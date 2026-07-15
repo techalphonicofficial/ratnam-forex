@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import Link from 'next/link';
 
-export default function GlobalError({ error, unstable_retry }) {
+export default function GlobalError({ error, retry }) {
   useEffect(() => {
     console.error(error);
   }, [error]);
@@ -53,7 +53,7 @@ export default function GlobalError({ error, unstable_retry }) {
             <div style={{ display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap' }}>
               <button
                 type="button"
-                onClick={() => unstable_retry()}
+                onClick={() => retry()}
                 style={{ padding: '14px 28px', borderRadius: 12, background: 'var(--color-primary)', color: '#ffffff', border: 'none', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}
               >
                 Try Again

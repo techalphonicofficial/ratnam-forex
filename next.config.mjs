@@ -20,7 +20,7 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'tourtravel.yber.in',
+        hostname: 'ratnamforex.yber.in',
       },
     ],
     qualities: [25, 50, 75, 100],

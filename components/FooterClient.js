@@ -120,7 +120,7 @@ const getLogoUrl = (logo) => {
   if (/^(https?:|data:|blob:)/i.test(logo)) return logo;
   if (!String(logo).startsWith('/uploads')) return logo;
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_IMAGE_URL || 'https://tourtravel.yber.in';
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_IMAGE_URL || 'https://ratnamforex.yber.in';
   return `${baseUrl.replace(/\/$/, '')}/${String(logo).replace(/^\//, '')}`;
 };
 
