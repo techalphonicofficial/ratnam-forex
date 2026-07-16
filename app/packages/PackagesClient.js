@@ -135,6 +135,7 @@ function PackageCard({ pkg }) {
   const [hovered, setHovered] = useState(false);
   const { isWishlisted, toggleWishlist } = useWishlist();
   const packageHref = `/tours?destination=${encodeURIComponent(pkg.destination)}`;
+  console.log("packageHref",packageHref);
   const wishlistItem = {
     id: pkg.slug || pkg.id || pkg.title,
     type: 'package',

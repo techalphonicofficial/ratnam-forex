@@ -3,21 +3,21 @@ import ScrollReveal from '@/components/ScrollReveal';
 import TeamCard from '@/components/TeamCard';
 import { getMediaUrl, getPageBySlug } from '@/utils/api';
 
-const FALLBACK_HERO_IMAGE = 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1920&q=75';
+const FALLBACK_HERO_IMAGE = 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1920&q=80';
 export const dynamic = 'force-dynamic';
 
 const FALLBACK_GALLERY = [
-  'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&q=75',
-  'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=400&q=75',
-  'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=400&q=75',
-  'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=400&q=75',
+  'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=400&q=80',
+  'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=400&q=80',
+  'https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=400&q=80',
+  'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?auto=format&fit=crop&w=400&q=80',
 ];
 
 const fallbackTeam = [
-  { name: 'Sarah Mitchell', role: 'CEO & Co-Founder', image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&q=75', bio: 'Former travel writer with 15+ years exploring 80 countries.' },
-  { name: 'James Thompson', role: 'Head of Operations', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&q=75', bio: 'Operations expert ensuring every tour runs seamlessly.' },
-  { name: 'Emma Wilson', role: 'Lead Tour Designer', image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300&q=75', bio: 'Crafts unique itineraries blending culture, adventure & luxury.' },
-  { name: 'David Martinez', role: 'Customer Experience', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&q=75', bio: 'Dedicated to making every traveler feel truly cared for.' },
+  { name: 'Sarah Mitchell', role: 'CEO & Co-Founder', image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80', bio: 'Former travel writer with 15+ years exploring 80 countries.' },
+  { name: 'James Thompson', role: 'Head of Operations', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80', bio: 'Operations expert ensuring every tour runs seamlessly.' },
+  { name: 'Emma Wilson', role: 'Lead Tour Designer', image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=300&q=80', bio: 'Crafts unique itineraries blending culture, adventure & luxury.' },
+  { name: 'David Martinez', role: 'Customer Experience', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80', bio: 'Dedicated to making every traveler feel truly cared for.' },
 ];
 
 const fallbackMilestones = [
@@ -59,10 +59,10 @@ const buildAboutContent = (page) => {
   const statsBar = findSection(page, 'stats_bar');
   const teamGrid = findSection(page, 'team_grid');
 
-  const heroImage = getMediaUrl(imageText?.json_data?.media_url || page?.feature_image) || FALLBACK_HERO_IMAGE;
+  const heroImage = getMediaUrl(imageText?.json_data?.media_url || imageText?.json_data?.image || page?.feature_image) || FALLBACK_HERO_IMAGE;
   const storyGallery = storyGrid?.json_data?.gallery?.length
     ? storyGrid.json_data.gallery.map((item) => ({
-      src: getMediaUrl(item.img),
+      src: getMediaUrl(item.img || item.image),
       alt: item.alt || storyGrid.title || 'Travel moment',
     })).filter((item) => item.src)
     : FALLBACK_GALLERY.map((src) => ({ src, alt: 'Travel moment' }));
@@ -80,7 +80,7 @@ const buildAboutContent = (page) => {
       title: storyGrid?.title || 'From a Single Trip to 50,000 Adventures',
       html: storyGrid?.json_data?.story_desc || fallbackStoryHtml,
       stats: storyGrid?.json_data?.stats?.length ? storyGrid.json_data.stats : fallbackStats,
-      gallery: storyGallery,
+      gallery: storyGallery.length ? storyGallery : FALLBACK_GALLERY.map((src) => ({ src, alt: 'Travel moment' })),
     },
     milestones: {
       label: statsBar?.title || 'Our Journey',
@@ -101,7 +101,7 @@ const buildAboutContent = (page) => {
           name: member.name,
           role: member.role,
           bio: member.bio,
-          image: getMediaUrl(member.img),
+          image: getMediaUrl(member.img || member.image),
         })).filter((member) => member.name && member.image)
         : fallbackTeam,
     },
@@ -114,11 +114,11 @@ export async function generateMetadata() {
 
   return {
     title: page?.meta_title || page?.title || 'About Us',
-    description: page?.meta_description || page?.description || 'Learn about ITS TRAVELS AND TOURS, our story, team, and mission to create extraordinary travel experiences.',
+    description: page?.meta_description || page?.description || 'Learn about ITs Travel Holiday, our story, team, and mission to create extraordinary travel experiences.',
     keywords: page?.keyword ? [page.keyword] : undefined,
     openGraph: {
       title: page?.meta_title || page?.title || 'About Us',
-      description: page?.meta_description || page?.description || 'Learn about ITS TRAVELS AND TOURS.',
+      description: page?.meta_description || page?.description || 'Learn about ITS TRAVEL HOLIDAY.',
       images: image ? [{ url: image, width: 1200, height: 630, alt: page?.alt_text || page?.title || 'About Us' }] : undefined,
     },
   };
@@ -132,14 +132,11 @@ export default async function AboutPage() {
     <>
       <section style={{ position: 'relative', minHeight: '60vh', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0 }}>
-          <Image
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
             src={content.hero.image}
             alt={content.hero.alt}
-            fill
-            sizes="100vw"
-            style={{ objectFit: 'cover' }}
-            loading="eager"
-            preload
+            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
           />
         </div>
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(0,10,40,0.85) 0%, rgba(0,82,204,0.5) 100%)' }} />
@@ -180,7 +177,8 @@ export default async function AboutPage() {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                   {content.story.gallery.slice(0, 4).map((item, i) => (
                     <div key={`${item.src}-${i}`} style={{ position: 'relative', height: 200, borderRadius: 'var(--radius-xl)', overflow: 'hidden' }}>
-                      <Image src={item.src} alt={item.alt} fill sizes="300px" style={{ objectFit: 'cover' }} loading="lazy" />
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={item.src} alt={item.alt} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} loading="lazy" />
                     </div>
                   ))}
                 </div>

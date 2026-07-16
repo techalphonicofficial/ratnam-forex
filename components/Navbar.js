@@ -57,9 +57,9 @@ const packageCols = [
     { name: 'Weekend Getaways', href: '/packages' },
   ],
   [
+    { name: 'Char Dham Yatra', href: '/tours/deluxe-chardham-yatra' },
     { name: 'Beach Holidays', href: '/packages?type=BEACH' },
     { name: 'Wildlife Safaris', href: '/packages?dest=Safari' },
-    { name: 'Cultural Tours', href: '/packages?type=CULTURAL' },
     { name: 'View All Packages →', href: '/packages', isExplore: true },
   ],
 ];
