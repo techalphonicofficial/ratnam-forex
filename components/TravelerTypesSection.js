@@ -155,10 +155,7 @@ export default function TravelerTypesSection() {
       style={{
         position: 'relative',
         padding: '80px 0 84px',
-        backgroundImage: 'linear-gradient(to bottom, rgba(5,8,12,0.4) 0%, rgba(5,8,12,0.95) 100%), url("/bg-traveler.jpg")',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'scroll',
+        background: 'var(--color-bg)',
         overflow: 'hidden',
       }}
     >
@@ -173,7 +170,7 @@ export default function TravelerTypesSection() {
           background: transparent;
           padding: 0;
           cursor: pointer;
-          color: white;
+          color: var(--color-text-primary);
           font-family: Poppins, sans-serif;
           text-align: center;
           transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
@@ -196,13 +193,15 @@ export default function TravelerTypesSection() {
           width: 170px;
           height: 250px;
           border-radius: 120px;
-          filter: drop-shadow(0 14px 28px rgba(0,0,0,0.48));
+          filter: drop-shadow(0 10px 20px rgba(0,0,0,0.15));
           border: 3px solid transparent;
-          transition: border-color 0.22s ease;
+          transition: border-color 0.22s ease, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.3s ease;
         }
         .sec-traveller-option:hover .sec-traveller-photo-wrap,
         .sec-traveller-option.is-active .sec-traveller-photo-wrap {
-          border-color: rgba(255, 255, 255, 0.4);
+          border-color: var(--color-primary);
+          transform: scale(1.05);
+          filter: drop-shadow(0 16px 28px rgba(0,0,0,0.22));
         }
         .sec-traveller-photo-wrap img {
           width: 100%;
@@ -247,7 +246,6 @@ export default function TravelerTypesSection() {
           line-height: 1.2;
           font-weight: 900;
           text-transform: uppercase;
-          text-shadow: 0 3px 8px rgba(0,0,0,0.5);
           white-space: nowrap;
           transition: color 0.22s ease;
         }
@@ -269,9 +267,9 @@ export default function TravelerTypesSection() {
           width: 44px;
           height: 44px;
           border-radius: 50%;
-          border: 1px solid rgba(255,255,255,0.28);
-          background: rgba(31, 42, 68, 0.85);
-          color: white;
+          border: 1px solid rgba(0,0,0,0.1);
+          background: #fff;
+          color: var(--color-text-primary);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -312,7 +310,7 @@ export default function TravelerTypesSection() {
             fontWeight: 800,
             letterSpacing: 2.2,
             textTransform: 'uppercase',
-            color: "white",
+            color: "var(--color-primary)",
             display: 'block',
             marginBottom: 8
           }}>
@@ -322,7 +320,7 @@ export default function TravelerTypesSection() {
             fontFamily: 'Poppins, sans-serif',
             fontWeight: 900,
             fontSize: 'clamp(24px, 3vw, 36px)',
-            color: '#8EB69B',
+            color: 'var(--color-text-primary)',
             margin: '0 0 12px',
             textTransform: 'uppercase',
             letterSpacing: 0.5
@@ -330,7 +328,7 @@ export default function TravelerTypesSection() {
             Who is traveling with you?
           </h2>
           <p style={{
-            color: 'rgba(255, 255, 255, 0.72)',
+            color: 'var(--color-text-secondary)',
             fontSize: 15,
             maxWidth: 580,
             margin: '0 auto'
