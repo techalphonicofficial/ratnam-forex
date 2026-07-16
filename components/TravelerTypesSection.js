@@ -173,9 +173,10 @@ export default function TravelerTypesSection() {
           color: var(--color-text-primary);
           font-family: Poppins, sans-serif;
           text-align: center;
-          transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+          transition: transform 0.35s ease-out;
           scroll-snap-align: start;
           opacity: 0;
+          will-change: transform;
         }
         .sec-traveller-option:hover,
         .sec-traveller-option.is-active {
@@ -193,15 +194,16 @@ export default function TravelerTypesSection() {
           width: 170px;
           height: 250px;
           border-radius: 120px;
-          filter: drop-shadow(0 10px 20px rgba(0,0,0,0.15));
+          box-shadow: 0 10px 20px rgba(0,0,0,0.12);
           border: 3px solid transparent;
-          transition: border-color 0.22s ease, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.3s ease;
+          transition: border-color 0.35s ease-out, transform 0.35s ease-out, box-shadow 0.35s ease-out;
+          will-change: transform, box-shadow;
         }
         .sec-traveller-option:hover .sec-traveller-photo-wrap,
         .sec-traveller-option.is-active .sec-traveller-photo-wrap {
           border-color: var(--color-primary);
           transform: scale(1.05);
-          filter: drop-shadow(0 16px 28px rgba(0,0,0,0.22));
+          box-shadow: 0 18px 36px rgba(0,0,0,0.18);
         }
         .sec-traveller-photo-wrap img {
           width: 100%;
