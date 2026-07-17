@@ -248,9 +248,12 @@ export default function TravelerTypesSection() {
         .sec-traveller-swiper {
           padding-bottom: 20px !important;
         }
+        .sec-traveller-swiper .swiper-wrapper {
+          transition-timing-function: linear !important;
+        }
         @media (max-width: 768px) {
           .sec-traveller-option { 
-            flex: 0 0 100%; 
+            flex-basis: 150px; 
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -309,11 +312,12 @@ export default function TravelerTypesSection() {
           <Swiper
             modules={[Autoplay]}
             loop={true}
-            autoplay={{ delay: 3000, disableOnInteraction: false }}
+            speed={3500}
+            autoplay={{ delay: 0, disableOnInteraction: false }}
             spaceBetween={28}
             slidesPerView="auto"
             breakpoints={{
-              320: { slidesPerView: 1, spaceBetween: 16 },
+              320: { slidesPerView: 'auto', spaceBetween: 16 },
               768: { slidesPerView: 'auto', spaceBetween: 28 }
             }}
             className="sec-traveller-swiper"
