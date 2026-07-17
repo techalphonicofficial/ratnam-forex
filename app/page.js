@@ -15,7 +15,7 @@ import { getHomePage } from '@/utils/api';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: 'ITS TRAVELS AND TOURS — Create Your Sooper Hit Holiday!',
+  title: 'TRAVEL & HOLIDAY ',
   description:
     'Fully personalized international holidays crafted by experts. Book Bali, Maldives, Europe, Japan & 120+ destinations. 50K+ happy travelers. Best price guarantee.',
   keywords: 'travel packages, holiday packages, international tours, customized holidays, Bali, Maldives, Europe tours',

@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import Link from 'next/link';
 
-export default function Error({ error, retry }) {
+export default function Error({ error, reset }) {
   useEffect(() => {
     console.error(error);
   }, [error]);
@@ -50,7 +50,7 @@ export default function Error({ error, retry }) {
           </p>
 
           <div style={{ display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap' }}>
-            <button type="button" className="btn-primary" onClick={() => retry()}>
+            <button type="button" className="btn-primary" onClick={() => reset()}>
               Try Again
             </button>
             <Link href="/" className="btn-secondary" style={{ textDecoration: 'none' }}>

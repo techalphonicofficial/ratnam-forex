@@ -102,6 +102,7 @@ const buildAboutContent = (page) => {
           role: member.role,
           bio: member.bio,
           image: getMediaUrl(member.img || member.image),
+          fallbackImage: fallbackTeam.find((t) => t.name === member.name)?.image,
         })).filter((member) => member.name && member.image)
         : fallbackTeam,
     },
@@ -137,6 +138,10 @@ export default async function AboutPage() {
             src={content.hero.image}
             alt={content.hero.alt}
             style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = FALLBACK_HERO_IMAGE;
+            }}
           />
         </div>
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(0,10,40,0.85) 0%, rgba(0,82,204,0.5) 100%)' }} />
@@ -178,7 +183,16 @@ export default async function AboutPage() {
                   {content.story.gallery.slice(0, 4).map((item, i) => (
                     <div key={`${item.src}-${i}`} style={{ position: 'relative', height: 200, borderRadius: 'var(--radius-xl)', overflow: 'hidden' }}>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={item.src} alt={item.alt} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} loading="lazy" />
+                      <img
+                        src={item.src}
+                        alt={item.alt}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                        loading="lazy"
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = FALLBACK_GALLERY[i % FALLBACK_GALLERY.length];
+                        }}
+                      />
                     </div>
                   ))}
                 </div>
