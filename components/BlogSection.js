@@ -135,35 +135,7 @@ export default function BlogSection() {
           line-height: 1.5;
         }
 
-        .home-blog-banner-btn {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          padding: 15px 38px;
-          border-radius: 10px;
-          background: linear-gradient(135deg, #3C7A57 0%, #2C6245 100%);
-          color: #FFFFFF;
-          border: none;
-          font-size: 15px;
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: 0.8px;
-          text-decoration: none;
-          transition: all 0.35s ease;
-          box-shadow: 0 10px 25px rgba(44,98,69,0.28);
-          cursor: pointer;
-        }
 
-        .home-blog-banner-btn:hover {
-          background: linear-gradient(135deg, #2C6245 0%, #214C35 100%);
-          transform: translateY(-3px);
-          box-shadow: 0 16px 35px rgba(44,98,69,0.38);
-          color: #FFFFFF;
-        }
-
-        .home-blog-banner-btn:active {
-          transform: translateY(1px) scale(0.98);
-        }
 
         /* ── Cards Column ──────────────── */
         .home-blog-cards-container {
@@ -322,7 +294,7 @@ export default function BlogSection() {
             <div className="home-blog-banner-content">
               <h3>Explore Stories</h3>
               <p>Get the latest city insights, expert travel guides, and incredible stories from our global explorers.</p>
-              <Link href="/blog" className="home-blog-banner-btn">
+              <Link href="/blog" className="btn-primary">
                 Read Blog
               </Link>
             </div>

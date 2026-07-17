@@ -290,7 +290,7 @@ export default function GlobalInquiryModal({ brand, companyInfo }) {
                 ))}
               </div>
 
-              <button type="submit" className="interactive-btn mt-3 w-100">
+              <button type="submit" className="btn-primary mt-3 w-100" style={{ justifyContent: 'center' }}>
                 Enquiry Now
               </button>
             </form>
@@ -381,28 +381,6 @@ export default function GlobalInquiryModal({ brand, companyInfo }) {
             background: #e5e7eb;
             color: #1f2937;
             transform: rotate(90deg);
-          }
-
-          .interactive-btn {
-            background: linear-gradient(135deg, #E03C42 0%, #ff5e62 50%, #E03C42 100%);
-            background-size: 200% auto;
-            color: white;
-            font-weight: 700;
-            border-radius: 50px;
-            font-size: 16px;
-            height: 52px;
-            border: none;
-            box-shadow: 0 8px 20px -6px rgba(224, 60, 66, 0.4);
-            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-          }
-          .interactive-btn:hover {
-            background-position: right center;
-            transform: translateY(-3px);
-            box-shadow: 0 12px 20px -5px rgba(224, 60, 66, 0.5);
-          }
-          .interactive-btn:active {
-            transform: translateY(1px);
-            box-shadow: 0 5px 10px -3px rgba(224, 60, 66, 0.4);
           }
 
           .custom-checkbox .form-check-input:checked {

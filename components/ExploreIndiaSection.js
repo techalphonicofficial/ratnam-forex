@@ -274,7 +274,7 @@ function IndiaCard({ tour, animDelay }) {
           ₹{Number(tour.price).toLocaleString('en-IN')}
         </div>
 
-        <Link href={href} className="ei-card-cta">
+        <Link href={href} className="th-card-link w-100">
           EXPLORE NOW
         </Link>
       </div>
@@ -556,39 +556,7 @@ export default function ExploreIndiaSection() {
           margin-bottom: 12px;
         }
 
-        .ei-card-cta {
-          display: inline-flex;
-          align-items: center;
-          background: linear-gradient(135deg, #3C7A57 0%, #2C6245 100%);
-          color: #FFFFFF;
-          border: none;
-          padding: 8px 16px; /* Preserved size for card */
-          border-radius: 10px;
-          font-size: 12px;
-          font-weight: 600;
-          letter-spacing: 0.8px;
-          text-decoration: none;
-          text-transform: uppercase;
-          transition: all 0.35s ease;
-          box-shadow: 0 10px 25px rgba(44,98,69,0.28);
-          cursor: pointer;
-        }
 
-        .ei-card-cta:hover {
-          background: linear-gradient(135deg, #2C6245 0%, #214C35 100%);
-          transform: translateY(-3px);
-          box-shadow: 0 16px 35px rgba(44,98,69,0.38);
-          color: #FFFFFF;
-        }
-
-        .ei-card-cta:active {
-          transform: translateY(-1px);
-        }
-
-        .ei-card-cta:focus {
-          outline: none;
-          box-shadow: 0 0 0 4px rgba(60,122,87,.18), 0 12px 30px rgba(44,98,69,.35);
-        }
 
         /* ── Empty state ──────────────── */
         .ei-empty {

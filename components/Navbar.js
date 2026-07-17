@@ -37,7 +37,7 @@ const indiaDropdownCols = [
     { name: 'Andaman Islands', tag: null, href: '/tour?search=Andaman' },
   ],
   [
-    { name: 'Leh Ladakh', tag: 'ADVENTURE', tagClr: '#f97316', tagBg: '#fff7ed', href: '/tour?search=Ladakh' },
+    { name: 'Leh Ladakh', tag: 'ADVENTURE', tagClr: '#A3C644', tagBg: '#F2F8D9', href: '/tour?search=Ladakh' },
     { name: 'Varanasi Spiritual', tag: null, href: '/tour?search=Varanasi' },
     { name: 'Explore All India →', href: '/packages?destination=India', isExplore: true },
   ],
@@ -419,7 +419,7 @@ function MegaDropdown({ label, cols, isTransparent }) {
           transition: 'color 0.2s',
           whiteSpace: 'nowrap',
         }}
-        onMouseEnter={e => { if (!isTransparent) e.currentTarget.style.color = '#f97316'; }}
+        onMouseEnter={e => { if (!isTransparent) e.currentTarget.style.color = '#A3C644'; }}
         onMouseLeave={e => { if (!isTransparent) e.currentTarget.style.color = '#374151'; }}
       >
         {label}
@@ -476,15 +476,15 @@ function MegaDropdown({ label, cols, isTransparent }) {
                     padding: '8px 0',
                     borderBottom: '1px solid #f9fafb',
                     textDecoration: 'none',
-                    color: item.isExplore ? '#f97316' : '#1f2937',
+                    color: item.isExplore ? '#A3C644' : '#1f2937',
                     fontWeight: item.isExplore ? 700 : 500,
                     fontSize: 13.5,
                     transition: 'color 0.15s',
                     lineHeight: 1.5,
                     whiteSpace: 'nowrap',
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.color = '#f97316'; }}
-                  onMouseLeave={e => { e.currentTarget.style.color = item.isExplore ? '#f97316' : '#1f2937'; }}
+                  onMouseEnter={e => { e.currentTarget.style.color = '#A3C644'; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = item.isExplore ? '#A3C644' : '#1f2937'; }}
                 >
                   {item.name}
                   {item.tag && (
@@ -1078,7 +1078,7 @@ export default function Navbar({ brand, companyInfo }) {
           position: absolute;
           bottom: 0; left: 0;
           width: 0; height: 2px;
-          background: #f97316;
+          background: #A3C644;
           border-radius: 999px;
           transition: width 0.25s;
         }
@@ -1086,15 +1086,15 @@ export default function Navbar({ brand, companyInfo }) {
         .nav-plain-link.active::after { width: 100%; }
         .nav-plain-link:hover,
         .nav-plain-link.active {
-          color: #f97316 !important;
+          color: #A3C644 !important;
         }
         .nav-social-icon {
           width: 24px;
           height: 24px;
           border-radius: 50%;
-          border: 1.5px solid #f97316;
-          background: rgba(255, 255, 255, 0.1);
-          color: #ffffff;
+          border: 1.5px solid #0f172a;
+          background: transparent;
+          color: #0f172a;
           display: inline-flex;
           align-items: center;
           justify-content: center;
@@ -1102,8 +1102,8 @@ export default function Navbar({ brand, companyInfo }) {
           text-decoration: none;
         }
         .nav-social-icon:hover {
-          background: #f97316;
-          color: var(--color-primary, #0B3C5D);
+          background: #8DB133;
+          color: #ffffff;
           transform: scale(1.08);
         }
         .forex-modal-backdrop {
@@ -1540,7 +1540,7 @@ export default function Navbar({ brand, companyInfo }) {
         <div
           className="nav-top-bar d-none d-lg-block"
           style={{
-            background: '#1F2A44',
+            background: 'linear-gradient(135deg, #A3C644 0%, #8DB133 100%)',
             height: scrolled ? '0px' : '40px',
             overflow: 'hidden',
             transition: 'all 0.3s ease',
@@ -1548,9 +1548,9 @@ export default function Navbar({ brand, companyInfo }) {
           }}
         >
           <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '100%' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 20, color: 'rgba(255, 255, 255, 0.9)', fontSize: '12.5px', fontWeight: '500' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 20, color: '#0f172a', fontSize: '12.5px', fontWeight: '600' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
                   <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
                   <path d="M4 22h16" />
@@ -1560,20 +1560,20 @@ export default function Navbar({ brand, companyInfo }) {
                 20+ Years of Excellence in Travel
               </span>
               <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M15.05 5A5 5 0 0 1 19 8.95M15.05 1A9 9 0 0 1 23 8.94m-1 7.98v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
                 </svg>
                 24x7 Customer Support
               </span>
               <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <rect width="20" height="16" x="2" y="4" rx="2" />
                   <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
                 </svg>
                 {companyInfo?.contact?.email || 'info@yourcompany.com'}
               </span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: 'rgba(255, 255, 255, 0.9)', fontSize: '12.5px', fontWeight: '500' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: '#0f172a', fontSize: '12.5px', fontWeight: '600' }}>
               <span>Follow Us:</span>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 {/* Facebook */}
@@ -1641,7 +1641,7 @@ export default function Navbar({ brand, companyInfo }) {
                   <Link
                     href="/"
                     className={`nav-plain-link ${pathname === '/' ? 'active' : ''}`}
-                    style={{ color: pathname === '/' ? '#f97316' : '#374151' }}
+                    style={{ color: pathname === '/' ? '#A3C644' : '#374151' }}
                   >
                     Home
                   </Link>
@@ -1650,7 +1650,7 @@ export default function Navbar({ brand, companyInfo }) {
                   <Link
                     href="/about"
                     className={`nav-plain-link ${pathname === '/about' ? 'active' : ''}`}
-                    style={{ color: pathname === '/about' ? '#f97316' : '#374151' }}
+                    style={{ color: pathname === '/about' ? '#A3C644' : '#374151' }}
                   >
                     About Us
                   </Link>
@@ -1664,7 +1664,7 @@ export default function Navbar({ brand, companyInfo }) {
                   <Link
                     href="/blog"
                     className={`nav-plain-link ${pathname.startsWith('/blog') ? 'active' : ''}`}
-                    style={{ color: pathname.startsWith('/blog') ? '#f97316' : '#374151' }}
+                    style={{ color: pathname.startsWith('/blog') ? '#A3C644' : '#374151' }}
                   >
                     Blog
                   </Link>
@@ -1673,7 +1673,7 @@ export default function Navbar({ brand, companyInfo }) {
                   <Link
                     href="/contact"
                     className={`nav-plain-link ${pathname === '/contact' ? 'active' : ''}`}
-                    style={{ color: pathname === '/contact' ? '#f97316' : '#374151' }}
+                    style={{ color: pathname === '/contact' ? '#A3C644' : '#374151' }}
                   >
                     Contact Us
                   </Link>
@@ -1689,9 +1689,9 @@ export default function Navbar({ brand, companyInfo }) {
                       width: 38,
                       height: 38,
                       borderRadius: '50%',
-                      background: 'rgba(249, 115, 22, 0.12)',
-                      border: '1.5px solid #f97316',
-                      color: '#f97316',
+                      background: 'rgba(163, 198, 68, 0.12)',
+                      border: '1.5px solid #A3C644',
+                      color: '#A3C644',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',

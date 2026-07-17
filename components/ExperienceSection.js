@@ -215,11 +215,11 @@ function AdventureCard({ item, isMobile }) {
         </div>
         <div style={{
           marginTop: 12,
-          display: 'flex', alignItems: 'center', gap: 6,
-          background: 'linear-gradient(135deg, #3C7A57 0%, #2C6245 100%)',
-          boxShadow: '0 10px 25px rgba(44,98,69,0.28)',
+          display: 'flex', alignItems: 'center',
+          background: 'linear-gradient(135deg, #A3C644 0%, #8DB133 100%)',
+          boxShadow: '0 8px 24px rgba(163, 198, 68, 0.28)',
           border: 'none',
-          borderRadius: 10, padding: '8px 16px',
+          borderRadius: 16, padding: '8px 16px',
           color: '#FFFFFF', fontSize: 12, fontWeight: 600,
           width: 'fit-content',
           opacity: hovered ? 1 : 0,

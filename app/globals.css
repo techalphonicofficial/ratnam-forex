@@ -9,15 +9,15 @@
      RICH & ROYAL DESIGN SYSTEM
      ============================== */
 
-  /* Brand Colors (Primary CTA & Buttons - Light Green & Cream) */
-  --brand-primary: #dcfce7;
-  --brand-primary-hover: #fbf9f6;
-  --brand-primary-light: #f0fdf4;
-  --brand-primary-border: #86efac;
+  /* Brand Colors (Primary CTA & Buttons - Lime Yellow) */
+  --brand-primary: #A3C644;
+  --brand-primary-hover: #8DB133;
+  --brand-primary-light: #F2F8D9;
+  --brand-primary-border: #88B04B;
 
-  /* Secondary Accent (Tawny Bronze Orange) */
-  --brand-secondary: #B87333;
-  --brand-secondary-hover: #9E612B;
+  /* Secondary Accent */
+  --brand-secondary: #F4D35E;
+  --brand-secondary-hover: #E3BF45;
 
   --color-primary: var(--brand-primary);
   --color-primary-hover: var(--brand-primary-hover);
@@ -32,9 +32,9 @@
   --bs-link-color: var(--color-primary);
   --bs-link-hover-color: var(--color-primary-hover);
 
-  /* Luxury Detail (Soft Gold) */
-  --color-accent: #D1B464;
-  --color-accent-hover: #BA9D53;
+  /* Luxury Detail */
+  --color-accent: #88B04B;
+  --color-accent-hover: #72963E;
 
   /* Text (Deep Navy Blue) */
   --color-text-primary: #1F2A44;
@@ -440,32 +440,46 @@ nav,
   justify-content: center;
   min-height: 38px;
   padding: 9px 15px; /* Preserved size */
-  border-radius: 10px;
-  background: linear-gradient(135deg, #3C7A57 0%, #2C6245 100%);
+  border-radius: 16px;
+  background: linear-gradient(135deg, #A3C644 0%, #8DB133 100%);
   color: #FFFFFF;
   border: none;
   font-size: 12px; /* Preserved size */
   font-weight: 600;
+  letter-spacing: 0.4px;
   line-height: 1;
   text-decoration: none;
   white-space: nowrap;
-  transition: all .35s ease;
-  box-shadow: 0 10px 25px rgba(44,98,69,0.28);
+  transition: all 300ms ease;
+  box-shadow: 0 8px 24px rgba(163, 198, 68, 0.28);
   cursor: pointer;
 }
 
 .th-card-link:hover {
-  background: linear-gradient(135deg, #2C6245 0%, #214C35 100%);
+  background: linear-gradient(135deg, #8DB133 0%, #7EA42D 100%);
   transform: translateY(-3px);
-  box-shadow: 0 16px 35px rgba(44,98,69,0.38);
+  box-shadow: 0 16px 36px rgba(163, 198, 68, 0.35);
   color: #FFFFFF;
 }
+
 .th-card-link:active {
-  transform: translateY(-1px);
+  transform: translateY(1px);
+  box-shadow: 0 6px 18px rgba(163, 198, 68, 0.25);
 }
+
 .th-card-link:focus {
   outline: none;
-  box-shadow: 0 0 0 4px rgba(60,122,87,.18), 0 12px 30px rgba(44,98,69,.35);
+  box-shadow: 0 0 0 4px rgba(163, 198, 68, 0.25);
+}
+
+.th-card-link svg {
+  margin-left: 8px;
+  fill: currentColor;
+  transition: transform 300ms ease;
+}
+
+.th-card-link:hover svg {
+  transform: translateX(2px);
 }
 
 @media (max-width: 768px) {
@@ -503,69 +517,71 @@ nav,
 /* ==============================
    BUTTONS
    ============================== */
-.btn-primary {
+.btn-primary,
+.btn-secondary,
+.btn-warm {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  padding: 15px 38px;
-  background: linear-gradient(135deg, #3C7A57 0%, #2C6245 100%);
+  padding: 14px 28px;
+  background: linear-gradient(135deg, #A3C644 0%, #8DB133 100%);
   color: #FFFFFF;
   border: none;
-  border-radius: 10px;
+  border-radius: 16px;
   font-size: 15px;
   font-weight: 600;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.4px;
   cursor: pointer;
-  transition: all 0.35s ease;
-  box-shadow: 0 10px 25px rgba(44,98,69,0.28);
+  transition: all 300ms ease;
+  box-shadow: 0 8px 24px rgba(163, 198, 68, 0.28);
   white-space: nowrap;
 }
 
-.btn-primary:hover {
-  background: linear-gradient(135deg, #2C6245 0%, #214C35 100%);
+.btn-primary:hover,
+.btn-secondary:hover,
+.btn-warm:hover {
+  background: linear-gradient(135deg, #8DB133 0%, #7EA42D 100%);
   transform: translateY(-3px);
-  box-shadow: 0 16px 35px rgba(44,98,69,0.38);
+  box-shadow: 0 16px 36px rgba(163, 198, 68, 0.35);
   color: #FFFFFF;
 }
 
-.btn-primary:active {
-  transform: translateY(-1px);
+.btn-primary:active,
+.btn-secondary:active,
+.btn-warm:active {
+  transform: translateY(1px);
+  box-shadow: 0 6px 18px rgba(163, 198, 68, 0.25);
 }
 
-.btn-primary:focus {
+.btn-primary:focus,
+.btn-secondary:focus,
+.btn-warm:focus {
   outline: none;
-  box-shadow: 0 0 0 4px rgba(60,122,87,.18), 0 12px 30px rgba(44,98,69,.35);
+  box-shadow: 0 0 0 4px rgba(163, 198, 68, 0.25);
 }
 
-.btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: 15px 38px;
-  background: linear-gradient(135deg, #3C7A57 0%, #2C6245 100%);
-  color: #FFFFFF;
-  border: none;
-  border-radius: 10px;
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-  cursor: pointer;
-  transition: all 0.35s ease;
-  box-shadow: 0 10px 25px rgba(44,98,69,0.28);
+.btn-primary:disabled,
+.btn-secondary:disabled,
+.btn-warm:disabled {
+  background: #D9E7B3;
+  color: #8A8A8A;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
-.btn-secondary:hover {
-  background: linear-gradient(135deg, #2C6245 0%, #214C35 100%);
-  transform: translateY(-3px);
-  box-shadow: 0 16px 35px rgba(44,98,69,0.38);
-  color: #FFFFFF;
+.btn-primary svg,
+.btn-secondary svg,
+.btn-warm svg {
+  margin-left: 8px;
+  fill: currentColor;
+  transition: transform 300ms ease;
 }
-.btn-secondary:active {
-  transform: translateY(-1px);
-}
-.btn-secondary:focus {
-  outline: none;
-  box-shadow: 0 0 0 4px rgba(60,122,87,.18), 0 12px 30px rgba(44,98,69,.35);
+
+.btn-primary:hover svg,
+.btn-secondary:hover svg,
+.btn-warm:hover svg {
+  transform: translateX(2px);
 }
 
 .btn-outline-white {
@@ -589,39 +605,9 @@ nav,
   border-color: rgba(255, 255, 255, 0.9);
   transform: translateY(-3px) scale(1.02);
 }
+
 .btn-outline-white:active {
   transform: translateY(1px) scale(0.98);
-}
-
-.btn-warm {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: 15px 38px;
-  background: linear-gradient(135deg, #3C7A57 0%, #2C6245 100%);
-  color: #FFFFFF;
-  border: none;
-  border-radius: 10px;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  letter-spacing: 0.3px;
-  transition: all 0.35s ease;
-  box-shadow: 0 10px 25px rgba(44,98,69,0.28);
-}
-
-.btn-warm:hover {
-  background: linear-gradient(135deg, #2C6245 0%, #214C35 100%);
-  transform: translateY(-3px);
-  box-shadow: 0 16px 35px rgba(44,98,69,0.38);
-  color: #FFFFFF;
-}
-.btn-warm:active {
-  transform: translateY(-1px);
-}
-.btn-warm:focus {
-  outline: none;
-  box-shadow: 0 0 0 4px rgba(60,122,87,.18), 0 12px 30px rgba(44,98,69,.35);
 }
 
 .btn-sm {

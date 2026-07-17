@@ -101,7 +101,7 @@ export default function NewsletterForm() {
             color: 'var(--color-text-primary)',
           }}
         />
-        <button type="submit" className="btn-primary" disabled={loading} style={{ opacity: loading ? 0.75 : 1, borderRadius: 20 }}>
+        <button type="submit" className="btn-primary" disabled={loading} style={{ opacity: loading ? 0.75 : 1 }}>
           {loading ? 'Subscribing...' : 'Subscribe'}
         </button>
       </form>

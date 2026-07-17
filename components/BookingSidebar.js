@@ -78,65 +78,6 @@ export default function BookingSidebar({ tour }) {
           color: #64748b;
           pointer-events: none;
         }
-        .btn-book {
-          width: 100%;
-          background: var(--color-secondary);
-          color: #fff;
-          border: none;
-          padding: 16px;
-          border-radius: 8px;
-          font-weight: 700;
-          font-size: 16px;
-          cursor: pointer;
-          transition: opacity 0.2s, transform 0.2s;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-          margin-bottom: 12px;
-        }
-        .btn-book:hover { opacity: 0.9; transform: translateY(-2px); }
-        .btn-enquiry {
-          width: 100%;
-          background: #fff;
-          color: var(--color-secondary);
-          border: 1px solid var(--color-secondary);
-          padding: 14px;
-          border-radius: 8px;
-          font-weight: 600;
-          font-size: 15px;
-          cursor: pointer;
-          transition: background 0.2s;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-          margin-bottom: 24px;
-        }
-        .btn-enquiry:hover { background: #fff7ed; }
-        .contact-row {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 12px;
-          margin-bottom: 24px;
-        }
-        .btn-contact {
-          padding: 12px;
-          border-radius: 8px;
-          border: none;
-          color: #fff;
-          font-weight: 600;
-          font-size: 14px;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 6px;
-          transition: opacity 0.2s;
-        }
-        .btn-contact:hover { opacity: 0.9; }
-        .btn-whatsapp { background: #22c55e; }
-        .btn-call { background: #3b82f6; }
         .trust-badges {
           display: flex;
           justify-content: space-between;
@@ -203,22 +144,22 @@ export default function BookingSidebar({ tour }) {
         </select>
       </div>
 
-      <button className="btn-book">
+      <button className="btn-primary w-100" style={{ justifyContent: 'center', marginBottom: 12 }}>
         Book Now 
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
       </button>
 
-      <button className="btn-enquiry">
+      <button className="btn-secondary w-100" style={{ justifyContent: 'center', marginBottom: 24 }}>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
         Send Enquiry
       </button>
 
-      <div className="contact-row">
-        <button className="btn-contact btn-whatsapp">
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 24 }}>
+        <button className="btn-primary w-100" style={{ justifyContent: 'center' }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
           WhatsApp
         </button>
-        <button className="btn-contact btn-call">
+        <button className="btn-primary w-100" style={{ justifyContent: 'center' }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
           Call Now
         </button>
