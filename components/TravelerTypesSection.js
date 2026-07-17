@@ -63,16 +63,14 @@ export default function TravelerTypesSection() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTraveler, setActiveTraveler] = useState(null);
-  const [canScroll, setCanScroll] = useState({ prev: false, next: false });
+  const [isMobile, setIsMobile] = useState(false);
 
-  const updateScrollState = useCallback(() => {
-    const row = travellerRowRef.current;
-    if (!row) return;
-    const maxScroll = Math.max(0, row.scrollWidth - row.clientWidth);
-    setCanScroll({
-      prev: row.scrollLeft > 4,
-      next: row.scrollLeft < maxScroll - 4,
-    });
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    // Initialize on mount
+    handleResize();
+    window.addEventListener('resize', handleResize, { passive: true });
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   useEffect(() => {
@@ -106,17 +104,7 @@ export default function TravelerTypesSection() {
     };
   }, []);
 
-  useEffect(() => {
-    const row = travellerRowRef.current;
-    if (!row) return;
-    row.addEventListener('scroll', updateScrollState, { passive: true });
-    window.addEventListener('resize', updateScrollState);
-    updateScrollState();
-    return () => {
-      row.removeEventListener('scroll', updateScrollState);
-      window.removeEventListener('resize', updateScrollState);
-    };
-  }, [categories, updateScrollState]);
+    // Resize handled by isMobile
 
     // Scrolling is manual via native CSS scroll-snap
 
@@ -248,7 +236,7 @@ export default function TravelerTypesSection() {
         .sec-traveller-swiper {
           padding-bottom: 20px !important;
         }
-        .sec-traveller-swiper .swiper-wrapper {
+        .sec-traveller-swiper.is-mobile .swiper-wrapper {
           transition-timing-function: linear !important;
         }
         @media (max-width: 768px) {
@@ -312,15 +300,11 @@ export default function TravelerTypesSection() {
           <Swiper
             modules={[Autoplay]}
             loop={true}
-            speed={3500}
-            autoplay={{ delay: 0, disableOnInteraction: false }}
-            spaceBetween={28}
+            speed={isMobile ? 5000 : 300}
+            autoplay={isMobile ? { delay: 0, disableOnInteraction: false } : false}
+            spaceBetween={isMobile ? 16 : 28}
             slidesPerView="auto"
-            breakpoints={{
-              320: { slidesPerView: 'auto', spaceBetween: 16 },
-              768: { slidesPerView: 'auto', spaceBetween: 28 }
-            }}
-            className="sec-traveller-swiper"
+            className={`sec-traveller-swiper ${isMobile ? 'is-mobile' : ''}`}
           >
             {categories.map(({ id, label, image, alt }, index) => (
               <SwiperSlide key={id} style={{ width: 'auto', display: 'flex', justifyContent: 'center' }}>
