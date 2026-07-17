@@ -236,12 +236,8 @@ export default function TravelerTypesSection() {
         .sec-traveller-swiper {
           padding-bottom: 20px !important;
         }
-        .sec-traveller-swiper.is-mobile .swiper-wrapper {
-          transition-timing-function: linear !important;
-        }
         @media (max-width: 768px) {
           .sec-traveller-option { 
-            flex-basis: 150px; 
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -300,14 +296,14 @@ export default function TravelerTypesSection() {
           <Swiper
             modules={[Autoplay]}
             loop={true}
-            speed={isMobile ? 5000 : 300}
-            autoplay={isMobile ? { delay: 0, disableOnInteraction: false } : false}
+            speed={500}
+            autoplay={isMobile ? { delay: 2000, disableOnInteraction: false } : false}
             spaceBetween={isMobile ? 16 : 28}
             slidesPerView="auto"
-            className={`sec-traveller-swiper ${isMobile ? 'is-mobile' : ''}`}
+            className="sec-traveller-swiper"
           >
             {categories.map(({ id, label, image, alt }, index) => (
-              <SwiperSlide key={id} style={{ width: 'auto', display: 'flex', justifyContent: 'center' }}>
+              <SwiperSlide key={id} style={{ width: isMobile ? '100%' : 'auto', display: 'flex', justifyContent: 'center' }}>
                 <button
                   type="button"
                   className={`sec-traveller-option${activeTraveler === id ? ' is-active' : ''}`}
