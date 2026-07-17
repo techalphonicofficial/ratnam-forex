@@ -2,6 +2,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { getHomeCategories, getMediaUrl } from '@/utils/api';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay } from 'swiper/modules';
+import 'swiper/css';
 
 const DEFAULT_CUSTOMIZE_ROOMS = [
   {
@@ -242,16 +245,8 @@ export default function TravelerTypesSection() {
           width: 100%;
           position: relative;
         }
-        .sec-traveller-row {
-          display: flex;
-          gap: 28px;
-          overflow-x: auto;
-          scroll-snap-type: x mandatory;
-          padding: 16px 8px;
-          scrollbar-width: none;
-        }
-        .sec-traveller-row::-webkit-scrollbar {
-          display: none;
+        .sec-traveller-swiper {
+          padding-bottom: 20px !important;
         }
         @media (max-width: 768px) {
           .sec-traveller-option { 
@@ -259,9 +254,7 @@ export default function TravelerTypesSection() {
             display: flex;
             flex-direction: column;
             align-items: center;
-            scroll-snap-align: center;
           }
-          .sec-traveller-row { gap: 0px; padding: 16px 0; }
           .sec-traveller-photo-wrap {
             width: 130px;
             height: 195px;
@@ -313,35 +306,44 @@ export default function TravelerTypesSection() {
 
         {/* Scroll row wrapper */}
         <div className="sec-traveller-marquee-wrapper">
-          <div
-            ref={travellerRowRef}
-            className="sec-traveller-row"
+          <Swiper
+            modules={[Autoplay]}
+            loop={true}
+            autoplay={{ delay: 3000, disableOnInteraction: false }}
+            spaceBetween={28}
+            slidesPerView="auto"
+            breakpoints={{
+              320: { slidesPerView: 1, spaceBetween: 16 },
+              768: { slidesPerView: 'auto', spaceBetween: 28 }
+            }}
+            className="sec-traveller-swiper"
           >
             {categories.map(({ id, label, image, alt }, index) => (
-              <button
-                key={id}
-                type="button"
-                className={`sec-traveller-option${activeTraveler === id ? ' is-active' : ''}`}
-                onMouseEnter={() => setActiveTraveler(id)}
-                onFocus={() => setActiveTraveler(id)}
-                onMouseLeave={() => setActiveTraveler(null)}
-                onBlur={() => setActiveTraveler(null)}
-                onClick={() => handleSelect(label)}
-              >
-                <span className="sec-traveller-visual">
-                  <span className="sec-traveller-photo-wrap">
-                    <img src={image} alt={alt || label} loading="lazy" />
-                    <span className="sec-traveller-badge">
-                      {getCategoryIcon(label)}
+              <SwiperSlide key={id} style={{ width: 'auto', display: 'flex', justifyContent: 'center' }}>
+                <button
+                  type="button"
+                  className={`sec-traveller-option${activeTraveler === id ? ' is-active' : ''}`}
+                  onMouseEnter={() => setActiveTraveler(id)}
+                  onFocus={() => setActiveTraveler(id)}
+                  onMouseLeave={() => setActiveTraveler(null)}
+                  onBlur={() => setActiveTraveler(null)}
+                  onClick={() => handleSelect(label)}
+                >
+                  <span className="sec-traveller-visual">
+                    <span className="sec-traveller-photo-wrap">
+                      <img src={image} alt={alt || label} loading="lazy" />
+                      <span className="sec-traveller-badge">
+                        {getCategoryIcon(label)}
+                      </span>
                     </span>
                   </span>
-                </span>
-                <span className="sec-traveller-label">
-                  {label}
-                </span>
-              </button>
+                  <span className="sec-traveller-label">
+                    {label}
+                  </span>
+                </button>
+              </SwiperSlide>
             ))}
-          </div>
+          </Swiper>
         </div>
       </div>
     </section>
