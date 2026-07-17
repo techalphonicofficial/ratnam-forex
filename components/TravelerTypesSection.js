@@ -115,28 +115,7 @@ export default function TravelerTypesSection() {
     };
   }, [categories, updateScrollState]);
 
-  const scroll = (direction) => {
-    const row = travellerRowRef.current;
-    if (!row) return;
-
-    const currentLeft = row.scrollLeft;
-    const maxLeft = Math.max(0, row.scrollWidth - row.clientWidth);
-    if (maxLeft <= 0) return;
-
-    const scrollAmount = 280;
-
-    if (direction === 1 && currentLeft >= maxLeft - 15) {
-      row.scrollTo({ left: 0, behavior: 'smooth' });
-    } else if (direction === -1 && currentLeft <= 15) {
-      row.scrollTo({ left: maxLeft, behavior: 'smooth' });
-    } else {
-      row.scrollTo({
-        left: Math.max(0, Math.min(currentLeft + (direction * scrollAmount), maxLeft)),
-        behavior: 'smooth',
-      });
-    }
-    setTimeout(updateScrollState, 360);
-  };
+    // Auto-scrolling implemented via CSS marquee animation.
 
   const handleSelect = (label) => {
     const params = new URLSearchParams();
@@ -164,6 +143,10 @@ export default function TravelerTypesSection() {
           from { opacity: 0; transform: translateX(80px); }
           to   { opacity: 1; transform: translateX(0); }
         }
+        @keyframes marqueeScroll {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(calc(-50% - 14px)); }
+        }
         .sec-traveller-option {
           flex: 0 0 186px;
           border: 0;
@@ -175,8 +158,6 @@ export default function TravelerTypesSection() {
           text-align: center;
           transition: transform 0.35s ease-out;
           scroll-snap-align: start;
-          opacity: 0;
-          will-change: transform;
         }
         .sec-traveller-option:hover,
         .sec-traveller-option.is-active {
@@ -226,13 +207,13 @@ export default function TravelerTypesSection() {
           justify-content: center;
           box-shadow: 0 6px 16px rgba(0,0,0,0.25);
           z-index: 2;
-          color: #f77042;
+          color: #A3C644;
           transition: transform 0.25s ease, background 0.25s ease;
         }
         .sec-traveller-option:hover .sec-traveller-badge,
         .sec-traveller-option.is-active .sec-traveller-badge {
           transform: translateX(-50%) scale(1.1);
-          background: #fdf3ef;
+          background: #F2F8D9;
         }
         .sec-traveller-badge svg {
           width: 24px;
@@ -261,35 +242,26 @@ export default function TravelerTypesSection() {
           stroke-width: 3.5;
           flex: 0 0 auto;
         }
-        .sec-traveller-scroll-btn {
-          position: absolute;
-          z-index: 4;
-          top: 62%;
-          transform: translateY(-50%);
-          width: 44px;
-          height: 44px;
-          border-radius: 50%;
-          border: 1px solid rgba(0,0,0,0.1);
-          background: #fff;
-          color: var(--color-text-primary);
+        .sec-traveller-marquee-wrapper {
+          overflow: hidden;
+          width: 100%;
+          position: relative;
           display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          box-shadow: 0 10px 24px rgba(0,0,0,0.3);
-          transition: all 0.2s ease;
         }
-        .sec-traveller-scroll-btn:hover {
-          background: var(--brand-primary);
-          color: white;
-          border-color: var(--brand-primary);
-          transform: translateY(-50%) scale(1.1);
-          box-shadow: 0 10px 24px rgba(46,74,59,0.4);
+        .sec-traveller-row {
+          display: flex;
+          gap: 28px;
+          width: max-content;
+          padding: 16px 8px;
+          animation: marqueeScroll 25s linear infinite;
+          will-change: transform;
         }
-        .sec-traveller-scroll-btn.prev { left: 24px; }
-        .sec-traveller-scroll-btn.next { right: 24px; }
+        .sec-traveller-row:hover {
+          animation-play-state: paused;
+        }
         @media (max-width: 768px) {
           .sec-traveller-option { flex-basis: 150px; }
+          .sec-traveller-row { gap: 16px; }
           .sec-traveller-photo-wrap {
             width: 130px;
             height: 195px;
@@ -340,46 +312,16 @@ export default function TravelerTypesSection() {
         </div>
 
         {/* Scroll row wrapper */}
-        <div style={{ position: 'relative', width: '100%', display: 'flex', alignItems: 'center' }}>
-          <button
-            type="button"
-            className="sec-traveller-scroll-btn prev"
-            aria-label="Scroll left"
-            onClick={() => scroll(-1)}
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="22" height="22" strokeWidth="3">
-              <path d="M15 5l-7 7 7 7" />
-            </svg>
-          </button>
-
+        <div className="sec-traveller-marquee-wrapper">
           <div
             ref={travellerRowRef}
-            style={{
-              width: '100%',
-              display: 'flex',
-              justifyContent: 'center',
-              gap: 28,
-              overflowX: 'auto',
-              scrollbarWidth: 'none',
-              padding: '16px 8px',
-              scrollSnapType: 'x proximity',
-            }}
-            onWheel={(event) => {
-              if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
-              event.preventDefault();
-              event.currentTarget.scrollLeft += event.deltaY;
-              window.requestAnimationFrame(updateScrollState);
-            }}
+            className="sec-traveller-row"
           >
-            {categories.map(({ id, label, image, alt }, index) => (
+            {[...categories, ...categories].map(({ id, label, image, alt }, index) => (
               <button
-                key={id}
+                key={`${id}-${index}`}
                 type="button"
                 className={`sec-traveller-option${activeTraveler === id ? ' is-active' : ''}`}
-                style={{
-                  animation: 'slideInFromRight 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-                  animationDelay: `${index * 0.12}s`,
-                }}
                 onMouseEnter={() => setActiveTraveler(id)}
                 onFocus={() => setActiveTraveler(id)}
                 onMouseLeave={() => setActiveTraveler(null)}
@@ -400,17 +342,6 @@ export default function TravelerTypesSection() {
               </button>
             ))}
           </div>
-
-          <button
-            type="button"
-            className="sec-traveller-scroll-btn next"
-            aria-label="Scroll right"
-            onClick={() => scroll(1)}
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="22" height="22" strokeWidth="3">
-              <path d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
         </div>
       </div>
     </section>
