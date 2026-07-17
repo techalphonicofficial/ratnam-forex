@@ -115,7 +115,7 @@ export default function TravelerTypesSection() {
     };
   }, [categories, updateScrollState]);
 
-    // Auto-scrolling implemented via CSS marquee animation.
+    // Scrolling is manual via native CSS scroll-snap
 
   const handleSelect = (label) => {
     const params = new URLSearchParams();
@@ -139,10 +139,6 @@ export default function TravelerTypesSection() {
       }}
     >
       <style>{`
-        @keyframes slideInFromRight {
-          from { opacity: 0; transform: translateX(80px); }
-          to   { opacity: 1; transform: translateX(0); }
-        }
         @keyframes marqueeScroll {
           0% { transform: translateX(0); }
           100% { transform: translateX(calc(-50% - 14px)); }
@@ -243,25 +239,29 @@ export default function TravelerTypesSection() {
           flex: 0 0 auto;
         }
         .sec-traveller-marquee-wrapper {
-          overflow: hidden;
           width: 100%;
           position: relative;
-          display: flex;
         }
         .sec-traveller-row {
           display: flex;
           gap: 28px;
-          width: max-content;
+          overflow-x: auto;
+          scroll-snap-type: x mandatory;
           padding: 16px 8px;
-          animation: marqueeScroll 25s linear infinite;
-          will-change: transform;
+          scrollbar-width: none;
         }
-        .sec-traveller-row:hover {
-          animation-play-state: paused;
+        .sec-traveller-row::-webkit-scrollbar {
+          display: none;
         }
         @media (max-width: 768px) {
-          .sec-traveller-option { flex-basis: 150px; }
-          .sec-traveller-row { gap: 16px; }
+          .sec-traveller-option { 
+            flex: 0 0 100%; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            scroll-snap-align: center;
+          }
+          .sec-traveller-row { gap: 0px; padding: 16px 0; }
           .sec-traveller-photo-wrap {
             width: 130px;
             height: 195px;
@@ -317,9 +317,9 @@ export default function TravelerTypesSection() {
             ref={travellerRowRef}
             className="sec-traveller-row"
           >
-            {[...categories, ...categories].map(({ id, label, image, alt }, index) => (
+            {categories.map(({ id, label, image, alt }, index) => (
               <button
-                key={`${id}-${index}`}
+                key={id}
                 type="button"
                 className={`sec-traveller-option${activeTraveler === id ? ' is-active' : ''}`}
                 onMouseEnter={() => setActiveTraveler(id)}
