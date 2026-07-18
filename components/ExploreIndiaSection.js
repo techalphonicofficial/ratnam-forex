@@ -7,17 +7,13 @@ import { getFeaturedTourHref } from '@/components/FeaturedToursRow';
 
 /* ── Filter options ──────────────────────────────────── */
 const FILTER_OPTIONS = {
-  hotDeals: {
-    label: 'Hot Deals',
-    items: ['All', 'Under ₹20K', '₹20K – ₹40K', '₹40K – ₹80K', 'Premium'],
-  },
   theme: {
     label: 'Theme',
     items: ['All', 'Couple', 'Family', 'Adventure', 'Solo', 'Spiritual'],
   },
-  budget: {
-    label: 'Budget',
-    items: ['All', 'Under ₹20K', '₹20K – ₹40K', '₹40K – ₹80K', '₹80K+'],
+  travelClass: {
+    label: 'Travel Class',
+    items: ['All', 'Economy', 'Standard', 'Luxury'],
   },
   season: {
     label: 'Season',
@@ -30,13 +26,13 @@ const FILTER_OPTIONS = {
 };
 
 /* ── India tour data ─────────────────────────────────── */
-const indiaTours = [
+export const indiaTours = [
   {
     id: 'ei1',
     title: 'Kashmir Paradise',
     dest: 'India',
     locations: ['Srinagar (2N)', 'Pahalgam (2N)', 'Gulmarg (1N)'],
-    image: 'https://images.unsplash.com/photo-1597074866923-dc0589150458?w=600&q=80',
+    image: 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=600&q=80',
     nights: 5, days: 6, price: 28999, rating: 4.8,
     priceCategory: 'under50',
     type: 'COUPLE', typeColor: '#f97316',
@@ -169,10 +165,10 @@ function FilterDropdown({ label, items, value, onChange }) {
   return (
     <div ref={ref} className="ei-dropdown">
       <button
-        className={`ei-dropdown-btn ${open ? 'ei-dropdown-btn--open' : ''}`}
+        className={`ei-dropdown-btn ${open ? 'ei-dropdown-btn--open' : ''} ${value !== 'All' ? 'ei-dropdown-btn--active' : ''}`}
         onClick={() => setOpen(!open)}
       >
-        <span>{label}</span>
+        <span>{value !== 'All' ? value : label}</span>
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
           <polyline points="6 9 12 15 18 9" />
         </svg>
@@ -209,18 +205,14 @@ function applyFilters(tours, filters) {
     list = list.filter(t => t.theme === filters.theme.toLowerCase());
   }
 
-  if (filters.budget !== 'All') {
-    if (filters.budget === 'Under ₹20K') list = list.filter(t => t.price < 20000);
-    else if (filters.budget === '₹20K – ₹40K') list = list.filter(t => t.price >= 20000 && t.price < 40000);
-    else if (filters.budget === '₹40K – ₹80K') list = list.filter(t => t.price >= 40000 && t.price < 80000);
-    else if (filters.budget === '₹80K+') list = list.filter(t => t.price >= 80000);
+  if (filters.season !== 'All') {
+    list = list.filter(t => t.season === filters.season.toLowerCase());
   }
 
-  if (filters.hotDeals !== 'All') {
-    if (filters.hotDeals === 'Under ₹20K') list = list.filter(t => t.price < 20000);
-    else if (filters.hotDeals === '₹20K – ₹40K') list = list.filter(t => t.price >= 20000 && t.price < 40000);
-    else if (filters.hotDeals === '₹40K – ₹80K') list = list.filter(t => t.price >= 40000 && t.price < 80000);
-    else if (filters.hotDeals === 'Premium') list = list.filter(t => t.price >= 80000);
+  if (filters.travelClass !== 'All') {
+    if (filters.travelClass === 'Economy') list = list.filter(t => t.price < 50000);
+    else if (filters.travelClass === 'Standard') list = list.filter(t => t.price >= 50000 && t.price < 150000);
+    else if (filters.travelClass === 'Luxury') list = list.filter(t => t.price >= 150000);
   }
 
   if (filters.duration !== 'All') {
@@ -274,9 +266,11 @@ function IndiaCard({ tour, animDelay }) {
           ₹{Number(tour.price).toLocaleString('en-IN')}
         </div>
 
-        <Link href={href} className="th-card-link w-100">
-          EXPLORE NOW
-        </Link>
+        <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+          <Link href={href} className="th-card-link">
+            EXPLORE NOW
+          </Link>
+        </div>
       </div>
     </article>
   );
@@ -285,9 +279,8 @@ function IndiaCard({ tour, animDelay }) {
 /* ── Main Section ────────────────────────────────────── */
 export default function ExploreIndiaSection() {
   const [filters, setFilters] = useState({
-    hotDeals: 'All',
     theme: 'All',
-    budget: 'All',
+    travelClass: 'All',
     season: 'All',
     duration: 'All',
   });
@@ -439,32 +432,30 @@ export default function ExploreIndiaSection() {
           position: absolute;
           top: 50%;
           transform: translateY(-50%);
-          width: 38px;
-          height: 38px;
+          width: 44px;
+          height: 44px;
           border-radius: 50%;
-          border: 1.5px solid #d1d5db;
+          border: 1.5px solid var(--color-border, #E5E5E5);
           background: #ffffff;
-          color: #374151;
-          font-size: 18px;
+          color: var(--color-text-primary);
           display: flex;
           align-items: center;
           justify-content: center;
           cursor: pointer;
-          z-index: 5;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-          transition: all 0.2s;
+          z-index: 10;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+          transition: all 0.2s ease;
         }
 
         .ei-scroll-btn:hover {
-          background: var(--brand-primary);
-          color: white;
-          border-color: var(--brand-primary);
-          transform: translateY(-50%) scale(1.1);
-          box-shadow: 0 10px 24px rgba(46,74,59,0.4);
+          border-color: var(--color-primary);
+          color: var(--color-primary);
+          transform: translateY(-50%) translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
 
-        .ei-scroll-btn--left { left: -12px; }
-        .ei-scroll-btn--right { right: -12px; }
+        .ei-scroll-btn--left { left: -18px; }
+        .ei-scroll-btn--right { right: -18px; }
 
         /* ── Card ─────────────────────── */
         @keyframes eiCardIn {
@@ -574,6 +565,9 @@ export default function ExploreIndiaSection() {
 
         /* ── Responsive ───────────────── */
         @media (max-width: 768px) {
+          .ei-scroll-btn--left { left: 4px; }
+          .ei-scroll-btn--right { right: 4px; }
+          
           .ei-section {
             padding: 32px 0 40px;
           }
@@ -581,18 +575,13 @@ export default function ExploreIndiaSection() {
             padding: 0 16px;
           }
           .ei-filter-bar {
-            overflow-x: auto;
-            flex-wrap: nowrap;
+            flex-wrap: wrap;
             padding-bottom: 8px;
-            scrollbar-width: none;
-            -webkit-overflow-scrolling: touch;
+            justify-content: center;
           }
           .ei-filter-bar::-webkit-scrollbar { display: none; }
           .ei-card {
             width: calc(100vw - 40px);
-          }
-          .ei-scroll-btn {
-            display: none;
           }
         }
 
@@ -610,6 +599,9 @@ export default function ExploreIndiaSection() {
 
         {/* Filter dropdowns */}
         <div className="ei-filter-bar">
+          <span className="ei-dropdown-btn" style={{ background: '#fafafa', color: '#6b7280', cursor: 'default' }}>
+            Hot Deals
+          </span>
           {Object.entries(FILTER_OPTIONS).map(([key, opt]) => (
             <FilterDropdown
               key={key}
@@ -628,7 +620,7 @@ export default function ExploreIndiaSection() {
             aria-label="Scroll left"
             onClick={() => scroll(-1)}
           >
-            ‹
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6" /></svg>
           </button>
 
           <div ref={scrollRef} className="ei-scroll-area">
@@ -648,7 +640,7 @@ export default function ExploreIndiaSection() {
             aria-label="Scroll right"
             onClick={() => scroll(1)}
           >
-            ›
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6" /></svg>
           </button>
         </div>
       </div>

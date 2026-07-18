@@ -1,13 +1,17 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { blogsData } from '@/data/blogs';
 
 export default function BlogSection() {
-  // Get first 3 blogs for the homepage widget
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const blog = blogsData[currentIndex];
   const featuredBlogs = blogsData.slice(0, 3);
+
+  const nextBlog = () => setCurrentIndex((prev) => (prev + 1) % blogsData.length);
+  const prevBlog = () => setCurrentIndex((prev) => (prev - 1 + blogsData.length) % blogsData.length);
 
   return (
     <section className="home-blog-section" aria-labelledby="home-blog-title">
@@ -77,49 +81,47 @@ export default function BlogSection() {
           align-items: stretch;
         }
 
-        /* ── Banner Column ─────────────── */
-        .home-blog-banner-container {
+        /* ── Desktop Banner ─────────────── */
+        .desktop-banner {
           position: relative;
           border-radius: var(--radius-lg, 16px);
           overflow: hidden;
           box-shadow: var(--shadow-sm, 0 6px 20px rgba(0,0,0,0.08));
           display: flex;
           flex-direction: column;
-          justify-content: flex-end;
+          justify-content: center;
+          align-items: center;
+          text-align: center;
+          padding: 40px 24px;
           min-height: 480px;
-          background: var(--color-text-primary);
+          background: #ffffff;
           transition: transform var(--transition-base, 250ms), box-shadow var(--transition-base, 250ms);
         }
-
-        .home-blog-banner-container:hover {
+        .desktop-banner:hover {
           transform: translateY(-4px);
           box-shadow: var(--shadow-md, 0 10px 30px rgba(0,0,0,0.1));
         }
-
-        .home-blog-banner-bg {
-          position: absolute;
-          inset: 0;
-          z-index: 1;
-          background: linear-gradient(180deg, rgba(31, 42, 68, 0) 40%, rgba(31, 42, 68, 0.95) 100%);
+        .desktop-banner-bg {
+          display: none;
         }
-
-        .home-blog-banner-img {
-          object-fit: cover;
+        .desktop-banner-img {
+          object-fit: contain;
+          margin-bottom: 32px;
           transition: transform var(--transition-slow, 400ms);
         }
-
-        .home-blog-banner-container:hover .home-blog-banner-img {
+        .desktop-banner:hover .desktop-banner-img {
           transform: scale(1.04);
         }
-
-        .home-blog-banner-content {
+        .desktop-banner-content {
           position: relative;
           z-index: 2;
-          padding: var(--space-6, 24px);
-          color: #ffffff;
+          color: var(--color-primary, #0B3C5D);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
         }
-
-        .home-blog-banner-content h3 {
+        .desktop-banner-content h3 {
           font-family: var(--font-poppins), Poppins, sans-serif;
           font-size: 20px;
           font-weight: 800;
@@ -127,12 +129,71 @@ export default function BlogSection() {
           line-height: 1.3;
           text-transform: uppercase;
         }
-
-        .home-blog-banner-content p {
+        .desktop-banner-content p {
           font-size: 13px;
-          color: rgba(255, 255, 255, 0.85);
+          color: var(--color-text-secondary, #555555);
           margin-bottom: var(--space-4, 16px);
           line-height: 1.5;
+        }
+
+        /* ── Mobile Banner ─────────────── */
+        .mobile-banner {
+          position: relative;
+          border-radius: var(--radius-lg, 16px);
+          overflow: hidden;
+          box-shadow: var(--shadow-sm, 0 6px 20px rgba(0,0,0,0.08));
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          min-height: 200px;
+          background: #ffffff;
+          align-items: center;
+          text-align: center;
+          padding: 32px 24px;
+        }
+        .mobile-banner-img {
+          object-fit: contain;
+          margin-bottom: 24px;
+        }
+        .mobile-banner-content {
+          position: relative;
+          z-index: 2;
+          color: var(--color-primary, #0B3C5D);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+        }
+        .mobile-banner-content h3 {
+          font-family: var(--font-poppins), Poppins, sans-serif;
+          font-size: 20px;
+          font-weight: 800;
+          margin-bottom: var(--space-2, 8px);
+          line-height: 1.3;
+          text-transform: uppercase;
+        }
+        .mobile-banner-content p {
+          font-size: 13px;
+          color: var(--color-text-secondary, #555555);
+          margin-bottom: var(--space-4, 16px);
+          line-height: 1.5;
+        }
+        .home-blog-banner-btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 8px 20px;
+          background: var(--color-primary, #0B3C5D);
+          color: #ffffff;
+          border-radius: 999px;
+          font-size: 13px;
+          font-weight: 600;
+          text-decoration: none;
+          transition: all 0.2s ease;
+        }
+        .home-blog-banner-btn:hover {
+          background: var(--color-primary-hover, #082F49);
+          transform: translateY(-2px);
         }
 
 
@@ -142,6 +203,7 @@ export default function BlogSection() {
           display: flex;
           flex-direction: column;
           gap: var(--space-5, 20px);
+          position: relative;
         }
 
         .home-blog-card {
@@ -239,15 +301,52 @@ export default function BlogSection() {
           font-weight: 600;
         }
 
+        /* ── Controls ─────────────────── */
+        .home-blog-controls {
+          position: absolute;
+          top: 120px;
+          left: 12px;
+          right: 12px;
+          transform: translateY(-50%);
+          display: flex;
+          justify-content: space-between;
+          z-index: 10;
+          pointer-events: none;
+        }
+
+        .home-blog-arrow {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          border: 1.5px solid var(--color-border, #E5E5E5);
+          background: #ffffff;
+          color: var(--color-text-primary);
+          cursor: pointer;
+          transition: all 0.2s ease;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+          pointer-events: auto;
+        }
+
+        .home-blog-arrow:hover {
+          border-color: var(--color-primary);
+          color: var(--color-primary);
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
         /* ── Responsive ───────────────── */
         @media (max-width: 991px) {
+          .desktop-only { display: none !important; }
           .home-blog-grid {
             grid-template-columns: 1fr;
             gap: var(--space-6, 24px);
           }
-          .home-blog-banner-container {
-            min-height: 300px;
-          }
+        }
+        @media (min-width: 992px) {
+          .mobile-only { display: none !important; }
         }
 
         @media (max-width: 640px) {
@@ -280,18 +379,18 @@ export default function BlogSection() {
         </div>
 
         <div className="home-blog-grid">
-          {/* Left Column: Banner */}
-          <div className="home-blog-banner-container">
+          {/* Desktop Banner */}
+          <div className="desktop-banner desktop-only">
             <Image
-              src="/blog-banner.webp"
-              alt="Travel Blog Banner"
-              fill
-              sizes="(max-width: 991px) 100vw, 350px"
+              src="/logooo.png"
+              alt="Travel & Holiday Logo"
+              width={260}
+              height={100}
               priority={false}
-              className="home-blog-banner-img"
+              className="desktop-banner-img"
             />
-            <div className="home-blog-banner-bg" />
-            <div className="home-blog-banner-content">
+            <div className="desktop-banner-bg" />
+            <div className="desktop-banner-content">
               <h3>Explore Stories</h3>
               <p>Get the latest city insights, expert travel guides, and incredible stories from our global explorers.</p>
               <Link href="/blog" className="btn-primary">
@@ -300,30 +399,86 @@ export default function BlogSection() {
             </div>
           </div>
 
-          {/* Right Column: Blog Cards List */}
-          <div className="home-blog-cards-container">
-            {featuredBlogs.map((blog) => (
-              <Link key={blog.id} href={`/blog/${blog.slug}`} className="home-blog-card">
+          {/* Mobile Banner */}
+          <div className="mobile-banner mobile-only">
+            <Image
+              src="/logooo.png"
+              alt="Travel & Holiday Logo"
+              width={200}
+              height={80}
+              priority={false}
+              className="mobile-banner-img"
+            />
+            <div className="mobile-banner-content">
+              <h3>Explore Stories</h3>
+              <p>Get the latest city insights, expert travel guides, and incredible stories from our global explorers.</p>
+              <Link href="/blog" className="home-blog-banner-btn">
+                Read Blog
+              </Link>
+            </div>
+          </div>
+
+          {/* Desktop Cards (3 Stacked) */}
+          <div className="home-blog-cards-container desktop-only">
+            {featuredBlogs.map((b) => (
+              <Link key={b.id} href={`/blog/${b.slug}`} className="home-blog-card">
                 <div className="home-blog-card-media">
                   <Image
-                    src={blog.image}
-                    alt={blog.title}
+                    src={b.image}
+                    alt={b.title}
                     fill
                     sizes="(max-width: 640px) 100vw, 200px"
                     loading="lazy"
                   />
                 </div>
                 <div className="home-blog-card-body">
-                  <span className="home-blog-card-tag">{blog.category}</span>
-                  <h4 className="home-blog-card-title">{blog.title}</h4>
-                  <p className="home-blog-card-excerpt">{blog.excerpt}</p>
+                  <span className="home-blog-card-tag">{b.category}</span>
+                  <h4 className="home-blog-card-title">{b.title}</h4>
+                  <p className="home-blog-card-excerpt">{b.excerpt}</p>
                   <div className="home-blog-card-footer">
-                    <span className="home-blog-card-author">By {blog.author}</span>
-                    <span>{blog.date} • {blog.readTime || '5 min read'}</span>
+                    <span className="home-blog-card-author">By {b.author}</span>
+                    <span>{b.date} • {b.readTime || '5 min read'}</span>
                   </div>
                 </div>
               </Link>
             ))}
+          </div>
+
+          {/* Mobile Cards (1 with Arrows) */}
+          <div className="home-blog-cards-container mobile-only">
+            <div className="home-blog-controls">
+              <button onClick={prevBlog} className="home-blog-arrow" aria-label="Previous blog">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <polyline points="15 18 9 12 15 6" />
+                </svg>
+              </button>
+              <button onClick={nextBlog} className="home-blog-arrow" aria-label="Next blog">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+              </button>
+            </div>
+
+            <Link key={blog.id} href={`/blog/${blog.slug}`} className="home-blog-card" style={{ flex: 1, gridTemplateColumns: '1fr', gridTemplateRows: 'auto 1fr' }}>
+              <div className="home-blog-card-media" style={{ height: '240px' }}>
+                <Image
+                  src={blog.image}
+                  alt={blog.title}
+                  fill
+                  sizes="(max-width: 640px) 100vw, 400px"
+                  loading="lazy"
+                />
+              </div>
+              <div className="home-blog-card-body">
+                <span className="home-blog-card-tag">{blog.category}</span>
+                <h4 className="home-blog-card-title" style={{ fontSize: '18px', marginBottom: '12px' }}>{blog.title}</h4>
+                <p className="home-blog-card-excerpt" style={{ fontSize: '15px', marginBottom: 'auto' }}>{blog.excerpt}</p>
+                <div className="home-blog-card-footer" style={{ marginTop: '20px' }}>
+                  <span className="home-blog-card-author">By {blog.author}</span>
+                  <span>{blog.date} • {blog.readTime || '5 min read'}</span>
+                </div>
+              </div>
+            </Link>
           </div>
         </div>
       </div>

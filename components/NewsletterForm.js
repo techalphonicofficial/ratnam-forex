@@ -226,9 +226,10 @@ export default function NewsletterForm() {
         }
         @media (max-width: 560px) {
           .newsletter-form {
-            display: grid !important;
-            border-radius: 18px !important;
-            gap: 8px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            border-radius: 16px !important;
+            gap: 10px !important;
             padding: 10px !important;
           }
           .newsletter-form input {

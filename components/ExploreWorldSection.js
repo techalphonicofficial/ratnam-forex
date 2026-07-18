@@ -8,17 +8,13 @@ import { getTripInquiries, getMediaUrl } from '@/utils/api';
 
 /* ── Filter options ──────────────────────────────────── */
 const FILTER_OPTIONS = {
-  hotDeals: {
-    label: 'Hot Deals',
-    items: ['All', 'Under ₹50K', '₹50K – ₹1.5L', '₹1.5L – ₹2.5L', 'Luxury'],
-  },
   theme: {
     label: 'Theme',
     items: ['All', 'Couple', 'Family', 'Adventure', 'Solo', 'Luxury'],
   },
-  budget: {
-    label: 'Budget',
-    items: ['All', 'Under ₹50K', '₹50K – ₹1.5L', '₹1.5L – ₹2.5L', '₹2.5L+'],
+  travelClass: {
+    label: 'Travel Class',
+    items: ['All', 'Economy', 'Standard', 'Luxury'],
   },
   season: {
     label: 'Season',
@@ -31,7 +27,7 @@ const FILTER_OPTIONS = {
 };
 
 /* ── Explore world tour data ─────────────────────────── */
-const exploreTours = [
+export const exploreTours = [
   {
     id: 'ew1',
     title: 'Switzerland Spectacular',
@@ -146,10 +142,10 @@ function FilterDropdown({ label, items, value, onChange }) {
   return (
     <div ref={ref} className="ew-dropdown">
       <button
-        className={`ew-dropdown-btn ${open ? 'ew-dropdown-btn--open' : ''}`}
+        className={`ew-dropdown-btn ${open ? 'ew-dropdown-btn--open' : ''} ${value !== 'All' ? 'ew-dropdown-btn--active' : ''}`}
         onClick={() => setOpen(!open)}
       >
-        <span>{label}</span>
+        <span>{value !== 'All' ? value : label}</span>
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
           <polyline points="6 9 12 15 18 9" />
         </svg>
@@ -186,18 +182,14 @@ function applyFilters(tours, filters) {
     list = list.filter(t => t.theme === filters.theme.toLowerCase());
   }
 
-  if (filters.budget !== 'All') {
-    if (filters.budget === 'Under ₹50K') list = list.filter(t => t.price < 50000);
-    else if (filters.budget === '₹50K – ₹1.5L') list = list.filter(t => t.price >= 50000 && t.price < 150000);
-    else if (filters.budget === '₹1.5L – ₹2.5L') list = list.filter(t => t.price >= 150000 && t.price < 250000);
-    else if (filters.budget === '₹2.5L+') list = list.filter(t => t.price >= 250000);
+  if (filters.season !== 'All') {
+    list = list.filter(t => t.season === filters.season.toLowerCase());
   }
 
-  if (filters.hotDeals !== 'All') {
-    if (filters.hotDeals === 'Under ₹50K') list = list.filter(t => t.price < 50000);
-    else if (filters.hotDeals === '₹50K – ₹1.5L') list = list.filter(t => t.price >= 50000 && t.price < 150000);
-    else if (filters.hotDeals === '₹1.5L – ₹2.5L') list = list.filter(t => t.price >= 150000 && t.price < 250000);
-    else if (filters.hotDeals === 'Luxury') list = list.filter(t => t.price >= 250000);
+  if (filters.travelClass !== 'All') {
+    if (filters.travelClass === 'Economy') list = list.filter(t => t.price < 50000);
+    else if (filters.travelClass === 'Standard') list = list.filter(t => t.price >= 50000 && t.price < 150000);
+    else if (filters.travelClass === 'Luxury') list = list.filter(t => t.price >= 150000);
   }
 
   if (filters.duration !== 'All') {
@@ -251,9 +243,11 @@ function ExploreCard({ tour, animDelay }) {
           ₹{Number(tour.price).toLocaleString('en-IN')}
         </div>
 
-        <Link href={href} className="th-card-link w-100">
-          EXPLORE NOW
-        </Link>
+        <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+          <Link href={href} className="th-card-link">
+            EXPLORE NOW
+          </Link>
+        </div>
       </div>
     </article>
   );
@@ -262,9 +256,8 @@ function ExploreCard({ tour, animDelay }) {
 /* ── Main Section ────────────────────────────────────── */
 export default function ExploreWorldSection() {
   const [filters, setFilters] = useState({
-    hotDeals: 'All',
     theme: 'All',
-    budget: 'All',
+    travelClass: 'All',
     season: 'All',
     duration: 'All',
   });
@@ -416,32 +409,30 @@ export default function ExploreWorldSection() {
           position: absolute;
           top: 50%;
           transform: translateY(-50%);
-          width: 38px;
-          height: 38px;
+          width: 44px;
+          height: 44px;
           border-radius: 50%;
-          border: 1.5px solid #d1d5db;
+          border: 1.5px solid var(--color-border, #E5E5E5);
           background: #ffffff;
-          color: #374151;
-          font-size: 18px;
+          color: var(--color-text-primary);
           display: flex;
           align-items: center;
           justify-content: center;
           cursor: pointer;
-          z-index: 5;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-          transition: all 0.2s;
+          z-index: 10;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+          transition: all 0.2s ease;
         }
 
         .ew-scroll-btn:hover {
-          background: var(--brand-primary);
-          color: white;
-          border-color: var(--brand-primary);
-          transform: translateY(-50%) scale(1.1);
-          box-shadow: 0 10px 24px rgba(46,74,59,0.4);
+          border-color: var(--color-primary);
+          color: var(--color-primary);
+          transform: translateY(-50%) translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
 
-        .ew-scroll-btn--left { left: -12px; }
-        .ew-scroll-btn--right { right: -12px; }
+        .ew-scroll-btn--left { left: -18px; }
+        .ew-scroll-btn--right { right: -18px; }
 
         /* ── Card ─────────────────────── */
         @keyframes ewCardIn {
@@ -549,6 +540,9 @@ export default function ExploreWorldSection() {
 
         /* ── Responsive ───────────────── */
         @media (max-width: 768px) {
+          .ew-scroll-btn--left { left: 4px; }
+          .ew-scroll-btn--right { right: 4px; }
+          
           .ew-section {
             padding: 32px 0 40px;
           }
@@ -556,18 +550,13 @@ export default function ExploreWorldSection() {
             padding: 0 16px;
           }
           .ew-filter-bar {
-            overflow-x: auto;
-            flex-wrap: nowrap;
+            flex-wrap: wrap;
             padding-bottom: 8px;
-            scrollbar-width: none;
-            -webkit-overflow-scrolling: touch;
+            justify-content: center;
           }
           .ew-filter-bar::-webkit-scrollbar { display: none; }
           .ew-card {
             width: calc(100vw - 40px);
-          }
-          .ew-scroll-btn {
-            display: none;
           }
         }
 
@@ -585,6 +574,9 @@ export default function ExploreWorldSection() {
 
         {/* Filter dropdowns */}
         <div className="ew-filter-bar">
+          <span className="ew-dropdown-btn" style={{ background: '#fafafa', color: '#6b7280', cursor: 'default' }}>
+            Hot Deals
+          </span>
           {Object.entries(FILTER_OPTIONS).map(([key, opt]) => (
             <FilterDropdown
               key={key}
@@ -603,7 +595,7 @@ export default function ExploreWorldSection() {
             aria-label="Scroll left"
             onClick={() => scroll(-1)}
           >
-            ‹
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6" /></svg>
           </button>
 
           <div ref={scrollRef} className="ew-scroll-area">
@@ -623,7 +615,7 @@ export default function ExploreWorldSection() {
             aria-label="Scroll right"
             onClick={() => scroll(1)}
           >
-            ›
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6" /></svg>
           </button>
         </div>
       </div>

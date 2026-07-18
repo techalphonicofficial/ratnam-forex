@@ -64,7 +64,9 @@ function GramCard({ photo, index }) {
         overflow: 'hidden',
         position: 'relative',
         boxShadow: hovered ? '0 10px 30px rgba(255,255,255,0.05)' : 'none',
-        transition: 'box-shadow 0.3s ease'
+        transition: 'box-shadow 0.3s ease',
+        transform: 'translateZ(0)',
+        WebkitMaskImage: '-webkit-radial-gradient(white, black)'
       }}>
         {videoSrc ? (
             <video
@@ -199,7 +201,7 @@ export default function GramSection() {
             fontFamily: 'Poppins, sans-serif', fontWeight: 900,
             fontSize: 40, color: 'var(--color-text-primary)', margin: '0 0 16px', textTransform: 'uppercase', letterSpacing: 1
           }}>
-            LOVE FROM THE GRAM <span style={{ color: '#ef4444' }}>❤️</span>
+            Explore Incredible India
           </h2>
           
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 32 }}>
@@ -264,11 +266,12 @@ export default function GramSection() {
           >❯</button>
 
           {/* Cards Wrapper */}
-          <div
+          <div 
             ref={scrollRef}
-            style={{
-              display: 'flex', gap: 24, padding: '0 80px',
-              overflowX: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none',
+            className="gram-scroll-area"
+            style={{ 
+              display: 'flex', gap: 24, overflowX: 'auto', padding: '24px 24px 40px', 
+              scrollbarWidth: 'none', msOverflowStyle: 'none',
               scrollSnapType: 'x mandatory'
             }}
           >

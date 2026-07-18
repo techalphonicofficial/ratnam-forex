@@ -4,34 +4,24 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { getMediaUrl, getTripInquiries } from '@/utils/api';
 import { CardLink, CircleButton, FilterPill, SectionIntro, SoftBadge } from '@/components/ui/TravelPrimitives';
+import { indiaTours } from '@/components/ExploreIndiaSection';
+import { exploreTours } from '@/components/ExploreWorldSection';
 
-/* ── Filter definitions ───────────────────────────────── */
-const BUDGET_FILTERS = [
-  { label: 'All Budgets', key: 'all' },
-  { label: 'Under ₹50K', key: 'under50' },
-  { label: '₹50K to ₹1.5L', key: '50to150' },
-  { label: '₹1.5L to ₹2.5L', key: '150to250' },
-  { label: 'Luxury', key: 'luxury' },
+const CLASS_FILTERS = [
+  'All',
+  'Economy',
+  'Standard',
+  'Luxury'
 ];
 
-const getBudgetLabel = (key, fallback) => ({
-  all: 'All Budgets',
-  under50: 'Under Rs 50K',
-  '50to150': 'Rs 50K to Rs 1.5L',
-  '150to250': 'Rs 1.5L to Rs 2.5L',
-  luxury: 'Luxury',
-}[key] || fallback);
-
-const DESTINATIONS = [
+const DEST_FILTERS = [
   'All Destinations',
-  'Singapore',
-  'Bali',
-  'Europe',
-  'Thailand',
-  'Dubai',
-  'Japan',
-  'India',
+  'India Unlimited',
+  'International',
+  'India & Beyond'
 ];
+
+
 
 /* priceCategory:
    under50   = < 50000
@@ -311,7 +301,7 @@ export const allBookings = [
 ];
 
 /* ── Custom Dropdown Component ────────────────────────── */
-function DestinationDropdown({ currentDest, onChange, destinations = DESTINATIONS }) {
+function CustomDropdown({ label, currentValue, onChange, options }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
 
@@ -337,7 +327,7 @@ function DestinationDropdown({ currentDest, onChange, destinations = DESTINATION
           boxShadow: open ? '0 0 0 3px rgba(20,83,45,0.1)' : 'none',
         }}
       >
-        {currentDest}
+        <span>{currentValue === 'All' && label ? label : currentValue}</span>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14" style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
           <polyline points="6 9 12 15 18 9"></polyline>
         </svg>
@@ -351,8 +341,8 @@ function DestinationDropdown({ currentDest, onChange, destinations = DESTINATION
           minWidth: 200, zIndex: 50, padding: '8px 0',
           animation: 'fadeSlideIn 0.2s ease',
         }}>
-          {destinations.map((d, i) => {
-            const isActive = d === currentDest;
+          {options.map((d, i) => {
+            const isActive = d === currentValue;
             return (
               <button
                 key={d}
@@ -364,7 +354,7 @@ function DestinationDropdown({ currentDest, onChange, destinations = DESTINATION
                   display: 'flex', alignItems: 'center', gap: 12,
                   width: '100%', padding: '10px 18px',
                   background: 'none', border: 'none',
-                  borderBottom: i < destinations.length - 1 ? '1px solid #f3f4f6' : 'none',
+                  borderBottom: i < options.length - 1 ? '1px solid #f3f4f6' : 'none',
                   textAlign: 'left', cursor: 'pointer',
                   color: '#1f2937', fontSize: 13.5, fontWeight: isActive ? 600 : 400,
                   transition: 'background 0.15s',
@@ -391,14 +381,27 @@ function DestinationDropdown({ currentDest, onChange, destinations = DESTINATION
 }
 
 /* ── Filter logic ─────────────────────────────────────── */
-function filterBookings(budgetStr, destStr, source = []) {
+function filterBookings(travelClass, destFilter, source = []) {
   let list = source;
-  if (budgetStr !== 'all') {
-    list = list.filter(b => b.priceCategory === budgetStr);
+
+  // Filter by Travel Class
+  if (travelClass === 'Economy') {
+    list = list.filter(b => b.price < 50000);
+  } else if (travelClass === 'Standard') {
+    list = list.filter(b => b.price >= 50000 && b.price < 150000);
+  } else if (travelClass === 'Luxury') {
+    list = list.filter(b => b.price >= 150000);
   }
-  if (destStr !== 'All Destinations') {
-    list = list.filter(b => b.dest === destStr);
+
+  // Filter by Destination
+  if (destFilter === 'India Unlimited') {
+    list = list.filter(b => indiaTours.some(i => i.id === b.id));
+  } else if (destFilter === 'International') {
+    list = list.filter(b => exploreTours.some(e => e.id === b.id));
+  } else if (destFilter === 'India & Beyond') {
+    // Both, no filter needed since source contains both
   }
+
   return list;
 }
 
@@ -477,7 +480,7 @@ export const getFeaturedTourHref = (pkg) => {
 
 /* ── Main component ───────────────────────────────────── */
 export default function RecommendedPackages() {
-  const [activeBudget, setActiveBudget] = useState('all');
+  const [activeClass, setActiveClass] = useState('All');
   const [activeDest, setActiveDest] = useState('All Destinations');
   const [visible, setVisible] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
@@ -513,18 +516,15 @@ export default function RecommendedPackages() {
     };
   }, []);
 
-  const bookingSource = liveBookings.length ? liveBookings : allBookings.slice(0, 0);
-  const destinationOptions = [
-    'All Destinations',
-    ...Array.from(new Set(bookingSource.map((booking) => booking.dest).filter(Boolean))).sort(),
-  ];
-  const filtered = filterBookings(activeBudget, activeDest, bookingSource);
+  const combinedTours = [...indiaTours, ...exploreTours];
+  // We use combinedTours instead of liveBookings or allBookings
+  const filtered = filterBookings(activeClass, activeDest, combinedTours);
 
-  const handleBudgetSort = (key) => {
-    if (key === activeBudget) return;
+  const handleClassSort = (val) => {
+    if (val === activeClass) return;
     setVisible(false);
     setTimeout(() => {
-      setActiveBudget(key);
+      setActiveClass(val);
       setVisible(true);
       if (scrollRef.current) scrollRef.current.scrollLeft = 0;
     }, 180);
@@ -581,7 +581,6 @@ export default function RecommendedPackages() {
           gap: 12px;
           flex-wrap: wrap;
           min-width: 0;
-          margin-bottom: 24px;
         }
         
         /* Styled to match the dropdown filters in the design */
@@ -609,7 +608,7 @@ export default function RecommendedPackages() {
         .recent-result-row {
           display: flex;
           align-items: center;
-          justify-content: space-between;
+          justify-content: center;
           flex-wrap: wrap;
           gap: 10px;
           margin: -10px 0 18px;
@@ -785,11 +784,8 @@ export default function RecommendedPackages() {
            }
            .recent-filters {
              width: 100%;
-             flex-wrap: nowrap;
-             overflow-x: auto;
-             padding-bottom: 8px;
-             scrollbar-width: none;
-             -webkit-overflow-scrolling: touch;
+             flex-wrap: wrap;
+             justify-content: center;
            }
            .recent-filters::-webkit-scrollbar { display: none; }
            .recent-scroll-actions { display: none; }
@@ -800,6 +796,9 @@ export default function RecommendedPackages() {
              gap: 20px !important;
            }
         }
+
+        .th-scroll-btn-pos--left { left: -22px; }
+        .th-scroll-btn-pos--right { right: -22px; }
 
         @media (max-width: 420px) {
            .recent-bookings-section .th-section-copy p {
@@ -815,6 +814,10 @@ export default function RecommendedPackages() {
              width: calc(100vw - 32px);
            }
         }
+        @media (max-width: 991px) {
+          .th-scroll-btn-pos--left { left: 4px; }
+          .th-scroll-btn-pos--right { right: 4px; }
+        }
       `}</style>
 
       <div className="container">
@@ -829,28 +832,12 @@ export default function RecommendedPackages() {
             </SoftBadge>
           )}
           actions={(
-            <>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', flexWrap: 'wrap' }}>
               <div className="recent-filters">
-                <DestinationDropdown currentDest={activeDest} onChange={handleDestChange} destinations={destinationOptions} />
-                {BUDGET_FILTERS.map((filter) => (
-                  <FilterPill
-                    key={filter.key}
-                    active={activeBudget === filter.key}
-                    onClick={() => handleBudgetSort(filter.key)}
-                  >
-                    {getBudgetLabel(filter.key, filter.label)}
-                  </FilterPill>
-                ))}
+                <CustomDropdown currentValue={activeDest} onChange={handleDestChange} options={DEST_FILTERS} />
+                <CustomDropdown label="Travel Class" currentValue={activeClass} onChange={handleClassSort} options={CLASS_FILTERS} />
               </div>
-              <div className="recent-scroll-actions">
-                <CircleButton label="Previous itineraries" onClick={() => scroll(-1)}>
-                  &lt;
-                </CircleButton>
-                <CircleButton label="Next itineraries" onClick={() => scroll(1)}>
-                  &gt;
-                </CircleButton>
-              </div>
-            </>
+            </div>
           )}
         />
 
@@ -884,52 +871,9 @@ export default function RecommendedPackages() {
 
           {/* Filter pills */}
           <div className="filters-container" style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, flexWrap: 'wrap' }}>
-            {/* The Destination Dropdown */}
-            <DestinationDropdown currentDest={activeDest} onChange={handleDestChange} destinations={destinationOptions} />
-
-            {/* {BUDGET_FILTERS.map((f) => (
-              <button
-                key={f.key}
-                onClick={() => handleBudgetSort(f.key)}
-                style={{
-                  padding: '7px 16px',
-                  borderRadius: 999,
-                  border: activeBudget === f.key ? '2px solid #8EB69B' : '1.5px solid #d1d5db',
-                  background: activeBudget === f.key ? '#8EB69B' : 'white',
-                  color: activeBudget === f.key ? '#FFFFFF' : '#374151',
-                  fontWeight: activeBudget === f.key ? 700 : 500,
-                  fontSize: 13,
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {f.label}
-              </button>
-            ))} */}
-          </div>
-
-          {/* Prev / Next arrows */}
-          <div className="arrows-container" style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
-            {['‹', '›'].map((arrow, i) => (
-              <button
-                key={arrow}
-                onClick={() => scroll(i === 0 ? -1 : 1)}
-                style={{
-                  width: 36, height: 36, borderRadius: '50%',
-                  border: '1.5px solid #d1d5db',
-                  background: 'white', color: '#374151', fontSize: 20,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  cursor: 'pointer', lineHeight: 1,
-                  transition: 'all 0.2s',
-                  boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
-                }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'var(--brand-primary)'; e.currentTarget.style.color = 'white'; e.currentTarget.style.borderColor = 'var(--brand-primary)'; e.currentTarget.style.transform = 'scale(1.1)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(46,74,59,0.4)'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'white'; e.currentTarget.style.color = '#374151'; e.currentTarget.style.borderColor = '#d1d5db'; e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 1px 4px rgba(0,0,0,0.08)'; }}
-              >
-                {arrow}
-              </button>
-            ))}
+            {/* The Destination Dropdowns */}
+            <CustomDropdown currentValue={activeDest} onChange={handleDestChange} options={DEST_FILTERS} />
+            <CustomDropdown label="Travel Class" currentValue={activeClass} onChange={handleClassSort} options={CLASS_FILTERS} />
           </div>
         </div>
 
@@ -945,29 +889,67 @@ export default function RecommendedPackages() {
           <span style={{ color: '#9ca3af', fontSize: 12 }}>
               {inquiriesLoading
                 ? 'loading latest trips'
-                : activeDest === 'All Destinations' && activeBudget === 'all'
-                  ? (liveBookings.length ? 'showing latest saved trips' : 'no live trips returned')
+                : activeDest === 'All Destinations'
+                  ? 'showing top combined trips'
                   : 'filtered results'}
           </span>
         </div>
 
         {/* ── Cards horizontal scroll ── */}
-        <div
-          ref={scrollRef}
-          className={`booking-cards-wrap ${visible ? 'shown' : 'hidden'}`}
-        >
-          {filtered.map((pkg, idx) => (
-            <BookingCardV2
-              key={pkg.id}
-              pkg={pkg}
-              animDelay={idx * 40}
-            />
-          ))}
-          {!inquiriesLoading && filtered.length === 0 && (
-            <div className="recent-empty-state">
-              Live trip inquiries will appear here once the API returns data.
-            </div>
-          )}
+        <div style={{ position: 'relative' }}>
+          <div
+            ref={scrollRef}
+            className={`booking-cards-wrap ${visible ? 'shown' : 'hidden'}`}
+          >
+            {filtered.map((pkg, idx) => (
+              <BookingCardV2
+                key={pkg.id}
+                pkg={pkg}
+                animDelay={idx * 40}
+              />
+            ))}
+            {!inquiriesLoading && filtered.length === 0 && (
+              <div className="recent-empty-state">
+                Live trip inquiries will appear here once the API returns data.
+              </div>
+            )}
+          </div>
+          
+          <button
+            onClick={() => scroll(-1)}
+            aria-label="Previous"
+            className="th-scroll-btn-pos--left"
+            style={{
+              position: 'absolute', top: '50%', transform: 'translateY(-50%)',
+              width: 44, height: 44, borderRadius: '50%', border: '1.5px solid var(--color-border, #E5E5E5)',
+              background: '#ffffff', color: 'var(--color-text-primary)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer', zIndex: 10, boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+              transition: 'all 0.2s ease',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--color-primary)'; e.currentTarget.style.color = 'var(--color-primary)'; e.currentTarget.style.transform = 'translateY(-50%) translateY(-2px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)'; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--color-border, #E5E5E5)'; e.currentTarget.style.color = 'var(--color-text-primary)'; e.currentTarget.style.transform = 'translateY(-50%)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.05)'; }}
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6" /></svg>
+          </button>
+
+          <button
+            onClick={() => scroll(1)}
+            aria-label="Next"
+            className="th-scroll-btn-pos--right"
+            style={{
+              position: 'absolute', top: '50%', transform: 'translateY(-50%)',
+              width: 44, height: 44, borderRadius: '50%', border: '1.5px solid var(--color-border, #E5E5E5)',
+              background: '#ffffff', color: 'var(--color-text-primary)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer', zIndex: 10, boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+              transition: 'all 0.2s ease',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--color-primary)'; e.currentTarget.style.color = 'var(--color-primary)'; e.currentTarget.style.transform = 'translateY(-50%) translateY(-2px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)'; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--color-border, #E5E5E5)'; e.currentTarget.style.color = 'var(--color-text-primary)'; e.currentTarget.style.transform = 'translateY(-50%)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.05)'; }}
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6" /></svg>
+          </button>
         </div>
 
       </div>

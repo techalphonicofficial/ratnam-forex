@@ -88,8 +88,9 @@ export default function WhyChooseSection() {
           align-items: center;
         }
         .stats-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
+          display: flex;
+          justify-content: center;
+          flex-wrap: wrap;
           gap: 16px;
           margin-bottom: 32px;
         }
@@ -106,7 +107,8 @@ export default function WhyChooseSection() {
         }
         @media (max-width: 640px) {
           .stats-grid {
-            grid-template-columns: 1fr;
+            flex-direction: column;
+            align-items: center;
             gap: 12px;
           }
           .section-title {
@@ -117,7 +119,7 @@ export default function WhyChooseSection() {
 
       <div className="container">
         <div className="why-choose-grid">
-          <div>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
               <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2.5, textTransform: 'uppercase', color: 'var(--color-accent)', margin: '0 0 8px' }}>OUR TRACK RECORD</p>
               <h2 className="section-title" style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 800, fontSize: 28, color: 'var(--color-text-primary)', lineHeight: 1.2, margin: '0 0 28px' }}>
@@ -127,7 +129,7 @@ export default function WhyChooseSection() {
 
             <div className="stats-grid">
               {content.stats.map(({ number, label, icon }) => (
-                <div key={`${number}-${label}`} style={{ textAlign: 'center', padding: '18px 8px', background: 'var(--color-primary-light)', borderRadius: 14, border: '1px solid var(--brand-primary-border)' }}>
+                <div key={`${number}-${label}`} style={{ textAlign: 'center', padding: '18px 24px', background: 'var(--color-primary-light)', borderRadius: 14, border: '1px solid var(--brand-primary-border)', minWidth: '180px' }}>
                   <div style={{ fontSize: 24, marginBottom: 4 }}>{icon}</div>
                   <div style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 800, fontSize: 24, color: 'var(--color-primary)', lineHeight: 1 }}>{number}</div>
                   <div style={{ fontSize: 11, color: 'var(--color-text-muted)', marginTop: 5, whiteSpace: 'pre-line', lineHeight: 1.4 }}>{label}</div>
@@ -135,21 +137,24 @@ export default function WhyChooseSection() {
               ))}
             </div>
 
-            {content.features.map(({ icon, title, desc }) => (
-              <div key={title} style={{ display: 'flex', gap: 14, marginBottom: 18 }}>
-                <div style={{ flexShrink: 0, width: 40, height: 40, borderRadius: 10, background: 'var(--color-primary-light)', border: '1px solid var(--brand-primary-border)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 800 }}>
-                  {icon}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 18, marginBottom: 32, maxWidth: '300px' }}>
+              {content.features.map(({ icon, title, desc }) => (
+                <div key={title} style={{ display: 'flex', gap: 14, textAlign: 'left', alignItems: 'center' }}>
+                  <div style={{ flexShrink: 0, width: 40, height: 40, borderRadius: 10, background: 'var(--color-primary-light)', border: '1px solid var(--brand-primary-border)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 800 }}>
+                    {icon}
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--color-text-primary)', marginBottom: 2 }}>{title}</div>
+                    <div style={{ fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.5 }}>{desc}</div>
+                  </div>
                 </div>
-                <div>
-                  <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--color-text-primary)', marginBottom: 2 }}>{title}</div>
-                  <div style={{ fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.5 }}>{desc}</div>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
 
             <Link
               href="/tours"
               className="btn-primary"
+              style={{ width: 'fit-content' }}
             >
               Plan Your Holiday Now
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
