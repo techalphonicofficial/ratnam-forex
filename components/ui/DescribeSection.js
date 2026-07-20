@@ -683,7 +683,7 @@ export default function RecommendedPackages() {
         .recent-card-title {
           margin: 0 0 10px;
           color: #111827;
-          font-family: var(--font-poppins), Poppins, sans-serif;
+          font-family: "Italiana", sans-serif;
           font-size: 16px;
           font-weight: 700;
           line-height: 1.4;
@@ -718,7 +718,7 @@ export default function RecommendedPackages() {
         
         .recent-card-price {
           color: #111827; /* Dark price text */
-          font-family: var(--font-poppins), Poppins, sans-serif;
+          font-family: "Italiana", sans-serif;
           font-size: 18px;
           font-weight: 700;
         }
@@ -838,7 +838,7 @@ export default function RecommendedPackages() {
           {/* Left label */}
           <div className="heading-container" style={{ flexShrink: 0, marginRight: 12 }}>
             <h2 style={{
-              fontFamily: 'Poppins, sans-serif',
+              fontFamily: '"Italiana", sans-serif',
               fontWeight: 900, fontSize: 28,
               color: '#111827', margin: 0,
               lineHeight: 1.15,
@@ -1089,7 +1089,7 @@ function BookingCard({ pkg, animDelay, isMobile }) {
       <div style={{ padding: '14px 16px' }}>
         {/* Title */}
         <p style={{
-          fontFamily: 'Poppins, sans-serif', fontWeight: 700,
+          fontFamily: '"Italiana", sans-serif', fontWeight: 700,
           fontSize: 14, color: '#111827', margin: '0 0 6px',
           lineHeight: 1.4,
           display: '-webkit-box',
@@ -1146,7 +1146,7 @@ function BookingCard({ pkg, animDelay, isMobile }) {
           paddingTop: 12, gap: 8,
         }}>
           <div>
-            <div style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 800, fontSize: 18, color: '#111827', lineHeight: 1 }}>
+            <div style={{ fontFamily: '"Italiana", sans-serif', fontWeight: 800, fontSize: 18, color: '#111827', lineHeight: 1 }}>
               {priceLabel}
             </div>
             <div style={{ fontSize: 10, color: '#9ca3af' }}>{pkg.nights} nights / person</div>

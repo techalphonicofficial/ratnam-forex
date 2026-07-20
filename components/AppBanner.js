@@ -19,7 +19,7 @@ export default function AppBanner() {
             <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2.5, textTransform: 'uppercase', color: 'var(--color-secondary)', margin: '0 0 10px' }}>
               📱 MOBILE APP
             </p>
-            <h2 style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 900, fontSize: 34, color: 'white', lineHeight: 1.15, margin: '0 0 14px' }}>
+            <h2 style={{ fontFamily: '"Italiana", sans-serif', fontWeight: 900, fontSize: 34, color: 'white', lineHeight: 1.15, margin: '0 0 14px' }}>
               Your Best Way<br />to Plan a Trip!
             </h2>
             <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 15, lineHeight: 1.7, margin: '0 0 28px', maxWidth: 480 }}>
@@ -87,7 +87,7 @@ export default function AppBanner() {
               <img src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=400&q=80" alt="Bali" style={{ width: '100%', height: 185, objectFit: 'cover', display: 'block' }} />
               {/* App content */}
               <div style={{ background: 'white', padding: '14px 14px 8px', flex: 1 }}>
-                <div style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 700, fontSize: 13, color: '#111827', marginBottom: 3 }}>Bali Paradise Escape</div>
+                <div style={{ fontFamily: '"Italiana", sans-serif', fontWeight: 700, fontSize: 13, color: '#111827', marginBottom: 3 }}>Bali Paradise Escape</div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                   <span style={{ fontSize: 11, color: '#6b7280' }}>7 Days · 4★ Hotels</span>
                   <span style={{ fontWeight: 800, fontSize: 14, color: 'var(--color-primary)' }}>₹1,51,920</span>

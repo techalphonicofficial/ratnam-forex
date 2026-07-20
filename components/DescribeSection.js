@@ -61,7 +61,7 @@ export default function DescribeSection() {
         .collections-title {
           margin: 0 0 28px;
           color: var(--color-text-primary);
-          font-family: var(--font-poppins), Poppins, sans-serif;
+          font-family: "Italiana", sans-serif;
           font-size: clamp(18px, 2vw, 22px);
           font-weight: 800;
           line-height: 1.2;
@@ -182,7 +182,7 @@ export default function DescribeSection() {
 
         .collection-card-title {
           margin: 0;
-          font-family: var(--font-poppins), Poppins, sans-serif;
+          font-family: "Italiana", sans-serif;
           font-size: clamp(14px, 1.4vw, 18px);
           font-weight: 800;
           line-height: 1.15;

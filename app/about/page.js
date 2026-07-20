@@ -167,7 +167,7 @@ export default async function AboutPage() {
                 <div className="d-flex gap-5 flex-wrap">
                   {content.story.stats.map((stat) => (
                     <div key={`${stat.value}-${stat.desc}`}>
-                      <div style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 800, fontSize: 32, color: 'var(--color-primary)', lineHeight: 1 }}>{stat.value}</div>
+                      <div style={{ fontFamily: '"Italiana", sans-serif', fontWeight: 800, fontSize: 32, color: 'var(--color-primary)', lineHeight: 1 }}>{stat.value}</div>
                       <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>{stat.desc}</div>
                     </div>
                   ))}

@@ -99,7 +99,7 @@ export default function TourCard({ tour, className = '' }) {
         {/* Price Tag on image */}
         <div className="tour-card-price-tag">
           <div style={{ fontSize: 11, color: 'var(--color-text-muted)', fontWeight: 600 }}>From</div>
-          <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--color-primary)', fontFamily: 'Poppins, sans-serif', lineHeight: 1.1 }}>
+          <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--color-primary)', fontFamily: '"Italiana", sans-serif', lineHeight: 1.1 }}>
             Rs {formatPriceNumber(tour.price)}
           </div>
         </div>

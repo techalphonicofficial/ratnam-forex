@@ -282,7 +282,7 @@ function HotelDetailStyles() {
       .hotel-detail-container { width: min(100%, 1160px); margin: 0 auto; padding: 0 22px; }
       .hotel-detail-hero { padding-bottom: 22px; }
       .hotel-detail-hero a, .hotel-detail-empty a { color: var(--color-primary); font-size: 13px; font-weight: 900; text-decoration: none; }
-      .hotel-detail-hero h1 { margin: 12px 0 6px; font-family: var(--font-poppins), Poppins, sans-serif; font-size: clamp(32px, 5vw, 48px); font-weight: 900; }
+      .hotel-detail-hero h1 { margin: 12px 0 6px; font-family: "Italiana", sans-serif; font-size: clamp(32px, 5vw, 48px); font-weight: 900; }
       .hotel-detail-hero p { margin: 0; color: #64748b; font-weight: 800; }
       .hotel-detail-meta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
       .hotel-detail-meta > span { padding: 7px 10px; border: 1px solid #dde5ef; border-radius: 999px; background: #fff; color: #334155; font-size: 12px; font-weight: 900; }
@@ -296,7 +296,7 @@ function HotelDetailStyles() {
       .hotel-detail-content { display: grid; gap: 18px; }
       .hotel-detail-card, .hotel-inquiry-card, .hotel-detail-empty { border: 1px solid #e1e7ef; border-radius: 8px; background: #fff; box-shadow: 0 8px 24px rgba(15, 23, 42, .05); }
       .hotel-detail-card { padding: 24px; }
-      .hotel-detail-card h2 { margin: 0 0 14px; font-family: var(--font-poppins), Poppins, sans-serif; font-size: 22px; font-weight: 900; }
+      .hotel-detail-card h2 { margin: 0 0 14px; font-family: "Italiana", sans-serif; font-size: 22px; font-weight: 900; }
       .hotel-detail-card p { margin: 0; color: #475569; line-height: 1.75; }
       .hotel-detail-facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 20px; }
       .hotel-detail-facts div { padding: 14px; border: 1px solid #edf1f5; border-radius: 8px; background: #f8fafc; }
@@ -308,7 +308,7 @@ function HotelDetailStyles() {
       .hotel-inquiry-card::before { content: ''; position: absolute; inset: 0 0 auto; height: 4px; background: var(--gradient-primary); }
       .hotel-inquiry-price { padding-bottom: 16px; margin-bottom: 16px; border-bottom: 1px solid #edf1f5; }
       .hotel-inquiry-card span, .hotel-inquiry-card p { color: #64748b; font-size: 12px; font-weight: 800; }
-      .hotel-inquiry-price > strong { display: block; color: #111827; font-family: var(--font-poppins), Poppins, sans-serif; font-size: 30px; font-weight: 900; line-height: 1.08; }
+      .hotel-inquiry-price > strong { display: block; color: #111827; font-family: "Italiana", sans-serif; font-size: 30px; font-weight: 900; line-height: 1.08; }
       .hotel-inquiry-summary { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
       .hotel-inquiry-summary span { padding: 6px 9px; border-radius: 999px; background: #f1f7ff; color: #075985; font-size: 11px; font-weight: 900; }
       .hotel-inquiry-card form { display: grid; gap: 13px; }
@@ -336,7 +336,7 @@ function HotelDetailStyles() {
       .hotel-login-modal { position: fixed; inset: 0; z-index: 3000; display: grid; place-items: center; padding: 20px; background: rgba(15, 23, 42, .55); backdrop-filter: blur(8px); }
       .hotel-login-panel { position: relative; width: min(100%, 420px); border: 1px solid #e1e7ef; border-radius: 10px; background: #fff; padding: 26px; box-shadow: 0 28px 80px rgba(15, 23, 42, .28); }
       .hotel-login-close { position: absolute; right: 14px; top: 12px; width: 34px; height: 34px; border-radius: 50%; background: #f1f5f9; color: #334155; font-size: 22px; font-weight: 800; }
-      .hotel-login-panel h2 { margin: 0 0 8px; color: #111827; font-family: var(--font-poppins), Poppins, sans-serif; font-size: 24px; font-weight: 900; }
+      .hotel-login-panel h2 { margin: 0 0 8px; color: #111827; font-family: "Italiana", sans-serif; font-size: 24px; font-weight: 900; }
       .hotel-login-panel p { margin: 0; color: #64748b; font-size: 14px; line-height: 1.65; font-weight: 600; }
       .hotel-login-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
       .hotel-login-actions button, .hotel-login-actions a { display: inline-flex; align-items: center; justify-content: center; min-height: 40px; border-radius: 8px; padding: 0 14px; font-size: 13px; font-weight: 900; text-decoration: none; }

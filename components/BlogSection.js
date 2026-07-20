@@ -42,7 +42,7 @@ export default function BlogSection() {
         .home-blog-title {
           margin: 0;
           color: var(--color-text-primary, #323232);
-          font-family: var(--font-poppins), Poppins, sans-serif;
+          font-family: "Italiana", sans-serif;
           font-size: clamp(18px, 2.2vw, 24px);
           font-weight: 800;
           line-height: 1.2;
@@ -56,7 +56,7 @@ export default function BlogSection() {
 
         .home-blog-view-all {
           color: var(--color-primary, #0B3C5D);
-          font-family: var(--font-poppins), Poppins, sans-serif;
+          font-family: "Italiana", sans-serif;
           font-size: 14px;
           font-weight: 700;
           text-decoration: none;
@@ -122,7 +122,7 @@ export default function BlogSection() {
           text-align: center;
         }
         .desktop-banner-content h3 {
-          font-family: var(--font-poppins), Poppins, sans-serif;
+          font-family: "Italiana", sans-serif;
           font-size: 20px;
           font-weight: 800;
           margin-bottom: var(--space-2, 8px);
@@ -165,7 +165,7 @@ export default function BlogSection() {
           text-align: center;
         }
         .mobile-banner-content h3 {
-          font-family: var(--font-poppins), Poppins, sans-serif;
+          font-family: "Italiana", sans-serif;
           font-size: 20px;
           font-weight: 800;
           margin-bottom: var(--space-2, 8px);
@@ -263,7 +263,7 @@ export default function BlogSection() {
         }
 
         .home-blog-card-title {
-          font-family: var(--font-poppins), Poppins, sans-serif;
+          font-family: "Italiana", sans-serif;
           font-size: 16px;
           font-weight: 700;
           color: var(--color-text-primary, #323232);

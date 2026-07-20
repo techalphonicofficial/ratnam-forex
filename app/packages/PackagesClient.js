@@ -226,7 +226,7 @@ function PackageCard({ pkg }) {
       {/* Body */}
       <div style={{ padding: '14px 16px' }}>
         <p style={{
-          fontFamily: 'Poppins, sans-serif', fontWeight: 700,
+          fontFamily: '"Italiana", sans-serif', fontWeight: 700,
           fontSize: 14, color: '#111827', margin: '0 0 6px', lineHeight: 1.4,
           display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
         }}>
@@ -273,7 +273,7 @@ function PackageCard({ pkg }) {
           <div>
             <div style={{ fontSize: 10, color: '#9ca3af' }}>Starting from</div>
             <div style={{
-              fontFamily: 'Poppins, sans-serif', fontWeight: 800,
+              fontFamily: '"Italiana", sans-serif', fontWeight: 800,
               fontSize: 20, color: '#111827', lineHeight: 1,
             }}>
               {'\u20b9'}{pkg.price.toLocaleString('en-IN')}
@@ -526,7 +526,7 @@ function PackagesContent({ destParam, packages, basePath = '/packages' }) {
           </div>
 
           <h1 style={{
-            fontFamily: 'Poppins, sans-serif',
+            fontFamily: '"Italiana", sans-serif',
             fontWeight: 900, fontSize: 'clamp(28px, 4.5vw, 64px)',
             color: 'white', margin: 0, lineHeight: 1.05,
             textTransform: 'uppercase', letterSpacing: 2,
@@ -919,7 +919,7 @@ function PackagesContent({ destParam, packages, basePath = '/packages' }) {
               border: '1px dashed #d1d5db',
             }}>
               <div style={{ fontSize: 48, marginBottom: 16 }}>🔍</div>
-              <h3 style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 700, color: '#111827', margin: '0 0 8px' }}>
+              <h3 style={{ fontFamily: '"Italiana", sans-serif', fontWeight: 700, color: '#111827', margin: '0 0 8px' }}>
                 No packages found
               </h3>
               <p style={{ color: '#6b7280', fontSize: 14, margin: '0 0 20px' }}>

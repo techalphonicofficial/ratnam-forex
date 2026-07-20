@@ -211,11 +211,11 @@ export default function GlobalInquiryModal({ brand, companyInfo }) {
 
           <div style={{ maxWidth: '100%', margin: 'auto 0' }}>
             <div className="mb-4">
-              <h2 style={{ fontWeight: 800, fontSize: '26px', color: '#0B3C5D', marginBottom: '8px', lineHeight: '1.2' }}>
+              <h2 style={{ fontFamily: '"Italiana", sans-serif', fontWeight: 'bold', fontSize: '26px', color: '#0B3C5D', marginBottom: '8px', lineHeight: '1.2' }}>
                 Plan your next journey with <br/>
-                <span style={{ color: '#D9534F' }}>{brandName}</span>
+                <span style={{ color: '#D9534F', fontWeight: 'bold' }}>{brandName}</span>
               </h2>
-              <p style={{ color: '#6b7280', fontSize: '14px', marginTop: '10px' }}>
+              <p style={{ fontFamily: '"Gilda Display", serif', fontWeight: 400, color: '#6b7280', fontSize: '14px', marginTop: '10px' }}>
                 Share your details and preferred destination. Our experts will curate the perfect package for you.
               </p>
             </div>
@@ -288,6 +288,10 @@ export default function GlobalInquiryModal({ brand, companyInfo }) {
                     </label>
                   </div>
                 ))}
+              </div>
+
+              <div>
+                <textarea className="form-control px-4 py-2" placeholder="Text / Requirement" style={{ ...formInputStyle, height: '80px', resize: 'none' }}></textarea>
               </div>
 
               <button type="submit" className="btn-primary mt-3 w-100" style={{ justifyContent: 'center' }}>

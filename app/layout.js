@@ -1,6 +1,6 @@
 import './globals.css';
 
-import { Inter, Poppins } from 'next/font/google';
+// Fonts imported globally in globals.css
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import BootstrapClient from '@/components/BootstrapClient';
@@ -11,13 +11,6 @@ import { WishlistProvider } from '@/components/WishlistProvider';
 import { getCompanyInfo } from '@/utils/companyInfo';
 import { getProjectConfig } from '@/utils/projectConfig';
 import { getThemeColours } from '@/utils/themeColours';
-
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
-const poppins = Poppins({
-  weight: ['400', '500', '600', '700', '800'],
-  subsets: ['latin'],
-  variable: '--font-poppins',
-});
 
 const projectConfig = getProjectConfig();
 
@@ -80,10 +73,7 @@ export default async function RootLayout({ children }) {
 
   return (
     <html lang="en" data-theme="light" data-project={projectConfig.key} data-scroll-behavior="smooth">
-      <body
-        className={`${inter.variable} ${poppins.variable}`}
-        style={activeTheme}
-      >
+      <body style={activeTheme}>
         <BootstrapClient />
         <ThemeColoursClient initialVariables={activeTheme} />
         <WishlistProvider>

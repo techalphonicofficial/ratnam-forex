@@ -149,7 +149,7 @@ export default function BookingPage() {
         <div style={{ position: 'absolute', inset: 0, background: 'var(--gradient-card)' }} />
       </div>
       <div style={{ padding: 20 }}>
-        <h3 style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 700, fontSize: 16, color: 'var(--color-text-primary)', marginBottom: 4 }}>
+        <h3 style={{ fontFamily: '"Italiana", sans-serif', fontWeight: 700, fontSize: 16, color: 'var(--color-text-primary)', marginBottom: 4 }}>
           {tour.title}
         </h3>
         <p style={{ color: 'var(--color-text-muted)', fontSize: 13, display: 'flex', alignItems: 'center', gap: 4, marginBottom: 16 }}>
@@ -183,7 +183,7 @@ export default function BookingPage() {
           }}
         >
           <span style={{ fontWeight: 700, fontSize: 16 }}>Total</span>
-          <span style={{ fontWeight: 800, fontSize: 22, color: 'var(--color-primary)', fontFamily: 'Poppins, sans-serif' }}>
+          <span style={{ fontWeight: 800, fontSize: 22, color: 'var(--color-primary)', fontFamily: '"Italiana", sans-serif' }}>
             ${totalPrice.toLocaleString()}
           </span>
         </div>
@@ -195,7 +195,7 @@ export default function BookingPage() {
     <div style={{ paddingBottom: 80 }}>
       {/* Blog Hero Container */}
       <div style={{ background: '#111827', padding: '100px 24px 60px', textAlign: 'center', marginBottom: 50 }}>
-        <h1 style={{ fontFamily: 'Poppins, sans-serif', fontSize: 48, fontWeight: 900, color: 'white', margin: '0 0 16px' }}>
+        <h1 style={{ fontFamily: '"Italiana", sans-serif', fontSize: 48, fontWeight: 900, color: 'white', margin: '0 0 16px' }}>
           Travel Inspiration & Stories
         </h1>
         <p style={{ color: '#9ca3af', fontSize: 18, maxWidth: 600, margin: '0 auto', lineHeight: 1.6 }}>
@@ -219,7 +219,7 @@ export default function BookingPage() {
                   className="p-5"
                   style={{ background: 'var(--color-bg-card)', borderRadius: 'var(--radius-xl)', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-sm)' }}
                 >
-                  <h2 style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 700, fontSize: 22, marginBottom: 24, color: 'var(--color-text-primary)' }}>
+                  <h2 style={{ fontFamily: '"Italiana", sans-serif', fontWeight: 700, fontSize: 22, marginBottom: 24, color: 'var(--color-text-primary)' }}>
                     Tour Details
                   </h2>
 
@@ -278,7 +278,7 @@ export default function BookingPage() {
                   className="p-5"
                   style={{ background: 'var(--color-bg-card)', borderRadius: 'var(--radius-xl)', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-sm)' }}
                 >
-                  <h2 style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 700, fontSize: 22, marginBottom: 24, color: 'var(--color-text-primary)' }}>
+                  <h2 style={{ fontFamily: '"Italiana", sans-serif', fontWeight: 700, fontSize: 22, marginBottom: 24, color: 'var(--color-text-primary)' }}>
                     Personal Information
                   </h2>
                   <div className="row g-4">
@@ -361,7 +361,7 @@ export default function BookingPage() {
                   className="p-5"
                   style={{ background: 'var(--color-bg-card)', borderRadius: 'var(--radius-xl)', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-sm)' }}
                 >
-                  <h2 style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 700, fontSize: 22, marginBottom: 8, color: 'var(--color-text-primary)' }}>
+                  <h2 style={{ fontFamily: '"Italiana", sans-serif', fontWeight: 700, fontSize: 22, marginBottom: 8, color: 'var(--color-text-primary)' }}>
                     Payment Details
                   </h2>
                   <p style={{ color: 'var(--color-text-muted)', fontSize: 13, marginBottom: 28 }}>
@@ -456,7 +456,7 @@ export default function BookingPage() {
                   className="p-5"
                   style={{ background: 'var(--color-bg-card)', borderRadius: 'var(--radius-xl)', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-sm)' }}
                 >
-                  <h2 style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 700, fontSize: 22, marginBottom: 24, color: 'var(--color-text-primary)' }}>
+                  <h2 style={{ fontFamily: '"Italiana", sans-serif', fontWeight: 700, fontSize: 22, marginBottom: 24, color: 'var(--color-text-primary)' }}>
                     ✅ Review & Confirm
                   </h2>
 

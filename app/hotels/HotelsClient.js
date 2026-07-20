@@ -329,7 +329,7 @@ function HotelStyles() {
       .hotels-hero { padding: 124px 0 30px; background: linear-gradient(135deg, #0b1d35, #0d5c93); color: #fff; }
       .hotels-hero .hotels-container { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; }
       .hotels-hero span { color: #b7ddff; font-size: 12px; font-weight: 900; letter-spacing: .8px; text-transform: uppercase; }
-      .hotels-hero h1 { margin: 8px 0 6px; font-family: var(--font-poppins), Poppins, sans-serif; font-size: clamp(32px, 5vw, 52px); font-weight: 900; }
+      .hotels-hero h1 { margin: 8px 0 6px; font-family: "Italiana", sans-serif; font-size: clamp(32px, 5vw, 52px); font-weight: 900; }
       .hotels-hero p { margin: 0; color: rgba(255,255,255,.78); }
       .hotel-search-bar { display: grid; grid-template-columns: 1.4fr .7fr .7fr auto; gap: 10px; padding: 12px; border-radius: 8px; background: #fff; box-shadow: 0 18px 45px rgba(7, 18, 34, .25); }
       .hotel-search-bar input { min-height: 46px; border: 1px solid #d8dee8; border-radius: 8px; padding: 0 13px; color: #111827; font-size: 14px; outline: none; }
@@ -359,7 +359,7 @@ function HotelStyles() {
       .hotel-card-media span { position: absolute; left: 12px; top: 12px; padding: 5px 9px; border-radius: 999px; background: #16a34a; color: #fff; font-size: 11px; font-weight: 900; }
       .hotel-card-body { display: grid; grid-template-columns: minmax(0, 1fr) 178px; gap: 16px; padding: 18px; }
       .hotel-card-title-row { display: flex; justify-content: space-between; gap: 16px; }
-      .hotel-card h2 { margin: 0 0 5px; color: #111827; font-family: var(--font-poppins), Poppins, sans-serif; font-size: 21px; font-weight: 900; line-height: 1.2; }
+      .hotel-card h2 { margin: 0 0 5px; color: #111827; font-family: "Italiana", sans-serif; font-size: 21px; font-weight: 900; line-height: 1.2; }
       .hotel-card p { margin: 0; color: #64748b; font-size: 13px; font-weight: 700; }
       .hotel-rating-badge { min-width: 58px; align-self: start; border-radius: 8px; padding: 7px; background: #0f7b4f; color: #fff; text-align: center; }
       .hotel-rating-badge strong { display: block; font-size: 17px; line-height: 1; }
@@ -374,7 +374,7 @@ function HotelStyles() {
       .hotel-price-panel { border-left: 1px solid #edf1f5; padding-left: 16px; display: grid; align-content: end; justify-items: end; text-align: right; }
       .hotel-price-panel small { color: #64748b; font-size: 12px; font-weight: 800; }
       .hotel-price-panel del { color: #94a3b8; font-size: 13px; }
-      .hotel-price-panel strong { color: #111827; font-family: var(--font-poppins), Poppins, sans-serif; font-size: 24px; font-weight: 900; }
+      .hotel-price-panel strong { color: #111827; font-family: "Italiana", sans-serif; font-size: 24px; font-weight: 900; }
       .hotel-price-panel span { color: #64748b; font-size: 12px; font-weight: 700; }
       .hotel-price-panel a { margin-top: 12px; padding: 10px 16px; border-radius: 8px; background: var(--color-primary); color: #fff; font-size: 13px; font-weight: 900; text-decoration: none; }
       @media (max-width: 991px) {

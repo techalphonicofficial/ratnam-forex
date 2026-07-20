@@ -88,7 +88,7 @@ export default async function CancellationPolicy() {
           <span style={{ color: '#fecaca', fontSize: 13, fontWeight: 800, textTransform: 'uppercase', letterSpacing: 1 }}>
             {content.eyebrow}
           </span>
-          <h1 style={{ fontFamily: 'Poppins, sans-serif', fontSize: 'clamp(34px, 5vw, 56px)', fontWeight: 900, color: 'white', margin: '12px auto 16px', maxWidth: 780, lineHeight: 1.08 }}>
+          <h1 style={{ fontFamily: '"Italiana", sans-serif', fontSize: 'clamp(34px, 5vw, 56px)', fontWeight: 900, color: 'white', margin: '12px auto 16px', maxWidth: 780, lineHeight: 1.08 }}>
             {content.title}
           </h1>
           <p style={{ color: '#fee2e2', fontSize: 18, maxWidth: 740, margin: '0 auto', lineHeight: 1.7 }}>

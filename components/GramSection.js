@@ -125,7 +125,7 @@ function GramCard({ photo, index }) {
 
       {/* Description */}
       <div style={{ textAlign: 'center', marginTop: 16 }}>
-        <h4 style={{ color: 'var(--color-text-primary)', fontSize: 13, fontWeight: 700, margin: '0 0 8px', fontFamily: 'Poppins, sans-serif' }}>
+        <h4 style={{ color: 'var(--color-text-primary)', fontSize: 13, fontWeight: 700, margin: '0 0 8px', fontFamily: '"Italiana", sans-serif' }}>
           {photo.user} {photo.location} Holiday
         </h4>
         <div style={{ 
@@ -198,7 +198,7 @@ export default function GramSection() {
         {/* Header Section */}
         <div style={{ textAlign: 'center', marginBottom: 48 }}>
           <h2 style={{
-            fontFamily: 'Poppins, sans-serif', fontWeight: 900,
+            fontFamily: '"Italiana", sans-serif', fontWeight: 900,
             fontSize: 40, color: 'var(--color-text-primary)', margin: '0 0 16px', textTransform: 'uppercase', letterSpacing: 1
           }}>
             Explore Incredible India

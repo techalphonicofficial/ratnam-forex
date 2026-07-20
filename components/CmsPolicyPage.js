@@ -96,7 +96,7 @@ export default async function CmsPolicyPage({ slug, fallback, accent = '#0f766e'
           <span style={{ color: 'rgba(255,255,255,0.78)', fontSize: 13, fontWeight: 800, textTransform: 'uppercase', letterSpacing: 1 }}>
             {content.eyebrow}
           </span>
-          <h1 style={{ fontFamily: 'Poppins, sans-serif', fontSize: 'clamp(34px, 5vw, 56px)', fontWeight: 900, color: 'white', margin: '12px auto 16px', maxWidth: 820, lineHeight: 1.08 }}>
+          <h1 style={{ fontFamily: '"Italiana", sans-serif', fontSize: 'clamp(34px, 5vw, 56px)', fontWeight: 900, color: 'white', margin: '12px auto 16px', maxWidth: 820, lineHeight: 1.08 }}>
             {content.title}
           </h1>
           <p style={{ color: 'rgba(255,255,255,0.82)', fontSize: 18, maxWidth: 780, margin: '0 auto', lineHeight: 1.7 }}>

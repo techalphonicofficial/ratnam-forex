@@ -53,7 +53,7 @@ export default function ConfirmationPage() {
 
           <h1
             style={{
-              fontFamily: 'Poppins, sans-serif',
+              fontFamily: '"Italiana", sans-serif',
               fontWeight: 800,
               fontSize: 'clamp(28px, 4vw, 38px)',
               color: 'var(--color-text-primary)',
@@ -82,7 +82,7 @@ export default function ConfirmationPage() {
             </div>
             <div
               style={{
-                fontFamily: 'Poppins, sans-serif',
+                fontFamily: '"Italiana", sans-serif',
                 fontWeight: 800,
                 fontSize: 28,
                 color: 'var(--color-primary)',

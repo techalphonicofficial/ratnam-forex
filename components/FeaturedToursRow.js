@@ -472,10 +472,8 @@ const titleCase = (value) =>
     .replace(/\b\w/g, (letter) => letter.toUpperCase());
 
 export const getFeaturedTourHref = (pkg) => {
-  const searchTerm = pkg.locations?.[0]?.replace(/\s*\([^)]*\)/g, '').trim() || pkg.dest;
-  return pkg.isInquiry
-    ? `/itineraries/${encodeURIComponent(pkg.id)}`
-    : `/tour?search=${encodeURIComponent(searchTerm)}`;
+  const slug = pkg.slug || String(pkg.title || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+  return `/tours/${slug}`;
 };
 
 /* ── Main component ───────────────────────────────────── */
@@ -704,7 +702,7 @@ export default function RecommendedPackages() {
         .recent-card-title {
           margin: 0 0 10px;
           color: #111827;
-          font-family: var(--font-poppins), Poppins, sans-serif;
+          font-family: "Italiana", sans-serif;
           font-size: 16px;
           font-weight: 700;
           line-height: 1.4;
@@ -739,7 +737,7 @@ export default function RecommendedPackages() {
         
         .recent-card-price {
           color: #111827; /* Dark price text */
-          font-family: var(--font-poppins), Poppins, sans-serif;
+          font-family: "Italiana", sans-serif;
           font-size: 18px;
           font-weight: 700;
         }
@@ -821,78 +819,40 @@ export default function RecommendedPackages() {
       `}</style>
 
       <div className="container">
-        <SectionIntro
-          eyebrow="Traveler activity"
-          title="Hot Deals"
-          // accent="i"
-          subtitle="Unbeatable prices for unforgettable places creates a nice, memorable rhythm!"
-          meta={(
-            <SoftBadge tone="live">
-              {liveBookings.length ? `${liveBookings.length}+ recent trip requests` : '143+ trips booked last week'}
-            </SoftBadge>
-          )}
-          actions={(
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', flexWrap: 'wrap' }}>
-              <div className="recent-filters">
-                <CustomDropdown currentValue={activeDest} onChange={handleDestChange} options={DEST_FILTERS} />
-                <CustomDropdown label="Travel Class" currentValue={activeClass} onChange={handleClassSort} options={CLASS_FILTERS} />
-              </div>
-            </div>
-          )}
-        />
-
-        {/* ── Top row: left label + filters + arrows ── */}
-        <div className="responsive-header-row" style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 32, flexWrap: 'wrap' }}>
-
-          {/* Left label */}
-          <div className="heading-container" style={{ flexShrink: 0, marginRight: 12 }}>
-            <h2 style={{
-              fontFamily: 'Poppins, sans-serif',
-              fontWeight: 900, fontSize: 28,
-              color: 'var(--color-text-primary)', margin: 0,
-              lineHeight: 1.15,
-              textTransform: 'uppercase',
-              letterSpacing: -0.5,
-            }}>
-              RECENTLY<br />BOOKED<br />
-              <span style={{ color: 'var(--color-primary)' }}>ITINERARIES</span>
-            </h2>
-            <div style={{
-              marginTop: 12, display: 'flex', alignItems: 'center', gap: 6,
-              background: '#fff0f0', border: '1px solid #fecaca',
-              borderRadius: 999, padding: '5px 12px', width: 'fit-content',
-            }}>
-              <span style={{ color: '#ef4444', fontSize: 14 }}>❤️</span>
-              <span style={{ fontSize: 12, fontWeight: 700, color: '#374151' }}>
-                {liveBookings.length ? `${liveBookings.length}+ recent trip requests` : '143+ trips booked last week'}
-              </span>
-            </div>
+        {/* ── Centered Header Section matching design ── */}
+        <div style={{ textAlign: 'center', marginBottom: 40 }}>
+          <h2 style={{ fontFamily: '"Italiana", sans-serif', fontSize: 'clamp(28px, 4vw, 36px)', fontWeight: 900, color: 'var(--color-text-primary)', margin: '0 0 8px' }}>
+            Hot Deals
+          </h2>
+          <p style={{ color: '#6b7280', fontSize: '15px', margin: '0 0 20px' }}>
+            Unbeatable prices for unforgettable places creates a nice, memorable rhythm!
+          </p>
+          
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#fce7f3', border: '1px solid #fbcfe8', padding: '4px 12px', borderRadius: 999, marginBottom: 24 }}>
+             <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#ef4444' }}></div>
+             <span style={{ fontSize: 11, fontWeight: 700, color: '#be185d', letterSpacing: 0.5 }}>
+               {liveBookings.length ? `${liveBookings.length}+ recent trip requests` : '20+ recent trip requests'}
+             </span>
           </div>
 
-          {/* Filter pills */}
-          <div className="filters-container" style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, flexWrap: 'wrap' }}>
-            {/* The Destination Dropdowns */}
-            <CustomDropdown currentValue={activeDest} onChange={handleDestChange} options={DEST_FILTERS} />
-            <CustomDropdown label="Travel Class" currentValue={activeClass} onChange={handleClassSort} options={CLASS_FILTERS} />
+          <div className="recent-filters" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 16 }}>
+             <CustomDropdown currentValue={activeDest} onChange={handleDestChange} options={DEST_FILTERS} />
+             <CustomDropdown currentValue="DURATION" onChange={() => {}} options={['DURATION', '1-3 Days', '4-7 Days', '8+ Days']} />
+             <CustomDropdown label="TRAVEL CLASS" currentValue={activeClass} onChange={handleClassSort} options={CLASS_FILTERS} />
           </div>
-        </div>
 
-        {/* ── Result count badge ── */}
-        <div className="recent-result-row">
-          <span style={{
-            background: '#8EB69B', border: '1px solid #8EB69B',
-            color: '#FFFFFF', borderRadius: 999,
-            padding: '3px 12px', fontSize: 12, fontWeight: 700,
-          }}>
-            {filtered.length} itineraries
-          </span>
-          <span style={{ color: '#9ca3af', fontSize: 12 }}>
-              {inquiriesLoading
-                ? 'loading latest trips'
-                : activeDest === 'All Destinations'
-                  ? 'showing top combined trips'
-                  : 'filtered results'}
-          </span>
+          <div className="recent-result-row" style={{ color: '#9ca3af', fontSize: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+             <span style={{ background: 'var(--color-primary)', color: 'white', padding: '3px 10px', borderRadius: 12, marginRight: 8, fontWeight: 700 }}>
+               {filtered.length} itineraries
+             </span>
+             <span>
+               {inquiriesLoading
+                  ? 'loading latest trips'
+                  : activeDest === 'All Destinations'
+                    ? 'showing top combined trips'
+                    : 'filtered results'}
+             </span>
+          </div>
         </div>
 
         {/* ── Cards horizontal scroll ── */}
@@ -957,59 +917,119 @@ export default function RecommendedPackages() {
   
 }
 
-/* ── Single card ──────────────────────────────────────── */
-function BookingCardV2({ pkg, animDelay }) {
-  const priceLabel = Number(pkg.price) > 0 ? `Rs ${Number(pkg.price).toLocaleString('en-IN')}` : 'On request';
+export function BookingCardV2({ pkg, animDelay }) {
+  const [highlightsOpen, setHighlightsOpen] = useState(false);
+  
+  const priceLabel = Number(pkg.price) > 0 ? `₹${Number(pkg.price).toLocaleString('en-IN')}*` : 'On request';
   const href = getFeaturedTourHref(pkg);
+  const locationString = pkg.locations.join(' - ');
+  const titleText = pkg.title.length > 35 ? pkg.title.substring(0, 35) + '...' : pkg.title;
 
   return (
-    <article className="booking-card-item recent-booking-card" style={{ animationDelay: `${animDelay}ms` }}>
-      <div className="recent-card-media">
+    <article className="booking-card-item recent-booking-card" style={{ animationDelay: `${animDelay}ms`, display: 'flex', flexDirection: 'column', height: '100%', minHeight: 460 }}>
+      
+      {/* Media Section */}
+      <div className="recent-card-media" style={{ height: 210, minHeight: 210, position: 'relative', overflow: 'hidden' }}>
         <Image
           src={pkg.image}
           alt={pkg.title}
           fill
           sizes="(max-width: 768px) calc(100vw - 36px), 310px"
+          style={{ objectFit: 'cover' }}
         />
-        <div className="recent-user-badge">
-          <div className="recent-user-avatar" style={{ background: pkg.user.avatarBg }}>
-            {pkg.user.avatar}
-          </div>
-          <span>{pkg.user.name} from {pkg.user.city} - {pkg.user.ago}</span>
+        <div style={{
+          position: 'absolute', top: 12, left: 12,
+          background: 'var(--color-primary)', color: 'white',
+          padding: '4px 10px', fontSize: 10, fontWeight: 800,
+          borderRadius: 4, letterSpacing: 0.5, textTransform: 'uppercase',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
+        }}>
+          {pkg.user.name} FROM {pkg.user.city} - {pkg.user.ago.replace('ago', 'AGO')}
         </div>
       </div>
 
-      <div className="recent-card-body">
-        <p className="recent-card-title">{pkg.title}</p>
-        <p className="recent-card-location">
-          <svg viewBox="0 0 24 24" fill="currentColor" width="11" height="11" aria-hidden="true">
+      {/* Info Section */}
+      <div style={{ padding: '16px 16px 12px', background: 'white', flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <h3 style={{ fontFamily: '"Italiana", sans-serif', fontSize: 20, fontWeight: 900, color: '#111827', margin: '0 0 8px', lineHeight: 1.2 }}>
+          {titleText}
+        </h3>
+        
+        <p style={{ display: 'flex', alignItems: 'flex-start', gap: 6, fontSize: 12, color: '#6b7280', margin: '0 0 16px', lineHeight: 1.4 }}>
+          <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14" style={{ flexShrink: 0, marginTop: 2 }}>
             <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
           </svg>
-          <span>{pkg.locations.join(' - ')}</span>
-        </p>
-
-        <div className="recent-card-tags">
-          <span
-            className="recent-card-type"
-            style={{
-              background: `${pkg.typeColor}18`,
-              border: `1px solid ${pkg.typeColor}40`,
-              color: pkg.typeColor,
-            }}
-          >
-            {pkg.type}
+          <span style={{ display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+            {locationString}
           </span>
-          <span className="recent-card-nights">{pkg.nights} Nights</span>
-        </div>
-
-        <div className="recent-card-footer">
-          <div>
-            <div className="recent-card-price">{priceLabel}</div>
-            <div className="recent-card-price-note">{pkg.nights} nights / person</div>
+        </p>
+        
+        {/* Trip Highlights & Tour Includes */}
+        <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: 12, marginTop: 'auto' }}>
+          <div 
+            onClick={() => setHighlightsOpen(!highlightsOpen)}
+            style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, cursor: 'pointer', padding: '4px 0' }}
+          >
+             <span style={{ color: 'var(--color-primary)', fontSize: 11, fontWeight: 800, letterSpacing: 0.5, textTransform: 'uppercase' }}>
+               Trip Highlights
+             </span>
+             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="3" style={{ transform: highlightsOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }}><polyline points="6 9 12 15 18 9"></polyline></svg>
           </div>
-          <CardLink href={href}>View Details</CardLink>
+          
+          <div style={{ 
+            maxHeight: highlightsOpen ? '100px' : '0', 
+            overflow: 'hidden', 
+            transition: 'max-height 0.3s ease, margin 0.3s ease, padding 0.3s ease',
+            marginBottom: highlightsOpen ? 12 : 0,
+          }}>
+             <ul style={{ margin: 0, paddingLeft: 16, fontSize: 12, color: '#4b5563', lineHeight: 1.6 }}>
+                <li>Premium accommodations</li>
+                <li>Daily breakfast & guided tours</li>
+                <li>Private local transfers</li>
+             </ul>
+          </div>
+          
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+             <span style={{ fontSize: 12, fontWeight: 700, color: '#374151' }}>Tour Includes</span>
+             <div style={{ display: 'flex', gap: 6, color: 'var(--color-primary)' }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M3 7v10M21 7v10M3 13h18M5 10h14"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M7 3v18M17 3v18M12 8v8"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="3" y="8" width="18" height="12" rx="2" ry="2"/><circle cx="12" cy="14" r="3"/><path d="M7 8v-2a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="3" y="5" width="18" height="12" rx="2" ry="2"/><path d="M3 10h18M8 17v2M16 17v2"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+             </div>
+          </div>
         </div>
       </div>
+
+      {/* Pricing Block */}
+      <div style={{ background: '#fdf8f4', padding: '16px', borderTop: '1px dashed #e5e7eb' }}>
+        <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 2 }}>All inclusive price starts</div>
+        <div style={{ fontFamily: '"Italiana", sans-serif', fontSize: 26, fontWeight: 900, color: 'var(--color-primary)', lineHeight: 1, marginBottom: 16 }}>
+          {priceLabel}
+        </div>
+        
+        <div style={{ display: 'flex', gap: 8 }}>
+          <Link href={href} style={{ flex: 1, textAlign: 'center', background: 'var(--color-primary)', color: 'white', padding: '12px 0', borderRadius: 8, fontSize: 13, fontWeight: 800, textDecoration: 'none', transition: 'all 0.2s', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.15)'; e.currentTarget.style.opacity = '0.9'; }} onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)'; e.currentTarget.style.opacity = '1'; }}>
+            View Tour
+          </Link>
+          <Link href={`/customize?step=0&subStep=room-config`} style={{ flex: 1, textAlign: 'center', background: '#0B3C5D', color: 'white', padding: '12px 0', borderRadius: 8, fontSize: 13, fontWeight: 800, textDecoration: 'none', transition: 'all 0.2s', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.15)'; e.currentTarget.style.opacity = '0.9'; }} onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)'; e.currentTarget.style.opacity = '1'; }}>
+            Book Now
+          </Link>
+        </div>
+      </div>
+
+      {/* Footer Actions */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', background: 'white', borderTop: '1px solid #f3f4f6' }}>
+        <a href="https://wa.me/910000000000" target="_blank" rel="noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none', color: '#111827', transition: 'transform 0.2s' }} onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'} onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}>
+           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#25D366" strokeWidth="2.5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+           <span style={{ fontSize: 12, fontWeight: 700, borderBottom: '1px solid #111827' }}>Request Callback</span>
+        </a>
+        <button type="button" style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', color: '#111827', cursor: 'pointer', padding: 0, transition: 'transform 0.2s' }} onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'} onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}>
+           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+           <span style={{ fontSize: 12, fontWeight: 700, borderBottom: '1px solid #111827' }}>Get Itinerary</span>
+        </button>
+      </div>
+
     </article>
   );
 }
@@ -1090,7 +1110,7 @@ function BookingCard({ pkg, animDelay, isMobile }) {
       <div style={{ padding: '14px 16px' }}>
         {/* Title */}
         <p style={{
-          fontFamily: 'Poppins, sans-serif', fontWeight: 700,
+          fontFamily: '"Italiana", sans-serif', fontWeight: 700,
           fontSize: 14, color: 'var(--color-text-primary)', margin: '0 0 6px',
           lineHeight: 1.4,
           display: '-webkit-box',
@@ -1147,7 +1167,7 @@ function BookingCard({ pkg, animDelay, isMobile }) {
           paddingTop: 12, gap: 8,
         }}>
           <div>
-            <div style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 800, fontSize: 18, color: 'var(--color-text-primary)', lineHeight: 1 }}>
+            <div style={{ fontFamily: '"Italiana", sans-serif', fontWeight: 800, fontSize: 18, color: 'var(--color-text-primary)', lineHeight: 1 }}>
               {priceLabel}
             </div>
             <div style={{ fontSize: 10, color: '#9ca3af' }}>{pkg.nights} nights / person</div>

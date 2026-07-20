@@ -84,7 +84,7 @@ function DestinationCard({ item }) {
             color: 'white',
             fontSize: item.name.length > 12 ? 18 : item.name.length > 8 ? 20 : 24,
             fontWeight: 800,
-            fontFamily: 'Poppins, sans-serif',
+            fontFamily: '"Italiana", sans-serif',
             margin: 0,
             lineHeight: 1.1,
             textShadow: '0 2px 8px rgba(0,0,0,0.4)',
@@ -154,7 +154,7 @@ export default function PopularDestinationRows() {
               marginBottom: 20,
             }}>
               <h2 style={{
-                fontFamily: 'Poppins, sans-serif',
+                fontFamily: '"Italiana", sans-serif',
                 fontWeight: 900,
                 fontSize: 18,
                 color: '#111827',

@@ -782,7 +782,7 @@ export default function CustomizeFlow() {
     if (subStep === 'room-config') {
       return (
         <div style={{ maxWidth: 500, margin: '40px auto', textAlign: 'center', animation: 'fadeIn 0.3s' }}>
-          <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 40, fontFamily: 'Poppins, sans-serif' }}>Select your rooms</h2>
+          <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 40, fontFamily: '"Italiana", sans-serif' }}>Select your rooms</h2>
           <div style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 24 }}>
             {data.rooms.map((r, index) => (
               <div key={r.id} style={{ border: '1px solid #fef08a', borderRadius: 12, padding: 24, background: '#fefce8' }}>
@@ -858,7 +858,7 @@ export default function CustomizeFlow() {
   ───────────────────────────────────────────────────────────────── */
   const renderDuration = () => (
     <div style={{ textAlign: 'center', maxWidth: 800, margin: '40px auto', animation: 'fadeIn 0.3s' }}>
-      <h2 style={{ fontSize: 24, fontWeight: 700, margin: '0 0 40px', fontFamily: 'Poppins, sans-serif' }}>What&apos;s the duration of your holiday?</h2>
+      <h2 style={{ fontSize: 24, fontWeight: 700, margin: '0 0 40px', fontFamily: '"Italiana", sans-serif' }}>What&apos;s the duration of your holiday?</h2>
       <div style={{ display: 'flex', gap: 20, justifyContent: 'center', flexWrap: 'wrap' }}>
         {DURATIONS.map((dur, i) => (
           <div key={dur} onClick={() => handleDuration(dur)}
@@ -878,7 +878,7 @@ export default function CustomizeFlow() {
   ───────────────────────────────────────────────────────────────── */
   const renderDepartureCity = () => (
     <div style={{ maxWidth: 600, margin: '40px auto', animation: 'fadeIn 0.3s' }}>
-      <h2 style={{ fontSize: 24, fontWeight: 700, margin: '0 0 30px', textAlign: 'center', fontFamily: 'Poppins, sans-serif' }}>Where are you travelling from?</h2>
+      <h2 style={{ fontSize: 24, fontWeight: 700, margin: '0 0 30px', textAlign: 'center', fontFamily: '"Italiana", sans-serif' }}>Where are you travelling from?</h2>
       <div style={{ position: 'relative', marginBottom: 24 }}>
         <input
           type="text"
@@ -1063,7 +1063,7 @@ export default function CustomizeFlow() {
 
     return (
       <div className="departure-calendar-step" style={{ maxWidth: 1000, margin: '40px auto', animation: 'fadeIn 0.3s' }}>
-        <h2 style={{ fontSize: 24, fontWeight: 700, margin: '0 0 30px', textAlign: 'center', fontFamily: 'Poppins, sans-serif' }}>When is your departure date?</h2>
+        <h2 style={{ fontSize: 24, fontWeight: 700, margin: '0 0 30px', textAlign: 'center', fontFamily: '"Italiana", sans-serif' }}>When is your departure date?</h2>
 
         <div className="departure-calendar-card" style={{ background: 'white', padding: '32px 40px', borderRadius: 16, border: '1px solid #f3f4f6', boxShadow: '0 4px 20px rgba(0,0,0,0.02)', position: 'relative' }}>
           {/* Navigation Arrows */}
@@ -1122,7 +1122,7 @@ export default function CustomizeFlow() {
 
   const renderCities = () => (
     <div style={{ maxWidth: 1100, margin: '40px auto', textAlign: 'center', animation: 'fadeIn 0.3s', paddingBottom: 100 }}>
-      <h2 style={{ fontSize: 24, fontWeight: 700, margin: '0 0 10px', fontFamily: 'Poppins, sans-serif' }}>Choose cities</h2>
+      <h2 style={{ fontSize: 24, fontWeight: 700, margin: '0 0 10px', fontFamily: '"Italiana", sans-serif' }}>Choose cities</h2>
       <p style={{ color: '#6b7280', fontSize: 14, margin: '0 0 30px' }}>
         {data.destination ? `Related destinations for ${data.destination}` : 'Recommended destinations'}
       </p>
@@ -1252,7 +1252,7 @@ export default function CustomizeFlow() {
         <div style={{ padding: '24px 24px 16px', textAlign: 'center', borderBottom: '1px solid #f3f4f6', position: 'relative' }}>
           <button onClick={() => setSubStep('')} style={{ position: 'absolute', top: 20, right: 20, width: 28, height: 28, borderRadius: '50%', background: 'transparent', border: '1px solid #d1d5db', fontSize: 14, cursor: 'pointer', color: '#6b7280', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
 
-          <h2 style={{ fontSize: 18, fontWeight: 700, color: '#111827', margin: '0 0 8px', fontFamily: 'Poppins, sans-serif' }}>Cities you will be visiting</h2>
+          <h2 style={{ fontSize: 18, fontWeight: 700, color: '#111827', margin: '0 0 8px', fontFamily: '"Italiana", sans-serif' }}>Cities you will be visiting</h2>
           {data.cities.length > 2 && (
             <>
               <p style={{ color: '#e11d48', fontSize: 13, fontWeight: 600, margin: '0 0 4px' }}>Itinerary could overshoot by 4 days</p>
@@ -1315,7 +1315,7 @@ export default function CustomizeFlow() {
               ) : null}
             </div>
             <h3 style={{ color: 'white', fontSize: 22, fontWeight: 500, margin: '0 0 10px', letterSpacing: 1 }}>YOUR</h3>
-            <h2 style={{ color: '#fef08a', fontSize: 36, fontWeight: 900, margin: '0 0 16px', lineHeight: 1.1, textShadow: '0 4px 12px rgba(0,0,0,0.3)', fontFamily: 'Poppins, sans-serif' }}>
+            <h2 style={{ color: '#fef08a', fontSize: 36, fontWeight: 900, margin: '0 0 16px', lineHeight: 1.1, textShadow: '0 4px 12px rgba(0,0,0,0.3)', fontFamily: '"Italiana", sans-serif' }}>
               SOOPER HIT<br />HOLIDAY
             </h2>
             <h3 style={{ color: 'white', fontSize: 22, fontWeight: 700, margin: 0, letterSpacing: 1 }}>STARTS HERE</h3>
@@ -1377,7 +1377,7 @@ export default function CustomizeFlow() {
                 ) : null}
               </div>
               <h3 style={{ color: 'white', fontSize: 20, fontWeight: 500, margin: '0 0 10px', letterSpacing: 1 }}>REVIEW YOUR</h3>
-              <h2 style={{ color: '#fef08a', fontSize: 34, fontWeight: 900, margin: '0 0 16px', lineHeight: 1.1, textShadow: '0 4px 12px rgba(0,0,0,0.3)', fontFamily: 'Poppins, sans-serif' }}>
+              <h2 style={{ color: '#fef08a', fontSize: 34, fontWeight: 900, margin: '0 0 16px', lineHeight: 1.1, textShadow: '0 4px 12px rgba(0,0,0,0.3)', fontFamily: '"Italiana", sans-serif' }}>
                 {itinerarySubmitState === 'success' ? (
                   <>
                     ITINERARY<br />SAVED
@@ -1535,7 +1535,7 @@ export default function CustomizeFlow() {
           animation: fadeIn 0.3s;
         }
         .cust-step-title {
-          font-family: Poppins, sans-serif;
+          font-family: "Italiana", sans-serif;
           font-size: 30px;
           line-height: 1.2;
           font-weight: 800;
@@ -1647,7 +1647,7 @@ export default function CustomizeFlow() {
             font-size: 14px;
             font-weight: 700;
             color: white;
-            font-family: Poppins, sans-serif;
+            font-family: "Italiana", sans-serif;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;

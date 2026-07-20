@@ -42,7 +42,7 @@ export default function Error({ error, reset }) {
           </div>
 
           <span className="section-label">Something went wrong</span>
-          <h1 style={{ fontFamily: 'Poppins, sans-serif', fontSize: 'clamp(30px, 4vw, 44px)', fontWeight: 900, color: 'var(--color-text-primary)', marginBottom: 12 }}>
+          <h1 style={{ fontFamily: '"Italiana", sans-serif', fontSize: 'clamp(30px, 4vw, 44px)', fontWeight: 900, color: 'var(--color-text-primary)', marginBottom: 12 }}>
             We could not load this page
           </h1>
           <p style={{ color: 'var(--color-text-secondary)', fontSize: 16, lineHeight: 1.7, maxWidth: 520, margin: '0 auto 28px' }}>

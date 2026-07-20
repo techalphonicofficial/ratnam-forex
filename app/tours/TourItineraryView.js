@@ -335,11 +335,11 @@ function HotelStayCard({ hotel }) {
 function ItineraryStyles() {
   return (
     <style jsx global>{`
-      .itn-page { background: #fff; padding: 112px 0 80px; color: var(--color-text-primary); font-family: var(--font-inter), Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif; font-size: 15px; line-height: 1.55; text-rendering: geometricPrecision; }
+      .itn-page { background: #fff; padding: 112px 0 80px; color: var(--color-text-primary); font-family: "Gilda Display", serif; font-size: 15px; line-height: 1.55; text-rendering: geometricPrecision; }
       .itn-container { width: min(100%, 1160px); margin: 0 auto; padding: 0 22px; }
       .itn-title { padding: 18px 0 16px; }
       .itn-title p { margin: 0 0 7px; color: var(--color-primary); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .45px; }
-      .itn-title h1 { margin: 0; font-family: var(--font-poppins), Poppins, sans-serif; font-size: clamp(32px, 4vw, 44px); font-weight: 800; letter-spacing: 0; line-height: 1.08; }
+      .itn-title h1 { margin: 0; font-family: "Italiana", sans-serif; font-size: clamp(32px, 4vw, 44px); font-weight: 800; letter-spacing: 0; line-height: 1.08; }
       .itn-title-summary { max-width: 720px; margin: 13px 0 0; color: #526173; font-size: 15px; font-weight: 400; line-height: 1.72; }
       .itn-print-brief { display: none; }
       .itn-print-note, .itn-print-footer { display: none; }
@@ -361,13 +361,13 @@ function ItineraryStyles() {
       .itn-media-modal { position: fixed; inset: 0; z-index: 500; display: flex; align-items: center; justify-content: center; padding: 24px; background: rgba(8, 14, 25, .82); backdrop-filter: blur(8px); }
       .itn-media-panel { width: min(100%, 980px); max-height: 88vh; overflow: auto; border-radius: 10px; background: #fff; box-shadow: var(--shadow-xl); }
       .itn-media-head { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 18px; background: #fff; border-bottom: 1px solid var(--color-border); }
-      .itn-media-head h3 { margin: 0; font-family: var(--font-poppins), Poppins, sans-serif; font-size: 18px; font-weight: 800; }
+      .itn-media-head h3 { margin: 0; font-family: "Italiana", sans-serif; font-size: 18px; font-weight: 800; }
       .itn-media-head button { width: 34px; height: 34px; border-radius: 50%; background: var(--color-bg-soft); color: var(--color-text-primary); font-weight: 900; }
       .itn-media-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; padding: 18px; }
       .itn-media-item { overflow: hidden; border-radius: 8px; background: var(--color-bg-soft); border: 1px solid var(--color-border); }
       .itn-media-item img, .itn-media-item video { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; }
       .itn-layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 48px; align-items: start; }
-      .itn-section h2 { margin: 0 0 20px; font-family: var(--font-poppins), Poppins, sans-serif; font-size: 19px; font-weight: 700; letter-spacing: 0; }
+      .itn-section h2 { margin: 0 0 20px; font-family: "Italiana", sans-serif; font-size: 19px; font-weight: 700; letter-spacing: 0; }
       .itn-section h2::after { content: ''; display: block; width: 42px; height: 3px; margin-top: 8px; border-radius: 999px; background: var(--gradient-primary); }
       .itn-proof-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 28px; margin-bottom: 46px; }
       .itn-proof { display: grid; grid-template-columns: 30px 1fr; gap: 12px; }
@@ -378,7 +378,7 @@ function ItineraryStyles() {
       .itn-itinerary-wrap::before { content: ''; position: absolute; left: -18px; top: 20px; bottom: 18px; width: 3px; border-radius: 999px; background: linear-gradient(180deg, #b9dcf5, color-mix(in srgb, var(--color-primary) 14%, transparent)); opacity: .7; }
       .itn-city-card { border: 1px solid #cbd5e1; border-radius: 8px; overflow: hidden; margin-bottom: 0; background: #fff; box-shadow: 0 18px 46px rgba(15, 23, 42, .07); }
       .itn-city-head { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; min-height: 64px; background: linear-gradient(90deg, #cfeeff 0%, #e9f6ff 100%); padding: 15px 19px; color: #334155; font-size: 15px; }
-      .itn-city-head strong { font-family: var(--font-poppins), Poppins, sans-serif; font-size: 21px; font-weight: 800; color: #243746; letter-spacing: 0; }
+      .itn-city-head strong { font-family: "Italiana", sans-serif; font-size: 21px; font-weight: 800; color: #243746; letter-spacing: 0; }
       .itn-city-head span { color: #43566a; font-size: 15px; font-weight: 700; }
       .itn-temp { display: inline-flex; align-items: center; gap: 8px; margin-left: 4px; padding: 2px 9px; border: 1px solid var(--color-primary); border-radius: 999px; background: #fff; color: #0f172a !important; font-size: 12px; font-weight: 800 !important; white-space: nowrap; }
       .itn-temp i { width: 3px; height: 3px; border-radius: 50%; background: #9ca3af; }
@@ -416,7 +416,7 @@ function ItineraryStyles() {
       .itn-hotel-card img { width: 100%; height: 184px; object-fit: cover; background: var(--color-bg-soft); }
       .itn-hotel-body { display: grid; gap: 9px; padding: 15px; }
       .itn-hotel-body > span { color: var(--color-primary); font-size: 11px; font-weight: 900; letter-spacing: .45px; text-transform: uppercase; }
-      .itn-hotel-body h3 { margin: 0; color: #0f172a; font-family: var(--font-poppins), Poppins, sans-serif; font-size: 17px; font-weight: 800; line-height: 1.25; }
+      .itn-hotel-body h3 { margin: 0; color: #0f172a; font-family: "Italiana", sans-serif; font-size: 17px; font-weight: 800; line-height: 1.25; }
       .itn-hotel-stars { display: flex; align-items: center; flex-wrap: wrap; gap: 3px; color: #f4b400; font-size: 13px; line-height: 1; }
       .itn-hotel-stars i { color: #d7dee8; font-style: normal; }
       .itn-hotel-stars i.is-filled { color: #f4b400; }
@@ -432,7 +432,7 @@ function ItineraryStyles() {
       .itn-price-card::after { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--gradient-primary); }
       .itn-price-card > div { position: relative; z-index: 1; display: grid; gap: 4px; }
       .itn-price-card span { color: var(--color-primary); font-size: 11px; font-weight: 800; letter-spacing: .55px; text-transform: uppercase; }
-      .itn-price-card strong { color: var(--color-text-primary); font-family: var(--font-poppins), Poppins, sans-serif; font-size: 28px; font-weight: 800; line-height: 1.05; }
+      .itn-price-card strong { color: var(--color-text-primary); font-family: "Italiana", sans-serif; font-size: 28px; font-weight: 800; line-height: 1.05; }
       .itn-price-card small { color: var(--color-text-secondary); font-size: 12px; font-weight: 600; }
       .itn-price-tax { color: #315273; font-size: 12px; font-style: normal; font-weight: 800; line-height: 1.3; }
       .itn-payment-options { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr; gap: 9px; }
@@ -440,7 +440,7 @@ function ItineraryStyles() {
       .itn-payment-options label.is-selected { border-color: var(--color-primary); background: #fff; box-shadow: 0 8px 22px color-mix(in srgb, var(--color-primary) 12%, transparent); }
       .itn-payment-options input { width: 16px; height: 16px; accent-color: var(--color-primary); }
       .itn-payment-options span { color: #334155; font-size: 12px; font-weight: 900; letter-spacing: 0; text-transform: none; }
-      .itn-payment-options strong { color: var(--color-primary); font-family: var(--font-poppins), Poppins, sans-serif; font-size: 15px; font-weight: 900; line-height: 1.1; text-align: right; }
+      .itn-payment-options strong { color: var(--color-primary); font-family: "Italiana", sans-serif; font-size: 15px; font-weight: 900; line-height: 1.1; text-align: right; }
       .itn-payment-options small { grid-column: 2 / -1; color: #64748b; font-size: 11px; font-weight: 800; line-height: 1.3; }
       .itn-price-card button { position: relative; z-index: 1; width: 100%; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 13px 16px; border-radius: 8px; background: var(--gradient-primary); color: #fff; font-size: 14px; font-weight: 800; box-shadow: 0 10px 22px color-mix(in srgb, var(--color-primary) 28%, transparent); transition: transform var(--transition-fast), box-shadow var(--transition-fast); }
       .itn-price-card button span { color: inherit; font-size: 14px; font-weight: 900; letter-spacing: 0; text-transform: none; }
@@ -464,7 +464,7 @@ function ItineraryStyles() {
       .itn-whatsapp-icon svg path:last-child { fill: #fff; }
       .itn-whatsapp-copy { position: relative; z-index: 1; display: grid; gap: 3px; min-width: 0; line-height: 1.15; text-align: left; }
       .itn-whatsapp-copy span { color: var(--color-primary); font-size: 10px; font-weight: 800; letter-spacing: .55px; text-transform: uppercase; }
-      .itn-whatsapp-copy strong { color: var(--color-text-primary); font-family: var(--font-poppins), Poppins, sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 0; white-space: normal; }
+      .itn-whatsapp-copy strong { color: var(--color-text-primary); font-family: "Italiana", sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 0; white-space: normal; }
       .itn-whatsapp-arrow { position: relative; z-index: 1; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--color-primary); color: #fff; font-size: 16px; font-weight: 900; }
       .itn-route { overflow: hidden; padding: 0; border-color: #e3e7ec; border-radius: 10px; box-shadow: 0 16px 42px rgba(15, 23, 42, .07); }
       .itn-route h3 { margin: 0; padding: 16px 18px 15px; border-bottom: 1px solid #eef1f4; color: #7b7f86; font-size: 12px; font-weight: 800; line-height: 1; text-align: center; text-transform: uppercase; letter-spacing: .35px; }
@@ -482,14 +482,14 @@ function ItineraryStyles() {
       .itn-route-icon.is-transfer::before, .itn-route-icon.is-transfer::after { content: ''; position: absolute; left: 4px; top: 8px; width: 10px; height: 2px; border-radius: 999px; background: currentColor; }
       .itn-route-icon.is-transfer::after { transform: rotate(90deg); }
       .itn-route-step p { margin: 0; color: #767b82; font-size: 13px; font-weight: 400; line-height: 1.35; }
-      .itn-route-step strong { color: #555b64; font-family: var(--font-poppins), Poppins, sans-serif; font-size: 17px; font-weight: 600; line-height: 1.25; letter-spacing: 0; }
+      .itn-route-step strong { color: #555b64; font-family: "Italiana", sans-serif; font-size: 17px; font-weight: 600; line-height: 1.25; letter-spacing: 0; }
       .itn-route-step.is-city { min-height: 40px; }
       .itn-route-step.is-note { min-height: 34px; }
       .itn-actions { display: grid; overflow: hidden; border-color: #e7ebef; box-shadow: 0 12px 30px rgba(15, 23, 42, .05); }
       .itn-actions button { padding: 13px 16px; color: #53606d; font-size: 13px; font-weight: 700; text-align: left; }
       .itn-actions button + button { border-top: 1px solid #eef1f4; }
       .itn-costing { padding: 0 12px 14px; border-top: 1px solid var(--color-border); color: var(--color-text-secondary); }
-      .itn-costing strong { display: block; margin-top: 12px; color: var(--color-primary); font-family: var(--font-poppins), Poppins, sans-serif; font-size: 24px; font-weight: 800; line-height: 1.1; }
+      .itn-costing strong { display: block; margin-top: 12px; color: var(--color-primary); font-family: "Italiana", sans-serif; font-size: 24px; font-weight: 800; line-height: 1.1; }
       .itn-costing span { display: block; margin-top: 4px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .3px; }
       .itn-costing p { margin: 8px 0 0; font-size: 12px; line-height: 1.5; }
       .itn-list { padding: 18px; border-color: #e7ebef; box-shadow: 0 12px 30px rgba(15, 23, 42, .05); }
@@ -498,7 +498,7 @@ function ItineraryStyles() {
       .itn-list li { display: grid; grid-template-columns: 20px 1fr; gap: 8px; color: #475569; font-size: 13px; font-weight: 500; line-height: 1.4; }
       .itn-list li span { color: var(--color-primary); font-size: 14px; font-weight: 900; }
       .itn-rating { padding: 26px; text-align: center; }
-      .itn-rating strong { display: block; font-family: var(--font-poppins), Poppins, sans-serif; font-size: 44px; font-weight: 800; line-height: 1; }
+      .itn-rating strong { display: block; font-family: "Italiana", sans-serif; font-size: 44px; font-weight: 800; line-height: 1; }
       .itn-rating span, .itn-stars { color: #f7b500; font-weight: 900; }
       .itn-rating p { margin: 6px 0 0; color: var(--color-text-secondary); font-size: 13px; font-weight: 700; }
       .itn-booking-modal { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: flex-start; justify-content: center; padding: 18px; overflow-y: auto; scrollbar-width: none; background: rgba(5, 12, 26, .72); backdrop-filter: blur(10px); }
@@ -508,12 +508,12 @@ function ItineraryStyles() {
       .itn-booking-hero { position: relative; overflow: hidden; padding: 26px 28px 30px; background: linear-gradient(135deg, #07142a 0%, var(--color-primary) 76%); color: #fff; }
       .itn-booking-hero::after { content: ''; position: absolute; right: -38px; top: -52px; width: 138px; height: 138px; border-radius: 50%; background: rgba(255,255,255,.14); }
       .itn-booking-hero span { color: #bfdbfe; font-size: 11px; font-weight: 900; letter-spacing: .9px; text-transform: uppercase; }
-      .itn-booking-hero h2 { position: relative; z-index: 1; margin: 8px 0 6px; color: #fff; font-family: var(--font-poppins), Poppins, sans-serif; font-size: clamp(24px, 4vw, 34px); font-weight: 900; line-height: 1.08; }
+      .itn-booking-hero h2 { position: relative; z-index: 1; margin: 8px 0 6px; color: #fff; font-family: "Italiana", sans-serif; font-size: clamp(24px, 4vw, 34px); font-weight: 900; line-height: 1.08; }
       .itn-booking-hero p { position: relative; z-index: 1; margin: 0; color: rgba(255,255,255,.78); font-size: 13px; font-weight: 700; }
       .itn-booking-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 18px 20px 0; }
       .itn-booking-summary > div { padding: 15px; border: 1px solid #dbe7f3; border-radius: 8px; background: #f8fbff; }
       .itn-booking-summary span { display: block; margin-bottom: 4px; color: var(--color-primary); font-size: 10px; font-weight: 900; letter-spacing: .55px; text-transform: uppercase; }
-      .itn-booking-summary strong { display: block; color: #0f172a; font-family: var(--font-poppins), Poppins, sans-serif; font-size: 23px; font-weight: 900; line-height: 1.08; }
+      .itn-booking-summary strong { display: block; color: #0f172a; font-family: "Italiana", sans-serif; font-size: 23px; font-weight: 900; line-height: 1.08; }
       .itn-booking-summary p { grid-column: 1 / -1; margin: 0; color: #64748b; font-size: 12px; font-weight: 700; line-height: 1.5; }
       .itn-booking-payment-choice { margin: 16px 20px 0; padding: 15px; border: 1px solid #dbe7f3; border-radius: 8px; background: #fff; }
       .itn-booking-payment-choice .itn-payment-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -523,7 +523,7 @@ function ItineraryStyles() {
       .itn-booking-travellers { margin: 16px 20px 0; padding: 15px; border: 1px solid #dbe7f3; border-radius: 8px; background: linear-gradient(180deg, #fff 0%, #f8fbff 100%); }
       .itn-traveller-count-row { display: grid; grid-template-columns: minmax(0, 1fr) 168px; align-items: center; gap: 14px; padding: 12px; border: 1px solid #e3edf7; border-radius: 8px; background: #fff; }
       .itn-traveller-count-row span, .itn-guest-card > strong { display: block; color: var(--color-primary); font-size: 10px; font-weight: 900; letter-spacing: .55px; text-transform: uppercase; }
-      .itn-traveller-count-row strong { display: block; margin-top: 4px; color: #0f172a; font-family: var(--font-poppins), Poppins, sans-serif; font-size: 21px; font-weight: 900; line-height: 1.08; }
+      .itn-traveller-count-row strong { display: block; margin-top: 4px; color: #0f172a; font-family: "Italiana", sans-serif; font-size: 21px; font-weight: 900; line-height: 1.08; }
       .itn-traveller-count-row small { display: block; margin-top: 4px; color: #64748b; font-size: 12px; font-weight: 800; }
       .itn-traveller-stepper { display: grid; grid-template-columns: 42px 1fr 42px; gap: 8px; }
       .itn-traveller-stepper button { width: 42px; height: 42px; border: 1px solid #c9dbea; border-radius: 8px; background: #fff; color: var(--color-primary); font-size: 20px; font-weight: 900; }
@@ -580,7 +580,7 @@ function ItineraryStyles() {
       .itn-booking-actions button:disabled { cursor: not-allowed; opacity: .64; box-shadow: none; }
       .itn-login-panel { position: relative; width: min(100%, 440px); overflow: hidden; border-radius: 10px; background: #fff; box-shadow: 0 28px 80px rgba(2, 8, 23, .34); }
       .itn-login-copy { display: grid; gap: 4px; padding: 20px; text-align: center; }
-      .itn-login-copy strong { color: #0f172a; font-family: var(--font-poppins), Poppins, sans-serif; font-size: 30px; font-weight: 900; line-height: 1; }
+      .itn-login-copy strong { color: #0f172a; font-family: "Italiana", sans-serif; font-size: 30px; font-weight: 900; line-height: 1; }
       .itn-login-copy span { color: var(--color-primary); font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: .5px; }
       .itn-login-copy p { margin: 10px auto 0; max-width: 340px; color: #64748b; font-size: 13px; font-weight: 700; line-height: 1.5; }
       .itn-reviews { margin-top: 90px; }
@@ -589,7 +589,7 @@ function ItineraryStyles() {
       .itn-avatar { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: var(--gradient-warm); color: #fff; font-size: 22px; font-weight: 900; }
       .itn-review-summary, .itn-review-empty { margin: 0 0 8px; padding: 16px 18px; border: 1px solid var(--color-border); border-radius: 8px; background: linear-gradient(180deg, #fff, var(--color-bg-soft)); }
       .itn-review-summary { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-      .itn-review-summary strong { font-family: var(--font-poppins), Poppins, sans-serif; font-size: 28px; font-weight: 800; line-height: 1; }
+      .itn-review-summary strong { font-family: "Italiana", sans-serif; font-size: 28px; font-weight: 800; line-height: 1; }
       .itn-review-summary span { color: #f7b500; font-weight: 900; }
       .itn-review-summary p, .itn-review-empty { color: var(--color-text-secondary); font-size: 13px; font-weight: 700; }
       .itn-review-summary p { margin: 0; }

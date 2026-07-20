@@ -511,7 +511,7 @@ export default function CollectionPage({ params }) {
         .recent-card-title {
           margin: 0 0 10px;
           color: #111827;
-          font-family: var(--font-poppins), Poppins, sans-serif;
+          font-family: "Italiana", sans-serif;
           font-size: 16px;
           font-weight: 700;
           line-height: 1.4;
@@ -545,7 +545,7 @@ export default function CollectionPage({ params }) {
         
         .recent-card-price {
           color: #111827;
-          font-family: var(--font-poppins), Poppins, sans-serif;
+          font-family: "Italiana", sans-serif;
           font-size: 18px;
           font-weight: 700;
         }

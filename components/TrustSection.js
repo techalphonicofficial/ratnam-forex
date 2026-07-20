@@ -42,7 +42,7 @@ export default function TrustSection({ section }) {
 
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 32, flexWrap: 'wrap', marginBottom: awards.length ? 28 : 0 }}>
           {partners.map((partner) => (
-            <span key={partner} style={{ fontSize: 14, fontWeight: 800, fontFamily: 'Poppins, sans-serif', color: 'var(--color-text-muted)', letterSpacing: -0.3 }}>
+            <span key={partner} style={{ fontSize: 14, fontWeight: 800, fontFamily: '"Italiana", sans-serif', color: 'var(--color-text-muted)', letterSpacing: -0.3 }}>
               {partner}
             </span>
           ))}

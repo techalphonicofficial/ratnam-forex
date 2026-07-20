@@ -30,7 +30,7 @@ function PytExclusiveCard({ title, oldPrice, newPrice, images, subTitle, listIte
 
       {/* Content Block */}
       <div style={{ padding: '20px 16px', flex: 1 }}>
-        <h4 style={{ color: 'white', margin: '0 0 8px', fontSize: 16, fontWeight: 700, textAlign: 'center', fontFamily: 'Poppins, sans-serif' }}>
+        <h4 style={{ color: 'white', margin: '0 0 8px', fontSize: 16, fontWeight: 700, textAlign: 'center', fontFamily: '"Italiana", sans-serif' }}>
           {title}
         </h4>
         <div style={{ color: '#9ca3af', fontSize: 11, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginBottom: 20 }}>
@@ -81,7 +81,7 @@ export function PytExclusive() {
 
         {/* PYT TITLE column */}
         <div style={{ flex: '1 1 250px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-          <h2 style={{ fontFamily: 'Poppins, sans-serif', color: '#fbbf24', fontSize: 36, fontWeight: 900, textTransform: 'uppercase', lineHeight: 1.1, margin: 0, textAlign: 'center' }}>
+          <h2 style={{ fontFamily: '"Italiana", sans-serif', color: '#fbbf24', fontSize: 36, fontWeight: 900, textTransform: 'uppercase', lineHeight: 1.1, margin: 0, textAlign: 'center' }}>
             PYT<br />EXCLUSIVES<span style={{ fontSize: 20, verticalAlign: 'super' }}>✨</span>
           </h2>
 
@@ -142,7 +142,7 @@ export function TrustBanner() {
             <span style={{ fontSize: 28 }}>🏆</span>
           </div>
           <div>
-            <h3 style={{ margin: 0, color: '#111827', fontSize: 20, fontWeight: 800, fontFamily: 'Poppins, sans-serif' }}>No.1</h3>
+            <h3 style={{ margin: 0, color: '#111827', fontSize: 20, fontWeight: 800, fontFamily: '"Italiana", sans-serif' }}>No.1</h3>
             <p style={{ margin: 0, color: '#059669', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5 }}>Customized Holiday Planner</p>
             <p style={{ margin: 0, color: '#6b7280', fontSize: 11 }}>in India & globally</p>
           </div>
@@ -198,7 +198,7 @@ export function BottomReviews({ destination }) {
 
         {/* Left Side: Summary */}
         <div style={{ flex: '1 1 300px' }}>
-          <h2 style={{ fontFamily: 'Poppins, sans-serif', color: '#111827', fontSize: 24, fontWeight: 800, marginBottom: 16 }}>
+          <h2 style={{ fontFamily: '"Italiana", sans-serif', color: '#111827', fontSize: 24, fontWeight: 800, marginBottom: 16 }}>
             Reviews for {destination} packages
           </h2>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
@@ -341,7 +341,7 @@ function PytPackageGrid({ title, tabs, defaultActiveTab, packages, isFamily, des
 
   return (
     <div style={{ marginBottom: 64 }}>
-      <h2 style={{ fontFamily: 'Poppins, sans-serif', fontSize: 24, fontWeight: 700, color: '#111827', marginBottom: 16 }}>
+      <h2 style={{ fontFamily: '"Italiana", sans-serif', fontSize: 24, fontWeight: 700, color: '#111827', marginBottom: 16 }}>
         {title}
       </h2>
 
@@ -372,7 +372,7 @@ function PytPackageGrid({ title, tabs, defaultActiveTab, packages, isFamily, des
           borderRadius: 12, border: '1px dashed #f59e0b', background: '#fffbeb', padding: 32, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center'
         }}>
           <div style={{ fontSize: 32, marginBottom: 12 }}>🤔</div>
-          <h3 style={{ fontSize: 20, fontWeight: 700, color: '#111827', marginBottom: 8, fontFamily: 'Poppins, sans-serif' }}>Don't see the perfect fit?</h3>
+          <h3 style={{ fontSize: 20, fontWeight: 700, color: '#111827', marginBottom: 8, fontFamily: '"Italiana", sans-serif' }}>Don't see the perfect fit?</h3>
           <p style={{ fontSize: 15, color: '#4b5563', marginBottom: 24, lineHeight: 1.5 }}>Build your perfect trip, your way.</p>
           <Link href={getCustomLink(destName)} style={{ textDecoration: 'none' }}>
             <button className="btn-secondary">

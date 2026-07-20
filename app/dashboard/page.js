@@ -852,7 +852,7 @@ export default function DashboardPage() {
         </div>
         <div className="d-flex align-items-center justify-content-between flex-wrap gap-2">
           <div>
-            <span style={{ fontWeight: 800, fontSize: 18, color: 'var(--color-primary)', fontFamily: 'Poppins, sans-serif' }}>
+            <span style={{ fontWeight: 800, fontSize: 18, color: 'var(--color-primary)', fontFamily: '"Italiana", sans-serif' }}>
               ${booking.totalPrice.toLocaleString()}
             </span>
             <span style={{ fontSize: 12, color: 'var(--color-text-muted)', marginLeft: 4 }}>total</span>
@@ -1169,7 +1169,7 @@ export default function DashboardPage() {
         .dashboard-booking-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 22px; }
         .dashboard-booking-summary div { padding: 16px; border: 1px solid var(--color-border); border-radius: var(--radius-xl); background: var(--color-bg-card); box-shadow: var(--shadow-sm); }
         .dashboard-booking-summary span { display: block; color: var(--color-text-muted); font-size: 11px; font-weight: 900; letter-spacing: .5px; text-transform: uppercase; }
-        .dashboard-booking-summary strong { display: block; margin-top: 5px; color: var(--color-primary); font-size: 20px; font-weight: 900; font-family: Poppins, sans-serif; }
+        .dashboard-booking-summary strong { display: block; margin-top: 5px; color: var(--color-primary); font-size: 20px; font-weight: 900; font-family: "Italiana", sans-serif; }
         .dashboard-booking-tabs { display: inline-flex; gap: 6px; padding: 5px; border: 1px solid var(--color-border); border-radius: 10px; background: #f8fafc; margin-bottom: 22px; }
         .dashboard-booking-tabs button { border: 0; border-radius: 8px; background: transparent; color: #475569; padding: 9px 14px; font-size: 13px; font-weight: 900; cursor: pointer; }
         .dashboard-booking-tabs button.active { background: #fff; color: var(--color-primary); box-shadow: 0 6px 18px rgba(15, 23, 42, .08); }
@@ -1214,7 +1214,7 @@ export default function DashboardPage() {
       `}</style>
       {/* Blog Hero Container */}
       <div className="dashboard-hero" style={{ background: '#111827', padding: '150px 24px 60px', textAlign: 'center', marginBottom: 50 }}>
-        <h1 style={{ fontFamily: 'Poppins, sans-serif', fontSize: 48, fontWeight: 900, color: 'white', margin: '0 0 16px' }}>
+        <h1 style={{ fontFamily: '"Italiana", sans-serif', fontSize: 48, fontWeight: 900, color: 'white', margin: '0 0 16px' }}>
           My Dashboard
         </h1>
         <p style={{ color: '#9ca3af', fontSize: 18, maxWidth: 600, margin: '0 auto', lineHeight: 1.6 }}>
@@ -1226,7 +1226,7 @@ export default function DashboardPage() {
         {/* Header */}
         <div className="mb-6 d-flex align-items-center gap-4 flex-wrap" style={{ marginBottom: 40 }}>
           <div>
-            <h1 style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 800, fontSize: 'clamp(22px, 3vw, 30px)', color: 'var(--color-text-primary)', marginBottom: 4 }}>
+            <h1 style={{ fontFamily: '"Italiana", sans-serif', fontWeight: 800, fontSize: 'clamp(22px, 3vw, 30px)', color: 'var(--color-text-primary)', marginBottom: 4 }}>
               Welcome back, {user.name.split(' ')[0]}! 👋
             </h1>
             <p style={{ color: 'var(--color-text-muted)', fontSize: 14, margin: 0 }}>{user.email}</p>
@@ -1258,7 +1258,7 @@ export default function DashboardPage() {
                 }}
               >
                 <div style={{ fontSize: 28, marginBottom: 8 }}>{icon}</div>
-                <div style={{ fontSize: 28, fontWeight: 800, color, fontFamily: 'Poppins, sans-serif', lineHeight: 1 }}>{value}</div>
+                <div style={{ fontSize: 28, fontWeight: 800, color, fontFamily: '"Italiana", sans-serif', lineHeight: 1 }}>{value}</div>
                 <div style={{ fontSize: 13, color: 'var(--color-text-muted)', marginTop: 4 }}>{label}</div>
               </div>
             </div>
@@ -1299,7 +1299,7 @@ export default function DashboardPage() {
             {/* My Bookings */}
             {activeTab === 'bookings' && (
               <div>
-                <h2 style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 700, fontSize: 22, color: 'var(--color-text-primary)', marginBottom: 24 }}>
+                <h2 style={{ fontFamily: '"Italiana", sans-serif', fontWeight: 700, fontSize: 22, color: 'var(--color-text-primary)', marginBottom: 24 }}>
                   My Bookings
                 </h2>
                 <div className="dashboard-booking-tabs" role="tablist" aria-label="Booking type">
@@ -1393,7 +1393,7 @@ export default function DashboardPage() {
             {/* Upcoming */}
             {activeTab === 'upcoming' && (
               <div>
-                <h2 style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 700, fontSize: 22, color: 'var(--color-text-primary)', marginBottom: 24 }}>
+                <h2 style={{ fontFamily: '"Italiana", sans-serif', fontWeight: 700, fontSize: 22, color: 'var(--color-text-primary)', marginBottom: 24 }}>
                   Upcoming Tours — Countdown
                 </h2>
                 {upcomingBookings.length === 0 ? (
@@ -1432,7 +1432,7 @@ export default function DashboardPage() {
             {/* Wishlist */}
             {activeTab === 'wishlist' && (
               <div>
-                <h2 style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 700, fontSize: 22, marginBottom: 24 }}>
+                <h2 style={{ fontFamily: '"Italiana", sans-serif', fontWeight: 700, fontSize: 22, marginBottom: 24 }}>
                   My Wishlist ❤️
                 </h2>
                 {wishlist.length ? (
@@ -1501,7 +1501,7 @@ export default function DashboardPage() {
             {/* Profile */}
             {activeTab === 'profile' && (
               <div>
-                <h2 style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 700, fontSize: 22, marginBottom: 24 }}>
+                <h2 style={{ fontFamily: '"Italiana", sans-serif', fontWeight: 700, fontSize: 22, marginBottom: 24 }}>
                   My Profile
                 </h2>
                 <div style={{ background: 'var(--color-bg-card)', borderRadius: 'var(--radius-xl)', padding: 32, border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-sm)' }}>
@@ -1532,7 +1532,7 @@ export default function DashboardPage() {
             {/* History */}
             {activeTab === 'history' && (
               <div>
-                <h2 style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 700, fontSize: 22, marginBottom: 24 }}>
+                <h2 style={{ fontFamily: '"Italiana", sans-serif', fontWeight: 700, fontSize: 22, marginBottom: 24 }}>
                   Travel History
                 </h2>
                 <div className="d-flex flex-column gap-4">

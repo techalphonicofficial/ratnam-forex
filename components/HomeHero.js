@@ -303,7 +303,7 @@ export default function HomeHero() {
                   whiteSpace: 'nowrap',
                   fontWeight: 700, fontSize: isMobile ? 14 : 15, cursor: 'pointer',
                   letterSpacing: 0.3, transition: 'all 0.2s ease',
-                  fontFamily: 'Poppins, sans-serif',
+                  fontFamily: '"Italiana", sans-serif',
                   borderRadius: '0 999px 999px 0',
                 }}
                 onMouseEnter={e => {

@@ -120,7 +120,7 @@ export default function ProfilePage() {
             <span style={{ color: '#9cc7ff', fontSize: 12, fontWeight: 800, letterSpacing: 2, textTransform: 'uppercase' }}>
               Customer Account
             </span>
-            <h1 style={{ fontFamily: 'Poppins, sans-serif', fontSize: 'clamp(34px, 5vw, 56px)', fontWeight: 900, margin: '12px 0 14px' }}>
+            <h1 style={{ fontFamily: '"Italiana", sans-serif', fontSize: 'clamp(34px, 5vw, 56px)', fontWeight: 900, margin: '12px 0 14px' }}>
               My Profile
             </h1>
             <p style={{ color: 'rgba(255,255,255,0.78)', fontSize: 17, maxWidth: 560, lineHeight: 1.7, margin: 0 }}>
@@ -192,7 +192,7 @@ export default function ProfilePage() {
               <section className="card-base" style={{ padding: 28 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'flex-start', flexWrap: 'wrap', marginBottom: 24 }}>
                   <div>
-                    <h2 style={{ fontFamily: 'Poppins, sans-serif', fontSize: 24, fontWeight: 800, marginBottom: 6 }}>
+                    <h2 style={{ fontFamily: '"Italiana", sans-serif', fontSize: 24, fontWeight: 800, marginBottom: 6 }}>
                       Account Details
                     </h2>
                     <p style={{ color: 'var(--color-text-muted)', margin: 0 }}>
@@ -229,7 +229,7 @@ export default function ProfilePage() {
               </section>
 
               <section className="card-base" style={{ padding: 28 }}>
-                <h2 style={{ fontFamily: 'Poppins, sans-serif', fontSize: 24, fontWeight: 800, marginBottom: 6 }}>
+                <h2 style={{ fontFamily: '"Italiana", sans-serif', fontSize: 24, fontWeight: 800, marginBottom: 6 }}>
                   Change Password
                 </h2>
                 <p style={{ color: 'var(--color-text-muted)', marginBottom: 24 }}>

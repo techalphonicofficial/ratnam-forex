@@ -883,7 +883,7 @@ export default function ReelsViewer() {
 
           {/* Title */}
           <h1 style={{
-            fontFamily: 'Poppins, sans-serif',
+            fontFamily: '"Italiana", sans-serif',
             fontWeight: 800, fontSize: 28,
             color: 'white', margin: '0 0 12px',
             lineHeight: 1.2,
@@ -937,7 +937,7 @@ export default function ReelsViewer() {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               background: 'var(--color-primary)', color: 'white',
               borderRadius: 12, padding: '14px 28px',
-              fontFamily: 'Poppins, sans-serif',
+              fontFamily: '"Italiana", sans-serif',
               fontWeight: 700, fontSize: 15,
               textDecoration: 'none',
               boxShadow: '0 4px 20px rgba(20,83,45,0.5)',

@@ -289,7 +289,7 @@ export default async function BlogArticle({ params }) {
           align-items: center;
         }
         .blog-hero-copy h1 {
-          font-family: Poppins, sans-serif;
+          font-family: "Italiana", sans-serif;
           color: #111827;
           font-size: clamp(30px, 4.2vw, 52px);
           line-height: 1.08;
@@ -384,7 +384,7 @@ export default async function BlogArticle({ params }) {
         }
         .blog-body h2,
         .blog-body h3 {
-          font-family: Poppins, sans-serif;
+          font-family: "Italiana", sans-serif;
           color: #111827;
           line-height: 1.25;
           margin: 30px 0 12px;
@@ -464,7 +464,7 @@ export default async function BlogArticle({ params }) {
         }
         .inquiry-card h2,
         .planner-card h2 {
-          font-family: Poppins, sans-serif;
+          font-family: "Italiana", sans-serif;
           margin: 0;
           line-height: 1.2;
           font-weight: 900;
@@ -544,7 +544,7 @@ export default async function BlogArticle({ params }) {
           margin-bottom: 18px;
         }
         .related-heading h2 {
-          font-family: Poppins, sans-serif;
+          font-family: "Italiana", sans-serif;
           font-size: 22px;
           color: #111827;
           margin: 0;
@@ -590,7 +590,7 @@ export default async function BlogArticle({ params }) {
           text-transform: uppercase;
         }
         .related-card h3 {
-          font-family: Poppins, sans-serif;
+          font-family: "Italiana", sans-serif;
           color: #111827;
           font-size: 15px;
           line-height: 1.35;
@@ -626,7 +626,7 @@ export default async function BlogArticle({ params }) {
           text-transform: uppercase;
         }
         .app-banner h2 {
-          font-family: Poppins, sans-serif;
+          font-family: "Italiana", sans-serif;
           font-size: 28px;
           margin: 5px 0 6px;
           font-weight: 900;

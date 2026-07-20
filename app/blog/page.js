@@ -111,7 +111,7 @@ export default async function BlogPage({ searchParams }) {
         />
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(17,24,39,0.58), rgba(17,24,39,0.92))' }} />
         <div style={{ position: 'relative', zIndex: 1 }}>
-          <h1 style={{ fontFamily: 'Poppins, sans-serif', fontSize: 'clamp(34px, 5vw, 56px)', fontWeight: 900, color: 'white', margin: '0 0 16px' }}>
+          <h1 style={{ fontFamily: '"Italiana", sans-serif', fontSize: 'clamp(34px, 5vw, 56px)', fontWeight: 900, color: 'white', margin: '0 0 16px' }}>
             {standardSection?.title || 'Travel Inspiration & Stories'}
           </h1>
           <p style={{ color: '#d1d5db', fontSize: 18, maxWidth: 680, margin: '0 auto', lineHeight: 1.7 }}>
@@ -160,7 +160,7 @@ export default async function BlogPage({ searchParams }) {
                     {blog.date && <span>{blog.date}</span>}
                   </div>
 
-                  <h3 style={{ fontFamily: 'Poppins, sans-serif', fontSize: 20, fontWeight: 800, color: '#111827', margin: '0 0 12px', lineHeight: 1.4 }}>
+                  <h3 style={{ fontFamily: '"Italiana", sans-serif', fontSize: 20, fontWeight: 800, color: '#111827', margin: '0 0 12px', lineHeight: 1.4 }}>
                     {blog.title}
                   </h3>
 

@@ -198,7 +198,7 @@ function AdventureCard({ item, isMobile }) {
         </p>
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
           <h3 style={{
-            fontFamily: 'Poppins, sans-serif', fontWeight: 700,
+            fontFamily: '"Italiana", sans-serif', fontWeight: 700,
             fontSize: 20, color: 'white', margin: 0, lineHeight: 1.2,
           }}>
             {item.title}
@@ -206,7 +206,7 @@ function AdventureCard({ item, isMobile }) {
           <div style={{ textAlign: 'right', flexShrink: 0, marginLeft: 10 }}>
             <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 10 }}>From</div>
             <div style={{
-              fontFamily: 'Poppins, sans-serif', fontWeight: 800,
+              fontFamily: '"Italiana", sans-serif', fontWeight: 800,
               fontSize: 16, color: 'var(--color-secondary)',
             }}>
               {item.from}
@@ -280,7 +280,7 @@ function HandpickedCard({ item }) {
 
         <div style={{ position: 'absolute', bottom: 14, left: 14, right: 14 }}>
           <div style={{
-            color: 'white', fontFamily: 'Poppins, sans-serif',
+            color: 'white', fontFamily: '"Italiana", sans-serif',
             fontWeight: 700, fontSize: 15, lineHeight: 1.3, marginBottom: 4,
           }}>
             {item.name}
@@ -344,7 +344,7 @@ export default function ExperienceSection() {
                 CURATED EXPERIENCES
               </p>
               <h2 style={{
-                fontFamily: 'Poppins, sans-serif', fontWeight: 800,
+                fontFamily: '"Italiana", sans-serif', fontWeight: 800,
                 fontSize: 26, color: '#111827', margin: 0,
               }}>
                 Plan Your Next Adventure
@@ -422,7 +422,7 @@ export default function ExperienceSection() {
                 TRAVEL YOUR WAY
               </p>
               <h2 style={{
-                fontFamily: 'Poppins, sans-serif', fontWeight: 800,
+                fontFamily: '"Italiana", sans-serif', fontWeight: 800,
                 fontSize: 26, color: '#111827', margin: 0,
               }}>
                 Popular Hand-picked Experiences

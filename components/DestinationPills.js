@@ -49,7 +49,7 @@ export default function DestinationPills() {
     <section style={{ padding: '0 0 20px', background: 'var(--color-bg)' }}>
       <div className="container" style={{ paddingTop: 40, paddingBottom: 8 }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 20 }}>
-          <h2 style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 700, fontSize: 20, color: 'var(--color-text-primary)', margin: 0 }}>
+          <h2 style={{ fontFamily: '"Italiana", sans-serif', fontWeight: 700, fontSize: 20, color: 'var(--color-text-primary)', margin: 0 }}>
             Explore Popular Destinations
           </h2>
           <Link href="/tours" style={{ fontSize: 13, color: 'var(--color-primary)', fontWeight: 600, textDecoration: 'underline' }}>View all</Link>

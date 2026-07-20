@@ -178,7 +178,7 @@ export default function ContactClient({ hero = fallbackHero, faqContent = fallba
                     boxShadow: 'var(--shadow-md)',
                   }}
                 >
-                  <h2 style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 700, fontSize: 24, marginBottom: 8 }}>{formConfig?.name || 'Send Us a Message'}</h2>
+                  <h2 style={{ fontFamily: '"Italiana", sans-serif', fontWeight: 700, fontSize: 24, marginBottom: 8 }}>{formConfig?.name || 'Send Us a Message'}</h2>
                   <p style={{ color: 'var(--color-text-muted)', fontSize: 14, marginBottom: 28 }}>
                     Fill in the form below and our travel experts will get back to you shortly.
                   </p>

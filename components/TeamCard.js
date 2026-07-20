@@ -37,7 +37,7 @@ export default function TeamCard({ member }) {
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.5) 100%)' }} />
       </div>
       <div style={{ padding: '20px' }}>
-        <h3 style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 700, fontSize: 16, color: 'var(--color-text-primary)', marginBottom: 4 }}>{member.name}</h3>
+        <h3 style={{ fontFamily: '"Italiana", sans-serif', fontWeight: 700, fontSize: 16, color: 'var(--color-text-primary)', marginBottom: 4 }}>{member.name}</h3>
         <div style={{ color: 'var(--color-primary)', fontSize: 13, fontWeight: 600, marginBottom: 8 }}>{member.role}</div>
         <p style={{ color: 'var(--color-text-muted)', fontSize: 13, lineHeight: 1.6, margin: 0 }}>{member.bio}</p>
       </div>

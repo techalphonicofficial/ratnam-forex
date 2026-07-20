@@ -122,7 +122,7 @@ export default function WhyChooseSection() {
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
               <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2.5, textTransform: 'uppercase', color: 'var(--color-accent)', margin: '0 0 8px' }}>OUR TRACK RECORD</p>
-              <h2 className="section-title" style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 800, fontSize: 28, color: 'var(--color-text-primary)', lineHeight: 1.2, margin: '0 0 28px' }}>
+              <h2 className="section-title" style={{ fontFamily: '"Italiana", sans-serif', fontWeight: 800, fontSize: 28, color: 'var(--color-text-primary)', lineHeight: 1.2, margin: '0 0 28px' }}>
                 {content.title}
               </h2>
             </div>
@@ -131,7 +131,7 @@ export default function WhyChooseSection() {
               {content.stats.map(({ number, label, icon }) => (
                 <div key={`${number}-${label}`} style={{ textAlign: 'center', padding: '18px 24px', background: 'var(--color-primary-light)', borderRadius: 14, border: '1px solid var(--brand-primary-border)', minWidth: '180px' }}>
                   <div style={{ fontSize: 24, marginBottom: 4 }}>{icon}</div>
-                  <div style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 800, fontSize: 24, color: 'var(--color-primary)', lineHeight: 1 }}>{number}</div>
+                  <div style={{ fontFamily: '"Italiana", sans-serif', fontWeight: 800, fontSize: 24, color: 'var(--color-primary)', lineHeight: 1 }}>{number}</div>
                   <div style={{ fontSize: 11, color: 'var(--color-text-muted)', marginTop: 5, whiteSpace: 'pre-line', lineHeight: 1.4 }}>{label}</div>
                 </div>
               ))}

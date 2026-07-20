@@ -56,7 +56,7 @@ export default function CategoriesClient() {
             Design Your Dream Trip
           </span>
           <h1 style={{
-            fontFamily: 'Poppins, sans-serif',
+            fontFamily: '"Italiana", sans-serif',
             fontWeight: 900,
             fontSize: 'clamp(32px, 4vw, 48px)',
             color: 'var(--color-text-primary)',

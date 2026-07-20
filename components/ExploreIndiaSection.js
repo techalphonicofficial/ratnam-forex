@@ -3,10 +3,19 @@
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { getFeaturedTourHref } from '@/components/FeaturedToursRow';
+import { getFeaturedTourHref, BookingCardV2 } from '@/components/FeaturedToursRow';
+import { getTripInquiries, getMediaUrl } from '@/utils/api';
 
 /* ── Filter options ──────────────────────────────────── */
 const FILTER_OPTIONS = {
+  hotDeal: {
+    label: 'Hot Deal',
+    items: ['All', 'Yes', 'No'],
+  },
+  duration: {
+    label: 'Duration',
+    items: ['All', '1-3 Nights', '4-6 Nights', '7-10 Nights', '10+ Nights'],
+  },
   theme: {
     label: 'Theme',
     items: ['All', 'Couple', 'Family', 'Adventure', 'Solo', 'Spiritual'],
@@ -18,10 +27,6 @@ const FILTER_OPTIONS = {
   season: {
     label: 'Season',
     items: ['All', 'Summer', 'Winter', 'Monsoon', 'Spring'],
-  },
-  duration: {
-    label: 'Duration',
-    items: ['All', '1-3 Nights', '4-6 Nights', '7-10 Nights', '10+ Nights'],
   },
 };
 
@@ -222,67 +227,22 @@ function applyFilters(tours, filters) {
     else if (filters.duration === '10+ Nights') list = list.filter(t => t.nights > 10);
   }
 
+  // Mock Hot Deal logic
+  if (filters.hotDeal === 'Yes') {
+    list = list.filter((t, i) => i % 2 === 0);
+  }
+
   return list;
-}
-
-/* ── India Card ──────────────────────────────────────── */
-function IndiaCard({ tour, animDelay }) {
-  const searchTerm = tour.locations?.[0]?.replace(/\s*\([^)]*\)/g, '').trim() || tour.dest;
-  const href = tour.isInquiry
-    ? `/itineraries/${encodeURIComponent(tour.id)}`
-    : `/tour?search=${encodeURIComponent(searchTerm)}`;
-
-  return (
-    <article className="ei-card" style={{ animationDelay: `${animDelay}ms` }}>
-      <div className="ei-card-media">
-        <Image
-          src={tour.image}
-          alt={tour.title}
-          fill
-          sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 1024px) 45vw, 30vw"
-        />
-      </div>
-
-      <div className="ei-card-body">
-        <h3 className="ei-card-title">{tour.title}</h3>
-
-        <div className="ei-card-meta">
-          <span className="ei-card-duration">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" aria-hidden="true">
-              <circle cx="12" cy="12" r="10" />
-              <polyline points="12 6 12 12 16 14" />
-            </svg>
-            {tour.nights}N / {tour.days}D
-          </span>
-          <span className="ei-card-rating">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="#f59e0b" aria-hidden="true">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-            </svg>
-            {tour.rating}
-          </span>
-        </div>
-
-        <div className="ei-card-price">
-          ₹{Number(tour.price).toLocaleString('en-IN')}
-        </div>
-
-        <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-          <Link href={href} className="th-card-link">
-            EXPLORE NOW
-          </Link>
-        </div>
-      </div>
-    </article>
-  );
 }
 
 /* ── Main Section ────────────────────────────────────── */
 export default function ExploreIndiaSection() {
   const [filters, setFilters] = useState({
+    hotDeal: 'All',
+    duration: 'All',
     theme: 'All',
     travelClass: 'All',
     season: 'All',
-    duration: 'All',
   });
   const scrollRef = useRef(null);
 
@@ -315,7 +275,7 @@ export default function ExploreIndiaSection() {
         .ei-title {
           margin: 0 0 24px;
           color: #151922;
-          font-family: var(--font-poppins), Poppins, sans-serif;
+          font-family: "Italiana", sans-serif;
           font-size: clamp(18px, 2vw, 22px);
           font-weight: 800;
           line-height: 1.2;
@@ -457,98 +417,6 @@ export default function ExploreIndiaSection() {
         .ei-scroll-btn--left { left: -18px; }
         .ei-scroll-btn--right { right: -18px; }
 
-        /* ── Card ─────────────────────── */
-        @keyframes eiCardIn {
-          from { opacity: 0; transform: translateY(14px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-
-        .ei-card {
-          flex-shrink: 0;
-          width: 280px;
-          overflow: hidden;
-          border-radius: 14px;
-          background: #ffffff;
-          border: 1px solid #eef0f4;
-          box-shadow: 0 2px 12px rgba(15, 23, 42, 0.05);
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
-          scroll-snap-align: start;
-          animation: eiCardIn 0.36s ease both;
-        }
-
-        .ei-card:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 12px 32px rgba(15, 23, 42, 0.1);
-        }
-
-        .ei-card-media {
-          position: relative;
-          height: 180px;
-          overflow: hidden;
-          background: #e2e8f0;
-        }
-
-        .ei-card-media img {
-          object-fit: cover;
-          transition: transform 0.45s ease;
-        }
-
-        .ei-card:hover .ei-card-media img {
-          transform: scale(1.06);
-        }
-
-        .ei-card-body {
-          padding: 16px 18px 18px;
-        }
-
-        .ei-card-title {
-          margin: 0 0 10px;
-          color: var(--color-text-primary);
-          font-family: var(--font-poppins), Poppins, sans-serif;
-          font-size: 16px;
-          font-weight: 700;
-          line-height: 1.3;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-
-        .ei-card-meta {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-bottom: 14px;
-        }
-
-        .ei-card-duration {
-          display: flex;
-          align-items: center;
-          gap: 5px;
-          color: #6b7280;
-          font-size: 13px;
-          font-weight: 500;
-        }
-
-        .ei-card-rating {
-          display: flex;
-          align-items: center;
-          gap: 4px;
-          color: #374151;
-          font-size: 13px;
-          font-weight: 700;
-        }
-
-        .ei-card-price {
-          color: var(--color-text-primary);
-          font-family: var(--font-poppins), Poppins, sans-serif;
-          font-size: 22px;
-          font-weight: 800;
-          line-height: 1;
-          margin-bottom: 12px;
-        }
-
-
-
         /* ── Empty state ──────────────── */
         .ei-empty {
           flex: 1 0 100%;
@@ -580,15 +448,6 @@ export default function ExploreIndiaSection() {
             justify-content: center;
           }
           .ei-filter-bar::-webkit-scrollbar { display: none; }
-          .ei-card {
-            width: calc(100vw - 40px);
-          }
-        }
-
-        @media (max-width: 420px) {
-          .ei-card {
-            width: calc(100vw - 32px);
-          }
         }
       `}</style>
 
@@ -599,9 +458,6 @@ export default function ExploreIndiaSection() {
 
         {/* Filter dropdowns */}
         <div className="ei-filter-bar">
-          <span className="ei-dropdown-btn" style={{ background: '#fafafa', color: '#6b7280', cursor: 'default' }}>
-            Hot Deals
-          </span>
           {Object.entries(FILTER_OPTIONS).map(([key, opt]) => (
             <FilterDropdown
               key={key}
@@ -626,7 +482,9 @@ export default function ExploreIndiaSection() {
           <div ref={scrollRef} className="ei-scroll-area">
             {filtered.length > 0 ? (
               filtered.map((tour, idx) => (
-                <IndiaCard key={tour.id} tour={tour} animDelay={idx * 50} />
+                <div key={tour.id} style={{ width: 320, flexShrink: 0 }}>
+                  <BookingCardV2 pkg={tour} animDelay={idx * 50} />
+                </div>
               ))
             ) : (
               <div className="ei-empty">

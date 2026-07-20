@@ -232,11 +232,11 @@ function TransferConnector({ destinationName }) {
 function BookedItineraryStyles() {
   return (
     <style jsx global>{`
-      .bi-page { background: #fff; padding: 112px 0 80px; color: var(--color-text-primary); font-family: var(--font-inter), Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif; font-size: 15px; line-height: 1.55; text-rendering: geometricPrecision; }
+      .bi-page { background: #fff; padding: 112px 0 80px; color: var(--color-text-primary); font-family: "Gilda Display", serif; font-size: 15px; line-height: 1.55; text-rendering: geometricPrecision; }
       .bi-container { width: min(100%, 1160px); margin: 0 auto; padding: 0 22px; }
       .bi-title { padding: 18px 0 16px; }
       .bi-title p { margin: 0 0 7px; color: var(--color-primary); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .45px; }
-      .bi-title h1 { margin: 0; font-family: var(--font-poppins), Poppins, sans-serif; font-size: clamp(32px, 4vw, 44px); font-weight: 800; letter-spacing: 0; line-height: 1.08; }
+      .bi-title h1 { margin: 0; font-family: "Italiana", sans-serif; font-size: clamp(32px, 4vw, 44px); font-weight: 800; letter-spacing: 0; line-height: 1.08; }
       .bi-title-summary { max-width: 720px; margin-top: 13px; color: #526173; font-size: 15px; font-weight: 400; line-height: 1.72; }
       .bi-route-ribbon { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
       .bi-route-ribbon span { padding: 8px 13px; border: 1px solid var(--color-border); border-radius: 999px; background: #fff; color: #263445; font-size: 13px; font-weight: 700; box-shadow: var(--shadow-xs); }
@@ -255,7 +255,7 @@ function BookedItineraryStyles() {
       .bi-media-modal { position: fixed; inset: 0; z-index: 500; display: grid; place-items: center; padding: 24px; background: rgba(15, 23, 42, .72); backdrop-filter: blur(10px); }
       .bi-media-panel { width: min(100%, 1040px); max-height: min(86vh, 820px); overflow: hidden; border-radius: 14px; background: #fff; box-shadow: 0 28px 90px rgba(15, 23, 42, .38); }
       .bi-media-head { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 18px 20px; border-bottom: 1px solid var(--color-border); }
-      .bi-media-head h3 { margin: 0; font-family: var(--font-poppins), Poppins, sans-serif; font-size: 20px; font-weight: 800; }
+      .bi-media-head h3 { margin: 0; font-family: "Italiana", sans-serif; font-size: 20px; font-weight: 800; }
       .bi-media-head button { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: var(--color-bg-soft); color: var(--color-text-primary); font-size: 22px; font-weight: 800; }
       .bi-media-grid { max-height: calc(min(86vh, 820px) - 76px); overflow: auto; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; padding: 18px; }
       .bi-media-item { overflow: hidden; border: 1px solid var(--color-border); border-radius: 10px; background: var(--color-bg-soft); box-shadow: var(--shadow-xs); }
@@ -264,7 +264,7 @@ function BookedItineraryStyles() {
       .bi-media-caption { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px; color: var(--color-text-secondary); font-size: 12px; font-weight: 700; }
       .bi-media-caption span { color: var(--color-primary); text-transform: uppercase; letter-spacing: .6px; }
       .bi-layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 48px; align-items: start; }
-      .bi-section h2 { margin: 0 0 20px; font-family: var(--font-poppins), Poppins, sans-serif; font-size: 19px; font-weight: 700; letter-spacing: 0; }
+      .bi-section h2 { margin: 0 0 20px; font-family: "Italiana", sans-serif; font-size: 19px; font-weight: 700; letter-spacing: 0; }
       .bi-section h2::after { content: ''; display: block; width: 42px; height: 3px; margin-top: 8px; border-radius: 999px; background: var(--gradient-primary); }
       .bi-proof-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 28px; margin-bottom: 46px; }
       .bi-proof { display: grid; grid-template-columns: 30px 1fr; gap: 12px; }
@@ -275,7 +275,7 @@ function BookedItineraryStyles() {
       .bi-itinerary-wrap::before { content: ''; position: absolute; left: -18px; top: 20px; bottom: 18px; width: 3px; border-radius: 999px; background: linear-gradient(180deg, #b9dcf5, color-mix(in srgb, var(--color-primary) 14%, transparent)); opacity: .7; }
       .bi-city-card { border: 1px solid #cbd5e1; border-radius: 8px; overflow: hidden; background: #fff; box-shadow: 0 18px 46px rgba(15, 23, 42, .07); }
       .bi-city-head { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; min-height: 64px; background: linear-gradient(90deg, #cfeeff 0%, #e9f6ff 100%); padding: 15px 19px; color: #334155; font-size: 15px; }
-      .bi-city-head strong { font-family: var(--font-poppins), Poppins, sans-serif; font-size: 21px; font-weight: 800; color: #243746; letter-spacing: 0; }
+      .bi-city-head strong { font-family: "Italiana", sans-serif; font-size: 21px; font-weight: 800; color: #243746; letter-spacing: 0; }
       .bi-city-head span { color: #43566a; font-size: 15px; font-weight: 700; }
       .bi-temp { display: inline-flex; align-items: center; gap: 8px; margin-left: 4px; padding: 3px 10px; border: 1px solid var(--color-primary); border-radius: 999px; background: #fff; color: #0f172a !important; font-size: 12px; font-weight: 900 !important; white-space: nowrap; }
       .bi-temp i { width: 3px; height: 3px; border-radius: 50%; background: #9ca3af; }
@@ -309,7 +309,7 @@ function BookedItineraryStyles() {
       .bi-price-card::after { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--gradient-primary); }
       .bi-price-card > div, .bi-price-card button { position: relative; z-index: 1; }
       .bi-price-card span { color: var(--color-primary); font-size: 11px; font-weight: 800; letter-spacing: .55px; text-transform: uppercase; }
-      .bi-price-card strong { color: var(--color-text-primary); font-family: var(--font-poppins), Poppins, sans-serif; font-size: 28px; font-weight: 800; line-height: 1.05; }
+      .bi-price-card strong { color: var(--color-text-primary); font-family: "Italiana", sans-serif; font-size: 28px; font-weight: 800; line-height: 1.05; }
       .bi-price-card small { color: var(--color-text-secondary); font-size: 12px; font-weight: 600; }
       .bi-price-card button, .bi-unlock button { width: 100%; padding: 14px 16px; border-radius: 8px; background: var(--gradient-primary); color: #fff; font-size: 14px; font-weight: 800; }
       .bi-unlock { padding: 22px; text-align: center; }
@@ -320,7 +320,7 @@ function BookedItineraryStyles() {
       .bi-whatsapp-icon { position: relative; z-index: 1; width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: #25d366; color: #fff; font-size: 24px; font-weight: 900; }
       .bi-whatsapp-copy { position: relative; z-index: 1; display: grid; gap: 3px; min-width: 0; line-height: 1.15; }
       .bi-whatsapp-copy span { color: var(--color-primary); font-size: 10px; font-weight: 800; letter-spacing: .55px; text-transform: uppercase; }
-      .bi-whatsapp-copy strong { color: var(--color-text-primary); font-family: var(--font-poppins), Poppins, sans-serif; font-size: 15px; font-weight: 700; }
+      .bi-whatsapp-copy strong { color: var(--color-text-primary); font-family: "Italiana", sans-serif; font-size: 15px; font-weight: 700; }
       .bi-whatsapp-arrow { position: relative; z-index: 1; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--color-primary); color: #fff; font-size: 16px; font-weight: 900; }
       .bi-route { overflow: hidden; padding: 0; border-color: #e3e7ec; border-radius: 10px; box-shadow: 0 16px 42px rgba(15, 23, 42, .07); }
       .bi-route h3 { margin: 0; padding: 16px 18px 15px; border-bottom: 1px solid #eef1f4; color: #7b7f86; font-size: 12px; font-weight: 800; line-height: 1; text-align: center; text-transform: uppercase; letter-spacing: .35px; }
@@ -338,7 +338,7 @@ function BookedItineraryStyles() {
       .bi-route-icon.is-transfer::before, .bi-route-icon.is-transfer::after { content: ''; position: absolute; left: 4px; top: 8px; width: 10px; height: 2px; border-radius: 999px; background: currentColor; }
       .bi-route-icon.is-transfer::after { transform: rotate(90deg); }
       .bi-route-step p { margin: 0; color: #767b82; font-size: 13px; font-weight: 400; line-height: 1.35; }
-      .bi-route-step strong { color: #555b64; font-family: var(--font-poppins), Poppins, sans-serif; font-size: 17px; font-weight: 600; line-height: 1.25; letter-spacing: 0; }
+      .bi-route-step strong { color: #555b64; font-family: "Italiana", sans-serif; font-size: 17px; font-weight: 600; line-height: 1.25; letter-spacing: 0; }
       .bi-route-step.is-city { min-height: 40px; }
       .bi-route-step.is-note { min-height: 34px; }
       .bi-list { padding: 18px; border-color: #e7ebef; box-shadow: 0 12px 30px rgba(15, 23, 42, .05); }
@@ -350,7 +350,7 @@ function BookedItineraryStyles() {
       .bi-actions button { display: block; width: 100%; padding: 13px 16px; border-bottom: 1px solid #eef1f4; color: #53606d; text-align: left; font-size: 13px; font-weight: 700; }
       .bi-actions button:last-child { border-bottom: 0; }
       .bi-rating { padding: 26px; text-align: center; }
-      .bi-rating strong { display: block; font-family: var(--font-poppins), Poppins, sans-serif; font-size: 44px; font-weight: 800; line-height: 1; }
+      .bi-rating strong { display: block; font-family: "Italiana", sans-serif; font-size: 44px; font-weight: 800; line-height: 1; }
       .bi-rating span, .bi-stars { color: #f7b500; font-weight: 900; }
       .bi-rating p { margin: 6px 0 0; color: var(--color-text-secondary); font-size: 13px; font-weight: 700; }
       .bi-reviews { margin-top: 90px; }
@@ -369,7 +369,7 @@ function BookedItineraryStyles() {
       .bi-inquiry-panel { width: min(100%, 560px); max-height: min(88vh, 760px); overflow: auto; border: 1px solid #dbe7f3; border-radius: 10px; background: #fff; box-shadow: 0 28px 90px rgba(15, 23, 42, .34); }
       .bi-inquiry-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 20px 22px 16px; border-bottom: 1px solid #edf3f9; }
       .bi-inquiry-head span { color: var(--color-primary); font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: .55px; }
-      .bi-inquiry-head h2 { margin: 3px 0 0; font-family: var(--font-poppins), Poppins, sans-serif; font-size: 22px; font-weight: 900; line-height: 1.15; }
+      .bi-inquiry-head h2 { margin: 3px 0 0; font-family: "Italiana", sans-serif; font-size: 22px; font-weight: 900; line-height: 1.15; }
       .bi-inquiry-close { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 8px; background: #eef4f9; color: #0f172a; font-size: 20px; font-weight: 900; }
       .bi-inquiry-form { display: grid; gap: 13px; padding: 20px 22px 22px; }
       .bi-inquiry-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }

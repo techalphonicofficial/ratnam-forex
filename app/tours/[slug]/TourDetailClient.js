@@ -152,7 +152,7 @@ export default function TourDetailClient({ tour, similarTours }) {
 
               <h1
                 style={{
-                  fontFamily: 'Poppins, sans-serif',
+                  fontFamily: '"Italiana", sans-serif',
                   fontSize: 'clamp(28px, 4vw, 42px)',
                   fontWeight: 800,
                   color: 'var(--color-text-primary)',
@@ -453,7 +453,7 @@ export default function TourDetailClient({ tour, similarTours }) {
                         <div style={{ color: 'var(--color-primary)', fontSize: 13, fontWeight: 800, letterSpacing: 0, textTransform: 'uppercase', marginBottom: 6 }}>
                           Share your experience
                         </div>
-                        <h3 style={{ fontFamily: 'Poppins, sans-serif', fontSize: 22, fontWeight: 800, color: 'var(--color-text-primary)', margin: 0 }}>
+                        <h3 style={{ fontFamily: '"Italiana", sans-serif', fontSize: 22, fontWeight: 800, color: 'var(--color-text-primary)', margin: 0 }}>
                           Write a review
                         </h3>
                         <p style={{ color: 'var(--color-text-secondary)', fontSize: 14, margin: '8px 0 0', maxWidth: 560 }}>
@@ -599,7 +599,7 @@ export default function TourDetailClient({ tour, similarTours }) {
               <div className="booking-card-header">
                 <div style={{ fontSize: 13, opacity: 0.8, marginBottom: 4 }}>Starting from</div>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-                  <div style={{ fontSize: 36, fontWeight: 800, fontFamily: 'Poppins, sans-serif' }}>
+                  <div style={{ fontSize: 36, fontWeight: 800, fontFamily: '"Italiana", sans-serif' }}>
                     ${tour.price.toLocaleString()}
                   </div>
                   <div style={{ opacity: 0.75, fontSize: 14 }}>/ person</div>
@@ -745,7 +745,7 @@ export default function TourDetailClient({ tour, similarTours }) {
         {similarTours.length > 0 && (
           <div className="mt-5">
             <ScrollReveal>
-              <h2 style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 700, fontSize: 28, color: 'var(--color-text-primary)', marginBottom: 32 }}>
+              <h2 style={{ fontFamily: '"Italiana", sans-serif', fontWeight: 700, fontSize: 28, color: 'var(--color-text-primary)', marginBottom: 32 }}>
                 Similar Tours
               </h2>
             </ScrollReveal>

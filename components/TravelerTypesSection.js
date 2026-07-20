@@ -91,7 +91,7 @@ export default function TravelerTypesSection() {
             Design Your Dream Trip
           </span>
           <h2 style={{
-            fontFamily: 'Poppins, sans-serif',
+            fontFamily: '"Italiana", sans-serif',
             fontWeight: 900,
             fontSize: 'clamp(24px, 3vw, 36px)',
             color: 'var(--color-text-primary)',
@@ -118,13 +118,16 @@ export default function TravelerTypesSection() {
             loop={isMobile}
             speed={500}
             autoplay={isMobile ? { delay: 2000, disableOnInteraction: false } : false}
-            spaceBetween={isMobile ? 16 : 28}
-            slidesPerView="auto"
+            breakpoints={{
+              320: { slidesPerView: 2, spaceBetween: 16 },
+              768: { slidesPerView: 3, spaceBetween: 24 },
+              1024: { slidesPerView: 5, spaceBetween: 28 },
+            }}
             centerInsufficientSlides={true}
             className="sec-traveller-swiper"
           >
             {categories.map(({ id, label, image, alt }, index) => (
-              <SwiperSlide key={id} style={{ width: isMobile ? '100%' : 'auto', display: 'flex', justifyContent: 'center' }}>
+              <SwiperSlide key={id} style={{ display: 'flex', justifyContent: 'center', height: 'auto' }}>
                 <CategoryCard
                   id={id}
                   label={label}

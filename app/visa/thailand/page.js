@@ -11,7 +11,7 @@ export default function VisaPage() {
       <div style={{ background: 'linear-gradient(135deg, #1f2937, #111827, #0f172a)', position: 'relative', overflow: 'hidden' }}>
         {/* <Navbar /> */}
         <div style={{ padding: '80px 24px', textAlign: 'center', position: 'relative', zIndex: 10 }}>
-          <h1 style={{ fontFamily: 'Poppins, sans-serif', fontSize: 48, fontWeight: 900, color: 'white', margin: '0 0 16px' }}>
+          <h1 style={{ fontFamily: '"Italiana", sans-serif', fontSize: 48, fontWeight: 900, color: 'white', margin: '0 0 16px' }}>
             Thailand Visa For Indians
           </h1>
           <p style={{ color: '#93c5fd', fontSize: 18, maxWidth: 600, margin: '0 auto', lineHeight: 1.6 }}>

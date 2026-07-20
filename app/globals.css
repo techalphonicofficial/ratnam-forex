@@ -1,5 +1,5 @@
 @import "bootstrap/dist/css/bootstrap.min.css";
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Gilda+Display&family=Italiana&display=swap');
 
 /* ==============================
    CSS VARIABLES / DESIGN TOKENS
@@ -166,7 +166,7 @@ html {
 }
 
 body {
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: "Gilda Display", serif;
   line-height: 1.6;
   color: var(--color-text-primary);
   background: var(--color-bg);
@@ -217,7 +217,7 @@ nav,
    TYPOGRAPHY
    ============================== */
 .font-poppins {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Italiana", sans-serif;
 }
 
 .text-gradient {
@@ -245,7 +245,7 @@ nav,
 }
 
 .section-title {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Italiana", sans-serif;
   font-size: clamp(28px, 4vw, 44px);
   font-weight: 700;
   color: var(--color-text-primary);
@@ -306,7 +306,7 @@ nav,
 .th-section-copy h2 {
   margin: 0;
   color: var(--color-text-primary);
-  font-family: var(--font-poppins), Poppins, sans-serif;
+  font-family: "Italiana", sans-serif;
   font-size: clamp(26px, 3.2vw, 38px);
   font-weight: 800;
   letter-spacing: 0;
@@ -896,7 +896,7 @@ rgba(0,0,0,.55) 100%);
 }
 
 .hero-title {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Italiana", sans-serif;
   font-size: clamp(36px, 6vw, 72px);
   font-weight: 800;
   line-height: 1.1;
@@ -1103,7 +1103,7 @@ rgba(0,0,0,.55) 100%);
 }
 
 .tour-card-title {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Italiana", sans-serif;
   font-size: 18px;
   font-weight: 700;
   color: var(--color-text-primary);
@@ -1146,7 +1146,7 @@ rgba(0,0,0,.55) 100%);
 }
 
 .tour-price-amount {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Italiana", sans-serif;
   font-size: 22px;
   font-weight: 800;
   color: var(--color-primary);
@@ -1206,7 +1206,7 @@ rgba(0,0,0,.55) 100%);
 }
 
 .destination-name {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Italiana", sans-serif;
   font-size: 22px;
   font-weight: 700;
   margin-bottom: 4px;
@@ -1388,7 +1388,7 @@ rgba(0,0,0,.55) 100%);
 }
 
 .stat-number {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Italiana", sans-serif;
   font-size: 48px;
   font-weight: 800;
   background: var(--gradient-primary);
@@ -1540,7 +1540,7 @@ background:linear-gradient(
 }
 
 .footer-logo {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Italiana", sans-serif;
   font-size: 24px;
   font-weight: 800;
   color: var(--color-text-primary);

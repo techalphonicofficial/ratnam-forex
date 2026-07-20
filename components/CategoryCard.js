@@ -52,6 +52,20 @@ export const getCategoryIcon = (label) => {
   );
 };
 
+export const getCategoryUSP = (label) => {
+  const l = String(label || '').toLowerCase();
+  if (l.includes('couple') || l.includes('honeymoon')) return '❤️ Romantic Escapes';
+  if (l.includes('luxury')) return '✨ Premium Experiences';
+  if (l.includes('trend')) return '🔥 Most Booked Packages';
+  if (l.includes('budget')) return '💰 Affordable Trips';
+  if (l.includes('family')) return '👨‍👩‍👧‍👦 Fun for Everyone';
+  if (l.includes('friend')) return '🎉 Group Adventures';
+  if (l.includes('adventure')) return '🧗‍♂️ Thrilling Journeys';
+  if (l.includes('solo')) return '🎒 Independent Travel';
+  if (l.includes('spiritual')) return '🕊️ Peaceful Retreats';
+  return '🌟 Handpicked Journey';
+};
+
 export default function CategoryCard({ id, label, image, alt, isActive, onMouseEnter, onMouseLeave, onFocus, onBlur }) {
   const router = useRouter();
 
@@ -68,118 +82,178 @@ export default function CategoryCard({ id, label, image, alt, isActive, onMouseE
     <>
       <style jsx>{`
         .sec-traveller-option {
-          flex: 0 0 186px;
+          width: 220px;
           border: 0;
           background: transparent;
           padding: 0;
           cursor: pointer;
           color: var(--color-text-primary);
-          font-family: Poppins, sans-serif;
+          font-family: "Italiana", sans-serif;
           text-align: center;
-          transition: transform 0.35s ease-out, z-index 0s;
-          scroll-snap-align: start;
+          transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
           position: relative;
           z-index: 1;
         }
+        
         .sec-traveller-option:hover,
         .sec-traveller-option.is-active {
-          transform: translateY(-8px) scale(1.06);
+          transform: translateY(-8px);
           z-index: 20;
         }
+
         .sec-traveller-visual {
           position: relative;
           display: flex;
           justify-content: center;
-          height: 250px;
-          margin-bottom: 44px;
+          height: 320px;
+          margin-bottom: 30px;
+          width: 100%;
         }
+
+        .sec-traveller-border-wrap {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          border-radius: 120px;
+          padding: 6px;
+          border: 3px solid transparent;
+          transition: border-color 0.4s ease, box-shadow 0.5s ease;
+          box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+        }
+
+        .sec-traveller-option:hover .sec-traveller-border-wrap,
+        .sec-traveller-option.is-active .sec-traveller-border-wrap {
+          border-color: var(--color-primary);
+          box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
         .sec-traveller-photo-wrap {
           position: relative;
-          width: 170px;
-          height: 250px;
-          border-radius: 120px;
-          box-shadow: 0 10px 20px rgba(0,0,0,0.12);
-          border: 3px solid transparent;
-          transition: border-color 0.35s ease-out, transform 0.35s ease-out, box-shadow 0.35s ease-out;
-          will-change: transform, box-shadow;
+          display: block;
+          width: 100%;
+          height: 100%;
+          border-radius: 112px;
+          overflow: hidden;
+          background: #000;
         }
-        .sec-traveller-option:hover .sec-traveller-photo-wrap,
-        .sec-traveller-option.is-active .sec-traveller-photo-wrap {
-          border-color: var(--color-primary);
-          box-shadow: 0 18px 36px rgba(0,0,0,0.18);
-        }
+
         .sec-traveller-photo-wrap img {
           width: 100%;
           height: 100%;
           object-fit: cover;
           display: block;
-          border-radius: 120px;
+          border-radius: 112px;
+          transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease;
         }
+
+        .sec-traveller-option:hover img,
+        .sec-traveller-option.is-active img {
+          transform: scale(1.1);
+          opacity: 0.8;
+        }
+
+        .overlay-content {
+          position: absolute;
+          inset: 0;
+          border-radius: 112px;
+          background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 60%);
+          opacity: 0;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: flex-end;
+          padding-bottom: 40px;
+          transition: opacity 0.4s ease;
+          pointer-events: none;
+        }
+
+        .sec-traveller-option:hover .overlay-content,
+        .sec-traveller-option.is-active .overlay-content {
+          opacity: 1;
+        }
+
+        .usp-text {
+          color: #fff;
+          font-family: "Gilda Display", serif;
+          font-size: 14px;
+          font-weight: 500;
+          letter-spacing: 0.5px;
+          transform: translateY(10px);
+          transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+          text-align: center;
+          width: 100%;
+          padding: 0 10px;
+        }
+
+        .sec-traveller-option:hover .usp-text,
+        .sec-traveller-option.is-active .usp-text {
+          transform: translateY(0);
+        }
+
         .sec-traveller-badge {
           position: absolute;
           bottom: -22px;
           left: 50%;
           transform: translateX(-50%);
-          width: 50px;
-          height: 50px;
+          width: 48px;
+          height: 48px;
           background: #FFFFFF;
           border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
-          box-shadow: 0 6px 16px rgba(0,0,0,0.25);
-          z-index: 2;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+          z-index: 10;
           color: #A3C644;
-          transition: transform 0.25s ease, background 0.25s ease;
+          transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s ease;
         }
+
         .sec-traveller-option:hover .sec-traveller-badge,
         .sec-traveller-option.is-active .sec-traveller-badge {
-          transform: translateX(-50%) scale(1.1);
+          transform: translateX(-50%) scale(1.15);
           background: #F2F8D9;
         }
+
         .sec-traveller-badge svg {
-          width: 24px;
-          height: 24px;
+          width: 22px;
+          height: 22px;
         }
+
         .sec-traveller-label {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          gap: 6px;
+          display: inline-block;
           width: 100%;
-          font-size: 17.5px;
+          font-size: 18px;
           line-height: 1.2;
           font-weight: 900;
           text-transform: uppercase;
           white-space: nowrap;
-          transition: color 0.22s ease;
+          transition: color 0.3s ease;
         }
+
         .sec-traveller-option:hover .sec-traveller-label,
         .sec-traveller-option.is-active .sec-traveller-label {
           color: var(--color-accent);
         }
-        .sec-traveller-label svg {
-          width: 14px;
-          height: 14px;
-          stroke-width: 3.5;
-          flex: 0 0 auto;
+
+        @media (max-width: 1024px) {
+           .sec-traveller-option { width: 200px; }
+           .sec-traveller-visual { height: 280px; }
         }
+
         @media (max-width: 768px) {
           .sec-traveller-option { 
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            width: 100%;
+            max-width: 100%;
           }
-          .sec-traveller-photo-wrap {
-            width: 130px;
-            height: 195px;
-            border-radius: 80px;
-          }
-          .sec-traveller-visual { height: 195px; margin-bottom: 36px; }
-          .sec-traveller-photo-wrap img { border-radius: 80px; }
+          .sec-traveller-visual { height: 220px; margin-bottom: 24px; }
+          .sec-traveller-border-wrap { border-radius: 100px; padding: 4px; border-width: 2px; }
+          .sec-traveller-photo-wrap { border-radius: 96px; }
+          .sec-traveller-photo-wrap img { border-radius: 96px; }
+          .overlay-content { border-radius: 96px; padding-bottom: 30px; }
+          .usp-text { font-size: 12px; }
           .sec-traveller-label { font-size: 15px; }
-          .sec-traveller-badge { width: 44px; height: 44px; bottom: -18px; }
-          .sec-traveller-badge svg { width: 20px; height: 20px; }
+          .sec-traveller-badge { width: 40px; height: 40px; bottom: -18px; }
+          .sec-traveller-badge svg { width: 18px; height: 18px; }
         }
       `}</style>
       <button
@@ -191,14 +265,19 @@ export default function CategoryCard({ id, label, image, alt, isActive, onMouseE
         onBlur={onBlur}
         onClick={handleSelect}
       >
-        <span className="sec-traveller-visual">
-          <span className="sec-traveller-photo-wrap">
-            <img src={image} alt={alt || label} loading="lazy" />
-            <span className="sec-traveller-badge">
-              {getCategoryIcon(label)}
-            </span>
+        <div className="sec-traveller-visual">
+          <div className="sec-traveller-border-wrap">
+            <div className="sec-traveller-photo-wrap">
+              <img src={image} alt={alt || label} loading="lazy" />
+              <div className="overlay-content">
+                <span className="usp-text">{getCategoryUSP(label)}</span>
+              </div>
+            </div>
+          </div>
+          <span className="sec-traveller-badge">
+            {getCategoryIcon(label)}
           </span>
-        </span>
+        </div>
         <span className="sec-traveller-label">
           {label}
         </span>
