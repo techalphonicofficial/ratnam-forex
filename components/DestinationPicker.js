@@ -195,7 +195,7 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
         {/* Heading & Search - Inside Container */}
         <div className="container" style={{ maxWidth: '1400px', marginBottom: '40px' }}>
           <div className="text-center">
-            <h2 style={{ fontSize: '32px', fontWeight: 800, color: '#111827', fontFamily: ""Italiana", sans-serif" }}>
+            <h2 style={{ fontSize: '32px', fontWeight: 800, color: '#111827', fontFamily: '"Italiana", sans-serif' }}>
               What&apos;s <span style={{ color: 'var(--color-primary)', fontStyle: 'italic', fontWeight: 500 }}> your pick </span> for your next vacation
             </h2>
 
