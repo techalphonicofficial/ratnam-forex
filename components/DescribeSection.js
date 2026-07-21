@@ -237,6 +237,11 @@ export default function DescribeSection() {
             height: 20px;
             margin-bottom: 4px;
           }
+          .collection-card-icon {
+            width: 26px;
+            height: 20px;
+            margin-bottom: 4px;
+          }
         }
       `}</style>
 
