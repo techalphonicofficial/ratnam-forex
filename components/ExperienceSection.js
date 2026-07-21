@@ -8,7 +8,7 @@ const adventures = [
     subtitle: 'South Africa',
     image: 'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=700&q=80',
     tag: '🦁 Safari',
-    tagColor: '#f59e0b',
+    tagColor: 'var(--color-secondary)',
     href: '/tour?type=Safari',
     duration: '7 Nights',
     from: '₹89,999',
@@ -18,7 +18,7 @@ const adventures = [
     subtitle: 'Iceland & Norway',
     image: 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=700&q=80',
     tag: '✨ Adventure',
-    tagColor: '#6366f1',
+    tagColor: 'var(--color-primary)',
     href: '/tour?type=Adventure',
     duration: '8 Nights',
     from: '₹1,24,999',
@@ -28,7 +28,7 @@ const adventures = [
     subtitle: 'Mediterranean, Europe',
     image: 'https://images.unsplash.com/photo-1467269204594-f3e4a89fcf87?w=700&q=80',
     tag: '🌊 Luxury',
-    tagColor: '#0ea5e9',
+    tagColor: 'var(--color-secondary)',
     href: '/tour?type=Luxury',
     duration: '10 Nights',
     from: '₹2,19,999',
@@ -38,7 +38,7 @@ const adventures = [
     subtitle: 'Tokyo & Kyoto, Japan',
     image: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=700&q=80',
     tag: '🌸 Cultural',
-    tagColor: '#ec4899',
+    tagColor: 'var(--color-primary)',
     href: '/tour?type=Cultural',
     duration: '10 Nights',
     from: '₹1,45,999',
@@ -48,7 +48,7 @@ const adventures = [
     subtitle: 'Seminyak & Ubud, Bali',
     image: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=700&q=80',
     tag: '🏖️ Beach',
-    tagColor: '#10b981',
+    tagColor: 'var(--color-primary)',
     href: '/tour?type=Beach',
     duration: '7 Nights',
     from: '₹75,999',
@@ -58,7 +58,7 @@ const adventures = [
     subtitle: 'Interlaken, Switzerland',
     image: 'https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?w=700&q=80',
     tag: '🏔️ Snow',
-    tagColor: '#0284c7',
+    tagColor: 'var(--color-secondary)',
     href: '/tour?type=Snow',
     duration: '6 Nights',
     from: '₹1,89,999',
@@ -71,64 +71,64 @@ const handpicked = [
     image: 'https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=500&q=80',
     count: 27,
     tag: '💑',
-    tagBg: '#fce7f3',
-    tagColor: '#be185d',
+    tagBg: 'var(--color-primary-light)',
+    tagColor: 'var(--color-primary)',
   },
   {
     name: 'Adventure Seekers',
     image: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=500&q=80',
     count: 35,
     tag: '🏔️',
-    tagBg: '#eff6ff',
-    tagColor: '#1d4ed8',
+    tagBg: 'var(--color-bg-soft)',
+    tagColor: 'var(--color-primary)',
   },
   {
     name: 'Cultural Immersion',
     image: 'https://images.unsplash.com/photo-1477587458883-47145ed94245?w=500&q=80',
     count: 42,
     tag: '🏛️',
-    tagBg: '#fef3c7',
-    tagColor: '#b45309',
+    tagBg: 'var(--color-secondary-hover)',
+    tagColor: 'var(--color-secondary)',
   },
   {
     name: 'Beach & Relax',
     image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500&q=80',
     count: 48,
     tag: '🏖️',
-    tagBg: '#ecfdf5',
-    tagColor: '#047857',
+    tagBg: 'var(--color-primary-light)',
+    tagColor: 'var(--color-primary)',
   },
   {
     name: 'Wildlife Safari',
     image: 'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=500&q=80',
     count: 14,
     tag: '🦁',
-    tagBg: '#fff7ed',
-    tagColor: '#c2410c',
+    tagBg: 'var(--color-secondary-hover)',
+    tagColor: 'var(--color-secondary)',
   },
   {
     name: 'City Breaks',
     image: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=500&q=80',
     count: 30,
     tag: '🏙️',
-    tagBg: '#f5f3ff',
-    tagColor: '#6d28d9',
+    tagBg: 'var(--color-bg-soft)',
+    tagColor: 'var(--color-primary)',
   },
   {
     name: 'Family Holidays',
     image: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=500&q=80',
     count: 22,
     tag: '👨‍👩‍👧',
-    tagBg: '#eff6ff',
-    tagColor: '#1d4ed8',
+    tagBg: 'var(--color-bg-soft)',
+    tagColor: 'var(--color-primary)',
   },
   {
     name: 'Solo Explorer',
     image: 'https://images.unsplash.com/photo-1508193638397-1c4234db14d8?w=500&q=80',
     count: 19,
     tag: '🎒',
-    tagBg: '#fef2f2',
-    tagColor: '#b91c1c',
+    tagBg: 'var(--color-secondary-hover)',
+    tagColor: 'var(--color-secondary)',
   },
 ];
 
@@ -147,7 +147,7 @@ function AdventureCard({ item, isMobile }) {
         display: 'block',
         position: 'relative', height: 280, borderRadius: 20,
         overflow: 'hidden', textDecoration: 'none',
-        // boxShadow: hovered ? '0 20px 50px rgba(0,0,0,0.3)' : '0 4px 20px rgba(0,0,0,0.14)',
+        // boxShadow: hovered ? 'var(--shadow-xl)' : 'var(--shadow-md)',
         transform: hovered ? 'translateY(-6px)' : 'none',
         transition: 'all 0.35s ease',
       }}
@@ -216,11 +216,11 @@ function AdventureCard({ item, isMobile }) {
         <div style={{
           marginTop: 12,
           display: 'flex', alignItems: 'center',
-          background: 'linear-gradient(135deg, #A3C644 0%, #8DB133 100%)',
-          boxShadow: '0 8px 24px rgba(163, 198, 68, 0.28)',
+          background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%)',
+          boxShadow: 'var(--shadow-md)',
           border: 'none',
           borderRadius: 16, padding: '8px 16px',
-          color: '#FFFFFF', fontSize: 12, fontWeight: 600,
+          color: 'var(--color-card)', fontSize: 12, fontWeight: 600,
           width: 'fit-content',
           opacity: hovered ? 1 : 0,
           transform: hovered ? 'translateY(0)' : 'translateY(6px)',
@@ -248,7 +248,7 @@ function HandpickedCard({ item }) {
       <div style={{
         position: 'relative', height: 200, borderRadius: 18,
         overflow: 'hidden',
-        // boxShadow: hovered ? '0 16px 40px rgba(0,0,0,0.22)' : '0 4px 16px rgba(0,0,0,0.1)',
+        // boxShadow: hovered ? 'var(--shadow-lg)' : 'var(--shadow-sm)',
         transform: hovered ? 'translateY(-6px)' : 'none',
         transition: 'all 0.35s ease',
       }}>
@@ -273,7 +273,7 @@ function HandpickedCard({ item }) {
           background: item.tagBg,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: 18,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+          boxShadow: 'var(--shadow-sm)',
         }}>
           {item.tag}
         </div>
@@ -327,7 +327,7 @@ export default function ExperienceSection() {
   return (
     <>
       {/* ── Plan Your Next Adventure ── */}
-      <section style={{ background: '#fff', padding: '56px 0 60px' }}>
+      <section style={{ background: 'var(--color-card)', padding: '56px 0 60px' }}>
         <div className='container' style={{ margin: '0 auto', padding: '0 24px' }}>
 
           {/* Header row */}
@@ -345,7 +345,7 @@ export default function ExperienceSection() {
               </p>
               <h2 style={{
                 fontFamily: '"Italiana", sans-serif', fontWeight: 800,
-                fontSize: 26, color: '#111827', margin: 0,
+                fontSize: 26, color: 'var(--color-text-primary)', margin: 0,
               }}>
                 Plan Your Next Adventure
               </h2>
@@ -369,15 +369,15 @@ export default function ExperienceSection() {
                   onClick={() => scroll(adventureRef, i === 0 ? -1 : 1)}
                   style={{
                     width: 36, height: 36, borderRadius: '50%',
-                    border: '1.5px solid #d1d5db',
-                    background: 'white', color: '#374151', fontSize: 20,
+                    border: '1.5px solid var(--color-border)',
+                    background: 'white', color: 'var(--color-text-primary)', fontSize: 20,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     cursor: 'pointer', lineHeight: 1,
-                    boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
+                    boxShadow: 'var(--shadow-sm)',
                     transition: 'all 0.2s',
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.background = '#f3f4f6'; e.currentTarget.style.borderColor = '#9ca3af'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'white'; e.currentTarget.style.borderColor = '#d1d5db'; }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--color-bg-soft)'; e.currentTarget.style.borderColor = 'var(--color-text-muted)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'white'; e.currentTarget.style.borderColor = 'var(--color-border)'; }}
                 >
                   {arrow}
                 </button>
@@ -403,7 +403,7 @@ export default function ExperienceSection() {
 
       {/* ── Popular Hand-picked Experiences ── */}
       {/* <section style={{
-        background: 'linear-gradient(135deg, var(--color-primary-light) 0%, #ecfdf5 50%, var(--color-primary-light) 100%)',
+        background: 'linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-primary-light) 50%, var(--color-primary-light) 100%)',
         padding: '52px 0 60px',
         borderTop: '1px solid var(--brand-primary-border)',
       }}>
@@ -423,7 +423,7 @@ export default function ExperienceSection() {
               </p>
               <h2 style={{
                 fontFamily: '"Italiana", sans-serif', fontWeight: 800,
-                fontSize: 26, color: '#111827', margin: 0,
+                fontSize: 26, color: 'var(--color-text-primary)', margin: 0,
               }}>
                 Popular Hand-picked Experiences
               </h2>
@@ -447,15 +447,15 @@ export default function ExperienceSection() {
                   onClick={() => scroll2(handpickedRef, i === 0 ? -1 : 1)}
                   style={{
                     width: 36, height: 36, borderRadius: '50%',
-                    border: '1.5px solid #d1d5db',
-                    background: 'white', color: '#374151', fontSize: 20,
+                    border: '1.5px solid var(--color-border)',
+                    background: 'white', color: 'var(--color-text-primary)', fontSize: 20,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     cursor: 'pointer', lineHeight: 1,
-                    boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
+                    boxShadow: 'var(--shadow-sm)',
                     transition: 'all 0.2s',
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.background = '#f3f4f6'; e.currentTarget.style.borderColor = '#9ca3af'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'white'; e.currentTarget.style.borderColor = '#d1d5db'; }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--color-bg-soft)'; e.currentTarget.style.borderColor = 'var(--color-text-muted)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'white'; e.currentTarget.style.borderColor = 'var(--color-border)'; }}
                 >
                   {arrow}
                 </button>

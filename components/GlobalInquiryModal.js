@@ -171,13 +171,13 @@ export default function GlobalInquiryModal({ brand, companyInfo }) {
           </div>
 
           <div style={{ position: 'relative', zIndex: 2, marginTop: 'auto', textAlign: 'left' }}>
-            <h4 style={{ color: '#fbbf24', fontWeight: 700, fontSize: '12px', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '8px' }}>
+            <h4 style={{ color: 'var(--color-secondary)', fontWeight: 700, fontSize: '12px', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '8px' }}>
               {activeSlide.badge}
             </h4>
-            <h2 style={{ color: 'white', fontWeight: 800, fontSize: '2.5rem', lineHeight: 1.1, marginBottom: '10px', textShadow: '0 4px 8px rgba(0,0,0,0.4)' }}>
+            <h2 style={{ color: 'var(--color-card)', fontWeight: 800, fontSize: '2.5rem', lineHeight: 1.1, marginBottom: '10px', textShadow: '0 4px 8px rgba(0,0,0,0.4)' }}>
               {activeSlide.title}
             </h2>
-            <p style={{ color: '#f3f4f6', fontSize: '15px', lineHeight: '1.6', marginBottom: '24px', minHeight: '48px', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>
+            <p style={{ color: 'var(--color-bg-soft)', fontSize: '15px', lineHeight: '1.6', marginBottom: '24px', minHeight: '48px', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>
               {activeSlide.desc}
             </p>
             
@@ -190,7 +190,7 @@ export default function GlobalInquiryModal({ brand, companyInfo }) {
                     width: currentSlide === index ? '24px' : '8px', 
                     height: '8px', 
                     borderRadius: '10px', 
-                    background: currentSlide === index ? 'white' : 'rgba(255,255,255,0.3)',
+                    background: currentSlide === index ? 'var(--color-card)' : 'rgba(255,255,255,0.3)',
                     transition: 'all 0.4s ease',
                     cursor: 'pointer'
                   }} 
@@ -211,11 +211,11 @@ export default function GlobalInquiryModal({ brand, companyInfo }) {
 
           <div style={{ maxWidth: '100%', margin: 'auto 0' }}>
             <div className="mb-4">
-              <h2 style={{ fontFamily: '"Italiana", sans-serif', fontWeight: 'bold', fontSize: '26px', color: '#0B3C5D', marginBottom: '8px', lineHeight: '1.2' }}>
+              <h2 style={{ fontFamily: '"Italiana", sans-serif', fontWeight: 'bold', fontSize: '26px', color: 'var(--color-text-primary)', marginBottom: '8px', lineHeight: '1.2' }}>
                 Plan your next journey with <br/>
-                <span style={{ color: '#D9534F', fontWeight: 'bold' }}>{brandName}</span>
+                <span style={{ color: 'var(--color-primary)', fontWeight: 'bold' }}>{brandName}</span>
               </h2>
-              <p style={{ fontFamily: '"Gilda Display", serif', fontWeight: 400, color: '#6b7280', fontSize: '14px', marginTop: '10px' }}>
+              <p style={{ fontFamily: '"Gilda Display", serif', fontWeight: 400, color: 'var(--color-text-muted)', fontSize: '14px', marginTop: '10px' }}>
                 Share your details and preferred destination. Our experts will curate the perfect package for you.
               </p>
             </div>
@@ -232,14 +232,14 @@ export default function GlobalInquiryModal({ brand, companyInfo }) {
                 <div ref={dropdownRef} style={{ width: '110px', minWidth: '110px', flexShrink: 0, position: 'relative' }}>
                   <div 
                     className="form-control px-2 d-flex align-items-center justify-content-between"
-                    style={{ ...formInputStyle, cursor: 'pointer', userSelect: 'none', background: isDropdownOpen ? '#f9fafb' : '#ffffff' }}
+                    style={{ ...formInputStyle, cursor: 'pointer', userSelect: 'none', background: isDropdownOpen ? 'var(--color-bg-soft)' : 'var(--color-card)' }}
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                   >
                     <div className="d-flex align-items-center gap-1" style={{ whiteSpace: 'nowrap' }}>
-                      <span style={{ fontSize: '14px', fontWeight: '700', color: '#374151' }}>{selectedCountry.iso}</span>
-                      <span style={{ fontSize: '14px', fontWeight: '500', color: '#4b5563' }}>{selectedCountry.code}</span>
+                      <span style={{ fontSize: '14px', fontWeight: '700', color: 'var(--color-text-primary)' }}>{selectedCountry.iso}</span>
+                      <span style={{ fontSize: '14px', fontWeight: '500', color: 'var(--color-text-muted)' }}>{selectedCountry.code}</span>
                     </div>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ transform: isDropdownOpen ? 'rotate(180deg)' : 'rotate(0)', transition: '0.2s', color: '#6b7280', flexShrink: 0 }}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ transform: isDropdownOpen ? 'rotate(180deg)' : 'rotate(0)', transition: '0.2s', color: 'var(--color-text-muted)', flexShrink: 0 }}>
                       <path d="M6 9l6 6 6-6"/>
                     </svg>
                   </div>
@@ -247,9 +247,9 @@ export default function GlobalInquiryModal({ brand, companyInfo }) {
                   {isDropdownOpen && (
                     <div style={{
                       position: 'absolute', top: 'calc(100% + 4px)', left: 0, width: '220px',
-                      maxHeight: '220px', overflowY: 'auto', background: 'white',
-                      border: '1px solid #e5e7eb', borderRadius: '12px',
-                      boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)', zIndex: 50,
+                      maxHeight: '220px', overflowY: 'auto', background: 'var(--color-card)',
+                      border: '1px solid var(--color-border)', borderRadius: 'var(--radius-xl)',
+                      boxShadow: 'var(--shadow-md)', zIndex: 50,
                       animation: 'dropdownFade 0.2s ease'
                     }}>
                       {countries.map((c, i) => (
@@ -258,13 +258,13 @@ export default function GlobalInquiryModal({ brand, companyInfo }) {
                           className="country-option"
                           onClick={() => { setSelectedCountry(c); setIsDropdownOpen(false); }}
                           style={{
-                            padding: '10px 16px', display: 'flex', alignItems: 'center', gap: '10px',
-                            cursor: 'pointer', borderBottom: i !== countries.length - 1 ? '1px solid #f3f4f6' : 'none'
+                            padding: 'var(--space-2) var(--space-4)', display: 'flex', alignItems: 'center', gap: '10px',
+                            cursor: 'pointer', borderBottom: i !== countries.length - 1 ? '1px solid var(--color-bg-soft)' : 'none'
                           }}
                         >
-                          <span style={{ fontSize: '14px', fontWeight: '700', color: '#4b5563', width: '24px' }}>{c.iso}</span>
-                          <span style={{ fontSize: '13px', flex: 1, color: '#374151' }}>{c.name}</span>
-                          <span style={{ fontSize: '13px', color: '#9ca3af', fontWeight: '500' }}>{c.code}</span>
+                          <span style={{ fontSize: '14px', fontWeight: '700', color: 'var(--color-text-muted)', width: '24px' }}>{c.iso}</span>
+                          <span style={{ fontSize: '13px', flex: 1, color: 'var(--color-text-primary)' }}>{c.name}</span>
+                          <span style={{ fontSize: '13px', color: 'var(--color-text-muted)', fontWeight: '500' }}>{c.code}</span>
                         </div>
                       ))}
                     </div>
@@ -283,7 +283,7 @@ export default function GlobalInquiryModal({ brand, companyInfo }) {
                 {['COUPLE', 'FAMILY', 'GROUP', 'NRI /FOREIGN'].map((type) => (
                   <div className="form-check form-check-inline m-0 custom-checkbox" key={type}>
                     <input className="form-check-input" type="checkbox" id={`chk-${type}`} value={type} style={{ cursor: 'pointer' }} />
-                    <label className="form-check-label" htmlFor={`chk-${type}`} style={{ fontSize: '12px', color: '#0B3C5D', fontWeight: 600, cursor: 'pointer', paddingLeft: '4px' }}>
+                    <label className="form-check-label" htmlFor={`chk-${type}`} style={{ fontSize: '12px', color: 'var(--color-text-primary)', fontWeight: 600, cursor: 'pointer', paddingLeft: '4px' }}>
                       {type}
                     </label>
                   </div>
@@ -300,7 +300,7 @@ export default function GlobalInquiryModal({ brand, companyInfo }) {
             </form>
 
             <div className="mt-4 text-center pt-3 border-top">
-              <p style={{ fontSize: '13px', color: '#9ca3af', marginBottom: 0, fontWeight: 500 }}>
+              <p style={{ fontSize: '13px', color: 'var(--color-text-muted)', marginBottom: 0, fontWeight: 500 }}>
                 15+ Yrs Experiences &nbsp;|&nbsp; 400+ Travel Experts &nbsp;|&nbsp; 1000+ Destinations
               </p>
             </div>
@@ -330,8 +330,8 @@ export default function GlobalInquiryModal({ brand, companyInfo }) {
             max-height: 650px;
             min-height: 500px;
             background: white; 
-            border-radius: 20px;
-            box-shadow: 0 40px 100px -10px rgba(0,0,0,0.5);
+            border-radius: var(--radius-2xl);
+            box-shadow: var(--shadow-xl);
             z-index: 10000;
             display: flex;
             flex-direction: row;
@@ -343,32 +343,32 @@ export default function GlobalInquiryModal({ brand, companyInfo }) {
             flex: 0 0 45%;
             position: relative;
             flex-direction: column;
-            padding: 40px 30px;
+            padding: var(--space-8) var(--space-7);
             overflow: hidden;
           }
 
           .right-panel {
             flex: 1;
-            padding: 40px 48px;
+            padding: var(--space-8) var(--space-8);
             position: relative;
             display: flex;
             flex-direction: column;
             overflow-y: auto;
-            background: #ffffff;
+            background: var(--color-card);
           }
 
-          .form-control::placeholder { color: #9ca3af; }
+          .form-control::placeholder { color: var(--color-text-muted); }
           .form-control:focus {
-            border-color: #E03C42;
-            box-shadow: 0 0 0 4px rgba(224, 60, 66, 0.1);
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-primary) 10%, transparent);
           }
-          .country-option:hover { background-color: #f9fafb; }
+          .country-option:hover { background-color: var(--color-bg-soft); }
 
           .close-btn {
             position: absolute;
             top: 20px;
             right: 20px;
-            background: #f3f4f6;
+            background: var(--color-bg-soft);
             border: none;
             border-radius: 50%;
             width: 36px;
@@ -377,24 +377,24 @@ export default function GlobalInquiryModal({ brand, companyInfo }) {
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #4b5563;
+            color: var(--color-text-muted);
             z-index: 10;
             transition: all 0.3s ease;
           }
           .close-btn:hover {
-            background: #e5e7eb;
-            color: #1f2937;
+            background: var(--color-border);
+            color: var(--color-text-primary);
             transform: rotate(90deg);
           }
 
           .custom-checkbox .form-check-input:checked {
-            background-color: #E03C42;
-            border-color: #E03C42;
+            background-color: var(--color-primary);
+            border-color: var(--color-primary);
           }
 
           @media (max-width: 992px) {
             .modal-container { width: 95vw; height: 90vh; max-height: none; }
-            .right-panel { padding: 40px 32px; }
+            .right-panel { padding: var(--space-8) var(--space-7); }
           }
 
           /* Mobile CSS Updated */
@@ -411,9 +411,9 @@ export default function GlobalInquiryModal({ brand, companyInfo }) {
             }
             .right-panel { 
               flex: 1; 
-              padding: 40px 24px 30px 24px; 
+              padding: var(--space-8) var(--space-6) var(--space-7) var(--space-6); 
             }
-            .close-btn { top: 12px; right: 12px; background: #f3f4f6; }
+            .close-btn { top: 12px; right: 12px; background: var(--color-bg-soft); }
           }
         `}</style>
       </div>
@@ -422,9 +422,9 @@ export default function GlobalInquiryModal({ brand, companyInfo }) {
 }
 
 const formInputStyle = {
-  borderRadius: '12px',
-  background: '#ffffff',
-  border: '1.5px solid #e5e7eb',
+  borderRadius: 'var(--radius-xl)',
+  background: 'var(--color-card)',
+  border: '1.5px solid var(--color-border)',
   fontSize: '14.5px',
   height: '52px',
   boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.02)',

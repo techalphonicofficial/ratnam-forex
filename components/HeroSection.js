@@ -32,7 +32,7 @@ export default function HeroSection() {
           animation: 'float 6s ease-in-out infinite',
         }}
       >
-        <div className="card-glass" style={{ padding: '12px 16px', color: 'white', fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div className="card-glass" style={{ padding: 'var(--space-3) var(--space-4)', color: 'white', fontSize: 13, display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
           <span style={{ fontSize: 20 }}>⭐</span>
           <div>
             <div style={{ fontWeight: 700 }}>4.9/5 Rating</div>
@@ -49,7 +49,7 @@ export default function HeroSection() {
           animation: 'float 8s ease-in-out infinite reverse',
         }}
       >
-        <div className="card-glass" style={{ padding: '12px 16px', color: 'white', fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div className="card-glass" style={{ padding: 'var(--space-3) var(--space-4)', color: 'white', fontSize: 13, display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
           <span style={{ fontSize: 20 }}>✈️</span>
           <div>
             <div style={{ fontWeight: 700 }}>120+ Destinations</div>
@@ -61,7 +61,7 @@ export default function HeroSection() {
       {/* Hero Content */}
       <div
         className="hero-content"
-        style={{ width: '100%', maxWidth: 1240, margin: '0 auto', padding: '0 24px' }}
+        style={{ width: '100%', maxWidth: 1240, margin: '0 auto', padding: '0 var(--space-6)' }}
       >
         <span
           style={{
@@ -70,11 +70,11 @@ export default function HeroSection() {
             backdropFilter: 'blur(10px)',
             border: '1px solid rgba(255,255,255,0.25)',
             borderRadius: 999,
-            padding: '6px 18px',
+            padding: 'var(--space-2) var(--space-5)',
             fontSize: 13,
             fontWeight: 600,
             color: 'white',
-            marginBottom: 20,
+            marginBottom: 'var(--space-5)',
             letterSpacing: 0.5,
           }}
         >
@@ -84,7 +84,7 @@ export default function HeroSection() {
         <h1 className="hero-title">
           Your Dream Journey
           <br />
-          <span style={{ color: '#ffd700' }}>Starts Here</span>
+          <span style={{ color: 'var(--color-secondary)' }}>Starts Here</span>
         </h1>
         <p className="hero-subtitle">
           Handcrafted travel experiences to 120+ destinations. Luxury tours, beach escapes, cultural adventures — tailored just for you.
@@ -103,7 +103,7 @@ export default function HeroSection() {
                 background: 'rgba(255,255,255,0.1)',
                 border: '1px solid rgba(255,255,255,0.25)',
                 borderRadius: 999,
-                padding: '6px 14px',
+                padding: 'var(--space-2) var(--space-4)',
                 color: 'white',
                 fontSize: 13,
                 cursor: 'pointer',
@@ -123,7 +123,7 @@ export default function HeroSection() {
       <div
         style={{
           position: 'absolute',
-          bottom: 32,
+          bottom: 'var(--space-7)',
           left: '50%',
           transform: 'translateX(-50%)',
           zIndex: 2,
@@ -132,7 +132,7 @@ export default function HeroSection() {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: 4,
+          gap: 'var(--space-1)',
         }}
       >
         <span style={{ fontSize: 12, letterSpacing: 1.5, textTransform: 'uppercase' }}>Scroll</span>

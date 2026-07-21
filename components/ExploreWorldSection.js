@@ -40,9 +40,9 @@ export const exploreTours = [
     image: 'https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?w=600&q=80',
     nights: 6, days: 7, price: 135999, rating: 4.8,
     priceCategory: '50to150',
-    type: 'COUPLE', typeColor: '#f97316',
+    type: 'COUPLE', typeColor: 'var(--color-secondary)',
     theme: 'couple', season: 'summer',
-    user: { name: 'Priya', city: 'Bangalore', avatar: 'P', avatarBg: '#10b981', ago: '2hr ago' },
+    user: { name: 'Priya', city: 'Bangalore', avatar: 'P', avatarBg: 'var(--color-primary)', ago: '2hr ago' },
   },
   {
     id: 'ew2',
@@ -52,9 +52,9 @@ export const exploreTours = [
     image: 'https://images.unsplash.com/photo-1519451241324-20b4ea2c4220?w=600&q=80',
     nights: 5, days: 6, price: 45999, rating: 4.6,
     priceCategory: 'under50',
-    type: 'FAMILY', typeColor: '#6366f1',
+    type: 'FAMILY', typeColor: 'var(--color-primary)',
     theme: 'family', season: 'winter',
-    user: { name: 'Hema', city: 'Chennai', avatar: 'H', avatarBg: '#6366f1', ago: '5hr ago' },
+    user: { name: 'Hema', city: 'Chennai', avatar: 'H', avatarBg: 'var(--color-primary)', ago: '5hr ago' },
   },
   {
     id: 'ew3',
@@ -64,9 +64,9 @@ export const exploreTours = [
     image: 'https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=600&q=80',
     nights: 6, days: 7, price: 68999, rating: 4.7,
     priceCategory: '50to150',
-    type: 'ADVENTURE', typeColor: '#10b981',
+    type: 'ADVENTURE', typeColor: 'var(--color-primary)',
     theme: 'adventure', season: 'spring',
-    user: { name: 'Rahul', city: 'Hyderabad', avatar: 'R', avatarBg: '#ec4899', ago: '3hr ago' },
+    user: { name: 'Rahul', city: 'Hyderabad', avatar: 'R', avatarBg: 'var(--color-primary)', ago: '3hr ago' },
   },
   {
     id: 'ew4',
@@ -76,9 +76,9 @@ export const exploreTours = [
     image: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=600&q=80',
     nights: 8, days: 9, price: 75656, rating: 4.9,
     priceCategory: '50to150',
-    type: 'COUPLE', typeColor: '#f97316',
+    type: 'COUPLE', typeColor: 'var(--color-secondary)',
     theme: 'couple', season: 'summer',
-    user: { name: 'Gaurav', city: 'Mumbai', avatar: 'G', avatarBg: '#f97316', ago: '10hr ago' },
+    user: { name: 'Gaurav', city: 'Mumbai', avatar: 'G', avatarBg: 'var(--color-secondary)', ago: '10hr ago' },
   },
   {
     id: 'ew5',
@@ -88,9 +88,9 @@ export const exploreTours = [
     image: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=600&q=80',
     nights: 10, days: 11, price: 145000, rating: 4.8,
     priceCategory: '50to150',
-    type: 'SOLO', typeColor: '#0ea5e9',
+    type: 'SOLO', typeColor: 'var(--color-secondary)',
     theme: 'solo', season: 'spring',
-    user: { name: 'Arjun', city: 'Hyderabad', avatar: 'A', avatarBg: '#0ea5e9', ago: '5hr ago' },
+    user: { name: 'Arjun', city: 'Hyderabad', avatar: 'A', avatarBg: 'var(--color-secondary)', ago: '5hr ago' },
   },
   {
     id: 'ew6',
@@ -100,9 +100,9 @@ export const exploreTours = [
     image: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=600&q=80',
     nights: 8, days: 9, price: 110000, rating: 4.5,
     priceCategory: '50to150',
-    type: 'FAMILY', typeColor: '#6366f1',
+    type: 'FAMILY', typeColor: 'var(--color-primary)',
     theme: 'family', season: 'winter',
-    user: { name: 'Ramesh', city: 'Kolkata', avatar: 'R', avatarBg: '#6366f1', ago: '20hr ago' },
+    user: { name: 'Ramesh', city: 'Kolkata', avatar: 'R', avatarBg: 'var(--color-primary)', ago: '20hr ago' },
   },
   {
     id: 'ew7',
@@ -112,9 +112,9 @@ export const exploreTours = [
     image: 'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=600&q=80',
     nights: 8, days: 9, price: 325000, rating: 4.9,
     priceCategory: 'luxury',
-    type: 'LUXURY', typeColor: '#f59e0b',
+    type: 'LUXURY', typeColor: 'var(--color-secondary)',
     theme: 'luxury', season: 'winter',
-    user: { name: 'Mayank', city: 'Delhi', avatar: 'M', avatarBg: '#ec4899', ago: '13hr ago' },
+    user: { name: 'Mayank', city: 'Delhi', avatar: 'M', avatarBg: 'var(--color-primary)', ago: '13hr ago' },
   },
   {
     id: 'ew8',
@@ -124,9 +124,9 @@ export const exploreTours = [
     image: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=600&q=80',
     nights: 7, days: 8, price: 189000, rating: 4.7,
     priceCategory: '150to250',
-    type: 'COUPLE', typeColor: '#f97316',
+    type: 'COUPLE', typeColor: 'var(--color-secondary)',
     theme: 'couple', season: 'spring',
-    user: { name: 'Deepak', city: 'Delhi', avatar: 'D', avatarBg: '#f97316', ago: '1hr ago' },
+    user: { name: 'Deepak', city: 'Delhi', avatar: 'D', avatarBg: 'var(--color-secondary)', ago: '1hr ago' },
   },
 ];
 
@@ -283,9 +283,9 @@ export default function ExploreWorldSection() {
           gap: 8px;
           padding: 9px 18px;
           border-radius: 999px;
-          border: 1.5px solid #d1d5db;
-          background: #ffffff;
-          color: #374151;
+          border: 1.5px solid var(--color-border);
+          background: var(--color-card);
+          color: var(--color-text-primary);
           font-size: 13px;
           font-weight: 600;
           cursor: pointer;
@@ -295,7 +295,7 @@ export default function ExploreWorldSection() {
         }
 
         .ew-dropdown-btn:hover {
-          border-color: #9ca3af;
+          border-color: var(--color-text-muted);
           background: #fafafa;
         }
 
@@ -308,8 +308,8 @@ export default function ExploreWorldSection() {
           position: absolute;
           top: calc(100% + 8px);
           left: 0;
-          background: #ffffff;
-          border: 1px solid #e5e7eb;
+          background: var(--color-card);
+          border: 1px solid var(--color-border);
           border-radius: 12px;
           box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
           min-width: 180px;
@@ -332,19 +332,19 @@ export default function ExploreWorldSection() {
           text-align: left;
           font-size: 13px;
           font-weight: 500;
-          color: #374151;
+          color: var(--color-text-primary);
           cursor: pointer;
           transition: background 0.15s;
         }
 
         .ew-dropdown-item:hover {
-          background: #f9fafb;
+          background: var(--color-bg-soft);
         }
 
         .ew-dropdown-item--active {
           color: var(--color-accent);
           font-weight: 700;
-          background: #fffbeb;
+          background: var(--color-secondary-hover);
         }
 
         /* ── Scroll area ──────────────── */
@@ -372,7 +372,7 @@ export default function ExploreWorldSection() {
           height: 44px;
           border-radius: 50%;
           border: 1.5px solid var(--color-border, #E5E5E5);
-          background: #ffffff;
+          background: var(--color-card);
           color: var(--color-text-primary);
           display: flex;
           align-items: center;
@@ -423,7 +423,7 @@ export default function ExploreWorldSection() {
           display: flex;
           align-items: center;
           gap: 5px;
-          color: #6b7280;
+          color: var(--color-text-muted);
           font-size: 13px;
           font-weight: 500;
         }
@@ -432,7 +432,7 @@ export default function ExploreWorldSection() {
           display: flex;
           align-items: center;
           gap: 4px;
-          color: #374151;
+          color: var(--color-text-primary);
           font-size: 13px;
           font-weight: 700;
         }
@@ -452,10 +452,10 @@ export default function ExploreWorldSection() {
           min-height: 160px;
           display: grid;
           place-items: center;
-          border: 2px dashed #d1d5db;
+          border: 2px dashed var(--color-border);
           border-radius: 12px;
-          color: #64748b;
-          background: #ffffff;
+          color: var(--color-text-muted);
+          background: var(--color-card);
           font-size: 14px;
           font-weight: 600;
         }

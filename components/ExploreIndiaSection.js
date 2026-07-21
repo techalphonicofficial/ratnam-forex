@@ -40,9 +40,9 @@ export const indiaTours = [
     image: 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=600&q=80',
     nights: 5, days: 6, price: 28999, rating: 4.8,
     priceCategory: 'under50',
-    type: 'COUPLE', typeColor: '#f97316',
+    type: 'COUPLE', typeColor: 'var(--color-secondary)',
     theme: 'couple', season: 'summer',
-    user: { name: 'Riya', city: 'Delhi', avatar: 'R', avatarBg: '#f97316', ago: '2hr ago' },
+    user: { name: 'Riya', city: 'Delhi', avatar: 'R', avatarBg: 'var(--color-secondary)', ago: '2hr ago' },
   },
   {
     id: 'ei2',
@@ -52,9 +52,9 @@ export const indiaTours = [
     image: 'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?w=600&q=80',
     nights: 4, days: 5, price: 18999, rating: 4.6,
     priceCategory: 'under50',
-    type: 'FAMILY', typeColor: '#6366f1',
+    type: 'FAMILY', typeColor: 'var(--color-primary)',
     theme: 'family', season: 'summer',
-    user: { name: 'Vikram', city: 'Chandigarh', avatar: 'V', avatarBg: '#6366f1', ago: '4hr ago' },
+    user: { name: 'Vikram', city: 'Chandigarh', avatar: 'V', avatarBg: 'var(--color-primary)', ago: '4hr ago' },
   },
   {
     id: 'ei3',
@@ -64,9 +64,9 @@ export const indiaTours = [
     image: 'https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=600&q=80',
     nights: 4, days: 5, price: 22999, rating: 4.7,
     priceCategory: 'under50',
-    type: 'COUPLE', typeColor: '#f97316',
+    type: 'COUPLE', typeColor: 'var(--color-secondary)',
     theme: 'couple', season: 'monsoon',
-    user: { name: 'Suresh', city: 'Chennai', avatar: 'S', avatarBg: '#10b981', ago: '5hr ago' },
+    user: { name: 'Suresh', city: 'Chennai', avatar: 'S', avatarBg: 'var(--color-primary)', ago: '5hr ago' },
   },
   {
     id: 'ei4',
@@ -76,9 +76,9 @@ export const indiaTours = [
     image: 'https://images.unsplash.com/photo-1477587458883-47145ed94245?w=600&q=80',
     nights: 6, days: 7, price: 35999, rating: 4.8,
     priceCategory: 'under50',
-    type: 'FAMILY', typeColor: '#6366f1',
+    type: 'FAMILY', typeColor: 'var(--color-primary)',
     theme: 'family', season: 'winter',
-    user: { name: 'Anita', city: 'Jaipur', avatar: 'A', avatarBg: '#ec4899', ago: '6hr ago' },
+    user: { name: 'Anita', city: 'Jaipur', avatar: 'A', avatarBg: 'var(--color-primary)', ago: '6hr ago' },
   },
   {
     id: 'ei5',
@@ -88,9 +88,9 @@ export const indiaTours = [
     image: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?w=600&q=80',
     nights: 5, days: 6, price: 19999, rating: 4.5,
     priceCategory: 'under50',
-    type: 'ADVENTURE', typeColor: '#10b981',
+    type: 'ADVENTURE', typeColor: 'var(--color-primary)',
     theme: 'adventure', season: 'winter',
-    user: { name: 'Kiran', city: 'Mumbai', avatar: 'K', avatarBg: '#0ea5e9', ago: '3hr ago' },
+    user: { name: 'Kiran', city: 'Mumbai', avatar: 'K', avatarBg: 'var(--color-secondary)', ago: '3hr ago' },
   },
   {
     id: 'ei6',
@@ -100,9 +100,9 @@ export const indiaTours = [
     image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&q=80',
     nights: 6, days: 7, price: 42999, rating: 4.9,
     priceCategory: 'under50',
-    type: 'COUPLE', typeColor: '#f97316',
+    type: 'COUPLE', typeColor: 'var(--color-secondary)',
     theme: 'couple', season: 'winter',
-    user: { name: 'Pooja', city: 'Bangalore', avatar: 'P', avatarBg: '#ec4899', ago: '8hr ago' },
+    user: { name: 'Pooja', city: 'Bangalore', avatar: 'P', avatarBg: 'var(--color-primary)', ago: '8hr ago' },
   },
   {
     id: 'ei7',
@@ -112,9 +112,9 @@ export const indiaTours = [
     image: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=600&q=80',
     nights: 6, days: 7, price: 38999, rating: 4.8,
     priceCategory: 'under50',
-    type: 'ADVENTURE', typeColor: '#10b981',
+    type: 'ADVENTURE', typeColor: 'var(--color-primary)',
     theme: 'adventure', season: 'summer',
-    user: { name: 'Arjun', city: 'Pune', avatar: 'A', avatarBg: '#10b981', ago: '1hr ago' },
+    user: { name: 'Arjun', city: 'Pune', avatar: 'A', avatarBg: 'var(--color-primary)', ago: '1hr ago' },
   },
   {
     id: 'ei8',
@@ -124,9 +124,9 @@ export const indiaTours = [
     image: 'https://images.unsplash.com/photo-1561361513-2d000a50f0dc?w=600&q=80',
     nights: 4, days: 5, price: 15999, rating: 4.6,
     priceCategory: 'under50',
-    type: 'SOLO', typeColor: '#0ea5e9',
+    type: 'SOLO', typeColor: 'var(--color-secondary)',
     theme: 'spiritual', season: 'winter',
-    user: { name: 'Deepak', city: 'Lucknow', avatar: 'D', avatarBg: '#8b5cf6', ago: '7hr ago' },
+    user: { name: 'Deepak', city: 'Lucknow', avatar: 'D', avatarBg: 'var(--color-primary)', ago: '7hr ago' },
   },
   {
     id: 'ei9',
@@ -136,9 +136,9 @@ export const indiaTours = [
     image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80',
     nights: 7, days: 8, price: 32999, rating: 4.7,
     priceCategory: 'under50',
-    type: 'FAMILY', typeColor: '#6366f1',
+    type: 'FAMILY', typeColor: 'var(--color-primary)',
     theme: 'family', season: 'spring',
-    user: { name: 'Sneha', city: 'Kolkata', avatar: 'S', avatarBg: '#6366f1', ago: '9hr ago' },
+    user: { name: 'Sneha', city: 'Kolkata', avatar: 'S', avatarBg: 'var(--color-primary)', ago: '9hr ago' },
   },
   {
     id: 'ei10',
@@ -148,9 +148,9 @@ export const indiaTours = [
     image: 'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=600&q=80',
     nights: 4, days: 5, price: 16999, rating: 4.5,
     priceCategory: 'under50',
-    type: 'ADVENTURE', typeColor: '#10b981',
+    type: 'ADVENTURE', typeColor: 'var(--color-primary)',
     theme: 'adventure', season: 'spring',
-    user: { name: 'Nikhil', city: 'Delhi', avatar: 'N', avatarBg: '#10b981', ago: '12hr ago' },
+    user: { name: 'Nikhil', city: 'Delhi', avatar: 'N', avatarBg: 'var(--color-primary)', ago: '12hr ago' },
   },
 ];
 
@@ -307,9 +307,9 @@ export default function ExploreIndiaSection() {
           gap: 8px;
           padding: 9px 18px;
           border-radius: 999px;
-          border: 1.5px solid #d1d5db;
-          background: #ffffff;
-          color: #374151;
+          border: 1.5px solid var(--color-border);
+          background: var(--color-card);
+          color: var(--color-text-primary);
           font-size: 13px;
           font-weight: 600;
           cursor: pointer;
@@ -319,7 +319,7 @@ export default function ExploreIndiaSection() {
         }
 
         .ei-dropdown-btn:hover {
-          border-color: #9ca3af;
+          border-color: var(--color-text-muted);
           background: #fafafa;
         }
 
@@ -332,8 +332,8 @@ export default function ExploreIndiaSection() {
           position: absolute;
           top: calc(100% + 8px);
           left: 0;
-          background: #ffffff;
-          border: 1px solid #e5e7eb;
+          background: var(--color-card);
+          border: 1px solid var(--color-border);
           border-radius: 12px;
           box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
           min-width: 180px;
@@ -356,19 +356,19 @@ export default function ExploreIndiaSection() {
           text-align: left;
           font-size: 13px;
           font-weight: 500;
-          color: #374151;
+          color: var(--color-text-primary);
           cursor: pointer;
           transition: background 0.15s;
         }
 
         .ei-dropdown-item:hover {
-          background: #f9fafb;
+          background: var(--color-bg-soft);
         }
 
         .ei-dropdown-item--active {
           color: var(--color-accent);
           font-weight: 700;
-          background: #fffbeb;
+          background: var(--color-secondary-hover);
         }
 
         /* ── Scroll area ──────────────── */
@@ -396,7 +396,7 @@ export default function ExploreIndiaSection() {
           height: 44px;
           border-radius: 50%;
           border: 1.5px solid var(--color-border, #E5E5E5);
-          background: #ffffff;
+          background: var(--color-card);
           color: var(--color-text-primary);
           display: flex;
           align-items: center;
@@ -423,10 +423,10 @@ export default function ExploreIndiaSection() {
           min-height: 160px;
           display: grid;
           place-items: center;
-          border: 2px dashed #d1d5db;
+          border: 2px dashed var(--color-border);
           border-radius: 12px;
-          color: #64748b;
-          background: #f9fafb;
+          color: var(--color-text-muted);
+          background: var(--color-bg-soft);
           font-size: 14px;
           font-weight: 600;
         }

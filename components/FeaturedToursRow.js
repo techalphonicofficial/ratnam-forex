@@ -39,8 +39,8 @@ export const allBookings = [
     locations: ['North Goa (2N)', 'South Goa (1N)'],
     image: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?w=600&q=80',
     nights: 3, price: 18500, priceCategory: 'under50',
-    type: 'COUPLE', typeColor: '#f97316',
-    user: { name: 'Riya', city: 'Pune', avatar: 'R', avatarBg: '#f97316', ago: '1hr ago' },
+    type: 'COUPLE', typeColor: 'var(--color-secondary)',
+    user: { name: 'Riya', city: 'Pune', avatar: 'R', avatarBg: 'var(--color-secondary)', ago: '1hr ago' },
   },
   {
     id: 'b2',
@@ -50,8 +50,8 @@ export const allBookings = [
     locations: ['Kochi (2N)', 'Alleppey (2N)'],
     image: 'https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=600&q=80',
     nights: 4, price: 24900, priceCategory: 'under50',
-    type: 'FAMILY', typeColor: '#6366f1',
-    user: { name: 'Suresh', city: 'Chennai', avatar: 'S', avatarBg: '#6366f1', ago: '3hr ago' },
+    type: 'FAMILY', typeColor: 'var(--color-primary)',
+    user: { name: 'Suresh', city: 'Chennai', avatar: 'S', avatarBg: 'var(--color-primary)', ago: '3hr ago' },
   },
   {
     id: 'b3',
@@ -61,8 +61,8 @@ export const allBookings = [
     locations: ['Manali (3N)'],
     image: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=600&q=80',
     nights: 3, price: 32000, priceCategory: 'under50',
-    type: 'ADVENTURE', typeColor: '#10b981',
-    user: { name: 'Vikram', city: 'Delhi', avatar: 'V', avatarBg: '#10b981', ago: '4hr ago' },
+    type: 'ADVENTURE', typeColor: 'var(--color-primary)',
+    user: { name: 'Vikram', city: 'Delhi', avatar: 'V', avatarBg: 'var(--color-primary)', ago: '4hr ago' },
   },
   {
     id: 'b4',
@@ -72,8 +72,8 @@ export const allBookings = [
     locations: ['Jaisalmer (2N)', 'Jodhpur (2N)'],
     image: 'https://images.unsplash.com/photo-1477587458883-47145ed94245?w=600&q=80',
     nights: 4, price: 28500, priceCategory: 'under50',
-    type: 'COUPLE', typeColor: '#f97316',
-    user: { name: 'Anita', city: 'Jaipur', avatar: 'A', avatarBg: '#ec4899', ago: '6hr ago' },
+    type: 'COUPLE', typeColor: 'var(--color-secondary)',
+    user: { name: 'Anita', city: 'Jaipur', avatar: 'A', avatarBg: 'var(--color-primary)', ago: '6hr ago' },
   },
   {
     id: 'b5',
@@ -83,8 +83,8 @@ export const allBookings = [
     locations: ['Bangkok (5N)'],
     image: 'https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?w=600&q=80',
     nights: 5, price: 42000, priceCategory: 'under50',
-    type: 'SOLO', typeColor: '#0ea5e9',
-    user: { name: 'Kiran', city: 'Hyderabad', avatar: 'K', avatarBg: '#0ea5e9', ago: '8hr ago' },
+    type: 'SOLO', typeColor: 'var(--color-secondary)',
+    user: { name: 'Kiran', city: 'Hyderabad', avatar: 'K', avatarBg: 'var(--color-secondary)', ago: '8hr ago' },
   },
   {
     id: 'b6',
@@ -94,8 +94,8 @@ export const allBookings = [
     locations: ['Ho Chi Minh (3N)', 'Hanoi (2N)'],
     image: 'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=600&q=80',
     nights: 5, price: 38000, priceCategory: 'under50',
-    type: 'SOLO', typeColor: '#0ea5e9',
-    user: { name: 'Rohan', city: 'Mumbai', avatar: 'R', avatarBg: '#8b5cf6', ago: '9hr ago' },
+    type: 'SOLO', typeColor: 'var(--color-secondary)',
+    user: { name: 'Rohan', city: 'Mumbai', avatar: 'R', avatarBg: 'var(--color-primary)', ago: '9hr ago' },
   },
 
   /* ── ₹50K–₹1.5L ──────────────────────────────────────── */
@@ -107,8 +107,8 @@ export const allBookings = [
     locations: ['Ubud (3N)', '+1 more'],
     image: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=600&q=80',
     nights: 8, price: 75656, priceCategory: '50to150',
-    type: 'COUPLE', typeColor: '#f97316',
-    user: { name: 'Gaurav', city: 'Mumbai', avatar: 'G', avatarBg: '#f97316', ago: '10hr ago' },
+    type: 'COUPLE', typeColor: 'var(--color-secondary)',
+    user: { name: 'Gaurav', city: 'Mumbai', avatar: 'G', avatarBg: 'var(--color-secondary)', ago: '10hr ago' },
   },
   {
     id: 'b8',
@@ -118,8 +118,8 @@ export const allBookings = [
     locations: ['Pattaya (3N)', '+1 more'],
     image: 'https://images.unsplash.com/photo-1519451241324-20b4ea2c4220?w=600&q=80',
     nights: 6, price: 50009, priceCategory: '50to150',
-    type: 'FAMILY', typeColor: '#6366f1',
-    user: { name: 'Hema', city: 'Chennai', avatar: 'H', avatarBg: '#6366f1', ago: '11hr ago' },
+    type: 'FAMILY', typeColor: 'var(--color-primary)',
+    user: { name: 'Hema', city: 'Chennai', avatar: 'H', avatarBg: 'var(--color-primary)', ago: '11hr ago' },
   },
   {
     id: 'b9',
@@ -129,8 +129,8 @@ export const allBookings = [
     locations: ['Tokyo (4N)', '+3 more'],
     image: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=600&q=80',
     nights: 10, price: 145000, priceCategory: '50to150',
-    type: 'SOLO', typeColor: '#0ea5e9',
-    user: { name: 'Arjun', city: 'Hyderabad', avatar: 'A', avatarBg: '#0ea5e9', ago: '5hr ago' },
+    type: 'SOLO', typeColor: 'var(--color-secondary)',
+    user: { name: 'Arjun', city: 'Hyderabad', avatar: 'A', avatarBg: 'var(--color-secondary)', ago: '5hr ago' },
   },
   {
     id: 'b10',
@@ -140,8 +140,8 @@ export const allBookings = [
     locations: ['Singapore (4N)', 'Sentosa (2N)'],
     image: 'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?w=600&q=80',
     nights: 6, price: 89000, priceCategory: '50to150',
-    type: 'COUPLE', typeColor: '#f97316',
-    user: { name: 'Pooja', city: 'Bangalore', avatar: 'P', avatarBg: '#ec4899', ago: '2hr ago' },
+    type: 'COUPLE', typeColor: 'var(--color-secondary)',
+    user: { name: 'Pooja', city: 'Bangalore', avatar: 'P', avatarBg: 'var(--color-primary)', ago: '2hr ago' },
   },
   {
     id: 'b11',
@@ -151,8 +151,8 @@ export const allBookings = [
     locations: ['Hanoi (3N)', 'Siem Reap (4N)'],
     image: 'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=600&q=80',
     nights: 7, price: 64000, priceCategory: '50to150',
-    type: 'ADVENTURE', typeColor: '#10b981',
-    user: { name: 'Nikhil', city: 'Pune', avatar: 'N', avatarBg: '#10b981', ago: '14hr ago' },
+    type: 'ADVENTURE', typeColor: 'var(--color-primary)',
+    user: { name: 'Nikhil', city: 'Pune', avatar: 'N', avatarBg: 'var(--color-primary)', ago: '14hr ago' },
   },
   {
     id: 'b12',
@@ -162,8 +162,8 @@ export const allBookings = [
     locations: ['Dubai (5N)', 'Abu Dhabi (3N)'],
     image: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=600&q=80',
     nights: 8, price: 110000, priceCategory: '50to150',
-    type: 'FAMILY', typeColor: '#6366f1',
-    user: { name: 'Ramesh', city: 'Kolkata', avatar: 'R', avatarBg: '#6366f1', ago: '20hr ago' },
+    type: 'FAMILY', typeColor: 'var(--color-primary)',
+    user: { name: 'Ramesh', city: 'Kolkata', avatar: 'R', avatarBg: 'var(--color-primary)', ago: '20hr ago' },
   },
 
   /* ── ₹1.5L–₹2.5L ─────────────────────────────────────── */
@@ -175,8 +175,8 @@ export const allBookings = [
     locations: ['Interlaken (3N)', '+2 more'],
     image: 'https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?w=600&q=80',
     nights: 7, price: 189000, priceCategory: '150to250',
-    type: 'ADVENTURE', typeColor: '#10b981',
-    user: { name: 'Priya', city: 'Bangalore', avatar: 'P', avatarBg: '#10b981', ago: '2hr ago' },
+    type: 'ADVENTURE', typeColor: 'var(--color-primary)',
+    user: { name: 'Priya', city: 'Bangalore', avatar: 'P', avatarBg: 'var(--color-primary)', ago: '2hr ago' },
   },
   {
     id: 'b14',
@@ -186,8 +186,8 @@ export const allBookings = [
     locations: ['Paris (3N)', 'Rome (3N)', '+2 more'],
     image: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=600&q=80',
     nights: 10, price: 210000, priceCategory: '150to250',
-    type: 'COUPLE', typeColor: '#f97316',
-    user: { name: 'Deepak', city: 'Delhi', avatar: 'D', avatarBg: '#f97316', ago: '1hr ago' },
+    type: 'COUPLE', typeColor: 'var(--color-secondary)',
+    user: { name: 'Deepak', city: 'Delhi', avatar: 'D', avatarBg: 'var(--color-secondary)', ago: '1hr ago' },
   },
   {
     id: 'b15',
@@ -197,8 +197,8 @@ export const allBookings = [
     locations: ['Sydney (4N)', 'Melbourne (5N)'],
     image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80',
     nights: 9, price: 235000, priceCategory: '150to250',
-    type: 'FAMILY', typeColor: '#6366f1',
-    user: { name: 'Sneha', city: 'Mumbai', avatar: 'S', avatarBg: '#6366f1', ago: '3hr ago' },
+    type: 'FAMILY', typeColor: 'var(--color-primary)',
+    user: { name: 'Sneha', city: 'Mumbai', avatar: 'S', avatarBg: 'var(--color-primary)', ago: '3hr ago' },
   },
   {
     id: 'b16',
@@ -208,8 +208,8 @@ export const allBookings = [
     locations: ['Santorini (4N)', 'Mykonos (4N)'],
     image: 'https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=600&q=80',
     nights: 8, price: 195000, priceCategory: '150to250',
-    type: 'COUPLE', typeColor: '#f97316',
-    user: { name: 'Rahul', city: 'Hyderabad', avatar: 'R', avatarBg: '#ec4899', ago: '5hr ago' },
+    type: 'COUPLE', typeColor: 'var(--color-secondary)',
+    user: { name: 'Rahul', city: 'Hyderabad', avatar: 'R', avatarBg: 'var(--color-primary)', ago: '5hr ago' },
   },
   {
     id: 'b17',
@@ -219,8 +219,8 @@ export const allBookings = [
     locations: ['Cape Town (4N)', 'Kruger (4N)'],
     image: 'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=600&q=80',
     nights: 8, price: 220000, priceCategory: '150to250',
-    type: 'ADVENTURE', typeColor: '#10b981',
-    user: { name: 'Arun', city: 'Chennai', avatar: 'A', avatarBg: '#10b981', ago: '7hr ago' },
+    type: 'ADVENTURE', typeColor: 'var(--color-primary)',
+    user: { name: 'Arun', city: 'Chennai', avatar: 'A', avatarBg: 'var(--color-primary)', ago: '7hr ago' },
   },
   {
     id: 'b18',
@@ -230,8 +230,8 @@ export const allBookings = [
     locations: ['Vancouver (3N)', 'Banff (4N)', '+1 more'],
     image: 'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=600&q=80',
     nights: 10, price: 245000, priceCategory: '150to250',
-    type: 'FAMILY', typeColor: '#6366f1',
-    user: { name: 'Meena', city: 'Pune', avatar: 'M', avatarBg: '#8b5cf6', ago: '12hr ago' },
+    type: 'FAMILY', typeColor: 'var(--color-primary)',
+    user: { name: 'Meena', city: 'Pune', avatar: 'M', avatarBg: 'var(--color-primary)', ago: '12hr ago' },
   },
 
   /* ── Luxury (₹2.5L+) ──────────────────────────────────── */
@@ -243,8 +243,8 @@ export const allBookings = [
     locations: ['Zurich (2N)', '+2 more'],
     image: 'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=600&q=80',
     nights: 8, price: 325000, priceCategory: 'luxury',
-    type: 'COUPLE', typeColor: '#f97316',
-    user: { name: 'Mayank', city: 'Delhi', avatar: 'M', avatarBg: '#ec4899', ago: '13hr ago' },
+    type: 'COUPLE', typeColor: 'var(--color-secondary)',
+    user: { name: 'Mayank', city: 'Delhi', avatar: 'M', avatarBg: 'var(--color-primary)', ago: '13hr ago' },
   },
   {
     id: 'b20',
@@ -254,8 +254,8 @@ export const allBookings = [
     locations: ['Auckland (3N)', 'Queenstown (4N)', '+1 more'],
     image: 'https://images.unsplash.com/photo-1507699622108-4be3abd695ad?w=600&q=80',
     nights: 10, price: 380000, priceCategory: 'luxury',
-    type: 'COUPLE', typeColor: '#f97316',
-    user: { name: 'Leela', city: 'Chennai', avatar: 'L', avatarBg: '#f59e0b', ago: '4hr ago' },
+    type: 'COUPLE', typeColor: 'var(--color-secondary)',
+    user: { name: 'Leela', city: 'Chennai', avatar: 'L', avatarBg: 'var(--color-secondary)', ago: '4hr ago' },
   },
   {
     id: 'b21',
@@ -265,8 +265,8 @@ export const allBookings = [
     locations: ['Mahé (5N)', 'Mauritius (7N)'],
     image: 'https://images.unsplash.com/photo-1573843981267-be1999ff37cd?w=600&q=80',
     nights: 12, price: 450000, priceCategory: 'luxury',
-    type: 'LUXURY', typeColor: '#f59e0b',
-    user: { name: 'Kavitha', city: 'Chennai', avatar: 'K', avatarBg: '#f59e0b', ago: '7hr ago' },
+    type: 'LUXURY', typeColor: 'var(--color-secondary)',
+    user: { name: 'Kavitha', city: 'Chennai', avatar: 'K', avatarBg: 'var(--color-secondary)', ago: '7hr ago' },
   },
   {
     id: 'b22',
@@ -275,8 +275,8 @@ export const allBookings = [
     locations: ['New York (4N)', 'Las Vegas (4N)', '+2 more'],
     image: 'https://images.unsplash.com/photo-1534430480872-3498386e7856?w=600&q=80',
     nights: 14, price: 520000, priceCategory: 'luxury',
-    type: 'LUXURY', typeColor: '#f59e0b',
-    user: { name: 'Aditya', city: 'Mumbai', avatar: 'A', avatarBg: '#f59e0b', ago: '9hr ago' },
+    type: 'LUXURY', typeColor: 'var(--color-secondary)',
+    user: { name: 'Aditya', city: 'Mumbai', avatar: 'A', avatarBg: 'var(--color-secondary)', ago: '9hr ago' },
   },
   {
     id: 'b23',
@@ -285,8 +285,8 @@ export const allBookings = [
     locations: ['Tokyo (4N)', 'Kyoto (3N)', '+1 more'],
     image: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=600&q=80',
     nights: 10, price: 395000, priceCategory: 'luxury',
-    type: 'LUXURY', typeColor: '#f59e0b',
-    user: { name: 'Shweta', city: 'Delhi', avatar: 'S', avatarBg: '#8b5cf6', ago: '15hr ago' },
+    type: 'LUXURY', typeColor: 'var(--color-secondary)',
+    user: { name: 'Shweta', city: 'Delhi', avatar: 'S', avatarBg: 'var(--color-primary)', ago: '15hr ago' },
   },
   {
     id: 'b24',
@@ -295,7 +295,7 @@ export const allBookings = [
     locations: ['London (3N)', 'Paris (2N)', '+5 more'],
     image: 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=600&q=80',
     nights: 15, price: 680000, priceCategory: 'luxury',
-    type: 'LUXURY', typeColor: '#f59e0b',
+    type: 'LUXURY', typeColor: 'var(--color-secondary)',
     user: { name: 'Harish', city: 'Bangalore', avatar: 'H', avatarBg: 'var(--color-primary)', ago: '20hr ago' },
   },
 ];
@@ -320,9 +320,9 @@ function CustomDropdown({ label, currentValue, onChange, options }) {
         style={{
           display: 'flex', alignItems: 'center', gap: 8,
           padding: '7px 16px', borderRadius: 999,
-          border: open ? '1.5px solid var(--color-primary)' : '1.5px solid #d1d5db',
+          border: open ? '1.5px solid var(--color-primary)' : '1.5px solid var(--color-border)',
           background: 'white',
-          color: '#374151', fontSize: 13, fontWeight: 500, cursor: 'pointer',
+          color: 'var(--color-text-primary)', fontSize: 13, fontWeight: 500, cursor: 'pointer',
           whiteSpace: 'nowrap', transition: 'all 0.2s',
           boxShadow: open ? '0 0 0 3px rgba(20,83,45,0.1)' : 'none',
         }}
@@ -336,7 +336,7 @@ function CustomDropdown({ label, currentValue, onChange, options }) {
       {open && (
         <div style={{
           position: 'absolute', top: 'calc(100% + 8px)', left: 0,
-          background: 'white', border: '1px solid #e5e7eb',
+          background: 'white', border: '1px solid var(--color-border)',
           borderRadius: 12, boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
           minWidth: 200, zIndex: 50, padding: '8px 0',
           animation: 'fadeSlideIn 0.2s ease',
@@ -354,18 +354,18 @@ function CustomDropdown({ label, currentValue, onChange, options }) {
                   display: 'flex', alignItems: 'center', gap: 12,
                   width: '100%', padding: '10px 18px',
                   background: 'none', border: 'none',
-                  borderBottom: i < options.length - 1 ? '1px solid #f3f4f6' : 'none',
+                  borderBottom: i < options.length - 1 ? '1px solid var(--color-bg-soft)' : 'none',
                   textAlign: 'left', cursor: 'pointer',
-                  color: '#1f2937', fontSize: 13.5, fontWeight: isActive ? 600 : 400,
+                  color: 'var(--color-text-primary)', fontSize: 13.5, fontWeight: isActive ? 600 : 400,
                   transition: 'background 0.15s',
                 }}
-                onMouseEnter={e => e.currentTarget.style.background = '#f9fafb'}
+                onMouseEnter={e => e.currentTarget.style.background = 'var(--color-bg-soft)'}
                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
               >
                 {/* Radio circle matching screenshot */}
                 <div style={{
                   width: 18, height: 18, borderRadius: '50%',
-                  border: isActive ? '2px solid #16a34a' : '1.5px solid #d1d5db',
+                  border: isActive ? '2px solid #16a34a' : '1.5px solid var(--color-border)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
                   {isActive && <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#16a34a' }} />}
@@ -436,10 +436,10 @@ const getRelativeTime = (value) => {
 
 const getTypeColor = (value) => {
   const key = String(value || '').toLowerCase();
-  if (key.includes('luxury')) return '#f59e0b';
-  if (key.includes('family')) return '#6366f1';
-  if (key.includes('couple') || key.includes('honeymoon')) return '#f97316';
-  if (key.includes('adventure') || key.includes('trending')) return '#10b981';
+  if (key.includes('luxury')) return 'var(--color-secondary)';
+  if (key.includes('family')) return 'var(--color-primary)';
+  if (key.includes('couple') || key.includes('honeymoon')) return 'var(--color-secondary)';
+  if (key.includes('adventure') || key.includes('trending')) return 'var(--color-primary)';
   return 'var(--color-primary)';
 };
 
@@ -589,7 +589,7 @@ export default function RecommendedPackages() {
         }
         
         .recent-bookings-section {
-          background: #ffffff;
+          background: var(--color-card);
           padding: 60px 0;
         }
         
@@ -604,12 +604,12 @@ export default function RecommendedPackages() {
         /* Styled to match the dropdown filters in the design */
         .recent-filters select,
         .recent-filters button {
-          background: #fff;
-          border: 1px solid #d1d5db;
+          background: var(--color-card);
+          border: 1px solid var(--color-border);
           border-radius: 4px;
           padding: 6px 12px;
           font-size: 13px;
-          color: #4b5563;
+          color: var(--color-text-muted);
           cursor: pointer;
         }
         
@@ -635,7 +635,7 @@ export default function RecommendedPackages() {
         .recent-result-row p,
         .recent-result-row > span:last-child {
           margin: 0;
-          color: #4b5563;
+          color: var(--color-text-muted);
           font-size: 14px;
           font-weight: 500;
         }
@@ -645,10 +645,10 @@ export default function RecommendedPackages() {
           min-height: 128px;
           display: grid;
           place-items: center;
-          border: 1px dashed #d1d5db;
+          border: 1px dashed var(--color-border);
           border-radius: 8px;
-          color: #64748b;
-          background: #f9fafb;
+          color: var(--color-text-muted);
+          background: var(--color-bg-soft);
           font-size: 14px;
           font-weight: 600;
         }
@@ -658,9 +658,9 @@ export default function RecommendedPackages() {
           flex-shrink: 0;
           width: 320px;
           overflow: hidden;
-          border: 1px solid #f3f4f6;
+          border: 1px solid var(--color-bg-soft);
           border-radius: 8px;
-          background: #ffffff;
+          background: var(--color-card);
           box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
           transition: transform 0.3s ease, box-shadow 0.3s ease;
           scroll-snap-align: start;
@@ -675,7 +675,7 @@ export default function RecommendedPackages() {
           position: relative;
           height: 200px;
           overflow: hidden;
-          background: #f3f4f6;
+          background: var(--color-bg-soft);
         }
         
         .recent-card-media img {
@@ -699,8 +699,8 @@ export default function RecommendedPackages() {
           align-items: center;
           padding: 4px 8px;
           border-radius: 4px;
-          background: #ef4444; /* Red tag matching design */
-          color: #ffffff;
+          background: var(--color-secondary); /* Red tag matching design */
+          color: var(--color-card);
           font-size: 11px;
           font-weight: 700;
           letter-spacing: 0.5px;
@@ -721,7 +721,7 @@ export default function RecommendedPackages() {
         
         .recent-card-title {
           margin: 0 0 10px;
-          color: #111827;
+          color: var(--color-text-primary);
           font-family: "Italiana", sans-serif;
           font-size: 16px;
           font-weight: 700;
@@ -738,7 +738,7 @@ export default function RecommendedPackages() {
           align-items: center;
           justify-content: space-between;
           margin: 0 0 16px;
-          color: #6b7280;
+          color: var(--color-text-muted);
           font-size: 13px;
           font-weight: 500;
         }
@@ -751,12 +751,12 @@ export default function RecommendedPackages() {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          border-top: 1px solid #f3f4f6;
+          border-top: 1px solid var(--color-bg-soft);
           padding-top: 16px;
         }
         
         .recent-card-price {
-          color: #111827; /* Dark price text */
+          color: var(--color-text-primary); /* Dark price text */
           font-family: "Italiana", sans-serif;
           font-size: 18px;
           font-weight: 700;
@@ -844,13 +844,13 @@ export default function RecommendedPackages() {
           <h2 style={{ fontFamily: '"Italiana", sans-serif', fontSize: 'clamp(28px, 4vw, 36px)', fontWeight: 900, color: 'var(--color-text-primary)', margin: '0 0 8px' }}>
             Hot Deals
           </h2>
-          <p style={{ color: '#6b7280', fontSize: '15px', margin: '0 0 20px' }}>
+          <p style={{ color: 'var(--color-text-muted)', fontSize: '15px', margin: '0 0 20px' }}>
             Unbeatable prices for unforgettable places creates a nice, memorable rhythm!
           </p>
           
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#fce7f3', border: '1px solid #fbcfe8', padding: '4px 12px', borderRadius: 999, marginBottom: 24 }}>
-             <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#ef4444' }}></div>
-             <span style={{ fontSize: 11, fontWeight: 700, color: '#be185d', letterSpacing: 0.5 }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'var(--color-primary-light)', border: '1px solid #fbcfe8', padding: '4px 12px', borderRadius: 999, marginBottom: 24 }}>
+             <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--color-secondary)' }}></div>
+             <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-primary)', letterSpacing: 0.5 }}>
                {liveBookings.length ? `${liveBookings.length}+ recent trip requests` : '20+ recent trip requests'}
              </span>
           </div>
@@ -861,7 +861,7 @@ export default function RecommendedPackages() {
              <CustomDropdown label="TRAVEL CLASS" currentValue={activeClass} onChange={handleClassSort} options={CLASS_FILTERS} />
           </div>
 
-          <div className="recent-result-row" style={{ color: '#9ca3af', fontSize: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div className="recent-result-row" style={{ color: 'var(--color-text-muted)', fontSize: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
              <span style={{ background: 'var(--color-primary)', color: 'white', padding: '3px 10px', borderRadius: 12, marginRight: 8, fontWeight: 700 }}>
                {filtered.length} itineraries
              </span>
@@ -902,7 +902,7 @@ export default function RecommendedPackages() {
             style={{
               position: 'absolute', top: '50%', transform: 'translateY(-50%)',
               width: 44, height: 44, borderRadius: '50%', border: '1.5px solid var(--color-border, #E5E5E5)',
-              background: '#ffffff', color: 'var(--color-text-primary)',
+              background: 'var(--color-card)', color: 'var(--color-text-primary)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               cursor: 'pointer', zIndex: 10, boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
               transition: 'all 0.2s ease',
@@ -920,7 +920,7 @@ export default function RecommendedPackages() {
             style={{
               position: 'absolute', top: '50%', transform: 'translateY(-50%)',
               width: 44, height: 44, borderRadius: '50%', border: '1.5px solid var(--color-border, #E5E5E5)',
-              background: '#ffffff', color: 'var(--color-text-primary)',
+              background: 'var(--color-card)', color: 'var(--color-text-primary)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               cursor: 'pointer', zIndex: 10, boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
               transition: 'all 0.2s ease',
@@ -970,11 +970,11 @@ export function BookingCardV2({ pkg, animDelay }) {
 
       {/* Info Section */}
       <div style={{ padding: '16px 16px 12px', background: 'white', flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <h3 style={{ fontFamily: '"Italiana", sans-serif', fontSize: 20, fontWeight: 900, color: '#111827', margin: '0 0 8px', lineHeight: 1.2 }}>
+        <h3 style={{ fontFamily: '"Italiana", sans-serif', fontSize: 20, fontWeight: 900, color: 'var(--color-text-primary)', margin: '0 0 8px', lineHeight: 1.2 }}>
           {titleText}
         </h3>
         
-        <p style={{ display: 'flex', alignItems: 'flex-start', gap: 6, fontSize: 12, color: '#6b7280', margin: '0 0 16px', lineHeight: 1.4 }}>
+        <p style={{ display: 'flex', alignItems: 'flex-start', gap: 6, fontSize: 12, color: 'var(--color-text-muted)', margin: '0 0 16px', lineHeight: 1.4 }}>
           <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14" style={{ flexShrink: 0, marginTop: 2 }}>
             <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
           </svg>
@@ -984,7 +984,7 @@ export function BookingCardV2({ pkg, animDelay }) {
         </p>
         
         {/* Trip Highlights & Tour Includes */}
-        <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: 12, marginTop: 'auto' }}>
+        <div style={{ borderTop: '1px solid var(--color-bg-soft)', paddingTop: 12, marginTop: 'auto' }}>
           <div 
             onClick={() => setHighlightsOpen(!highlightsOpen)}
             style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, cursor: 'pointer', padding: '4px 0' }}
@@ -1001,7 +1001,7 @@ export function BookingCardV2({ pkg, animDelay }) {
             transition: 'max-height 0.3s ease, margin 0.3s ease, padding 0.3s ease',
             marginBottom: highlightsOpen ? 12 : 0,
           }}>
-             <ul style={{ margin: 0, paddingLeft: 16, fontSize: 12, color: '#4b5563', lineHeight: 1.6 }}>
+             <ul style={{ margin: 0, paddingLeft: 16, fontSize: 12, color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
                 <li>Premium accommodations</li>
                 <li>Daily breakfast & guided tours</li>
                 <li>Private local transfers</li>
@@ -1009,7 +1009,7 @@ export function BookingCardV2({ pkg, animDelay }) {
           </div>
           
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-             <span style={{ fontSize: 12, fontWeight: 700, color: '#374151' }}>Tour Includes</span>
+             <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-text-primary)' }}>Tour Includes</span>
              <div style={{ display: 'flex', gap: 6, color: 'var(--color-primary)' }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M3 7v10M21 7v10M3 13h18M5 10h14"/></svg>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M7 3v18M17 3v18M12 8v8"/></svg>
@@ -1022,8 +1022,8 @@ export function BookingCardV2({ pkg, animDelay }) {
       </div>
 
       {/* Pricing Block */}
-      <div style={{ background: '#fdf8f4', padding: '16px', borderTop: '1px dashed #e5e7eb' }}>
-        <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 2 }}>All inclusive price starts</div>
+      <div style={{ background: '#fdf8f4', padding: '16px', borderTop: '1px dashed var(--color-border)' }}>
+        <div style={{ fontSize: 11, color: 'var(--color-text-muted)', marginBottom: 2 }}>All inclusive price starts</div>
         <div style={{ fontFamily: '"Italiana", sans-serif', fontSize: 26, fontWeight: 900, color: 'var(--color-primary)', lineHeight: 1, marginBottom: 16 }}>
           {priceLabel}
         </div>
@@ -1032,21 +1032,21 @@ export function BookingCardV2({ pkg, animDelay }) {
           <Link href={href} style={{ flex: 1, textAlign: 'center', background: 'var(--color-primary)', color: 'white', padding: '12px 0', borderRadius: 8, fontSize: 13, fontWeight: 800, textDecoration: 'none', transition: 'all 0.2s', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.15)'; e.currentTarget.style.opacity = '0.9'; }} onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)'; e.currentTarget.style.opacity = '1'; }}>
             View Tour
           </Link>
-          <Link href={`/customize?step=0&subStep=room-config`} style={{ flex: 1, textAlign: 'center', background: '#0B3C5D', color: 'white', padding: '12px 0', borderRadius: 8, fontSize: 13, fontWeight: 800, textDecoration: 'none', transition: 'all 0.2s', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.15)'; e.currentTarget.style.opacity = '0.9'; }} onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)'; e.currentTarget.style.opacity = '1'; }}>
+          <Link href={`/customize?step=0&subStep=room-config`} style={{ flex: 1, textAlign: 'center', background: 'var(--color-text-primary)', color: 'white', padding: '12px 0', borderRadius: 8, fontSize: 13, fontWeight: 800, textDecoration: 'none', transition: 'all 0.2s', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.15)'; e.currentTarget.style.opacity = '0.9'; }} onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)'; e.currentTarget.style.opacity = '1'; }}>
             Book Now
           </Link>
         </div>
       </div>
 
       {/* Footer Actions */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', background: 'white', borderTop: '1px solid #f3f4f6' }}>
-        <a href="https://wa.me/910000000000" target="_blank" rel="noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none', color: '#111827', transition: 'transform 0.2s' }} onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'} onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', background: 'white', borderTop: '1px solid var(--color-bg-soft)' }}>
+        <a href="https://wa.me/910000000000" target="_blank" rel="noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none', color: 'var(--color-text-primary)', transition: 'transform 0.2s' }} onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'} onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}>
            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#25D366" strokeWidth="2.5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-           <span style={{ fontSize: 12, fontWeight: 700, borderBottom: '1px solid #111827' }}>Request Callback</span>
+           <span style={{ fontSize: 12, fontWeight: 700, borderBottom: '1px solid var(--color-text-primary)' }}>Request Callback</span>
         </a>
-        <button type="button" style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', color: '#111827', cursor: 'pointer', padding: 0, transition: 'transform 0.2s' }} onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'} onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}>
-           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-           <span style={{ fontSize: 12, fontWeight: 700, borderBottom: '1px solid #111827' }}>Get Itinerary</span>
+        <button type="button" style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', color: 'var(--color-text-primary)', cursor: 'pointer', padding: 0, transition: 'transform 0.2s' }} onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'} onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}>
+           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+           <span style={{ fontSize: 12, fontWeight: 700, borderBottom: '1px solid var(--color-text-primary)' }}>Get Itinerary</span>
         </button>
       </div>
 
@@ -1070,7 +1070,7 @@ function BookingCard({ pkg, animDelay, isMobile }) {
         background: 'white',
         borderRadius: 16,
         overflow: 'hidden',
-        border: '1px solid #e5e7eb',
+        border: '1px solid var(--color-border)',
         // boxShadow: hovered ? '0 12px 40px rgba(0,0,0,0.14)' : '0 2px 12px rgba(0,0,0,0.07)',
         transform: hovered ? 'translateY(-4px)' : 'none',
         transition: 'all 0.3s ease',
@@ -1143,10 +1143,10 @@ function BookingCard({ pkg, animDelay, isMobile }) {
 
         {/* Location */}
         <p style={{
-          fontSize: 12, color: '#6b7280', margin: '0 0 10px',
+          fontSize: 12, color: 'var(--color-text-muted)', margin: '0 0 10px',
           display: 'flex', alignItems: 'center', gap: 4,
         }}>
-          <svg viewBox="0 0 24 24" fill="#6b7280" width="11" height="11">
+          <svg viewBox="0 0 24 24" fill="var(--color-text-muted)" width="11" height="11">
             <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
           </svg>
           {pkg.locations.join(' · ')}
@@ -1169,8 +1169,8 @@ function BookingCard({ pkg, animDelay, isMobile }) {
           </span>
           <span style={{
             display: 'inline-block',
-            background: '#f3f4f6',
-            color: '#4b5563',
+            background: 'var(--color-bg-soft)',
+            color: 'var(--color-text-muted)',
             borderRadius: 6,
             padding: '2px 9px',
             fontSize: 10, fontWeight: 700,
@@ -1183,14 +1183,14 @@ function BookingCard({ pkg, animDelay, isMobile }) {
         <div style={{
           display: 'flex', alignItems: 'center',
           justifyContent: 'space-between',
-          borderTop: '1px solid #f3f4f6',
+          borderTop: '1px solid var(--color-bg-soft)',
           paddingTop: 12, gap: 8,
         }}>
           <div>
             <div style={{ fontFamily: '"Italiana", sans-serif', fontWeight: 800, fontSize: 18, color: 'var(--color-text-primary)', lineHeight: 1 }}>
               {priceLabel}
             </div>
-            <div style={{ fontSize: 10, color: '#9ca3af' }}>{pkg.nights} nights / person</div>
+            <div style={{ fontSize: 10, color: 'var(--color-text-muted)' }}>{pkg.nights} nights / person</div>
           </div>
           <Link
             href={pkg.isInquiry ? `/itineraries/${encodeURIComponent(pkg.id)}` : `/tour?search=${encodeURIComponent(searchTerm)}`}

@@ -165,7 +165,7 @@ export default function WhyChooseSection() {
             {content.gallery.map(({ src, span, label }, i) => (
               <div
                 key={`${src}-${i}`}
-                style={{ gridColumn: span ? '1 / -1' : undefined, height: span ? 195 : 150, borderRadius: 14, overflow: 'hidden', position: 'relative', boxShadow: '0 4px 14px rgba(0,0,0,0.12)' }}
+                style={{ gridColumn: span ? '1 / -1' : undefined, height: span ? 195 : 150, borderRadius: 14, overflow: 'hidden', position: 'relative', boxShadow: 'var(--shadow-sm)' }}
               >
                 <img src={src} alt={label || 'Travel gallery'} style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
                 {label && (

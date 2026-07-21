@@ -89,7 +89,7 @@ export default function TourCard({ tour, className = '' }) {
           }}
           aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
           aria-pressed={wishlisted}
-          style={{ color: 'white', background: wishlisted ? 'rgba(255,87,34,0.9)' : 'rgba(255,255,255,0.2)' }}
+          style={{ color: 'white', background: wishlisted ? 'var(--color-secondary)' : 'rgba(255,255,255,0.2)' }}
         >
           <svg viewBox="0 0 24 24" fill={wishlisted ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" width="16" height="16">
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />

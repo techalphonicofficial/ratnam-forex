@@ -11,7 +11,7 @@ export default function ReviewCard({ review }) {
 
       <div className="mb-3">
         <StarRating rating={review.rating} size={15} />
-        <div style={{ fontSize: 12, color: 'var(--color-text-muted)', marginTop: 4 }}>
+        <div style={{ fontSize: 12, color: 'var(--color-text-muted)', marginTop: 'var(--space-1)' }}>
           for {review.tour}
         </div>
       </div>
@@ -40,7 +40,7 @@ export default function ReviewCard({ review }) {
           <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--color-text-primary)' }}>
             {review.name}
           </div>
-          <div style={{ fontSize: 12, color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: 4 }}>
+          <div style={{ fontSize: 12, color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
             <svg viewBox="0 0 24 24" fill="currentColor" width="11" height="11">
               <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
             </svg>

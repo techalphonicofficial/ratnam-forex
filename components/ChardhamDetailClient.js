@@ -15,13 +15,13 @@ export default function ChardhamDetailClient({ tour }) {
   };
 
   return (
-    <div style={{ background: '#f8fafc', paddingBottom: 80 }}>
+    <div style={{ background: 'var(--color-bg-soft)', paddingBottom: 80 }}>
       {/* FULL WIDTH BANNER */}
       <div style={{ 
         position: 'relative', 
         width: '100%', 
         height: 500, 
-        backgroundColor: '#0f172a',
+        backgroundColor: 'var(--color-text-primary)',
         backgroundImage: 'url("/images/kedarnath_banner.png")',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
@@ -77,7 +77,7 @@ export default function ChardhamDetailClient({ tour }) {
       <div className="container" style={{ position: 'relative', zIndex: 10, marginTop: -40 }}>
         
         {/* STATS STRIP (FULL WIDTH) */}
-        <div style={{ background: '#fff', borderRadius: 16, padding: '24px 32px', display: 'flex', justifyContent: 'space-between', boxShadow: '0 4px 20px rgba(0,0,0,0.04)', marginBottom: 32, flexWrap: 'wrap', gap: 24 }}>
+        <div style={{ background: 'var(--color-card)', borderRadius: 16, padding: '24px 32px', display: 'flex', justifyContent: 'space-between', boxShadow: '0 4px 20px rgba(0,0,0,0.04)', marginBottom: 32, flexWrap: 'wrap', gap: 24 }}>
           {[
             { label: 'Duration', value: '10 Days / 9 Nights', icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> },
             { label: 'Best Time', value: 'Apr – Jun, Sep – Oct', icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-secondary)" strokeWidth="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg> },
@@ -89,11 +89,11 @@ export default function ChardhamDetailClient({ tour }) {
             { label: 'Group Size', value: '2 – 20 People', icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> }
           ].map((stat, i) => (
             <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', minWidth: 100, flex: 1 }}>
-              <div style={{ background: '#f1f5f9', width: 48, height: 48, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+              <div style={{ background: 'var(--color-border)', width: 48, height: 48, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
                 {stat.icon}
               </div>
-              <strong style={{ color: '#0f172a', fontSize: 13, marginBottom: 4 }}>{stat.label}</strong>
-              <span style={{ color: '#64748b', fontSize: 12, whiteSpace: 'nowrap' }}>{stat.value}</span>
+              <strong style={{ color: 'var(--color-text-primary)', fontSize: 13, marginBottom: 4 }}>{stat.label}</strong>
+              <span style={{ color: 'var(--color-text-muted)', fontSize: 12, whiteSpace: 'nowrap' }}>{stat.value}</span>
             </div>
           ))}
         </div>
@@ -105,7 +105,7 @@ export default function ChardhamDetailClient({ tour }) {
             {/* Media Row */}
             <div className="row g-4 mb-5">
               <div className="col-md-6">
-                <div style={{ background: '#0f172a', borderRadius: 16, overflow: 'hidden', height: 260, position: 'relative' }}>
+                <div style={{ background: 'var(--color-text-primary)', borderRadius: 16, overflow: 'hidden', height: 260, position: 'relative' }}>
                   <Image src="https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Kedarnath Video" fill style={{ objectFit: 'cover', opacity: 0.6 }} />
                   <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <div style={{ width: 64, height: 64, background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(4px)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
@@ -129,19 +129,19 @@ export default function ChardhamDetailClient({ tour }) {
                     <svg width="100%" height="100%" viewBox="0 0 300 200" preserveAspectRatio="none">
                       <path d="M 20 160 C 80 160, 100 80, 140 80 S 180 120, 240 100" fill="none" stroke="var(--color-secondary)" strokeWidth="2" strokeDasharray="4 4" />
                       <circle cx="20" cy="160" r="4" fill="var(--color-secondary)" />
-                      <text x="20" y="180" fontSize="12" fill="#0f172a" fontWeight="bold">Dehradun</text>
+                      <text x="20" y="180" fontSize="12" fill="var(--color-text-primary)" fontWeight="bold">Dehradun</text>
                       
                       <circle cx="100" cy="80" r="4" fill="var(--color-secondary)" />
-                      <text x="100" y="70" fontSize="12" fill="#0f172a" fontWeight="bold" textAnchor="middle">Yamunotri</text>
+                      <text x="100" y="70" fontSize="12" fill="var(--color-text-primary)" fontWeight="bold" textAnchor="middle">Yamunotri</text>
                       
                       <circle cx="160" cy="50" r="4" fill="var(--color-secondary)" />
-                      <text x="160" y="40" fontSize="12" fill="#0f172a" fontWeight="bold" textAnchor="middle">Gangotri</text>
+                      <text x="160" y="40" fontSize="12" fill="var(--color-text-primary)" fontWeight="bold" textAnchor="middle">Gangotri</text>
 
                       <circle cx="200" cy="120" r="4" fill="var(--color-secondary)" />
-                      <text x="200" y="140" fontSize="12" fill="#0f172a" fontWeight="bold" textAnchor="middle">Kedarnath</text>
+                      <text x="200" y="140" fontSize="12" fill="var(--color-text-primary)" fontWeight="bold" textAnchor="middle">Kedarnath</text>
 
                       <circle cx="260" cy="100" r="4" fill="var(--color-secondary)" />
-                      <text x="260" y="90" fontSize="12" fill="#0f172a" fontWeight="bold" textAnchor="middle">Badrinath</text>
+                      <text x="260" y="90" fontSize="12" fill="var(--color-text-primary)" fontWeight="bold" textAnchor="middle">Badrinath</text>
                     </svg>
                   </div>
                 </div>
@@ -151,7 +151,7 @@ export default function ChardhamDetailClient({ tour }) {
             {/* Day Wise Itinerary */}
             <h2 style={{ fontSize: 28, fontWeight: 800, color: 'var(--color-primary)', marginBottom: 24 }}>Day Wise Itinerary</h2>
             
-            <div style={{ position: 'relative', paddingLeft: 24, borderLeft: '2px solid #e2e8f0', marginLeft: 16, marginBottom: 48 }}>
+            <div style={{ position: 'relative', paddingLeft: 24, borderLeft: '2px solid var(--color-border)', marginLeft: 16, marginBottom: 48 }}>
               {tour.itinerary.map((day, idx) => (
                 <div key={idx} style={{ marginBottom: 24, position: 'relative' }}>
                   <div 
@@ -162,13 +162,13 @@ export default function ChardhamDetailClient({ tour }) {
                       width: 48, 
                       height: 48, 
                       borderRadius: '50%', 
-                      background: activeDay === day.day ? 'var(--color-primary)' : '#fff',
+                      background: activeDay === day.day ? 'var(--color-primary)' : 'var(--color-card)',
                       border: '2px solid var(--color-primary)',
                       display: 'flex', 
                       flexDirection: 'column',
                       alignItems: 'center', 
                       justifyContent: 'center',
-                      color: activeDay === day.day ? '#fff' : 'var(--color-primary)',
+                      color: activeDay === day.day ? 'var(--color-card)' : 'var(--color-primary)',
                       lineHeight: 1,
                       cursor: 'pointer',
                       transition: 'all 0.2s',
@@ -182,8 +182,8 @@ export default function ChardhamDetailClient({ tour }) {
                   
                   <div 
                     style={{ 
-                      background: activeDay === day.day ? '#f8fafc' : '#fff', 
-                      border: '1px solid #f1f5f9', 
+                      background: activeDay === day.day ? 'var(--color-bg-soft)' : 'var(--color-card)', 
+                      border: '1px solid var(--color-border)', 
                       borderRadius: 12, 
                       padding: '20px 24px',
                       cursor: 'pointer',
@@ -194,7 +194,7 @@ export default function ChardhamDetailClient({ tour }) {
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <h3 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: 'var(--color-primary)' }}>{day.title}</h3>
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ transform: activeDay === day.day ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', color: '#94a3b8' }}><polyline points="6 9 12 15 18 9"></polyline></svg>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ transform: activeDay === day.day ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', color: 'var(--color-text-muted)' }}><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </div>
                     
                     {activeDay === day.day && (
@@ -203,11 +203,11 @@ export default function ChardhamDetailClient({ tour }) {
                           <p style={{ color: '#475569', fontSize: 15, lineHeight: 1.7, flex: '1 1 300px', margin: 0 }}>
                             {day.description}
                           </p>
-                          <div style={{ flex: '1 1 200px', background: '#f1f5f9', padding: 16, borderRadius: 12 }}>
+                          <div style={{ flex: '1 1 200px', background: 'var(--color-border)', padding: 16, borderRadius: 12 }}>
                             <strong style={{ display: 'block', fontSize: 14, color: 'var(--color-primary)', marginBottom: 12 }}>Highlights:</strong>
                             <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                               {tour.highlights.slice(0, 4).map((hl, i) => (
-                                <li key={i} style={{ display: 'flex', gap: 8, fontSize: 13, color: '#334155', marginBottom: 8, alignItems: 'center' }}>
+                                <li key={i} style={{ display: 'flex', gap: 8, fontSize: 13, color: 'var(--color-text-primary)', marginBottom: 8, alignItems: 'center' }}>
                                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-secondary)" strokeWidth="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
                                   {hl}
                                 </li>
@@ -222,12 +222,12 @@ export default function ChardhamDetailClient({ tour }) {
                             </span>
                           )}
                           {day.meals?.includes('Dinner') && (
-                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#ffedd5', color: '#c2410c', padding: '6px 12px', borderRadius: 20, fontSize: 12, fontWeight: 600 }}>
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#ffedd5', color: 'var(--color-secondary)', padding: '6px 12px', borderRadius: 20, fontSize: 12, fontWeight: 600 }}>
                               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path></svg> Dinner
                             </span>
                           )}
                           {!day.meals?.length && (
-                             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#fee2e2', color: '#b91c1c', padding: '6px 12px', borderRadius: 20, fontSize: 12, fontWeight: 600 }}>
+                             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'var(--color-secondary-hover)', color: 'var(--color-secondary)', padding: '6px 12px', borderRadius: 20, fontSize: 12, fontWeight: 600 }}>
                               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg> No Meals
                             </span>
                           )}
@@ -275,11 +275,11 @@ export default function ChardhamDetailClient({ tour }) {
             {/* Inclusions & Exclusions */}
             <div className="row g-4 mb-5">
               <div className="col-md-6">
-                <div style={{ background: '#fff', borderRadius: 16, padding: 24, border: '1px solid #f1f5f9', height: '100%' }}>
+                <div style={{ background: 'var(--color-card)', borderRadius: 16, padding: 24, border: '1px solid var(--color-border)', height: '100%' }}>
                   <h3 style={{ color: '#16a34a', fontSize: 18, fontWeight: 700, marginBottom: 16 }}>Inclusions</h3>
                   <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                     {tour.included.map((inc, i) => (
-                      <li key={i} style={{ display: 'flex', gap: 12, fontSize: 14, color: '#334155', marginBottom: 12 }}>
+                      <li key={i} style={{ display: 'flex', gap: 12, fontSize: 14, color: 'var(--color-text-primary)', marginBottom: 12 }}>
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="#16a34a" stroke="white" strokeWidth="2" style={{ flexShrink: 0, marginTop: 2 }}><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 11 15 16 9"></polyline></svg>
                         {inc}
                       </li>
@@ -288,11 +288,11 @@ export default function ChardhamDetailClient({ tour }) {
                 </div>
               </div>
               <div className="col-md-6">
-                <div style={{ background: '#fff', borderRadius: 16, padding: 24, border: '1px solid #f1f5f9', height: '100%' }}>
+                <div style={{ background: 'var(--color-card)', borderRadius: 16, padding: 24, border: '1px solid var(--color-border)', height: '100%' }}>
                   <h3 style={{ color: '#dc2626', fontSize: 18, fontWeight: 700, marginBottom: 16 }}>Exclusions</h3>
                   <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                     {tour.excluded.map((exc, i) => (
-                      <li key={i} style={{ display: 'flex', gap: 12, fontSize: 14, color: '#334155', marginBottom: 12 }}>
+                      <li key={i} style={{ display: 'flex', gap: 12, fontSize: 14, color: 'var(--color-text-primary)', marginBottom: 12 }}>
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="#dc2626" stroke="white" strokeWidth="2" style={{ flexShrink: 0, marginTop: 2 }}><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
                         {exc}
                       </li>
@@ -310,13 +310,13 @@ export default function ChardhamDetailClient({ tour }) {
             <BookingSidebar tour={tour} />
             
             {/* Policies Accordion */}
-            <div style={{ marginTop: 24, background: '#fff', borderRadius: 16, border: '1px solid #f1f5f9', padding: 12 }}>
+            <div style={{ marginTop: 24, background: 'var(--color-card)', borderRadius: 16, border: '1px solid var(--color-border)', padding: 12 }}>
               {[
                 { id: 'payment', title: 'Payment Policy', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2"><rect x="2" y="5" width="20" height="14" rx="2" ry="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg> },
-                { id: 'cancellation', title: 'Cancellation Policy', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg> },
-                { id: 'faq', title: 'Frequently Asked Questions', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg> }
+                { id: 'cancellation', title: 'Cancellation Policy', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-secondary)" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg> },
+                { id: 'faq', title: 'Frequently Asked Questions', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg> }
               ].map((policy, idx) => (
-                <div key={policy.id} style={{ borderBottom: idx < 2 ? '1px solid #f1f5f9' : 'none' }}>
+                <div key={policy.id} style={{ borderBottom: idx < 2 ? '1px solid var(--color-border)' : 'none' }}>
                   <button 
                     onClick={() => toggleFaq(idx)}
                     style={{ width: '100%', padding: '16px 12px', background: 'none', border: 'none', display: 'flex', alignItems: 'center', gap: 12, fontSize: 15, fontWeight: 700, color: 'var(--color-primary)', cursor: 'pointer', textAlign: 'left' }}
@@ -326,7 +326,7 @@ export default function ChardhamDetailClient({ tour }) {
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ transform: openFaqs.includes(idx) ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}><polyline points="6 9 12 15 18 9"></polyline></svg>
                   </button>
                   {openFaqs.includes(idx) && (
-                    <div style={{ padding: '0 12px 16px 44px', color: '#64748b', fontSize: 14, lineHeight: 1.6 }}>
+                    <div style={{ padding: '0 12px 16px 44px', color: 'var(--color-text-muted)', fontSize: 14, lineHeight: 1.6 }}>
                       Contact our team for detailed {policy.title.toLowerCase()}.
                     </div>
                   )}
@@ -345,14 +345,14 @@ export default function ChardhamDetailClient({ tour }) {
                   { title: 'Do Dham Yatra', duration: '6 Days / 5 Nights', price: 16999 },
                   { title: 'Kedarnath Yatra', duration: '5 Days / 4 Nights', price: 14999 }
                 ].map((t, i) => (
-                  <div key={i} style={{ display: 'flex', gap: 16, background: '#fff', borderRadius: 12, padding: 12, border: '1px solid #f1f5f9' }}>
+                  <div key={i} style={{ display: 'flex', gap: 16, background: 'var(--color-card)', borderRadius: 12, padding: 12, border: '1px solid var(--color-border)' }}>
                     <div style={{ width: 100, height: 75, borderRadius: 8, overflow: 'hidden', position: 'relative', flexShrink: 0 }}>
                       <Image src="https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt={t.title} fill style={{ objectFit: 'cover' }} />
                     </div>
                     <div>
                       <h4 style={{ margin: '0 0 4px', fontSize: 15, fontWeight: 700, color: 'var(--color-primary)' }}>{t.title}</h4>
-                      <div style={{ fontSize: 12, color: '#64748b', marginBottom: 8 }}>{t.duration}</div>
-                      <div style={{ fontSize: 14, fontWeight: 800, color: '#0f172a' }}>₹{t.price.toLocaleString()}</div>
+                      <div style={{ fontSize: 12, color: 'var(--color-text-muted)', marginBottom: 8 }}>{t.duration}</div>
+                      <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--color-text-primary)' }}>₹{t.price.toLocaleString()}</div>
                     </div>
                   </div>
                 ))}

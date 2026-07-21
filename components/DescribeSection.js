@@ -59,7 +59,7 @@ export default function DescribeSection() {
       <style>{`
         .collections-section {
           position: relative;
-          background: #ffffff;
+          background: var(--color-bg);
           padding: 60px 0 80px;
         }
 
@@ -69,7 +69,7 @@ export default function DescribeSection() {
 
         .collections-title {
           margin: 0 0 50px;
-          color: #111827;
+          color: var(--color-text-primary);
           font-family: "Italiana", sans-serif;
           font-size: clamp(28px, 3.5vw, 42px);
           font-weight: 800;
@@ -100,13 +100,13 @@ export default function DescribeSection() {
           font-family: "Italiana", sans-serif;
           font-size: clamp(28px, 3.5vw, 40px);
           font-weight: 800;
-          color: #111827;
+          color: var(--color-text-primary);
           margin: auto 0 20px 0;
         }
 
         .collection-desc {
           font-size: 16px;
-          color: #4b5563;
+          color: var(--color-text-muted);
           line-height: 1.6;
           margin: 0 0 32px 0;
         }
@@ -124,12 +124,12 @@ export default function DescribeSection() {
           justify-content: flex-start;
           gap: 10px;
           font-size: 15px;
-          color: #374151;
+          color: var(--color-text-primary);
           font-weight: 500;
         }
 
         .highlight-icon {
-          color: #8dc63f; /* Green checkmark color */
+          color: var(--color-primary);
           flex-shrink: 0;
         }
 
@@ -138,11 +138,11 @@ export default function DescribeSection() {
           align-items: center;
           justify-content: center;
           padding: 14px 32px;
-          background: #8dc63f; /* Using a vibrant green button matching the screenshot */
-          color: #ffffff;
+          background: var(--color-primary);
+          color: var(--color-card);
           font-weight: 600;
           font-size: 15px;
-          border-radius: 8px;
+          border-radius: var(--radius-md);
           text-decoration: none;
           transition: background 0.3s ease, transform 0.3s ease;
           align-self: center;
@@ -150,7 +150,7 @@ export default function DescribeSection() {
         }
 
         .btn-explore:hover {
-          background: #7bb532;
+          background: color-mix(in srgb, var(--color-primary) 85%, black);
           transform: translateY(-2px);
         }
 
@@ -158,9 +158,9 @@ export default function DescribeSection() {
           flex: 0 0 55%;
           position: relative;
           aspect-ratio: 16 / 10;
-          border-radius: 12px;
+          border-radius: var(--radius-xl);
           overflow: hidden;
-          box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+          box-shadow: var(--shadow-md);
         }
 
         .collection-image {

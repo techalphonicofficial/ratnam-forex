@@ -68,6 +68,27 @@ export default async function RootLayout({ children }) {
     '--bs-link-hover-color': 'var(--color-primary-hover)',
     '--gradient-primary': 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%)',
     '--gradient-warm': 'linear-gradient(135deg, var(--color-secondary) 0%, var(--color-secondary-hover) 100%)',
+
+    // Extended Dashboard Variables (Fallbacks)
+    '--color-background': '#F3EFE6',
+    '--color-surface': '#F3EFE6',
+    '--color-card': '#ffffff',
+    '--color-text': '#1F2A44',
+    '--color-text-secondary': '#2A3859',
+    '--color-border': '#D1B464',
+    '--shadow-sm': '0 2px 5px rgba(0,0,0,0.06)',
+    '--shadow-md': '0 10px 30px rgba(0,0,0,0.10)',
+    '--shadow-lg': '0 20px 45px rgba(0,0,0,0.14)',
+    '--radius-sm': '8px',
+    '--radius-md': '12px',
+    '--radius-lg': '16px',
+    '--space-1': '4px',
+    '--space-2': '8px',
+    '--space-3': '12px',
+    '--transition-fast': '150ms ease',
+    '--transition-base': '250ms cubic-bezier(0.4,0,0.2,1)',
+    '--gradient-card': 'linear-gradient(180deg, transparent 35%, rgba(11,60,93,.92) 100%)',
+    '--gradient-hero': 'linear-gradient(180deg, rgba(11,60,93,0) 0%, rgba(11,60,93,.90) 100%)',
   };
   const activeTheme = { ...projectTheme, ...themeColours };
 

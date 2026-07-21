@@ -18,14 +18,14 @@ function PytExclusiveCard({ title, oldPrice, newPrice, images, subTitle, listIte
 
   return (
     <div style={{
-      width: 340, background: '#1c222e', borderRadius: 16, overflow: 'hidden',
-      display: 'flex', flexDirection: 'column', position: 'relative', border: '1px solid #2d3748'
+      width: 340, background: 'var(--color-bg)', borderRadius: 16, overflow: 'hidden',
+      display: 'flex', flexDirection: 'column', position: 'relative', border: '1px solid var(--color-border)'
     }}>
       {/* Image Block */}
       <div style={{ width: '100%', height: 200, position: 'relative' }}>
         <img src={images[idx]} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'opacity 0.3s ease' }} alt={title} />
-        <div onClick={prevImg} style={{ position: 'absolute', top: '50%', left: 12, transform: 'translateY(-50%)', width: 28, height: 28, background: 'rgba(255,255,255,0.9)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.3)', color: '#111827', fontSize: 12 }}>❮</div>
-        <div onClick={nextImg} style={{ position: 'absolute', top: '50%', right: 12, transform: 'translateY(-50%)', width: 28, height: 28, background: 'rgba(255,255,255,0.9)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.3)', color: '#111827', fontSize: 12 }}>❯</div>
+        <div onClick={prevImg} style={{ position: 'absolute', top: '50%', left: 12, transform: 'translateY(-50%)', width: 28, height: 28, background: 'rgba(255,255,255,0.9)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.3)', color: 'var(--color-text-primary)', fontSize: 12 }}>❮</div>
+        <div onClick={nextImg} style={{ position: 'absolute', top: '50%', right: 12, transform: 'translateY(-50%)', width: 28, height: 28, background: 'rgba(255,255,255,0.9)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.3)', color: 'var(--color-text-primary)', fontSize: 12 }}>❯</div>
       </div>
 
       {/* Content Block */}
@@ -33,14 +33,14 @@ function PytExclusiveCard({ title, oldPrice, newPrice, images, subTitle, listIte
         <h4 style={{ color: 'white', margin: '0 0 8px', fontSize: 16, fontWeight: 700, textAlign: 'center', fontFamily: '"Italiana", sans-serif' }}>
           {title}
         </h4>
-        <div style={{ color: '#9ca3af', fontSize: 11, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginBottom: 20 }}>
+        <div style={{ color: 'var(--color-text-muted)', fontSize: 11, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginBottom: 20 }}>
           <span>⚲</span> {subTitle}
         </div>
 
-        <div style={{ color: '#d1d5db', fontSize: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <div style={{ color: 'var(--color-border)', fontSize: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
           {listItems.map((item, i) => (
             <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
-              <span style={{ color: '#fbbf24' }}>✨</span>
+              <span style={{ color: 'var(--color-secondary)' }}>✨</span>
               <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item}</span>
             </div>
           ))}
@@ -48,21 +48,21 @@ function PytExclusiveCard({ title, oldPrice, newPrice, images, subTitle, listIte
       </div>
 
       {/* Ticket Divider */}
-      <div style={{ position: 'relative', borderTop: '1px dashed #4b5563', margin: '0 16px' }}>
-        <div style={{ position: 'absolute', left: -24, top: -8, width: 16, height: 16, background: '#0a0a0a', borderRadius: '50%' }} />
-        <div style={{ position: 'absolute', right: -24, top: -8, width: 16, height: 16, background: '#0a0a0a', borderRadius: '50%' }} />
+      <div style={{ position: 'relative', borderTop: '1px dashed var(--color-text-muted)', margin: '0 16px' }}>
+        <div style={{ position: 'absolute', left: -24, top: -8, width: 16, height: 16, background: 'var(--color-text-primary)', borderRadius: '50%' }} />
+        <div style={{ position: 'absolute', right: -24, top: -8, width: 16, height: 16, background: 'var(--color-text-primary)', borderRadius: '50%' }} />
       </div>
 
       {/* Footer / Price */}
-      <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#222938' }}>
+      <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--color-bg-soft)' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 4 }}>
-            {oldPrice && <span style={{ color: '#6b7280', fontSize: 11, textDecoration: 'line-through' }}>{oldPrice}</span>}
+            {oldPrice && <span style={{ color: 'var(--color-text-muted)', fontSize: 11, textDecoration: 'line-through' }}>{oldPrice}</span>}
             <span style={{ color: 'white', fontSize: 18, fontWeight: 800 }}>{newPrice}</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            {oldPrice && <span style={{ background: '#ef4444', color: 'white', fontSize: 9, fontWeight: 800, padding: '2px 6px', borderRadius: 4 }}>16% OFF</span>}
-            <span style={{ color: '#9ca3af', fontSize: 10 }}>5 nights / person</span>
+            {oldPrice && <span style={{ background: 'var(--color-secondary)', color: 'white', fontSize: 9, fontWeight: 800, padding: '2px 6px', borderRadius: 4 }}>16% OFF</span>}
+            <span style={{ color: 'var(--color-text-muted)', fontSize: 10 }}>5 nights / person</span>
           </div>
         </div>
         <button className="btn-primary btn-sm">
@@ -76,12 +76,12 @@ function PytExclusiveCard({ title, oldPrice, newPrice, images, subTitle, listIte
 /* 1. PYT Exclusive Section */
 export function PytExclusive() {
   return (
-    <div style={{ background: '#0a0a0a', padding: '60px 24px', position: 'relative', zIndex: 10 }}>
+    <div style={{ background: 'var(--color-text-primary)', padding: '60px 24px', position: 'relative', zIndex: 10 }}>
       <div className='container' style={{ margin: '0 auto', display: 'flex', flexWrap: 'wrap', gap: 40, justifyContent: 'center', alignItems: 'center' }}>
 
         {/* PYT TITLE column */}
         <div style={{ flex: '1 1 250px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-          <h2 style={{ fontFamily: '"Italiana", sans-serif', color: '#fbbf24', fontSize: 36, fontWeight: 900, textTransform: 'uppercase', lineHeight: 1.1, margin: 0, textAlign: 'center' }}>
+          <h2 style={{ fontFamily: '"Italiana", sans-serif', color: 'var(--color-secondary)', fontSize: 36, fontWeight: 900, textTransform: 'uppercase', lineHeight: 1.1, margin: 0, textAlign: 'center' }}>
             PYT<br />EXCLUSIVES<span style={{ fontSize: 20, verticalAlign: 'super' }}>✨</span>
           </h2>
 
@@ -97,7 +97,7 @@ export function PytExclusive() {
 
           <div style={{ width: '100%', marginTop: 40, display: 'flex', justifyContent: 'flex-start' }}>
             <svg width="200" height="80" viewBox="0 0 200 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M0 70 C30 80, 40 40, 50 60 C60 80, 70 70, 80 50 C100 0, 150 70, 200 10" stroke="#10b981" strokeWidth="1.5" strokeLinecap="round" />
+              <path d="M0 70 C30 80, 40 40, 50 60 C60 80, 70 70, 80 50 C100 0, 150 70, 200 10" stroke="var(--color-primary)" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
           </div>
         </div>
@@ -133,38 +133,38 @@ export function PytExclusive() {
 /* 2. Trust Banner (Mint green background with traveler avatars) */
 export function TrustBanner() {
   return (
-    <div style={{ background: 'linear-gradient(to right, #ecfdf5, #f0fdfa, #f8fafc)', padding: '24px 0', borderBottom: '1px solid #e5e7eb' }}>
+    <div style={{ background: 'linear-gradient(to right, var(--color-primary-light), var(--color-primary-light), var(--color-bg-soft))', padding: '24px 0', borderBottom: '1px solid var(--color-border)' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', flexWrap: 'wrap', gap: 40, alignItems: 'center', justifyContent: 'center', padding: '0 24px' }}>
 
         {/* Excellence Badge */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{ width: 64, height: 64, background: '#10b981', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: 64, height: 64, background: 'var(--color-primary)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <span style={{ fontSize: 28 }}>🏆</span>
           </div>
           <div>
-            <h3 style={{ margin: 0, color: '#111827', fontSize: 20, fontWeight: 800, fontFamily: '"Italiana", sans-serif' }}>No.1</h3>
-            <p style={{ margin: 0, color: '#059669', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5 }}>Customized Holiday Planner</p>
-            <p style={{ margin: 0, color: '#6b7280', fontSize: 11 }}>in India & globally</p>
+            <h3 style={{ margin: 0, color: 'var(--color-text-primary)', fontSize: 20, fontWeight: 800, fontFamily: '"Italiana", sans-serif' }}>No.1</h3>
+            <p style={{ margin: 0, color: 'var(--color-primary)', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5 }}>Customized Holiday Planner</p>
+            <p style={{ margin: 0, color: 'var(--color-text-muted)', fontSize: 11 }}>in India & globally</p>
           </div>
         </div>
 
         {/* Traveler 1 */}
         <div style={{ display: 'flex', gap: 12, background: 'white', padding: '12px 16px', borderRadius: 12, boxShadow: '0 2px 10px rgba(0,0,0,0.04)' }}>
-          <div style={{ width: 44, height: 44, background: '#f97316', borderRadius: '50%', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 18 }}>A</div>
+          <div style={{ width: 44, height: 44, background: 'var(--color-secondary)', borderRadius: '50%', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 18 }}>A</div>
           <div>
-            <p style={{ margin: '0 0 2px', fontSize: 14, fontWeight: 700, color: '#111827' }}>Anjali S.</p>
-            <p style={{ margin: 0, fontSize: 12, color: '#6b7280' }}>"Perfectly planned Bali honeymoon!"</p>
-            <div style={{ display: 'flex', gap: 2, marginTop: 4, color: '#fbbf24', fontSize: 10 }}>★★★★★</div>
+            <p style={{ margin: '0 0 2px', fontSize: 14, fontWeight: 700, color: 'var(--color-text-primary)' }}>Anjali S.</p>
+            <p style={{ margin: 0, fontSize: 12, color: 'var(--color-text-muted)' }}>"Perfectly planned Bali honeymoon!"</p>
+            <div style={{ display: 'flex', gap: 2, marginTop: 4, color: 'var(--color-secondary)', fontSize: 10 }}>★★★★★</div>
           </div>
         </div>
 
         {/* Traveler 2 */}
         <div style={{ display: 'flex', gap: 12, background: 'white', padding: '12px 16px', borderRadius: 12, boxShadow: '0 2px 10px rgba(0,0,0,0.04)' }}>
-          <div style={{ width: 44, height: 44, background: '#8b5cf6', borderRadius: '50%', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 18 }}>R</div>
+          <div style={{ width: 44, height: 44, background: 'var(--color-primary)', borderRadius: '50%', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 18 }}>R</div>
           <div>
-            <p style={{ margin: '0 0 2px', fontSize: 14, fontWeight: 700, color: '#111827' }}>Rahul V.</p>
-            <p style={{ margin: 0, fontSize: 12, color: '#6b7280' }}>"Seamless Europe family trip."</p>
-            <div style={{ display: 'flex', gap: 2, marginTop: 4, color: '#fbbf24', fontSize: 10 }}>★★★★★</div>
+            <p style={{ margin: '0 0 2px', fontSize: 14, fontWeight: 700, color: 'var(--color-text-primary)' }}>Rahul V.</p>
+            <p style={{ margin: 0, fontSize: 12, color: 'var(--color-text-muted)' }}>"Seamless Europe family trip."</p>
+            <div style={{ display: 'flex', gap: 2, marginTop: 4, color: 'var(--color-secondary)', fontSize: 10 }}>★★★★★</div>
           </div>
         </div>
 
@@ -177,8 +177,8 @@ export function TrustBanner() {
 export function BrandsRow() {
   const brands = ['Tourism Australia', 'Saudi', 'Visit Dubai', 'Singapore', 'VFS Global', 'Emirates', 'Marriott', 'Qatar Airways'];
   return (
-    <div style={{ background: '#fff', padding: '40px 0', borderTop: '1px dashed #e5e7eb', borderBottom: '1px dashed #e5e7eb' }}>
-      <p style={{ textAlign: 'center', fontSize: 12, fontWeight: 800, letterSpacing: 1.5, textTransform: 'uppercase', color: '#6b7280', marginBottom: 24 }}>
+    <div style={{ background: 'var(--color-card)', padding: '40px 0', borderTop: '1px dashed var(--color-border)', borderBottom: '1px dashed var(--color-border)' }}>
+      <p style={{ textAlign: 'center', fontSize: 12, fontWeight: 800, letterSpacing: 1.5, textTransform: 'uppercase', color: 'var(--color-text-muted)', marginBottom: 24 }}>
         Brands we've partnered with
       </p>
       <div style={{ display: 'flex', gap: 32, justifyContent: 'center', flexWrap: 'wrap', padding: '0 24px', opacity: 0.5, filter: 'grayscale(100%)' }}>
@@ -193,19 +193,19 @@ export function BrandsRow() {
 /* 4. Google Reviews Block */
 export function BottomReviews({ destination }) {
   return (
-    <div style={{ background: '#f8fafc', padding: '64px 24px' }}>
+    <div style={{ background: 'var(--color-bg-soft)', padding: '64px 24px' }}>
       <div style={{ maxWidth: 1000, margin: '0 auto', display: 'flex', gap: 40, flexWrap: 'wrap' }}>
 
         {/* Left Side: Summary */}
         <div style={{ flex: '1 1 300px' }}>
-          <h2 style={{ fontFamily: '"Italiana", sans-serif', color: '#111827', fontSize: 24, fontWeight: 800, marginBottom: 16 }}>
+          <h2 style={{ fontFamily: '"Italiana", sans-serif', color: 'var(--color-text-primary)', fontSize: 24, fontWeight: 800, marginBottom: 16 }}>
             Reviews for {destination} packages
           </h2>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-            <span style={{ fontSize: 40, fontWeight: 900, color: '#111827', lineHeight: 1 }}>4.9</span>
+            <span style={{ fontSize: 40, fontWeight: 900, color: 'var(--color-text-primary)', lineHeight: 1 }}>4.9</span>
             <div>
-              <div style={{ color: '#fbbf24', fontSize: 16, marginBottom: 4 }}>★★★★★</div>
-              <p style={{ margin: 0, fontSize: 12, color: '#6b7280' }}>Based on 4,289 reviews</p>
+              <div style={{ color: 'var(--color-secondary)', fontSize: 16, marginBottom: 4 }}>★★★★★</div>
+              <p style={{ margin: 0, fontSize: 12, color: 'var(--color-text-muted)' }}>Based on 4,289 reviews</p>
             </div>
           </div>
           <div style={{ height: 16, width: 100, background: 'url(https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg) no-repeat left center/contain', marginTop: 12 }} />
@@ -214,18 +214,18 @@ export function BottomReviews({ destination }) {
         {/* Right Side: Scrollable Reviews */}
         <div style={{ flex: '2 1 500px', display: 'flex', flexDirection: 'column', gap: 16 }}>
           {[1, 2, 3].map(i => (
-            <div key={i} style={{ background: 'white', padding: 20, borderRadius: 16, border: '1px solid #e5e7eb', boxShadow: '0 2px 10px rgba(0,0,0,0.03)' }}>
+            <div key={i} style={{ background: 'white', padding: 20, borderRadius: 16, border: '1px solid var(--color-border)', boxShadow: '0 2px 10px rgba(0,0,0,0.03)' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#1e40af', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>R</div>
+                  <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--color-primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>R</div>
                   <div>
-                    <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: '#111827' }}>Ramanathan Iyer</p>
-                    <p style={{ margin: 0, fontSize: 11, color: '#9ca3af' }}>3 days ago</p>
+                    <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: 'var(--color-text-primary)' }}>Ramanathan Iyer</p>
+                    <p style={{ margin: 0, fontSize: 11, color: 'var(--color-text-muted)' }}>3 days ago</p>
                   </div>
                 </div>
-                <div style={{ color: '#fbbf24', fontSize: 12 }}>★★★★★</div>
+                <div style={{ color: 'var(--color-secondary)', fontSize: 12 }}>★★★★★</div>
               </div>
-              <p style={{ margin: 0, fontSize: 13, color: '#4b5563', lineHeight: 1.5 }}>
+              <p style={{ margin: 0, fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.5 }}>
                 "The entire {destination} trip was orchestrated perfectly by the ITS TRAVELS AND TOURS team. From airport transfers to the stunning resort stay and daily activities, everything was seamless. Highly recommend their app for real-time concierge support!"
               </p>
             </div>
@@ -267,7 +267,7 @@ function PytPackageCard({ pkg }) {
 
   return (
     <div style={{
-      borderRadius: 12, border: '1px solid #e5e7eb', overflow: 'hidden', background: '#fff',
+      borderRadius: 12, border: '1px solid var(--color-border)', overflow: 'hidden', background: 'var(--color-card)',
       display: 'flex', flexDirection: 'column', transition: 'box-shadow 0.2s'
     }} onMouseEnter={e => e.currentTarget.style.boxShadow = '0 10px 25px rgba(0,0,0,0.05)'} onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}>
 
@@ -288,32 +288,32 @@ function PytPackageCard({ pkg }) {
 
       {/* Content Section */}
       <div style={{ padding: '16px 16px', flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <h4 style={{ margin: '0 0 12px', fontSize: 15, fontWeight: 700, color: '#111827', lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+        <h4 style={{ margin: '0 0 12px', fontSize: 15, fontWeight: 700, color: 'var(--color-text-primary)', lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
           {pkg.title}
         </h4>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#6b7280', fontSize: 13, marginBottom: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-text-muted)', fontSize: 13, marginBottom: 12 }}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
           <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{pkg.location}</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6 }}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="#047857" stroke="#047857" style={{ marginTop: 2, flexShrink: 0 }}><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>
-          <p style={{ margin: 0, fontSize: 13, color: '#374151', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', lineHeight: 1.5 }}>
-            <b style={{ color: '#047857' }}>Picks: </b>{pkg.picks}
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--color-primary)" stroke="var(--color-primary)" style={{ marginTop: 2, flexShrink: 0 }}><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>
+          <p style={{ margin: 0, fontSize: 13, color: 'var(--color-text-primary)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', lineHeight: 1.5 }}>
+            <b style={{ color: 'var(--color-primary)' }}>Picks: </b>{pkg.picks}
           </p>
         </div>
       </div>
 
       {/* Price & Action Section */}
-      <div style={{ padding: '16px', borderTop: '1px solid #f3f4f6', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+      <div style={{ padding: '16px', borderTop: '1px solid var(--color-bg-soft)', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
         <div>
           {pkg.oldPrice && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
-              <span style={{ fontSize: 11, color: '#9ca3af', textDecoration: 'line-through' }}>{pkg.oldPrice}</span>
-              <span style={{ background: '#ef4444', color: 'white', padding: '2px 6px', borderRadius: 4, fontSize: 10, fontWeight: 700 }}>{pkg.discount}</span>
+              <span style={{ fontSize: 11, color: 'var(--color-text-muted)', textDecoration: 'line-through' }}>{pkg.oldPrice}</span>
+              <span style={{ background: 'var(--color-secondary)', color: 'white', padding: '2px 6px', borderRadius: 4, fontSize: 10, fontWeight: 700 }}>{pkg.discount}</span>
             </div>
           )}
-          <div style={{ fontSize: 18, fontWeight: 800, color: '#111827', lineHeight: 1 }}>{pkg.price}</div>
-          <div style={{ fontSize: 11, color: '#6b7280', marginTop: 4 }}>{pkg.nights} nights / person</div>
+          <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--color-text-primary)', lineHeight: 1 }}>{pkg.price}</div>
+          <div style={{ fontSize: 11, color: 'var(--color-text-muted)', marginTop: 4 }}>{pkg.nights} nights / person</div>
         </div>
         <Link
           href={getCustomLink(pkg.location.split('(')[0].trim(), pkg.isFamily ? 'Family' : null)}
@@ -341,7 +341,7 @@ function PytPackageGrid({ title, tabs, defaultActiveTab, packages, isFamily, des
 
   return (
     <div style={{ marginBottom: 64 }}>
-      <h2 style={{ fontFamily: '"Italiana", sans-serif', fontSize: 24, fontWeight: 700, color: '#111827', marginBottom: 16 }}>
+      <h2 style={{ fontFamily: '"Italiana", sans-serif', fontSize: 24, fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: 16 }}>
         {title}
       </h2>
 
@@ -351,8 +351,8 @@ function PytPackageGrid({ title, tabs, defaultActiveTab, packages, isFamily, des
           const isActive = idx === activeTab;
           return (
             <div key={idx} onClick={() => setActiveTab(idx)} style={{
-              padding: '6px 16px', borderRadius: 24, border: isActive ? '1px solid var(--color-primary)' : '1px solid #e5e7eb',
-              background: isActive ? 'var(--color-primary)' : 'white', color: isActive ? 'white' : '#4b5563',
+              padding: '6px 16px', borderRadius: 24, border: isActive ? '1px solid var(--color-primary)' : '1px solid var(--color-border)',
+              background: isActive ? 'var(--color-primary)' : 'white', color: isActive ? 'white' : 'var(--color-text-muted)',
               fontSize: 14, fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s', userSelect: 'none'
             }}>
               {tab}
@@ -369,11 +369,11 @@ function PytPackageGrid({ title, tabs, defaultActiveTab, packages, isFamily, des
 
         {/* 6th Card: Build Your Own */}
         <div style={{
-          borderRadius: 12, border: '1px dashed #f59e0b', background: '#fffbeb', padding: 32, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center'
+          borderRadius: 12, border: '1px dashed var(--color-secondary)', background: 'var(--color-secondary-hover)', padding: 32, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center'
         }}>
           <div style={{ fontSize: 32, marginBottom: 12 }}>🤔</div>
-          <h3 style={{ fontSize: 20, fontWeight: 700, color: '#111827', marginBottom: 8, fontFamily: '"Italiana", sans-serif' }}>Don't see the perfect fit?</h3>
-          <p style={{ fontSize: 15, color: '#4b5563', marginBottom: 24, lineHeight: 1.5 }}>Build your perfect trip, your way.</p>
+          <h3 style={{ fontSize: 20, fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: 8, fontFamily: '"Italiana", sans-serif' }}>Don't see the perfect fit?</h3>
+          <p style={{ fontSize: 15, color: 'var(--color-text-muted)', marginBottom: 24, lineHeight: 1.5 }}>Build your perfect trip, your way.</p>
           <Link href={getCustomLink(destName)} style={{ textDecoration: 'none' }}>
             <button className="btn-secondary">
               Start Building your Itinerary →
@@ -415,7 +415,7 @@ export function CategoryBlocks({ destination }) {
   ];
 
   return (
-    <div style={{ background: '#fff', padding: '64px 0px' }}>
+    <div style={{ background: 'var(--color-card)', padding: '64px 0px' }}>
       <div className='container' style={{ margin: '0 auto' }}>
 
         {/* Family Section */}

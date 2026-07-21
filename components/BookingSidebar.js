@@ -14,19 +14,19 @@ export default function BookingSidebar({ tour }) {
     <div className="booking-sidebar">
       <style>{`
         .booking-sidebar {
-          background: #fff;
-          border-radius: 16px;
-          padding: 24px;
-          box-shadow: 0 10px 40px rgba(0,0,0,0.08);
-          border: 1px solid #f1f5f9;
+          background: var(--color-card);
+          border-radius: var(--radius-2xl);
+          padding: var(--space-6);
+          box-shadow: var(--shadow-md);
+          border: 1px solid var(--color-border);
         }
         .discount-badge {
-          background: #fee2e2;
-          color: #ef4444;
+          background: var(--color-secondary-hover);
+          color: var(--color-secondary);
           font-size: 12px;
           font-weight: 700;
           padding: 4px 10px;
-          border-radius: 20px;
+          border-radius: var(--radius-2xl);
           display: inline-block;
           margin-bottom: 12px;
         }
@@ -34,37 +34,37 @@ export default function BookingSidebar({ tour }) {
           display: flex;
           align-items: baseline;
           gap: 8px;
-          margin-bottom: 24px;
+          margin-bottom: var(--space-6);
         }
         .original-price {
-          color: #94a3b8;
+          color: var(--color-text-muted);
           text-decoration: line-through;
           font-size: 16px;
           font-weight: 500;
         }
         .current-price {
-          color: #0f172a;
+          color: var(--color-text-primary);
           font-size: 32px;
           font-weight: 800;
         }
         .price-suffix {
-          color: #64748b;
+          color: var(--color-text-muted);
           font-size: 14px;
         }
         .input-group {
-          margin-bottom: 16px;
+          margin-bottom: var(--space-4);
           position: relative;
         }
         .sidebar-input {
           width: 100%;
-          padding: 14px 16px 14px 44px;
-          border: 1px solid #e2e8f0;
-          border-radius: 8px;
+          padding: var(--space-3) var(--space-4) var(--space-3) 44px;
+          border: 1px solid var(--color-border);
+          border-radius: var(--radius-md);
           font-size: 15px;
-          color: #334155;
+          color: var(--color-text-primary);
           outline: none;
           transition: border-color 0.2s;
-          background: #fff;
+          background: var(--color-card);
           appearance: none;
         }
         .sidebar-input:focus {
@@ -75,14 +75,14 @@ export default function BookingSidebar({ tour }) {
           left: 16px;
           top: 50%;
           transform: translateY(-50%);
-          color: #64748b;
+          color: var(--color-text-muted);
           pointer-events: none;
         }
         .trust-badges {
           display: flex;
           justify-content: space-between;
-          border-top: 1px solid #f1f5f9;
-          padding-top: 20px;
+          border-top: 1px solid var(--color-border);
+          padding-top: var(--space-5);
         }
         .trust-badge {
           display: flex;
@@ -95,16 +95,16 @@ export default function BookingSidebar({ tour }) {
         .trust-icon {
           width: 32px;
           height: 32px;
-          background: #f8fafc;
+          background: var(--color-bg-soft);
           border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
-          color: #10b981;
+          color: var(--color-primary);
         }
         .trust-text {
           font-size: 11px;
-          color: #64748b;
+          color: var(--color-text-muted);
           font-weight: 500;
           line-height: 1.2;
         }
@@ -144,17 +144,17 @@ export default function BookingSidebar({ tour }) {
         </select>
       </div>
 
-      <button className="btn-primary w-100" style={{ justifyContent: 'center', marginBottom: 12 }}>
+      <button className="btn-primary w-100" style={{ justifyContent: 'center', marginBottom: 'var(--space-3)' }}>
         Book Now 
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
       </button>
 
-      <button className="btn-secondary w-100" style={{ justifyContent: 'center', marginBottom: 24 }}>
+      <button className="btn-secondary w-100" style={{ justifyContent: 'center', marginBottom: 'var(--space-6)' }}>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
         Send Enquiry
       </button>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-3)', marginBottom: 'var(--space-6)' }}>
         <button className="btn-primary w-100" style={{ justifyContent: 'center' }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
           WhatsApp

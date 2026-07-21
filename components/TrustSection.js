@@ -36,7 +36,7 @@ export default function TrustSection({ section }) {
   return (
     <section style={{ background: 'var(--color-bg)', borderTop: '1px solid var(--color-primary-light)', padding: '32px 0' }}>
       <div className="container">
-        <p style={{ textAlign: 'center', fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: '#9ca3af', marginBottom: 20 }}>
+        <p style={{ textAlign: 'center', fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: 'var(--color-text-muted)', marginBottom: 20 }}>
           {heading}
         </p>
 
@@ -49,7 +49,7 @@ export default function TrustSection({ section }) {
         </div>
 
         {awards.length > 0 && (
-          <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: 24 }}>
+          <div style={{ borderTop: '1px solid var(--color-bg-soft)', paddingTop: 24 }}>
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 32, flexWrap: 'wrap' }}>
               {awards.map(({ icon, label }) => (
                 <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 7 }}>

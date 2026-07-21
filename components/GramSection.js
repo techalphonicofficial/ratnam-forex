@@ -83,7 +83,7 @@ function GramCard({ photo, index }) {
                 objectFit: 'cover',
                 transform: hovered ? 'scale(1.05)' : 'scale(1)',
                 transition: 'transform 0.5s ease',
-                background: '#000',
+                background: 'var(--color-text-primary)',
               }}
             >
               <source src={videoSrc} type={getVideoType(videoSrc)} />
@@ -212,7 +212,7 @@ export default function GramSection() {
               <div style={{ color: 'var(--color-text-primary)', fontSize: 13, fontWeight: 700, display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                   4.6<span style={{ fontSize: 10, color: 'var(--color-text-muted)', marginRight: 4 }}>/5</span> 
-                  <span style={{ color: '#fbbf24', fontSize: 14 }}>★</span>
+                  <span style={{ color: 'var(--color-secondary)', fontSize: 14 }}>★</span>
                 </div>
                 <div style={{ fontSize: 10, color: 'var(--color-text-muted)', fontWeight: 500, letterSpacing: 0.5 }}>8250 reviews</div>
               </div>
@@ -230,7 +230,7 @@ export default function GramSection() {
               <div style={{ color: 'var(--color-text-primary)', fontSize: 13, fontWeight: 700, display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                   4.8<span style={{ fontSize: 10, color: 'var(--color-text-muted)', marginRight: 4 }}>/5</span> 
-                  <span style={{ color: '#fbbf24', fontSize: 14 }}>★</span>
+                  <span style={{ color: 'var(--color-secondary)', fontSize: 14 }}>★</span>
                 </div>
                 <div style={{ fontSize: 10, color: 'var(--color-text-muted)', fontWeight: 500, letterSpacing: 0.5 }}>1440 reviews</div>
               </div>
@@ -247,10 +247,10 @@ export default function GramSection() {
               position: 'absolute', left: 40, top: '45%', transform: 'translateY(-50%)', zIndex: 10,
               width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,0.8)', border: 'none',
               display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
-              color: '#111827', fontSize: 18, paddingBottom: 2, transition: 'all 0.2s ease'
+              color: 'var(--color-text-primary)', fontSize: 18, paddingBottom: 2, transition: 'all 0.2s ease'
             }}
             onMouseEnter={e => { e.currentTarget.style.background = 'var(--brand-primary)'; e.currentTarget.style.color = 'white'; e.currentTarget.style.transform = 'translateY(-50%) scale(1.1)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(46,74,59,0.4)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.8)'; e.currentTarget.style.color = '#111827'; e.currentTarget.style.transform = 'translateY(-50%)'; e.currentTarget.style.boxShadow = '0 4px 10px rgba(0,0,0,0.3)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.8)'; e.currentTarget.style.color = 'var(--color-text-primary)'; e.currentTarget.style.transform = 'translateY(-50%)'; e.currentTarget.style.boxShadow = '0 4px 10px rgba(0,0,0,0.3)'; }}
           >❮</button>
 
           <button 
@@ -259,10 +259,10 @@ export default function GramSection() {
               position: 'absolute', right: 40, top: '45%', transform: 'translateY(-50%)', zIndex: 10,
               width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,0.8)', border: 'none',
               display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
-              color: '#111827', fontSize: 18, paddingBottom: 2, transition: 'all 0.2s ease'
+              color: 'var(--color-text-primary)', fontSize: 18, paddingBottom: 2, transition: 'all 0.2s ease'
             }}
             onMouseEnter={e => { e.currentTarget.style.background = 'var(--brand-primary)'; e.currentTarget.style.color = 'white'; e.currentTarget.style.transform = 'translateY(-50%) scale(1.1)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(46,74,59,0.4)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.8)'; e.currentTarget.style.color = '#111827'; e.currentTarget.style.transform = 'translateY(-50%)'; e.currentTarget.style.boxShadow = '0 4px 10px rgba(0,0,0,0.3)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.8)'; e.currentTarget.style.color = 'var(--color-text-primary)'; e.currentTarget.style.transform = 'translateY(-50%)'; e.currentTarget.style.boxShadow = '0 4px 10px rgba(0,0,0,0.3)'; }}
           >❯</button>
 
           {/* Cards Wrapper */}

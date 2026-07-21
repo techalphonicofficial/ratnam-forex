@@ -78,23 +78,23 @@ export default function AppBanner() {
 
           {/* RIGHT: Phone mockup */}
           <div className="app-banner-phone-wrap" style={{ position: 'relative', flexShrink: 0 }}>
-            <div className="app-banner-phone" style={{ width: 260, height: 500, background: '#111827', borderRadius: 38, border: '6px solid rgba(255,255,255,0.08)', overflow: 'hidden', boxShadow: '0 40px 80px rgba(0,0,0,0.6)', position: 'relative' }}>
+            <div className="app-banner-phone" style={{ width: 260, height: 500, background: 'var(--color-text-primary)', borderRadius: 38, border: '6px solid rgba(255,255,255,0.08)', overflow: 'hidden', boxShadow: '0 40px 80px rgba(0,0,0,0.6)', position: 'relative' }}>
               {/* Top notch */}
               <div style={{ background: 'var(--color-primary)', height: 38, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <div style={{ width: 70, height: 18, background: '#111827', borderRadius: 999 }} />
+                <div style={{ width: 70, height: 18, background: 'var(--color-text-primary)', borderRadius: 999 }} />
               </div>
               {/* Hero image */}
               <img src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=400&q=80" alt="Bali" style={{ width: '100%', height: 185, objectFit: 'cover', display: 'block' }} />
               {/* App content */}
               <div style={{ background: 'white', padding: '14px 14px 8px', flex: 1 }}>
-                <div style={{ fontFamily: '"Italiana", sans-serif', fontWeight: 700, fontSize: 13, color: '#111827', marginBottom: 3 }}>Bali Paradise Escape</div>
+                <div style={{ fontFamily: '"Italiana", sans-serif', fontWeight: 700, fontSize: 13, color: 'var(--color-text-primary)', marginBottom: 3 }}>Bali Paradise Escape</div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                  <span style={{ fontSize: 11, color: '#6b7280' }}>7 Days · 4★ Hotels</span>
+                  <span style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>7 Days · 4★ Hotels</span>
                   <span style={{ fontWeight: 800, fontSize: 14, color: 'var(--color-primary)' }}>₹1,51,920</span>
                 </div>
                 <div style={{ background: 'var(--color-primary)', borderRadius: 8, padding: '8px', textAlign: 'center', color: 'white', fontWeight: 700, fontSize: 12, marginBottom: 12 }}>Enquire Now</div>
                 {/* Bottom nav */}
-                <div style={{ display: 'flex', justifyContent: 'space-around', paddingTop: 6, borderTop: '1px solid #f3f4f6' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-around', paddingTop: 6, borderTop: '1px solid var(--color-bg-soft)' }}>
                   {['🏠', '🔍', '❤️', '👤'].map((ic, i) => (
                     <span key={i} style={{ fontSize: 18, opacity: i === 0 ? 1 : 0.35 }}>{ic}</span>
                   ))}
@@ -105,13 +105,13 @@ export default function AppBanner() {
             {/* Floating badges */}
             <div style={{ position: 'absolute', top: 30, right: -28, background: 'white', borderRadius: 14, padding: '10px 14px', boxShadow: '0 8px 24px rgba(0,0,0,0.25)', textAlign: 'center' }}>
               <div style={{ fontWeight: 800, fontSize: 18, color: 'var(--color-primary)' }}>25%</div>
-              <div style={{ fontSize: 10, color: '#6b7280', fontWeight: 600 }}>APP DEAL</div>
+              <div style={{ fontSize: 10, color: 'var(--color-text-muted)', fontWeight: 600 }}>APP DEAL</div>
             </div>
             <div style={{ position: 'absolute', bottom: 60, left: -28, background: 'white', borderRadius: 14, padding: '10px 12px', boxShadow: '0 8px 24px rgba(0,0,0,0.2)', display: 'flex', alignItems: 'center', gap: 8 }}>
               <span style={{ fontSize: 20 }}>⭐</span>
               <div>
-                <div style={{ fontWeight: 700, fontSize: 12, color: '#111827', lineHeight: 1 }}>4.9 Rating</div>
-                <div style={{ fontSize: 10, color: '#6b7280' }}>12K reviews</div>
+                <div style={{ fontWeight: 700, fontSize: 12, color: 'var(--color-text-primary)', lineHeight: 1 }}>4.9 Rating</div>
+                <div style={{ fontSize: 10, color: 'var(--color-text-muted)' }}>12K reviews</div>
               </div>
             </div>
           </div>

@@ -627,7 +627,7 @@ export default function CollectionPage({ params }) {
           title={meta.title}
           subtitle={meta.description}
           meta={(
-            <SoftBadge tone="live">
+            <SoftBadge tone="primary">
               {collectionLive.length ? `${collectionLive.length}+ recent trip requests` : `${collectionFallback.length}+ tour packages`}
             </SoftBadge>
           )}
@@ -660,8 +660,8 @@ export default function CollectionPage({ params }) {
         {/* ── Result count badge ── */}
         <div className="recent-result-row">
           <span style={{
-            background: '#8EB69B', border: '1px solid #8EB69B',
-            color: '#FFFFFF', borderRadius: 999,
+            background: 'var(--color-primary)', border: '1px solid var(--color-primary)',
+            color: 'var(--color-card)', borderRadius: 999,
             padding: '3px 12px', fontSize: 12, fontWeight: 700,
           }}>
             {filtered.length} itineraries

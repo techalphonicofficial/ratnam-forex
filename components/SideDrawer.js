@@ -63,7 +63,7 @@ export default function SideDrawer({ isOpen, onClose, companyInfo }) {
           zIndex: 2000,
           opacity: isOpen ? 1 : 0,
           visibility: isOpen ? 'visible' : 'hidden',
-          transition: 'all 0.3s ease',
+          transition: 'all var(--transition-base)',
           backdropFilter: 'blur(4px)',
         }}
       />
@@ -75,15 +75,15 @@ export default function SideDrawer({ isOpen, onClose, companyInfo }) {
           width: '100%', maxWidth: 340, height: '100vh',
           background: 'white', zIndex: 2001,
           transform: isOpen ? 'translateX(0)' : 'translateX(100%)',
-          transition: 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+          transition: 'transform var(--transition-slow)',
           display: 'flex', flexDirection: 'column',
           boxShadow: '-10px 0 30px rgba(0,0,0,0.1)',
         }}
       >
         {/* Header */}
-        <div style={{ padding: '24px', borderBottom: '1px solid #f0f0f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0, color: '#111827' }}>Hello, Guest</h2>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 5, color: '#6b7280' }}>
+        <div style={{ padding: 'var(--space-6)', borderBottom: '1px solid var(--color-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0, color: 'var(--color-text-primary)' }}>Hello, Guest</h2>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 5, color: 'var(--color-text-muted)' }}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="20" height="20">
               <path d="M18 6L6 18M6 6l12 12" />
             </svg>
@@ -100,18 +100,18 @@ export default function SideDrawer({ isOpen, onClose, companyInfo }) {
               <div
                 onClick={() => group.hasSub ? toggleExpand(group.label) : null}
                 style={{
-                  padding: '16px 24px',
+                  padding: 'var(--space-4) var(--space-6)',
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
                   cursor: 'pointer',
-                  transition: 'all 0.2s',
-                  background: isExpanded ? '#fff9f2' : 'white',
+                  transition: 'all var(--transition-base)',
+                  background: isExpanded ? 'var(--color-primary-light)' : 'white',
                 }}
-                onMouseEnter={e => { if (!isExpanded) e.currentTarget.style.background = '#fcfcfc'; }}
+                onMouseEnter={e => { if (!isExpanded) e.currentTarget.style.background = 'var(--color-bg-soft)'; }}
                 onMouseLeave={e => { if (!isExpanded) e.currentTarget.style.background = 'white'; }}
               >
-                <span style={{ fontSize: 13.5, fontWeight: isExpanded ? 600 : 500, color: isExpanded ? '#111827' : '#374151' }}>
+                <span style={{ fontSize: 13.5, fontWeight: isExpanded ? 600 : 500, color: isExpanded ? 'var(--color-text-primary)' : 'var(--color-text-secondary)' }}>
                   {group.label}
                 </span>
                 {group.hasSub && (
@@ -120,7 +120,7 @@ export default function SideDrawer({ isOpen, onClose, companyInfo }) {
                     style={{
                       opacity: 0.6,
                       transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
-                      transition: 'transform 0.3s ease',
+                      transition: 'transform var(--transition-base)',
                     }}
                   >
                     <path d="M7 10l5 5 5-5z" />
@@ -130,7 +130,7 @@ export default function SideDrawer({ isOpen, onClose, companyInfo }) {
             );
 
             return (
-              <div key={idx} style={{ borderBottom: '1px solid #f9fafb' }}>
+              <div key={idx} style={{ borderBottom: '1px solid var(--color-bg)' }}>
                 {hasHref ? (
                   <Link href={group.href} style={{ textDecoration: 'none' }} onClick={onClose}>
                     {ItemTrigger}
@@ -138,7 +138,7 @@ export default function SideDrawer({ isOpen, onClose, companyInfo }) {
                 ) : ItemTrigger}
 
                 {group.hasSub && isExpanded && (
-                  <div style={{ background: '#fff9f2', paddingBottom: 12 }}>
+                  <div style={{ background: 'var(--color-primary-light)', paddingBottom: 12 }}>
                     {group.subItems.map((sub, sidx) => {
                       const isObj = typeof sub === 'object';
                       const label = isObj ? sub.label : sub;
@@ -146,9 +146,9 @@ export default function SideDrawer({ isOpen, onClose, companyInfo }) {
 
                       const ItemContent = (
                         <div
-                          style={{ padding: '10px 48px', fontSize: '13px', color: '#4b5563', cursor: 'pointer', transition: 'color 0.2s' }}
-                          onMouseEnter={e => e.currentTarget.style.color = '#10b981'}
-                          onMouseLeave={e => e.currentTarget.style.color = '#4b5563'}
+                          style={{ padding: '10px 48px', fontSize: '13px', color: 'var(--color-text-muted)', cursor: 'pointer', transition: 'color var(--transition-base)' }}
+                          onMouseEnter={e => e.currentTarget.style.color = 'var(--color-primary)'}
+                          onMouseLeave={e => e.currentTarget.style.color = 'var(--color-text-muted)'}
                         >
                           {label}
                         </div>
@@ -170,16 +170,16 @@ export default function SideDrawer({ isOpen, onClose, companyInfo }) {
         </div>
 
         {/* Footer */}
-        <div style={{ padding: '24px', background: '#f9fafb', borderTop: '1px solid #f0f0f0' }}>
+        <div style={{ padding: 'var(--space-6)', background: 'var(--color-bg)', borderTop: '1px solid var(--color-border)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div style={{ display: 'flex', gap: 12 }}>
+            <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
               {[1, 2, 3, 4].map(i => (
-                <div key={i} style={{ width: 32, height: 32, borderRadius: '50%', background: '#e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6b7280' }}>
+                <div key={i} style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--color-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-muted)' }}>
                   <div style={{ width: 14, height: 14, background: 'currentColor', borderRadius: 2 }} />
                 </div>
               ))}
             </div>
-            <span style={{ fontSize: 12, fontWeight: 700, color: '#374151' }}>{displayPhone}</span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-text-secondary)' }}>{displayPhone}</span>
           </div>
         </div>
       </div>

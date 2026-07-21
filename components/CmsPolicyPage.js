@@ -81,7 +81,7 @@ export default async function CmsPolicyPage({ slug, fallback, accent = '#0f766e'
   const content = getPolicyContent(page, fallback);
 
   return (
-    <main style={{ background: '#f8fafc', minHeight: '100vh', paddingBottom: 100 }}>
+    <main style={{ background: 'var(--color-bg-soft)', minHeight: '100vh', paddingBottom: 100 }}>
       <section style={{ position: 'relative', minHeight: 360, display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
         <Image
           src={content.image}
@@ -107,7 +107,7 @@ export default async function CmsPolicyPage({ slug, fallback, accent = '#0f766e'
 
       <section className="container" style={{ marginTop: -48, position: 'relative', zIndex: 2 }}>
         <article style={{ maxWidth: 920, margin: '0 auto', background: 'white', padding: 'clamp(28px, 6vw, 60px)', borderRadius: 24, boxShadow: '0 18px 60px rgba(15,23,42,0.12)', border: '1px solid rgba(226,232,240,0.9)' }}>
-          <p style={{ color: '#6b7280', fontSize: 14, marginBottom: 36, fontWeight: 700 }}>
+          <p style={{ color: 'var(--color-text-muted)', fontSize: 14, marginBottom: 36, fontWeight: 700 }}>
             Last Updated: {content.updatedAt}
           </p>
           <div className="cms-policy-content" dangerouslySetInnerHTML={{ __html: content.html }} />
@@ -116,13 +116,13 @@ export default async function CmsPolicyPage({ slug, fallback, accent = '#0f766e'
 
       <style>{`
         .cms-policy-content {
-          color: #4b5563;
+          color: var(--color-text-muted);
           font-size: 16px;
           line-height: 1.85;
         }
 
         .cms-policy-content h2 {
-          color: #1f2937;
+          color: var(--color-text-primary);
           font-size: clamp(22px, 3vw, 28px);
           line-height: 1.25;
           margin: 38px 0 14px;
@@ -175,18 +175,18 @@ export default async function CmsPolicyPage({ slug, fallback, accent = '#0f766e'
           margin: 24px 0 32px;
           overflow: hidden;
           border-radius: 12px;
-          box-shadow: 0 0 0 1px #e5e7eb;
+          box-shadow: 0 0 0 1px var(--color-border);
         }
 
         .cms-policy-content td,
         .cms-policy-content th {
-          border: 1px solid #e5e7eb;
+          border: 1px solid var(--color-border);
           padding: 14px 16px;
           vertical-align: top;
         }
 
         .cms-policy-content tr:nth-child(even) {
-          background: #f9fafb;
+          background: var(--color-bg-soft);
         }
       `}</style>
     </main>

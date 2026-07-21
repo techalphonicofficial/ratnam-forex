@@ -90,7 +90,7 @@ export default function CategoryCard({ id, label, image, alt, isActive, onMouseE
           color: var(--color-text-primary);
           font-family: "Italiana", sans-serif;
           text-align: center;
-          transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+          transition: transform var(--transition-slow);
           position: relative;
           z-index: 1;
         }
@@ -106,7 +106,7 @@ export default function CategoryCard({ id, label, image, alt, isActive, onMouseE
           display: flex;
           justify-content: center;
           height: 320px;
-          margin-bottom: 30px;
+          margin-bottom: var(--space-8);
           width: 100%;
         }
 
@@ -115,16 +115,16 @@ export default function CategoryCard({ id, label, image, alt, isActive, onMouseE
           width: 100%;
           height: 100%;
           border-radius: 120px;
-          padding: 6px;
+          padding: var(--space-2);
           border: 3px solid transparent;
-          transition: border-color 0.4s ease, box-shadow 0.5s ease;
-          box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+          transition: border-color var(--transition-slow), box-shadow var(--transition-slow);
+          box-shadow: var(--shadow-md);
         }
 
         .sec-traveller-option:hover .sec-traveller-border-wrap,
         .sec-traveller-option.is-active .sec-traveller-border-wrap {
           border-color: var(--color-primary);
-          box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+          box-shadow: var(--shadow-lg);
         }
 
         .sec-traveller-photo-wrap {
@@ -134,7 +134,7 @@ export default function CategoryCard({ id, label, image, alt, isActive, onMouseE
           height: 100%;
           border-radius: 112px;
           overflow: hidden;
-          background: #000;
+          background: var(--color-text-primary);
         }
 
         .sec-traveller-photo-wrap img {
@@ -162,8 +162,8 @@ export default function CategoryCard({ id, label, image, alt, isActive, onMouseE
           flex-direction: column;
           align-items: center;
           justify-content: flex-end;
-          padding-bottom: 40px;
-          transition: opacity 0.4s ease;
+          padding-bottom: var(--space-8);
+          transition: opacity var(--transition-slow);
           pointer-events: none;
         }
 
@@ -173,16 +173,16 @@ export default function CategoryCard({ id, label, image, alt, isActive, onMouseE
         }
 
         .usp-text {
-          color: #fff;
+          color: var(--color-card);
           font-family: "Gilda Display", serif;
           font-size: 14px;
           font-weight: 500;
           letter-spacing: 0.5px;
           transform: translateY(10px);
-          transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+          transition: transform var(--transition-slow);
           text-align: center;
           width: 100%;
-          padding: 0 10px;
+          padding: 0 var(--space-3);
         }
 
         .sec-traveller-option:hover .usp-text,
@@ -197,21 +197,21 @@ export default function CategoryCard({ id, label, image, alt, isActive, onMouseE
           transform: translateX(-50%);
           width: 48px;
           height: 48px;
-          background: #FFFFFF;
+          background: var(--color-card);
           border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+          box-shadow: var(--shadow-sm);
           z-index: 10;
-          color: #A3C644;
-          transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s ease;
+          color: var(--color-primary);
+          transition: all var(--transition-base);
         }
 
         .sec-traveller-option:hover .sec-traveller-badge,
         .sec-traveller-option.is-active .sec-traveller-badge {
           transform: translateX(-50%) scale(1.15);
-          background: #F2F8D9;
+          background: var(--color-primary-light);
         }
 
         .sec-traveller-badge svg {
@@ -227,7 +227,7 @@ export default function CategoryCard({ id, label, image, alt, isActive, onMouseE
           font-weight: 900;
           text-transform: uppercase;
           white-space: nowrap;
-          transition: color 0.3s ease;
+          transition: color var(--transition-base);
         }
 
         .sec-traveller-option:hover .sec-traveller-label,
@@ -245,11 +245,11 @@ export default function CategoryCard({ id, label, image, alt, isActive, onMouseE
             width: 100%;
             max-width: 100%;
           }
-          .sec-traveller-visual { height: 220px; margin-bottom: 24px; }
-          .sec-traveller-border-wrap { border-radius: 100px; padding: 4px; border-width: 2px; }
+          .sec-traveller-visual { height: 220px; margin-bottom: var(--space-6); }
+          .sec-traveller-border-wrap { border-radius: 100px; padding: var(--space-1); border-width: 2px; }
           .sec-traveller-photo-wrap { border-radius: 96px; }
           .sec-traveller-photo-wrap img { border-radius: 96px; }
-          .overlay-content { border-radius: 96px; padding-bottom: 30px; }
+          .overlay-content { border-radius: 96px; padding-bottom: var(--space-6); }
           .usp-text { font-size: 12px; }
           .sec-traveller-label { font-size: 15px; }
           .sec-traveller-badge { width: 40px; height: 40px; bottom: -18px; }

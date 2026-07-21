@@ -79,10 +79,10 @@ export default function NewsletterForm() {
         style={{
           display: 'flex',
           gap: 10,
-          background: 'white',
+          background: 'var(--color-card)',
           borderRadius: 'var(--radius-2xl)',
-          padding: 8,
-          boxShadow: '0 8px 40px rgba(0,0,0,0.2)',
+          padding: 'var(--space-2)',
+          boxShadow: 'var(--shadow-lg)',
         }}
       >
         <input
@@ -95,7 +95,7 @@ export default function NewsletterForm() {
             flex: 1,
             border: 'none',
             outline: 'none',
-            padding: '10px 16px',
+            padding: 'var(--space-2) var(--space-4)',
             fontSize: 15,
             background: 'transparent',
             color: 'var(--color-text-primary)',
@@ -141,7 +141,7 @@ export default function NewsletterForm() {
           z-index: 3000;
           display: grid;
           place-items: center;
-          padding: 18px;
+          padding: var(--space-5);
           background: rgba(15, 23, 42, 0.46);
           backdrop-filter: blur(8px);
         }
@@ -149,17 +149,17 @@ export default function NewsletterForm() {
           position: relative;
           width: min(440px, 100%);
           border: 1px solid rgba(255, 255, 255, 0.65);
-          border-radius: 8px;
-          background: #fff;
-          padding: 26px;
-          box-shadow: 0 24px 80px rgba(15, 23, 42, 0.28);
+          border-radius: var(--radius-md);
+          background: var(--color-card);
+          padding: var(--space-6);
+          box-shadow: var(--shadow-xl);
           text-align: left;
         }
         .newsletter-popup.is-success {
-          border-top: 5px solid #16a34a;
+          border-top: 5px solid var(--color-primary);
         }
         .newsletter-popup.is-error {
-          border-top: 5px solid #dc2626;
+          border-top: 5px solid var(--color-secondary);
         }
         .newsletter-popup-close {
           position: absolute;
@@ -167,10 +167,10 @@ export default function NewsletterForm() {
           right: 12px;
           width: 32px;
           height: 32px;
-          border: 1px solid #e2e8f0;
-          border-radius: 8px;
-          background: #fff;
-          color: #334155;
+          border: 1px solid var(--color-border);
+          border-radius: var(--radius-md);
+          background: var(--color-card);
+          color: var(--color-text-primary);
           font-size: 18px;
           font-weight: 900;
           line-height: 1;
@@ -179,18 +179,18 @@ export default function NewsletterForm() {
         .newsletter-popup-kicker {
           display: block;
           margin-bottom: 8px;
-          color: #0f766e;
+          color: var(--color-primary);
           font-size: 12px;
           font-weight: 900;
           letter-spacing: 1.5px;
           text-transform: uppercase;
         }
         .newsletter-popup.is-error .newsletter-popup-kicker {
-          color: #b91c1c;
+          color: var(--color-secondary);
         }
         .newsletter-popup h3 {
           margin: 0;
-          color: #0f172a;
+          color: var(--color-text-primary);
           font-size: 23px;
           font-weight: 900;
           line-height: 1.25;
@@ -205,21 +205,21 @@ export default function NewsletterForm() {
           justify-content: space-between;
           gap: 14px;
           margin: 0;
-          padding: 11px 12px;
-          border: 1px solid #e2e8f0;
-          border-radius: 8px;
-          background: #f8fafc;
-          color: #334155;
+          padding: var(--space-3);
+          border: 1px solid var(--color-border);
+          border-radius: var(--radius-md);
+          background: var(--color-bg-soft);
+          color: var(--color-text-primary);
           font-size: 13px;
           line-height: 1.35;
         }
         .newsletter-popup-details strong {
-          color: #64748b;
+          color: var(--color-text-muted);
           font-weight: 900;
           text-transform: uppercase;
         }
         .newsletter-popup-details span {
-          color: #0f172a;
+          color: var(--color-text-primary);
           font-weight: 800;
           text-align: right;
           overflow-wrap: anywhere;
@@ -228,7 +228,7 @@ export default function NewsletterForm() {
           .newsletter-form {
             display: flex !important;
             flex-direction: column !important;
-            border-radius: 16px !important;
+            border-radius: var(--radius-2xl) !important;
             gap: 10px !important;
             padding: 10px !important;
           }
@@ -242,7 +242,7 @@ export default function NewsletterForm() {
             min-height: 48px;
           }
           .newsletter-popup {
-            padding: 24px 18px;
+            padding: var(--space-6) 18px;
           }
           .newsletter-popup-details p {
             flex-direction: column;

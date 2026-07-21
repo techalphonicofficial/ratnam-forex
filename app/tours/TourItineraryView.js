@@ -1776,7 +1776,7 @@ export default function TourItineraryView({ destination, packageSlug }) {
           {destinationNames.length ? (
             <div className="itn-route-ribbon" aria-label="Trip route">
               {destinationNames.map((name, index) => (
-                <span key={`${name}-ribbon`}>
+                <span key={`${name}-${index}-ribbon`}>
                   {name}
                   {index < destinationNames.length - 1 ? <i /> : null}
                 </span>

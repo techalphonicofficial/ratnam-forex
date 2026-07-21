@@ -209,7 +209,7 @@ export default function FooterClient({ brand, companyInfo }) {
         </div>
       </div>
 
-      <div style={{ borderTop: '1px solid #e5e7eb' }}>
+      <div style={{ borderTop: '1px solid var(--color-border)' }}>
         <div className="container">
           <div className="py-4 d-flex flex-column flex-md-row align-items-center justify-content-between gap-4 text-center text-md-start">
             

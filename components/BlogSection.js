@@ -55,7 +55,7 @@ export default function BlogSection() {
         }
 
         .home-blog-view-all {
-          color: var(--color-primary, #0B3C5D);
+          color: var(--color-primary, var(--color-text-primary));
           font-family: "Italiana", sans-serif;
           font-size: 14px;
           font-weight: 700;
@@ -94,7 +94,7 @@ export default function BlogSection() {
           text-align: center;
           padding: 40px 24px;
           min-height: 480px;
-          background: #ffffff;
+          background: var(--color-card);
           transition: transform var(--transition-base, 250ms), box-shadow var(--transition-base, 250ms);
         }
         .desktop-banner:hover {
@@ -115,7 +115,7 @@ export default function BlogSection() {
         .desktop-banner-content {
           position: relative;
           z-index: 2;
-          color: var(--color-primary, #0B3C5D);
+          color: var(--color-primary, var(--color-text-primary));
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -146,7 +146,7 @@ export default function BlogSection() {
           flex-direction: column;
           justify-content: center;
           min-height: 200px;
-          background: #ffffff;
+          background: var(--color-card);
           align-items: center;
           text-align: center;
           padding: 32px 24px;
@@ -158,7 +158,7 @@ export default function BlogSection() {
         .mobile-banner-content {
           position: relative;
           z-index: 2;
-          color: var(--color-primary, #0B3C5D);
+          color: var(--color-primary, var(--color-text-primary));
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -183,8 +183,8 @@ export default function BlogSection() {
           align-items: center;
           justify-content: center;
           padding: 8px 20px;
-          background: var(--color-primary, #0B3C5D);
-          color: #ffffff;
+          background: var(--color-primary, var(--color-text-primary));
+          color: var(--color-card);
           border-radius: 999px;
           font-size: 13px;
           font-weight: 600;
@@ -209,7 +209,7 @@ export default function BlogSection() {
         .home-blog-card {
           display: grid;
           grid-template-columns: 200px 1fr;
-          background: var(--color-bg-card, #FFFFFF);
+          background: var(--color-bg-card, var(--color-card));
           border: 1px solid var(--color-border, #E5E5E5);
           border-radius: var(--radius-md, 12px);
           overflow: hidden;
@@ -229,7 +229,7 @@ export default function BlogSection() {
           position: relative;
           height: 100%;
           min-height: 140px;
-          background: #e2e8f0;
+          background: var(--color-border);
           overflow: hidden;
         }
 
@@ -255,7 +255,7 @@ export default function BlogSection() {
           font-weight: 800;
           text-transform: uppercase;
           letter-spacing: 0.5px;
-          color: var(--color-primary, #0B3C5D);
+          color: var(--color-primary, var(--color-text-primary));
           margin-bottom: var(--space-2, 8px);
           background: var(--brand-primary-light, #EAF2F8);
           padding: 2px 8px;
@@ -273,7 +273,7 @@ export default function BlogSection() {
         }
 
         .home-blog-card:hover .home-blog-card-title {
-          color: var(--color-primary, #0B3C5D);
+          color: var(--color-primary, var(--color-text-primary));
         }
 
         .home-blog-card-excerpt {
@@ -293,7 +293,7 @@ export default function BlogSection() {
           justify-content: space-between;
           font-size: 12px;
           color: var(--color-text-muted, #777777);
-          border-top: 1px solid #f1f5f9;
+          border-top: 1px solid var(--color-border);
           padding-top: var(--space-2, 8px);
         }
 
@@ -322,7 +322,7 @@ export default function BlogSection() {
           height: 44px;
           border-radius: 50%;
           border: 1.5px solid var(--color-border, #E5E5E5);
-          background: #ffffff;
+          background: var(--color-card);
           color: var(--color-text-primary);
           cursor: pointer;
           transition: all 0.2s ease;

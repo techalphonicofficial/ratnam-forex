@@ -91,7 +91,7 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
           borderRadius: '150px 150px 10px 10px',
           overflow: 'hidden',
           position: 'relative',
-          boxShadow: isHovered ? '0 30px 60px rgba(0,0,0,0.3)' : '0 20px 40px rgba(0,0,0,0.15)',
+          boxShadow: isHovered ? 'var(--shadow-xl)' : 'var(--shadow-lg)',
           transition: 'all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1)',
           transform: isHovered ? 'scale(1.05) translateY(-20px)' : 'scale(1) translateY(0)',
           zIndex: isHovered ? 10 : 1
@@ -122,7 +122,7 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
               {dest.subtitle}
             </p>
             <h3 style={{
-              color: 'white',
+              color: 'var(--color-card)',
               fontSize: '26px',
               fontWeight: 700,
               margin: 0,
@@ -148,15 +148,15 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
           whiteSpace: 'nowrap'
         }}>
           <span style={{
-            background: '#ffebf0',
-            color: '#e11d48',
+            background: 'var(--color-primary-light)',
+            color: 'var(--color-primary)',
             fontSize: '8px',
             fontWeight: 800,
             padding: '2px 8px',
             borderRadius: '4px',
             textTransform: 'uppercase'
           }}>In Season</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '3px', color: '#6b7280', fontSize: '9px', fontWeight: 600 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '3px', color: 'var(--color-text-muted)', fontSize: '9px', fontWeight: 600 }}>
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
             <span>Booked 4 hr ago</span>
           </div>
@@ -168,8 +168,8 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
 
   return (
     <section style={{
-      padding: '40px 0 60px',
-      background: '#fff',
+      padding: 'var(--space-8) 0 var(--space-10)',
+      background: 'var(--color-card)',
       position: 'relative',
       overflow: 'hidden',
       width: '100%',
@@ -195,12 +195,12 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
         {/* Heading & Search - Inside Container */}
         <div className="container" style={{ maxWidth: '1400px', marginBottom: '40px' }}>
           <div className="text-center">
-            <h2 style={{ fontSize: '32px', fontWeight: 800, color: '#111827', fontFamily: '"Italiana", sans-serif' }}>
+            <h2 style={{ fontSize: '32px', fontWeight: 800, color: 'var(--color-text-primary)', fontFamily: '"Italiana", sans-serif' }}>
               What&apos;s <span style={{ color: 'var(--color-primary)', fontStyle: 'italic', fontWeight: 500 }}> your pick </span> for your next vacation
             </h2>
 
             <div className="mx-auto mt-4" style={{ maxWidth: '620px', position: 'relative' }}>
-              <div style={{ position: 'absolute', left: '24px', top: '50%', transform: 'translateY(-50%)', color: '#f59e0b' }}>
+              <div style={{ position: 'absolute', left: '24px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-secondary)' }}>
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                 </svg>
@@ -212,13 +212,13 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
                 onChange={(event) => setSearch(event.target.value)}
                 style={{
                   width: '100%',
-                  padding: '18px 24px 18px 60px',
-                  borderRadius: '50px',
-                  border: '1.5px solid #f59e0b',
+                  padding: 'var(--space-4) var(--space-6) var(--space-4) 60px',
+                  borderRadius: 'var(--radius-full)',
+                  border: '1.5px solid var(--color-secondary)',
                   fontSize: '16px',
                   outline: 'none',
-                  background: 'white',
-                  boxShadow: '0 4px 12px rgba(16,185,129,0.08)'
+                  background: 'var(--color-card)',
+                  boxShadow: '0 4px 12px color-mix(in srgb, var(--color-primary) 8%, transparent)'
                 }}
               />
             </div>
@@ -236,13 +236,13 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
               disabled={!canScroll.prev}
               style={{
                 position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)',
-                width: '44px', height: '44px', borderRadius: '50%', background: 'white',
-                border: 'none', boxShadow: '0 10px 25px rgba(0,0,0,0.15)', cursor: canScroll.prev ? 'pointer' : 'not-allowed',
+                width: '44px', height: '44px', borderRadius: '50%', background: 'var(--color-card)',
+                border: 'none', boxShadow: 'var(--shadow-md)', cursor: canScroll.prev ? 'pointer' : 'not-allowed',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'auto',
                 opacity: canScroll.prev ? 1 : 0.38
               }}
             >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#111827" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-primary)" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
             </button>
 
             <button
@@ -251,13 +251,13 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
               disabled={!canScroll.next}
               style={{
                 position: 'absolute', right: '20px', top: '50%', transform: 'translateY(-50%)',
-                width: '44px', height: '44px', borderRadius: '50%', background: 'white',
-                border: 'none', boxShadow: '0 10px 25px rgba(0,0,0,0.15)', cursor: canScroll.next ? 'pointer' : 'not-allowed',
+                width: '44px', height: '44px', borderRadius: '50%', background: 'var(--color-card)',
+                border: 'none', boxShadow: 'var(--shadow-md)', cursor: canScroll.next ? 'pointer' : 'not-allowed',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'auto',
                 opacity: canScroll.next ? 1 : 0.38
               }}
             >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#111827" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-primary)" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </button>
           </div>
 
@@ -273,7 +273,7 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
               minWidth: 0,
               scrollbarWidth: 'none',
               msOverflowStyle: 'none',
-              padding: '60px 0 50px', // Increased top padding to 60px to prevent clipping
+              padding: 'var(--space-10) 0 var(--space-9)', // Increased top padding to 60px to prevent clipping
               scrollSnapType: 'x mandatory',
               WebkitOverflowScrolling: 'touch',
               scrollBehavior: 'smooth',
@@ -296,7 +296,7 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
                 <span className="destination-skeleton-line" />
               </div>
             )) : error ? (
-              <div style={{ padding: '40px 24px', color: '#b91c1c', fontWeight: 800 }}>
+              <div style={{ padding: 'var(--space-8) var(--space-6)', color: 'var(--color-secondary)', fontWeight: 800 }}>
                 {error}
               </div>
             ) : visibleDestinations.length ? visibleDestinations.map((dest, i) => (
@@ -320,7 +320,7 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
                 )}
               </div>
             )) : (
-              <div style={{ padding: '40px 24px', color: '#6b7280', fontWeight: 800 }}>
+              <div style={{ padding: 'var(--space-8) var(--space-6)', color: 'var(--color-text-muted)', fontWeight: 800 }}>
                 No destinations found.
               </div>
             )}
@@ -342,7 +342,7 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
         .destination-image-missing {
           width: 100%;
           height: 100%;
-          background: linear-gradient(135deg, #dbeafe 0%, #ecfeff 52%, #f8fafc 100%);
+          background: linear-gradient(135deg, #dbeafe 0%, #ecfeff 52%, var(--color-bg-soft) 100%);
         }
         .destination-skeleton-card {
           flex: 0 0 auto;
@@ -355,12 +355,12 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
           position: relative;
           display: block;
           overflow: hidden;
-          background: #e5e7eb;
+          background: var(--color-border);
         }
         .destination-skeleton-arch {
           height: 300px;
           border-radius: 150px 150px 10px 10px;
-          box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+          box-shadow: var(--shadow-md);
         }
         .destination-skeleton-line {
           width: 74%;

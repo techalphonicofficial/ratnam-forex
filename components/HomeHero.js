@@ -176,7 +176,7 @@ export default function HomeHero() {
           height: heroHeight,
           minHeight: 620,
           overflow: 'hidden',
-          background: '#041a0c',
+          background: 'var(--color-text-primary)',
         }}
       >
         {/* CAROUSEL background */}
@@ -220,7 +220,7 @@ export default function HomeHero() {
           style={{
             position: 'absolute', inset: 0, zIndex: 1,
             background:
-              'linear-gradient(180deg, rgba(0,0,0,0.48) 0%, rgba(0,0,0,0.32) 48%, rgba(4,26,12,0.92) 100%)',
+              'linear-gradient(180deg, rgba(0,0,0,0.48) 0%, rgba(0,0,0,0.32) 48%, rgba(0, 0, 0,0.92) 100%)',
           }}
         />
 
@@ -245,7 +245,7 @@ export default function HomeHero() {
                 border: '2.5px solid var(--color-secondary)',
                 borderRadius: 999,
                 overflow: 'hidden',
-                boxShadow: '0 0 0 5px rgba(253, 206, 46, 0.18), 0 12px 40px rgba(0,0,0,0.45)',
+                boxShadow: '0 0 0 5px color-mix(in srgb, var(--color-secondary) 18%, transparent), 0 12px 40px rgba(0,0,0,0.45)',
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0, padding: isMobile ? '0 8px 0 16px' : '0 10px 0 20px' }}>
@@ -288,7 +288,7 @@ export default function HomeHero() {
                 style={{
                   flex: '1 1 auto', minWidth: 0,
                   border: 'none', outline: 'none',
-                  fontSize: isMobile ? 15 : 16, color: '#111827',
+                  fontSize: isMobile ? 15 : 16, color: 'var(--color-text-primary)',
                   padding: isMobile ? '14px 6px' : '12px 8px',
                   background: 'transparent',
                   fontFamily: 'Inter, sans-serif',
@@ -309,7 +309,7 @@ export default function HomeHero() {
                 onMouseEnter={e => {
                   e.currentTarget.style.background = 'var(--color-primary-hover)';
                   e.currentTarget.style.transform = 'scale(1.02)';
-                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(46,74,59,0.3)';
+                  e.currentTarget.style.boxShadow = '0 6px 20px color-mix(in srgb, var(--color-primary) 30%, transparent)';
                 }}
                 onMouseLeave={e => {
                   e.currentTarget.style.background = 'var(--color-primary)';
@@ -329,7 +329,7 @@ export default function HomeHero() {
                   right: 0,
                   zIndex: 20,
                   overflow: 'hidden',
-                  borderRadius: 18,
+                  borderRadius: 'var(--radius-xl)',
                   background: 'rgba(255,255,255,0.98)',
                   border: '1px solid rgba(15,23,42,0.12)',
                   boxShadow: '0 18px 44px rgba(15,23,42,0.28)',
@@ -339,8 +339,8 @@ export default function HomeHero() {
                 {locationLoading ? (
                   <div
                     style={{
-                      padding: '16px 18px',
-                      color: '#64748b',
+                      padding: 'var(--space-4) var(--space-5)',
+                      color: 'var(--color-text-muted)',
                       fontSize: 14,
                       fontFamily: 'Inter, sans-serif',
                     }}
@@ -366,9 +366,9 @@ export default function HomeHero() {
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'space-between',
-                          gap: 12,
+                          gap: 'var(--space-3)',
                           border: 'none',
-                          borderBottom: index === locationSuggestions.length - 1 ? 'none' : '1px solid rgba(226,232,240,0.9)',
+                          borderBottom: index === locationSuggestions.length - 1 ? 'none' : '1px solid var(--color-border)',
                           background: 'transparent',
                           minHeight: isMobile ? 54 : 62,
                           padding: isMobile ? '13px 14px' : '14px 18px',
@@ -377,7 +377,7 @@ export default function HomeHero() {
                           textAlign: 'left',
                         }}
                         onMouseEnter={(event) => {
-                          event.currentTarget.style.background = '#f8fafc';
+                          event.currentTarget.style.background = 'var(--color-bg-soft)';
                         }}
                         onMouseLeave={(event) => {
                           event.currentTarget.style.background = 'transparent';
@@ -387,7 +387,7 @@ export default function HomeHero() {
                           <span
                             style={{
                               display: 'block',
-                              color: '#0f172a',
+                              color: 'var(--color-text-primary)',
                               fontSize: isMobile ? 14 : 15,
                               fontWeight: 800,
                               overflow: 'hidden',
@@ -397,7 +397,7 @@ export default function HomeHero() {
                           >
                             {getLocationLabel(location)}
                           </span>
-                          <span style={{ color: '#64748b', fontSize: 12, fontWeight: 600 }}>
+                          <span style={{ color: 'var(--color-text-muted)', fontSize: 12, fontWeight: 600 }}>
                             {getLocationMeta(location)}
                           </span>
                         </span>
@@ -405,9 +405,9 @@ export default function HomeHero() {
                           style={{
                             flex: '0 0 auto',
                             borderRadius: 999,
-                            padding: '5px 10px',
-                            background: location.type === 'country' ? '#e0f2fe' : '#dcfce7',
-                            color: location.type === 'country' ? '#0369a1' : '#15803d',
+                            padding: 'var(--space-1) var(--space-3)',
+                            background: location.type === 'country' ? 'var(--color-secondary-hover)' : 'var(--color-primary-light)',
+                            color: location.type === 'country' ? 'var(--color-secondary)' : 'var(--color-primary)',
                             fontSize: 11,
                             fontWeight: 900,
                             textTransform: 'uppercase',

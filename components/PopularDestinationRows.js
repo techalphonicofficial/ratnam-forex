@@ -144,7 +144,7 @@ export default function PopularDestinationRows() {
   };
 
   return (
-    <section style={{ background: '#fff', padding: '52px 0 64px' }}>
+    <section style={{ background: 'var(--color-card)', padding: '52px 0 64px' }}>
       <div className="container" style={{ margin: '0 auto', padding: '0 24px' }}>
         {rows.map((row) => (
           <div key={row.id} style={{ marginBottom: 52 }}>
@@ -157,7 +157,7 @@ export default function PopularDestinationRows() {
                 fontFamily: '"Italiana", sans-serif',
                 fontWeight: 900,
                 fontSize: 18,
-                color: '#111827',
+                color: 'var(--color-text-primary)',
                 margin: 0,
                 letterSpacing: 0.5,
                 textTransform: 'uppercase',
@@ -173,18 +173,18 @@ export default function PopularDestinationRows() {
                     style={{
                       width: 34, height: 34,
                       borderRadius: '50%',
-                      border: '1.5px solid #d1d5db',
+                      border: '1.5px solid var(--color-border)',
                       background: 'white',
-                      color: '#374151',
+                      color: 'var(--color-text-primary)',
                       fontSize: 18,
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       cursor: 'pointer',
                       lineHeight: 1,
                       transition: 'all 0.2s',
-                      boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
+                      boxShadow: 'var(--shadow-sm)',
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.background = '#f3f4f6'; e.currentTarget.style.borderColor = '#9ca3af'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'white'; e.currentTarget.style.borderColor = '#d1d5db'; }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--color-bg-soft)'; e.currentTarget.style.borderColor = 'var(--color-text-muted)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'white'; e.currentTarget.style.borderColor = 'var(--color-border)'; }}
                   >
                     {arrow}
                   </button>
@@ -213,9 +213,9 @@ export default function PopularDestinationRows() {
                   minHeight: 120,
                   display: 'grid',
                   placeItems: 'center',
-                  border: '1px dashed #d1d5db',
+                  border: '1px dashed var(--color-border)',
                   borderRadius: 12,
-                  color: '#64748b',
+                  color: 'var(--color-text-muted)',
                   fontSize: 13,
                   fontWeight: 700,
                 }}>

@@ -97,10 +97,10 @@ export default async function BlogPage({ searchParams }) {
   const heroImage = getMediaUrl(pageContent?.feature_image) || FALLBACK_HERO_IMAGE;
 
   return (
-    <main style={{ background: '#f8fafc', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <main style={{ background: 'var(--color-bg)', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Navbar />
 
-      <div style={{ position: 'relative', overflow: 'hidden', padding: '112px 24px 72px', textAlign: 'center', background: '#111827' }}>
+      <div style={{ position: 'relative', overflow: 'hidden', padding: '112px 24px 72px', textAlign: 'center', background: 'var(--color-text-primary)' }}>
         <Image
           src={heroImage}
           alt={pageContent?.alt_text || standardSection?.title || 'Travel stories'}
@@ -114,7 +114,7 @@ export default async function BlogPage({ searchParams }) {
           <h1 style={{ fontFamily: '"Italiana", sans-serif', fontSize: 'clamp(34px, 5vw, 56px)', fontWeight: 900, color: 'white', margin: '0 0 16px' }}>
             {standardSection?.title || 'Travel Inspiration & Stories'}
           </h1>
-          <p style={{ color: '#d1d5db', fontSize: 18, maxWidth: 680, margin: '0 auto', lineHeight: 1.7 }}>
+          <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 18, maxWidth: 680, margin: '0 auto', lineHeight: 1.7 }}>
             {standardSection?.description || pageContent?.description || 'Discover hidden gems, expert packing guides, and carefully curated itineraries for your next adventure.'}
           </p>
         </div>
@@ -122,10 +122,10 @@ export default async function BlogPage({ searchParams }) {
 
       <div style={{ maxWidth: 1200, margin: '0 auto', padding: '64px 24px', width: '100%', flex: 1 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, marginBottom: 28, flexWrap: 'wrap' }}>
-          <span style={{ color: '#64748b', fontSize: 14, fontWeight: 700 }}>
+          <span style={{ color: 'var(--color-text-muted)', fontSize: 14, fontWeight: 700 }}>
             Showing {blogs.length} of {totalItems.toLocaleString('en-IN')} stories
           </span>
-          <span style={{ color: '#10b981', fontSize: 13, fontWeight: 800, textTransform: 'uppercase', letterSpacing: 1 }}>
+          <span style={{ color: 'var(--color-primary)', fontSize: 13, fontWeight: 800, textTransform: 'uppercase', letterSpacing: 1 }}>
             Page {safePage} of {totalPages}
           </span>
         </div>
@@ -147,29 +147,29 @@ export default async function BlogPage({ searchParams }) {
                     position: 'absolute', top: 16, left: 16,
                     background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(4px)',
                     padding: '4px 12px', borderRadius: 20,
-                    fontSize: 12, fontWeight: 800, color: '#10b981', textTransform: 'uppercase',
+                    fontSize: 12, fontWeight: 800, color: 'var(--color-primary)', textTransform: 'uppercase',
                   }}>
                     {blog.category}
                   </div>
                 </div>
 
                 <div style={{ padding: 24, display: 'flex', flexDirection: 'column', flex: 1 }}>
-                  <div style={{ display: 'flex', gap: 12, alignItems: 'center', fontSize: 13, color: '#6b7280', marginBottom: 12, flexWrap: 'wrap' }}>
-                    <span style={{ fontWeight: 700, color: '#374151' }}>{blog.author}</span>
+                  <div style={{ display: 'flex', gap: 12, alignItems: 'center', fontSize: 13, color: 'var(--color-text-muted)', marginBottom: 12, flexWrap: 'wrap' }}>
+                    <span style={{ fontWeight: 700, color: 'var(--color-text-secondary)' }}>{blog.author}</span>
                     {blog.date && <span>|</span>}
                     {blog.date && <span>{blog.date}</span>}
                   </div>
 
-                  <h3 style={{ fontFamily: '"Italiana", sans-serif', fontSize: 20, fontWeight: 800, color: '#111827', margin: '0 0 12px', lineHeight: 1.4 }}>
+                  <h3 style={{ fontFamily: '"Italiana", sans-serif', fontSize: 20, fontWeight: 800, color: 'var(--color-text-primary)', margin: '0 0 12px', lineHeight: 1.4 }}>
                     {blog.title}
                   </h3>
 
-                  <p style={{ margin: '0 0 24px', fontSize: 15, color: '#4b5563', lineHeight: 1.6, flex: 1 }}>
+                  <p style={{ margin: '0 0 24px', fontSize: 15, color: 'var(--color-text-muted)', lineHeight: 1.6, flex: 1 }}>
                     {blog.excerpt}
                   </p>
 
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #f3f4f6', paddingTop: 16, gap: 12 }}>
-                    <span style={{ fontSize: 14, fontWeight: 800, color: '#10b981', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid var(--color-border)', paddingTop: 16, gap: 12 }}>
+                    <span style={{ fontSize: 14, fontWeight: 800, color: 'var(--color-primary)', display: 'flex', alignItems: 'center', gap: 4 }}>
                       Read Article
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
                     </span>
@@ -179,7 +179,7 @@ export default async function BlogPage({ searchParams }) {
             ))}
           </div>
         ) : (
-          <div style={{ textAlign: 'center', background: 'white', border: '1px dashed #cbd5e1', borderRadius: 16, padding: '56px 24px', color: '#64748b', fontWeight: 700 }}>
+          <div style={{ textAlign: 'center', background: 'var(--color-card)', border: '1px dashed var(--color-border)', borderRadius: 16, padding: '56px 24px', color: 'var(--color-text-muted)', fontWeight: 700 }}>
             No blog posts are available right now.
           </div>
         )}
@@ -210,20 +210,20 @@ export default async function BlogPage({ searchParams }) {
 
         <form action="/blog" style={{ margin: '28px auto 0', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
           <input type="hidden" name="page" value="1" />
-          <label htmlFor="blog-limit" style={{ color: '#64748b', fontSize: 13, fontWeight: 800 }}>
+          <label htmlFor="blog-limit" style={{ color: 'var(--color-text-muted)', fontSize: 13, fontWeight: 800 }}>
             Blogs to fetch
           </label>
           <select
             id="blog-limit"
             name="limit"
             defaultValue={limit}
-            style={{ height: 40, borderRadius: 8, border: '1px solid #d1d5db', padding: '0 12px', color: '#374151', fontWeight: 700, background: 'white' }}
+            style={{ height: 40, borderRadius: 8, border: '1px solid var(--color-border)', padding: '0 12px', color: 'var(--color-text-secondary)', fontWeight: 700, background: 'var(--color-card)' }}
           >
             {LIMIT_OPTIONS.map((option) => (
               <option key={option} value={option}>{option}</option>
             ))}
           </select>
-          <button type="submit" style={{ height: 40, borderRadius: 8, border: 'none', padding: '0 16px', background: '#10b981', color: 'white', fontWeight: 800, cursor: 'pointer' }}>
+          <button type="submit" style={{ height: 40, borderRadius: 8, border: 'none', padding: '0 16px', background: 'var(--color-primary)', color: 'white', fontWeight: 800, cursor: 'pointer' }}>
             Apply
           </button>
         </form>
@@ -237,7 +237,7 @@ export default async function BlogPage({ searchParams }) {
         }
         .blog-card {
           text-decoration: none;
-          background: white;
+          background: var(--color-card);
           border-radius: 16px;
           overflow: hidden;
           box-shadow: 0 4px 20px rgba(0,0,0,0.05);
@@ -269,24 +269,24 @@ export default async function BlogPage({ searchParams }) {
         }
         .pager-link {
           padding: 0 16px;
-          border: 1px solid #e5e7eb;
-          background: white;
-          color: #374151;
+          border: 1px solid var(--color-border);
+          background: var(--color-card);
+          color: var(--color-text-secondary);
         }
         .page-number {
           width: 40px;
-          background: white;
-          color: #4b5563;
+          background: var(--color-card);
+          color: var(--color-text-muted);
           box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
         .page-number.is-active {
-          background: #10b981;
+          background: var(--color-primary);
           color: white;
-          box-shadow: 0 4px 12px rgba(16,185,129,0.3);
+          box-shadow: 0 4px 12px color-mix(in srgb, var(--color-primary) 30%, transparent);
         }
         .is-disabled {
           pointer-events: none;
-          color: #cbd5e1;
+          color: var(--color-border);
         }
       `}</style>
     </main>

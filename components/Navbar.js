@@ -9,13 +9,13 @@ import { getDestinationHref } from '@/utils/destinationLinks';
 /* ── Mega-menu data ───────────────────────────────────── */
 const destinationCols = [
   [
-    { name: 'Bali', tag: 'TRENDING', tagClr: '#ef4444', tagBg: '#fef2f2', href: '/tour?search=Bali' },
-    { name: 'Maldives', tag: 'HONEYMOON', tagClr: '#ec4899', tagBg: '#fdf2f8', href: '/tour?search=Maldives' },
-    { name: 'Thailand', tag: 'BUDGET', tagClr: '#f59e0b', tagBg: '#fffbeb', href: '/tour?search=Thailand' },
+    { name: 'Bali', tag: 'TRENDING', tagClr: 'var(--color-card)', tagBg: 'var(--color-secondary)', href: '/tour?search=Bali' },
+    { name: 'Maldives', tag: 'HONEYMOON', tagClr: 'var(--color-card)', tagBg: 'var(--color-secondary)', href: '/tour?search=Maldives' },
+    { name: 'Thailand', tag: 'BUDGET', tagClr: 'var(--color-card)', tagBg: 'var(--color-secondary)', href: '/tour?search=Thailand' },
   ],
   [
     { name: 'Dubai', tag: null, href: '/tour?search=Dubai' },
-    { name: 'Switzerland', tag: 'LUXURY', tagClr: '#8b5cf6', tagBg: '#f5f3ff', href: '/tour?search=Switzerland' },
+    { name: 'Switzerland', tag: 'LUXURY', tagClr: 'var(--color-card)', tagBg: 'var(--color-secondary)', href: '/tour?search=Switzerland' },
     { name: 'Singapore', tag: null, href: '/tour?search=Singapore' },
   ],
   [
@@ -27,9 +27,9 @@ const destinationCols = [
 
 const indiaDropdownCols = [
   [
-    { name: 'Kashmir Paradise', tag: 'POPULAR', tagClr: '#0ea5e9', tagBg: '#f0f9ff', href: '/tour?search=Kashmir' },
+    { name: 'Kashmir Paradise', tag: 'POPULAR', tagClr: 'var(--color-card)', tagBg: 'var(--color-secondary)', href: '/tour?search=Kashmir' },
     { name: 'Himachal Escape', tag: null, href: '/tour?search=Himachal' },
-    { name: 'Kerala Backwaters', tag: 'TRENDING', tagClr: '#ef4444', tagBg: '#fef2f2', href: '/tour?search=Kerala' },
+    { name: 'Kerala Backwaters', tag: 'TRENDING', tagClr: 'var(--color-card)', tagBg: 'var(--color-secondary)', href: '/tour?search=Kerala' },
   ],
   [
     { name: 'Rajasthan Royal', tag: null, href: '/tour?search=Rajasthan' },
@@ -37,7 +37,7 @@ const indiaDropdownCols = [
     { name: 'Andaman Islands', tag: null, href: '/tour?search=Andaman' },
   ],
   [
-    { name: 'Leh Ladakh', tag: 'ADVENTURE', tagClr: '#A3C644', tagBg: '#F2F8D9', href: '/tour?search=Ladakh' },
+    { name: 'Leh Ladakh', tag: 'ADVENTURE', tagClr: 'var(--color-primary)', tagBg: 'var(--color-primary-light)', href: '/tour?search=Ladakh' },
     { name: 'Varanasi Spiritual', tag: null, href: '/tour?search=Varanasi' },
     { name: 'Explore All India →', href: '/packages?destination=India', isExplore: true },
   ],
@@ -381,9 +381,9 @@ function Tag({ label, color, bg }) {
       fontSize: 8,
       fontWeight: 700,
       letterSpacing: 0.8,
-      padding: '2px 4px',
-      borderRadius: 4,
-      marginLeft: 6,
+      padding: 'var(--space-1) var(--space-2)',
+      borderRadius: 'var(--radius-sm)',
+      marginLeft: 'var(--space-2)',
       lineHeight: 1.6,
       verticalAlign: 'middle',
       textTransform: 'uppercase',
@@ -405,29 +405,29 @@ function MegaDropdown({ label, cols, isTransparent }) {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  const linkColor = isTransparent ? 'rgba(255,255,255,0.92)' : '#374151';
+  const linkColor = isTransparent ? 'rgba(255,255,255,0.92)' : 'var(--color-text-secondary)';
 
   return (
     <li ref={ref} style={{ position: 'relative', listStyle: 'none' }}>
       <button
         onClick={() => setOpen(!open)}
         style={{
-          display: 'flex', alignItems: 'center', gap: 5,
+          display: 'flex', alignItems: 'center', gap: 'var(--space-1)',
           background: 'none', border: 'none', cursor: 'pointer',
           color: linkColor, fontSize: 13, fontWeight: 600,
-          padding: '6px 2px',
-          transition: 'color 0.2s',
+          padding: 'var(--space-2) var(--space-1)',
+          transition: 'color var(--transition-base)',
           whiteSpace: 'nowrap',
         }}
-        onMouseEnter={e => { if (!isTransparent) e.currentTarget.style.color = '#A3C644'; }}
-        onMouseLeave={e => { if (!isTransparent) e.currentTarget.style.color = '#374151'; }}
+        onMouseEnter={e => { if (!isTransparent) e.currentTarget.style.color = 'var(--color-primary)'; }}
+        onMouseLeave={e => { if (!isTransparent) e.currentTarget.style.color = 'var(--color-text-secondary)'; }}
       >
         {label}
         <svg
           viewBox="0 0 24 24" fill="currentColor" width="14" height="14"
           style={{
             transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
-            transition: 'transform 0.25s',
+            transition: 'transform var(--transition-fast)',
             opacity: 0.7,
           }}
         >
@@ -444,10 +444,10 @@ function MegaDropdown({ label, cols, isTransparent }) {
             left: '50%',
             transform: 'translateX(-50%)',
             background: 'white',
-            borderRadius: 14,
-            boxShadow: '0 8px 40px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.08)',
-            border: '1px solid #f0f0f0',
-            padding: '20px 24px',
+            borderRadius: 'var(--radius-lg)',
+            boxShadow: 'var(--shadow-md)',
+            border: '1px solid var(--color-border)',
+            padding: 'var(--space-5) var(--space-6)',
             display: 'flex',
             gap: 0,
             zIndex: 999,
@@ -462,7 +462,7 @@ function MegaDropdown({ label, cols, isTransparent }) {
                 flex: 1,
                 paddingRight: ci < cols.length - 1 ? 20 : 0,
                 marginRight: ci < cols.length - 1 ? 20 : 0,
-                borderRight: ci < cols.length - 1 ? '1px solid #f3f4f6' : 'none',
+                borderRight: ci < cols.length - 1 ? '1px solid var(--color-border)' : 'none',
               }}
             >
               {col.map((item) => (
@@ -473,18 +473,18 @@ function MegaDropdown({ label, cols, isTransparent }) {
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    padding: '8px 0',
-                    borderBottom: '1px solid #f9fafb',
+                    padding: 'var(--space-2) 0',
+                    borderBottom: '1px solid var(--color-bg)',
                     textDecoration: 'none',
-                    color: item.isExplore ? '#A3C644' : '#1f2937',
+                    color: item.isExplore ? 'var(--color-primary)' : 'var(--color-text-primary)',
                     fontWeight: item.isExplore ? 700 : 500,
                     fontSize: 13.5,
-                    transition: 'color 0.15s',
+                    transition: 'color var(--transition-fast)',
                     lineHeight: 1.5,
                     whiteSpace: 'nowrap',
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.color = '#A3C644'; }}
-                  onMouseLeave={e => { e.currentTarget.style.color = item.isExplore ? '#A3C644' : '#1f2937'; }}
+                  onMouseEnter={e => { e.currentTarget.style.color = 'var(--color-primary)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = item.isExplore ? 'var(--color-primary)' : 'var(--color-text-primary)'; }}
                 >
                   {item.name}
                   {item.tag && (
@@ -571,7 +571,7 @@ function SideDrawer({ isOpen, onClose, allCategories, isLoggedIn, currentUser, o
           zIndex: 2000,
           opacity: isOpen ? 1 : 0,
           visibility: isOpen ? 'visible' : 'hidden',
-          transition: 'all 0.3s ease',
+          transition: 'all var(--transition-base)',
           backdropFilter: 'blur(4px)',
         }}
       />
@@ -579,26 +579,26 @@ function SideDrawer({ isOpen, onClose, allCategories, isLoggedIn, currentUser, o
         style={{
           position: 'fixed', top: 0, right: 0,
           width: '100%', maxWidth: 360, height: '100vh',
-          background: 'linear-gradient(180deg, #ffffff 0%, #f8fbff 100%)', zIndex: 2001,
+          background: 'linear-gradient(180deg, var(--color-card) 0%, var(--color-bg-soft) 100%)', zIndex: 2001,
           transform: isOpen ? 'translateX(0)' : 'translateX(100%)',
-          transition: 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+          transition: 'transform var(--transition-slow)',
           display: 'flex', flexDirection: 'column',
           boxShadow: '-18px 0 50px rgba(15,23,42,0.22)',
         }}
       >
         {/* Header */}
-        <div style={{ padding: '20px 20px 16px', borderBottom: '1px solid #edf2f7' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
+        <div style={{ padding: 'var(--space-5) var(--space-5) var(--space-4)', borderBottom: '1px solid var(--color-border)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-5)' }}>
             <span style={{ color: 'var(--color-primary)', fontSize: 11, fontWeight: 900, letterSpacing: 1.6, textTransform: 'uppercase' }}>
               Travel Menu
             </span>
-            <button onClick={onClose} style={{ width: 36, height: 36, borderRadius: 12, background: '#f1f5f9', border: '1px solid #e2e8f0', cursor: 'pointer', padding: 0, color: '#64748b', display: 'grid', placeItems: 'center' }}>
+            <button onClick={onClose} style={{ width: 36, height: 36, borderRadius: 'var(--radius-lg)', background: 'var(--color-bg-soft)', border: '1px solid var(--color-border)', cursor: 'pointer', padding: 0, color: 'var(--color-text-muted)', display: 'grid', placeItems: 'center' }}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="20" height="20">
                 <path d="M18 6L6 18M6 6l12 12" />
               </svg>
             </button>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 14, borderRadius: 16, background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%)', color: 'white', boxShadow: '0 14px 30px color-mix(in srgb, var(--color-primary) 24%, transparent)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', padding: 'var(--space-4)', borderRadius: 'var(--radius-xl)', background: 'var(--gradient-primary)', color: 'white', boxShadow: '0 14px 30px color-mix(in srgb, var(--color-primary) 24%, transparent)' }}>
             <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'rgba(255,255,255,0.18)', border: '1px solid rgba(255,255,255,0.28)', display: 'grid', placeItems: 'center', fontSize: 15, fontWeight: 900 }}>
               {userInitial}
             </div>
@@ -614,7 +614,7 @@ function SideDrawer({ isOpen, onClose, allCategories, isLoggedIn, currentUser, o
         </div>
 
         {/* Scrollable Content */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '14px 14px 10px' }}>
+        <div style={{ flex: 1, overflowY: 'auto', padding: 'var(--space-4) var(--space-4) var(--space-3)' }}>
           {navGroups?.map((group, idx) => {
             const isExpanded = expanded === group.label;
             const hasHref = !!group.href;
@@ -631,35 +631,35 @@ function SideDrawer({ isOpen, onClose, allCategories, isLoggedIn, currentUser, o
                   }
                 }}
                 style={{
-                  padding: '12px 12px',
+                  padding: 'var(--space-3)',
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
                   cursor: 'pointer',
-                  transition: 'all 0.2s',
+                  transition: 'all var(--transition-base)',
                   background: isExpanded ? 'var(--color-primary-light)' : 'white',
-                  border: isExpanded ? '1px solid var(--brand-primary-border)' : '1px solid #edf2f7',
-                  borderRadius: 14,
-                  boxShadow: isExpanded ? '0 10px 22px color-mix(in srgb, var(--color-primary) 14%, transparent)' : '0 4px 12px rgba(15,23,42,0.035)',
+                  border: isExpanded ? '1px solid var(--brand-primary-border)' : '1px solid var(--color-border)',
+                  borderRadius: 'var(--radius-lg)',
+                  boxShadow: isExpanded ? '0 10px 22px color-mix(in srgb, var(--color-primary) 14%, transparent)' : 'var(--shadow-sm)',
                 }}
                 onMouseEnter={e => { if (!isExpanded) e.currentTarget.style.background = 'color-mix(in srgb, var(--color-primary) 8%, white)'; }}
                 onMouseLeave={e => { if (!isExpanded) e.currentTarget.style.background = 'white'; }}
               >
-                <span style={{ display: 'flex', alignItems: 'center', gap: 11, minWidth: 0 }}>
-                  <span style={{ width: 34, height: 34, flex: '0 0 34px', borderRadius: 11, display: 'grid', placeItems: 'center', background: isExpanded ? 'var(--color-primary)' : 'color-mix(in srgb, var(--color-primary) 10%, white)', color: isExpanded ? 'white' : 'var(--color-primary)', fontSize: 10, fontWeight: 950, letterSpacing: 0.3 }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', minWidth: 0 }}>
+                  <span style={{ width: 34, height: 34, flex: '0 0 34px', borderRadius: 'var(--radius-lg)', display: 'grid', placeItems: 'center', background: isExpanded ? 'var(--color-primary)' : 'color-mix(in srgb, var(--color-primary) 10%, white)', color: isExpanded ? 'white' : 'var(--color-primary)', fontSize: 10, fontWeight: 950, letterSpacing: 0.3 }}>
                     {navIcon}
                   </span>
-                  <span style={{ fontSize: 13.5, fontWeight: isExpanded ? 850 : 750, color: isExpanded ? '#0f172a' : '#334155', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <span style={{ fontSize: 13.5, fontWeight: isExpanded ? 850 : 750, color: isExpanded ? 'var(--color-text-primary)' : 'var(--color-text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {group.label}
                   </span>
                 </span>
-                <span style={{ width: 28, height: 28, borderRadius: 9, display: 'grid', placeItems: 'center', color: isExpanded ? 'var(--color-primary)' : '#94a3b8', background: isExpanded ? '#fff' : 'color-mix(in srgb, var(--color-primary) 6%, white)' }}>
+                <span style={{ width: 28, height: 28, borderRadius: 9, display: 'grid', placeItems: 'center', color: isExpanded ? 'var(--color-primary)' : 'var(--color-text-muted)', background: isExpanded ? 'var(--color-card)' : 'color-mix(in srgb, var(--color-primary) 6%, white)' }}>
                   {group.hasSub ? (
                     <svg
                       viewBox="0 0 24 24" fill="currentColor" width="16" height="16"
                       style={{
                         transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
-                        transition: 'transform 0.3s ease',
+                        transition: 'transform var(--transition-base)',
                       }}
                     >
                       <path d="M7 10l5 5 5-5z" />
@@ -674,7 +674,7 @@ function SideDrawer({ isOpen, onClose, allCategories, isLoggedIn, currentUser, o
             );
 
             return (
-              <div key={idx} style={{ marginBottom: 9 }}>
+              <div key={idx} style={{ marginBottom: 'var(--space-2)' }}>
                 {hasHref ? (
                   <Link href={group.href} style={{ textDecoration: 'none' }} onClick={onClose}>
                     {ItemTrigger}
@@ -687,7 +687,7 @@ function SideDrawer({ isOpen, onClose, allCategories, isLoggedIn, currentUser, o
 
                 {/* Expanded Sub-items */}
                 {group.hasSub && isExpanded && (
-                  <div style={{ display: 'grid', gap: 7, padding: '10px 4px 4px 48px' }}>
+                  <div style={{ display: 'grid', gap: 'var(--space-2)', padding: '10px 4px 4px 48px' }}>
                     {group.subItems.map((sub, sidx) => {
                       const isObj = typeof sub === 'object';
                       const label = isObj ? sub.label : sub;
@@ -696,18 +696,18 @@ function SideDrawer({ isOpen, onClose, allCategories, isLoggedIn, currentUser, o
                       const ItemContent = (
                         <div
                           style={{
-                            padding: '9px 12px',
-                            borderRadius: 11,
-                            background: '#fff',
-                            border: '1px solid #eef2f7',
+                            padding: 'var(--space-2) var(--space-3)',
+                            borderRadius: 'var(--radius-lg)',
+                            background: 'var(--color-card)',
+                            border: '1px solid var(--color-border)',
                             fontSize: '12.5px',
                             fontWeight: 750,
-                            color: '#475569',
+                            color: 'var(--color-text-secondary)',
                             cursor: 'pointer',
-                            transition: 'color 0.2s, background 0.2s, border-color 0.2s',
+                            transition: 'all var(--transition-base)',
                           }}
                           onMouseEnter={e => { e.currentTarget.style.color = 'var(--color-primary)'; e.currentTarget.style.background = 'color-mix(in srgb, var(--color-primary) 8%, white)'; e.currentTarget.style.borderColor = 'var(--brand-primary-border)'; }}
-                          onMouseLeave={e => { e.currentTarget.style.color = '#475569'; e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = '#eef2f7'; }}
+                          onMouseLeave={e => { e.currentTarget.style.color = 'var(--color-text-secondary)'; e.currentTarget.style.background = 'var(--color-card)'; e.currentTarget.style.borderColor = 'var(--color-border)'; }}
                         >
                           {label}
                         </div>
@@ -729,11 +729,11 @@ function SideDrawer({ isOpen, onClose, allCategories, isLoggedIn, currentUser, o
         </div>
 
         {/* Footer */}
-        <div style={{ padding: '16px 18px 20px', background: '#ffffff', borderTop: '1px solid #edf2f7' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+        <div style={{ padding: 'var(--space-4) var(--space-5) var(--space-5)', background: 'var(--color-card)', borderTop: '1px solid var(--color-border)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 'var(--space-3)' }}>
             <div>
-              <div style={{ color: '#0f172a', fontSize: 12, fontWeight: 900 }}>Need help planning?</div>
-              <div style={{ marginTop: 2, color: '#64748b', fontSize: 12, fontWeight: 700 }}>{displayPhone}</div>
+              <div style={{ color: 'var(--color-text-primary)', fontSize: 12, fontWeight: 900 }}>Need help planning?</div>
+              <div style={{ marginTop: 2, color: 'var(--color-text-muted)', fontSize: 12, fontWeight: 700 }}>{displayPhone}</div>
             </div>
             {isLoggedIn ? (
               <button
@@ -745,17 +745,17 @@ function SideDrawer({ isOpen, onClose, allCategories, isLoggedIn, currentUser, o
                 style={{
                   fontSize: 12,
                   fontWeight: 900,
-                  color: '#dc2626',
-                  background: '#fff1f2',
-                  border: '1px solid #fecdd3',
+                  color: 'var(--color-card)',
+                  background: 'var(--color-primary)',
+                  border: '1px solid var(--color-primary)',
                   borderRadius: 999,
-                  padding: '9px 13px',
+                  padding: 'var(--space-2) var(--space-3)',
                 }}
               >
                 Sign out
               </button>
             ) : (
-              <Link href="/auth/login" onClick={onClose} style={{ fontSize: 12, fontWeight: 900, color: 'white', background: 'var(--color-primary)', borderRadius: 999, padding: '10px 14px', textDecoration: 'none' }}>
+              <Link href="/auth/login" onClick={onClose} style={{ fontSize: 12, fontWeight: 900, color: 'white', background: 'var(--color-primary)', borderRadius: 999, padding: 'var(--space-3) var(--space-4)', textDecoration: 'none' }}>
                 Login
               </Link>
             )}
@@ -826,8 +826,8 @@ export default function Navbar({ brand, companyInfo }) {
                 name: item.name.charAt(0).toUpperCase() + item.name.slice(1),
                 href: getDestinationHref(item),
                 tag: tagStr,
-                tagClr: tagStr === 'BEACH' ? '#ef4444' : 'var(--color-primary)',
-                tagBg: tagStr === 'BEACH' ? '#fef2f2' : '#e0f2fe'
+                tagClr: tagStr === 'BEACH' ? 'var(--color-secondary)' : 'var(--color-primary)',
+                tagBg: tagStr === 'BEACH' ? 'var(--color-secondary-hover)' : 'var(--color-secondary-hover)'
               };
             });
 
@@ -951,18 +951,18 @@ export default function Navbar({ brand, companyInfo }) {
   const brandName = brand?.legalName || 'ITS TRAVELS AND TOURS';
   const isTransparent = isHeroPage && atHero && !scrolled && !drawerOpen;
   const isLightHeader = isTransparent || scrolled;
-  const linkColor = isLightHeader ? 'rgba(255,255,255,0.92)' : '#374151';
+  const linkColor = isLightHeader ? 'rgba(255,255,255,0.92)' : 'var(--color-text-secondary)';
   const navButtonStyle = {
-    padding: '8px 18px',
-    borderRadius: 8,
-    border: isLightHeader ? '1.5px solid rgba(255,255,255,0.6)' : '1.5px solid #d1d5db',
-    color: isLightHeader ? 'white' : '#374151',
+    padding: 'var(--space-2) var(--space-5)',
+    borderRadius: 'var(--radius-md)',
+    border: isLightHeader ? '1.5px solid rgba(255,255,255,0.6)' : '1.5px solid var(--color-border)',
+    color: isLightHeader ? 'white' : 'var(--color-text-secondary)',
     fontWeight: 600,
     fontSize: 13,
     textDecoration: 'none',
     background: isLightHeader ? 'rgba(255,255,255,0.1)' : 'white',
     backdropFilter: 'blur(6px)',
-    transition: 'all 0.2s',
+    transition: 'all var(--transition-base)',
   };
 
   const updateForexDraft = (key, value) => {
@@ -1078,7 +1078,7 @@ export default function Navbar({ brand, companyInfo }) {
           position: absolute;
           bottom: 0; left: 0;
           width: 0; height: 2px;
-          background: #A3C644;
+          background: var(--color-primary);
           border-radius: 999px;
           transition: width 0.25s;
         }
@@ -1086,15 +1086,15 @@ export default function Navbar({ brand, companyInfo }) {
         .nav-plain-link.active::after { width: 100%; }
         .nav-plain-link:hover,
         .nav-plain-link.active {
-          color: #A3C644 !important;
+          color: var(--color-primary) !important;
         }
         .nav-social-icon {
           width: 24px;
           height: 24px;
           border-radius: 50%;
-          border: 1.5px solid #0f172a;
+          border: 1.5px solid var(--color-text-primary);
           background: transparent;
-          color: #0f172a;
+          color: var(--color-text-primary);
           display: inline-flex;
           align-items: center;
           justify-content: center;
@@ -1102,8 +1102,8 @@ export default function Navbar({ brand, companyInfo }) {
           text-decoration: none;
         }
         .nav-social-icon:hover {
-          background: #8DB133;
-          color: #ffffff;
+          background: var(--color-primary-hover);
+          color: var(--color-card);
           transform: scale(1.08);
         }
         .forex-modal-backdrop {
@@ -1121,8 +1121,8 @@ export default function Navbar({ brand, companyInfo }) {
           width: min(100%, 720px);
           max-height: min(86vh, 760px);
           overflow: auto;
-          border-radius: 8px;
-          background: #fff;
+          border-radius: var(--radius-md);
+          background: var(--color-card);
           box-shadow: 0 28px 70px rgba(0,0,0,0.28);
         }
         .forex-modal-head {
@@ -1131,8 +1131,8 @@ export default function Navbar({ brand, companyInfo }) {
           justify-content: space-between;
           gap: 18px;
           padding: 22px 24px;
-          background: linear-gradient(135deg, #083d5b, #108173);
-          color: #fff;
+          background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+          color: var(--color-card);
         }
         .forex-modal-head span {
           display: block;
@@ -1161,7 +1161,7 @@ export default function Navbar({ brand, companyInfo }) {
           border: 1px solid rgba(255,255,255,.35);
           border-radius: 50%;
           background: rgba(255,255,255,.12);
-          color: #fff;
+          color: var(--color-card);
           display: inline-flex;
           align-items: center;
           justify-content: center;
@@ -1181,7 +1181,7 @@ export default function Navbar({ brand, companyInfo }) {
         .forex-modal-grid label {
           display: grid;
           gap: 7px;
-          color: #334155;
+          color: var(--color-text-secondary);
           font-size: 12px;
           font-weight: 900;
         }
@@ -1203,9 +1203,9 @@ export default function Navbar({ brand, companyInfo }) {
             "selected toggle"
             "search toggle";
           min-height: 64px;
-          border: 1px solid #d8dee8;
-          border-radius: 8px;
-          background: #fff;
+          border: 1px solid var(--color-border);
+          border-radius: var(--radius-md);
+          background: var(--color-card);
           transition: border-color .18s ease, box-shadow .18s ease;
         }
         .forex-currency-combobox.is-open {
@@ -1221,14 +1221,14 @@ export default function Navbar({ brand, companyInfo }) {
           padding: 9px 12px 0;
         }
         .forex-currency-selected strong {
-          color: #0f172a;
+          color: var(--color-text-primary);
           font-size: 15px;
           font-weight: 900;
           letter-spacing: .3px;
         }
         .forex-currency-selected span {
           min-width: 0;
-          color: #64748b;
+          color: var(--color-text-muted);
           font-size: 12px;
           font-weight: 800;
           overflow: hidden;
@@ -1239,8 +1239,8 @@ export default function Navbar({ brand, companyInfo }) {
           flex: 0 0 auto;
           padding: 2px 6px;
           border-radius: 999px;
-          background: #ecfeff;
-          color: #0369a1;
+          background: var(--color-secondary-hover);
+          color: var(--color-secondary);
           font-size: 10px;
           font-style: normal;
           font-weight: 900;
@@ -1251,7 +1251,7 @@ export default function Navbar({ brand, companyInfo }) {
           border: 0;
           border-radius: 0;
           padding: 0 12px 8px;
-          color: #111827;
+          color: var(--color-text-primary);
           font-size: 13px;
           font-weight: 700;
           outline: none;
@@ -1259,10 +1259,10 @@ export default function Navbar({ brand, companyInfo }) {
         .forex-currency-combobox > button {
           grid-area: toggle;
           border: 0;
-          border-left: 1px solid #edf1f5;
+          border-left: 1px solid var(--color-border);
           border-radius: 0 8px 8px 0;
-          background: #f8fafc;
-          color: #334155;
+          background: var(--color-bg-soft);
+          color: var(--color-text-secondary);
           display: inline-flex;
           align-items: center;
           justify-content: center;
@@ -1279,9 +1279,9 @@ export default function Navbar({ brand, companyInfo }) {
           z-index: 30;
           max-height: 248px;
           overflow-y: auto;
-          border: 1px solid #dbe5ef;
-          border-radius: 8px;
-          background: #fff;
+          border: 1px solid var(--color-border);
+          border-radius: var(--radius-md);
+          background: var(--color-card);
           box-shadow: 0 18px 42px rgba(15,23,42,.18);
           padding: 6px;
         }
@@ -1300,7 +1300,7 @@ export default function Navbar({ brand, companyInfo }) {
         }
         .forex-currency-menu button:hover,
         .forex-currency-menu button.active {
-          background: #eff6ff;
+          background: var(--color-secondary-hover);
         }
         .forex-currency-menu button span {
           display: grid;
@@ -1308,12 +1308,12 @@ export default function Navbar({ brand, companyInfo }) {
           min-width: 0;
         }
         .forex-currency-menu button strong {
-          color: #0f172a;
+          color: var(--color-text-primary);
           font-size: 13px;
           font-weight: 900;
         }
         .forex-currency-menu button small {
-          color: #64748b;
+          color: var(--color-text-muted);
           font-size: 12px;
           font-weight: 700;
           overflow: hidden;
@@ -1323,7 +1323,7 @@ export default function Navbar({ brand, companyInfo }) {
         .forex-currency-menu button em {
           flex: 0 0 auto;
           max-width: 120px;
-          color: #0369a1;
+          color: var(--color-secondary);
           font-size: 11px;
           font-style: normal;
           font-weight: 900;
@@ -1333,7 +1333,7 @@ export default function Navbar({ brand, companyInfo }) {
         }
         .forex-currency-empty {
           padding: 14px 12px;
-          color: #64748b;
+          color: var(--color-text-muted);
           font-size: 13px;
           font-weight: 800;
           text-align: center;
@@ -1342,9 +1342,9 @@ export default function Navbar({ brand, companyInfo }) {
           width: 42px;
           height: 42px;
           margin-bottom: 11px;
-          border: 1px solid #cfd9e6;
+          border: 1px solid var(--color-border);
           border-radius: 50%;
-          background: #fff;
+          background: var(--color-card);
           color: var(--color-primary);
           display: inline-flex;
           align-items: center;
@@ -1354,17 +1354,17 @@ export default function Navbar({ brand, companyInfo }) {
         }
         .forex-swap-button:hover {
           background: var(--color-primary);
-          color: #fff;
+          color: var(--color-card);
           transform: rotate(180deg);
         }
         .forex-modal-grid input,
         .forex-modal-grid select,
         .forex-modal-grid textarea {
           width: 100%;
-          border: 1px solid #d8dee8;
-          border-radius: 8px;
-          background: #fff;
-          color: #111827;
+          border: 1px solid var(--color-border);
+          border-radius: var(--radius-md);
+          background: var(--color-card);
+          color: var(--color-text-primary);
           font: inherit;
           font-size: 14px;
           outline: none;
@@ -1393,28 +1393,28 @@ export default function Navbar({ brand, companyInfo }) {
           justify-content: space-between;
           gap: 14px;
           padding: 14px 16px;
-          border: 1px solid #bae6fd;
-          border-radius: 8px;
-          background: #f0f9ff;
-          color: #0f172a;
+          border: 1px solid var(--color-border);
+          border-radius: var(--radius-md);
+          background: var(--color-secondary-hover);
+          color: var(--color-text-primary);
         }
         .forex-rate-preview strong {
           display: block;
-          color: #075985;
+          color: var(--color-text-primary);
           font-size: 13px;
           font-weight: 950;
         }
         .forex-rate-preview span {
           display: block;
           margin-top: 3px;
-          color: #334155;
+          color: var(--color-text-secondary);
           font-size: 13px;
           font-weight: 800;
           line-height: 1.45;
         }
         .forex-rate-preview small {
           flex: 0 0 auto;
-          color: #0369a1;
+          color: var(--color-secondary);
           font-size: 12px;
           font-weight: 900;
           text-align: right;
@@ -1422,7 +1422,7 @@ export default function Navbar({ brand, companyInfo }) {
         .forex-charge-note {
           grid-column: 1 / -1;
           margin-top: -6px;
-          color: #475569;
+          color: var(--color-text-secondary);
           font-size: 12px;
           font-weight: 850;
         }
@@ -1430,10 +1430,10 @@ export default function Navbar({ brand, companyInfo }) {
           grid-column: 1 / -1;
           margin: 0;
           padding: 11px 13px;
-          border: 1px solid #fed7aa;
-          border-radius: 8px;
-          background: #fff7ed;
-          color: #9a3412;
+          border: 1px solid var(--color-border);
+          border-radius: var(--radius-md);
+          background: var(--color-secondary-hover);
+          color: var(--color-secondary);
           font-size: 13px;
           font-weight: 850;
         }
@@ -1442,9 +1442,9 @@ export default function Navbar({ brand, companyInfo }) {
           min-height: 44px;
           padding: 0 18px;
           border: 0;
-          border-radius: 8px;
+          border-radius: var(--radius-md);
           background: var(--color-primary);
-          color: #fff;
+          color: var(--color-card);
           font-weight: 900;
           cursor: pointer;
         }
@@ -1454,10 +1454,10 @@ export default function Navbar({ brand, companyInfo }) {
         }
         .forex-modal-output {
           padding: 15px 16px;
-          border: 1px solid #bfe7d9;
-          border-radius: 8px;
-          background: #effdf7;
-          color: #14532d;
+          border: 1px solid var(--color-border);
+          border-radius: var(--radius-md);
+          background: var(--color-secondary-hover);
+          color: var(--color-text-primary);
         }
         .forex-modal-output strong {
           display: block;
@@ -1474,10 +1474,10 @@ export default function Navbar({ brand, companyInfo }) {
         .forex-result-grid span {
           min-height: 62px;
           padding: 10px;
-          border: 1px solid #bbf7d0;
-          border-radius: 8px;
-          background: #f7fee7;
-          color: #14532d;
+          border: 1px solid var(--color-border);
+          border-radius: var(--radius-md);
+          background: var(--color-secondary-hover);
+          color: var(--color-text-primary);
           font-size: 13px;
           font-weight: 900;
           overflow-wrap: anywhere;
@@ -1485,13 +1485,13 @@ export default function Navbar({ brand, companyInfo }) {
         .forex-result-grid b {
           display: block;
           margin-bottom: 4px;
-          color: #4d7c0f;
+          color: var(--color-text-secondary);
           font-size: 11px;
           text-transform: uppercase;
         }
         .forex-modal-output p {
           margin: 0;
-          color: #166534;
+          color: var(--color-text-primary);
           font-size: 14px;
           line-height: 1.55;
         }
@@ -1531,26 +1531,26 @@ export default function Navbar({ brand, companyInfo }) {
           left: 0,
           right: 0,
           zIndex: 1000,
-          boxShadow: scrolled ? '0 10px 30px rgba(0,0,0,0.08)' : 'none',
-          transition: 'all 0.3s ease',
-          background: '#FBF9F6',
+          boxShadow: scrolled ? 'var(--shadow-md)' : 'none',
+          transition: 'all var(--transition-base)',
+          background: 'var(--color-background)',
         }}
       >
         {/* Top Bar */}
         <div
           className="nav-top-bar d-none d-lg-block"
           style={{
-            background: 'linear-gradient(135deg, #A3C644 0%, #8DB133 100%)',
+            background: 'var(--gradient-primary)',
             height: scrolled ? '0px' : '40px',
             overflow: 'hidden',
-            transition: 'all 0.3s ease',
+            transition: 'all var(--transition-base)',
             borderBottom: '1px solid rgba(255, 255, 255, 0.08)'
           }}
         >
           <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '100%' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 20, color: '#0f172a', fontSize: '12.5px', fontWeight: '600' }}>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-5)', color: 'var(--color-text-primary)', fontSize: '12.5px', fontWeight: '600' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-primary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
                   <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
                   <path d="M4 22h16" />
@@ -1559,22 +1559,22 @@ export default function Navbar({ brand, companyInfo }) {
                 </svg>
                 20+ Years of Excellence in Travel
               </span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="#0f172a" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--color-text-primary)" stroke="var(--color-text-primary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                 </svg>
                 4.8/5 Google Rating
               </span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-primary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M15.05 5A5 5 0 0 1 19 8.95M15.05 1A9 9 0 0 1 23 8.94m-1 7.98v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
                 </svg>
                 {companyInfo?.contact?.phone || '+91 9876543210'}
               </span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: '#0f172a', fontSize: '12.5px', fontWeight: '600' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', color: 'var(--color-text-primary)', fontSize: '12.5px', fontWeight: '600' }}>
               <span>Follow Us:</span>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
                 {/* Facebook */}
                 <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="nav-social-icon">
                   <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M9 8H7v3h2v9h3v-9h3l.5-3H12V6c0-.88.39-1 1-1h2V2h-3C9.78 2 9 3.5 9 5.5V8z" /></svg>
@@ -1599,14 +1599,14 @@ export default function Navbar({ brand, companyInfo }) {
         {/* Main Navbar Header */}
         <header
           style={{
-            background: '#ffffff',
+            background: 'var(--color-card)',
             padding: scrolled ? '10px 0' : '16px 0',
             transition: 'padding 0.3s ease',
-            borderBottom: scrolled ? '1px solid #edf2f7' : 'none',
+            borderBottom: scrolled ? '1px solid var(--color-border)' : 'none',
           }}
         >
           <div className="container">
-            <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 20 }}>
+            <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--space-5)' }}>
 
               {/* Logo */}
               <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', flexShrink: 0 }}>
@@ -1627,7 +1627,7 @@ export default function Navbar({ brand, companyInfo }) {
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 14,
+                  gap: 'var(--space-4)',
                   listStyle: 'none',
                   margin: 0,
                   padding: 0,
@@ -1640,7 +1640,7 @@ export default function Navbar({ brand, companyInfo }) {
                   <Link
                     href="/"
                     className={`nav-plain-link ${pathname === '/' ? 'active' : ''}`}
-                    style={{ color: pathname === '/' ? '#A3C644' : '#374151' }}
+                    style={{ color: pathname === '/' ? 'var(--color-primary)' : 'var(--color-text-secondary)' }}
                   >
                     Home
                   </Link>
@@ -1649,7 +1649,7 @@ export default function Navbar({ brand, companyInfo }) {
                   <Link
                     href="/about"
                     className={`nav-plain-link ${pathname === '/about' ? 'active' : ''}`}
-                    style={{ color: pathname === '/about' ? '#A3C644' : '#374151' }}
+                    style={{ color: pathname === '/about' ? 'var(--color-primary)' : 'var(--color-text-secondary)' }}
                   >
                     About Us
                   </Link>
@@ -1663,7 +1663,7 @@ export default function Navbar({ brand, companyInfo }) {
                   <Link
                     href="/tours?search=nri"
                     className={`nav-plain-link`}
-                    style={{ color: '#374151' }}
+                    style={{ color: 'var(--color-text-secondary)' }}
                   >
                     NRI Tours
                   </Link>
@@ -1672,7 +1672,7 @@ export default function Navbar({ brand, companyInfo }) {
                   <Link
                     href="/tours?search=corporate"
                     className={`nav-plain-link`}
-                    style={{ color: '#374151' }}
+                    style={{ color: 'var(--color-text-secondary)' }}
                   >
                     Corporate Tours
                   </Link>
@@ -1681,7 +1681,7 @@ export default function Navbar({ brand, companyInfo }) {
                   <Link
                     href="/tours"
                     className={`nav-plain-link ${pathname === '/tours' ? 'active' : ''}`}
-                    style={{ color: pathname === '/tours' ? '#A3C644' : '#374151' }}
+                    style={{ color: pathname === '/tours' ? 'var(--color-primary)' : 'var(--color-text-secondary)' }}
                   >
                     Destinations
                   </Link>
@@ -1689,17 +1689,17 @@ export default function Navbar({ brand, companyInfo }) {
               </ul>
 
               {/* Right Side Call Section & Mobile Trigger Controls */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexShrink: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)', flexShrink: 0 }}>
                 {/* Call section */}
-                <div className="d-none d-md-flex" style={{ alignItems: 'center', gap: 10 }}>
+                <div className="d-none d-md-flex" style={{ alignItems: 'center', gap: 'var(--space-3)' }}>
                   <div
                     style={{
                       width: 38,
                       height: 38,
                       borderRadius: '50%',
                       background: 'rgba(163, 198, 68, 0.12)',
-                      border: '1.5px solid #A3C644',
-                      color: '#A3C644',
+                      border: '1.5px solid var(--color-primary)',
+                      color: 'var(--color-primary)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -1712,11 +1712,11 @@ export default function Navbar({ brand, companyInfo }) {
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <a
                       href={`tel:${companyInfo?.contact?.phone || '+91 98765 43210'}`}
-                      style={{ fontSize: '14.5px', fontWeight: 800, color: '#111827', textDecoration: 'none', lineHeight: 1.1 }}
+                      style={{ fontSize: '14.5px', fontWeight: 800, color: 'var(--color-text-primary)', textDecoration: 'none', lineHeight: 1.1 }}
                     >
                       {companyInfo?.contact?.phone || '+91 98765 43210'}
                     </a>
-                    <span style={{ fontSize: '10.5px', fontWeight: 600, color: '#64748b', marginTop: '2px' }}>
+                    <span style={{ fontSize: '10.5px', fontWeight: 600, color: 'var(--color-text-muted)', marginTop: '2px' }}>
                       Call Us Anytime
                     </span>
                   </div>
@@ -1732,13 +1732,13 @@ export default function Navbar({ brand, companyInfo }) {
                   style={{
                     width: 36,
                     height: 36,
-                    background: '#f9fafb',
-                    border: '1.5px solid #e5e7eb',
-                    borderRadius: 8,
+                    background: 'var(--color-bg)',
+                    border: '1.5px solid var(--color-border)',
+                    borderRadius: 'var(--radius-md)',
                     padding: 0,
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: '#374151',
+                    color: 'var(--color-text-secondary)',
                     cursor: 'pointer',
                   }}
                 >
@@ -1754,14 +1754,14 @@ export default function Navbar({ brand, companyInfo }) {
                   className="d-lg-none"
                   onClick={() => setDrawerOpen(true)}
                   style={{
-                    background: '#f9fafb',
-                    border: '1.5px solid #e5e7eb',
-                    borderRadius: 8,
+                    background: 'var(--color-bg)',
+                    border: '1.5px solid var(--color-border)',
+                    borderRadius: 'var(--radius-md)',
                     padding: '6px 10px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: '#374151',
+                    color: 'var(--color-text-secondary)',
                     cursor: 'pointer',
                   }}
                 >
