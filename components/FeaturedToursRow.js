@@ -381,7 +381,7 @@ function CustomDropdown({ label, currentValue, onChange, options }) {
 }
 
 /* ── Filter logic ─────────────────────────────────────── */
-function filterBookings(travelClass, destFilter, source = []) {
+function filterBookings(travelClass, destFilter, durationFilter, source = []) {
   let list = source;
 
   // Filter by Travel Class
@@ -400,6 +400,15 @@ function filterBookings(travelClass, destFilter, source = []) {
     list = list.filter(b => exploreTours.some(e => e.id === b.id));
   } else if (destFilter === 'India & Beyond') {
     // Both, no filter needed since source contains both
+  }
+
+  // Filter by Duration
+  if (durationFilter === '1-3 Days') {
+    list = list.filter(b => b.nights <= 3);
+  } else if (durationFilter === '4-7 Days') {
+    list = list.filter(b => b.nights >= 4 && b.nights <= 7);
+  } else if (durationFilter === '8+ Days') {
+    list = list.filter(b => b.nights >= 8);
   }
 
   return list;
@@ -480,6 +489,7 @@ export const getFeaturedTourHref = (pkg) => {
 export default function RecommendedPackages() {
   const [activeClass, setActiveClass] = useState('All');
   const [activeDest, setActiveDest] = useState('All Destinations');
+  const [activeDuration, setActiveDuration] = useState('DURATION');
   const [visible, setVisible] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [liveBookings, setLiveBookings] = useState([]);
@@ -516,7 +526,7 @@ export default function RecommendedPackages() {
 
   const combinedTours = [...indiaTours, ...exploreTours];
   // We use combinedTours instead of liveBookings or allBookings
-  const filtered = filterBookings(activeClass, activeDest, combinedTours);
+  const filtered = filterBookings(activeClass, activeDest, activeDuration, combinedTours);
 
   const handleClassSort = (val) => {
     if (val === activeClass) return;
@@ -533,6 +543,16 @@ export default function RecommendedPackages() {
     setVisible(false);
     setTimeout(() => {
       setActiveDest(dest);
+      setVisible(true);
+      if (scrollRef.current) scrollRef.current.scrollLeft = 0;
+    }, 180);
+  };
+
+  const handleDurationChange = (duration) => {
+    if (duration === activeDuration) return;
+    setVisible(false);
+    setTimeout(() => {
+      setActiveDuration(duration);
       setVisible(true);
       if (scrollRef.current) scrollRef.current.scrollLeft = 0;
     }, 180);
@@ -837,7 +857,7 @@ export default function RecommendedPackages() {
 
           <div className="recent-filters" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 16 }}>
              <CustomDropdown currentValue={activeDest} onChange={handleDestChange} options={DEST_FILTERS} />
-             <CustomDropdown currentValue="DURATION" onChange={() => {}} options={['DURATION', '1-3 Days', '4-7 Days', '8+ Days']} />
+             <CustomDropdown currentValue={activeDuration} onChange={handleDurationChange} options={['DURATION', '1-3 Days', '4-7 Days', '8+ Days']} />
              <CustomDropdown label="TRAVEL CLASS" currentValue={activeClass} onChange={handleClassSort} options={CLASS_FILTERS} />
           </div>
 

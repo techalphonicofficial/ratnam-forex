@@ -5,38 +5,53 @@ import Link from 'next/link';
 
 const collections = [
   {
+    id: 1,
     title: 'Incredible India',
-    subtitle: 'Timeless. Diverse. Incredible.',
     slug: 'incredible-india',
-    image: 'https://images.unsplash.com/photo-1477587458883-47145ed94245?w=900&q=80',
+    description: "Handcrafted journeys across India's most iconic destinations designed especially for NRIs, international travellers and luxury explorers.",
+    image: 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=1200&q=80',
+    highlights: [
+      'Luxury Hotels', 'Festival Experiences', 'Jungle Safari', 'Elephant Ride',
+      'Local Culture', 'Yoga Retreats', 'Ganga Aarti',
+      'Village Stay', 'Heritage Walks', 'Traditional Cuisine'
+    ]
   },
   {
+    id: 2,
     title: 'International',
-    subtitle: 'Explore Beyond Borders',
     slug: 'international',
-    image: 'https://images.unsplash.com/photo-1488085061387-422e29b40080?w=900&q=80',
+    description: "Discover breathtaking landscapes, world-class luxury, and immersive experiences across Europe, Asia, and beyond.",
+    image: 'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=1200&q=80',
+    highlights: [
+      'Premium Flights', 'Private Guides', 'Iconic Landmarks', 'Gourmet Dining',
+      'Luxury Transfers', 'Exclusive Access', 'Wine Tasting', 'Cultural Shows',
+      'Scenic Train Rides', 'Visa Assistance'
+    ]
   },
   {
+    id: 3,
     title: 'India Unlimited',
-    subtitle: 'Endless Journeys Within',
     slug: 'india-unlimited',
-    image: 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=900&q=80',
+    description: "Uncover the hidden gems of India with deeply authentic itineraries that go beyond the usual tourist trails.",
+    image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80',
+    highlights: [
+      'Offbeat Trails', 'Boutique Stays', 'Wildlife Photography', 'Houseboat Cruise',
+      'Tribal Village Tour', 'Desert Safari', 'Mountain Trekking', 'Spice Plantation'
+    ]
   },
   {
+    id: 4,
     title: 'Trans India',
-    subtitle: 'Crossing Landscapes',
     slug: 'trans-india',
-    image: 'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=900&q=80',
-  },
+    description: "Epic cross-country expeditions covering the diverse topography, climate, and traditions of the Indian subcontinent.",
+    image: 'https://images.unsplash.com/photo-1517427677506-ade074eb1432?w=1200&q=80',
+    highlights: [
+      'Luxury Train Journeys', 'Multi-city Tours', 'Domestic Flights Included',
+      'Seamless Logistics', 'Expert Escorts', 'Pan-India Cuisine', 'Historical Monuments',
+      'Diverse Landscapes'
+    ]
+  }
 ];
-
-function CollectionIcon() {
-  return (
-    <span className="collection-card-icon" aria-hidden="true">
-      <span />
-    </span>
-  );
-}
 
 export default function DescribeSection() {
   return (
@@ -44,234 +59,186 @@ export default function DescribeSection() {
       <style>{`
         .collections-section {
           position: relative;
-          overflow: hidden;
-          background: var(--color-bg);
-          padding: 48px 0 56px;
+          background: #ffffff;
+          padding: 60px 0 80px;
         }
 
         .collections-inner {
-          position: relative;
-          z-index: 1;
-          width: 100%;
-          max-width: 1280px;
-          margin: 0 auto;
-          padding: 0 24px;
+          /* Removed max-width and padding to rely on Bootstrap container */
         }
 
         .collections-title {
-          margin: 0 0 28px;
-          color: var(--color-text-primary);
+          margin: 0 0 50px;
+          color: #111827;
           font-family: "Italiana", sans-serif;
-          font-size: clamp(18px, 2vw, 22px);
+          font-size: clamp(28px, 3.5vw, 42px);
           font-weight: 800;
-          line-height: 1.2;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
+          text-align: center;
+        }
+
+        .collection-block {
+          display: flex;
+          align-items: stretch;
+          margin-bottom: 60px;
+          gap: 50px;
+        }
+
+        /* Alternate layout for even items. Use nth-of-type so the h2 doesn't mess up the count */
+        .collection-block:nth-of-type(even) {
+          flex-direction: row-reverse;
+        }
+
+        .collection-text {
+          flex: 0 0 45%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+        }
+
+        .collection-heading {
+          font-family: "Italiana", sans-serif;
+          font-size: clamp(28px, 3.5vw, 40px);
+          font-weight: 800;
+          color: #111827;
+          margin: auto 0 20px 0;
+        }
+
+        .collection-desc {
+          font-size: 16px;
+          color: #4b5563;
+          line-height: 1.6;
+          margin: 0 0 32px 0;
+        }
+
+        .collection-highlights {
+          display: grid;
+          grid-template-columns: repeat(2, max-content);
+          justify-content: center;
+          gap: 12px 20px;
+        }
+
+        .highlight-item {
           display: flex;
           align-items: center;
-          justify-content: center;
-          text-align: center;
-        }
-
-        .collections-grid {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 20px;
-        }
-
-        .collection-card {
-          position: relative;
-          display: block;
-          width: 100%;
-          aspect-ratio: 3 / 4;
-          overflow: hidden;
-          border-radius: 12px;
-          background: #101318;
-          box-shadow: 0 4px 16px rgba(15, 23, 42, 0.1);
-          isolation: isolate;
-          text-decoration: none;
-          transition: transform 0.35s ease, box-shadow 0.35s ease;
-        }
-
-        .collection-card:hover {
-          transform: translateY(-6px);
-          box-shadow: 0 16px 40px rgba(15, 23, 42, 0.18);
-        }
-
-        .collection-card img {
-          object-fit: cover;
-          transform: scale(1.01);
-          transition: transform 450ms ease, filter 450ms ease;
-        }
-
-        .collection-card::before {
-          content: '';
-          position: absolute;
-          inset: 0;
-          z-index: 1;
-          background: linear-gradient(
-            180deg,
-            rgba(5, 8, 12, 0.02) 0%,
-            rgba(5, 8, 12, 0.3) 50%,
-            rgba(5, 8, 12, 0.82) 100%
-          );
-          transition: background 0.35s ease;
-        }
-
-        .collection-card:hover::before {
-          background: linear-gradient(
-            180deg,
-            rgba(5, 8, 12, 0.05) 0%,
-            rgba(5, 8, 12, 0.35) 50%,
-            rgba(5, 8, 12, 0.88) 100%
-          );
-        }
-
-        .collection-card:hover img {
-          transform: scale(1.06);
-          filter: saturate(1.1);
-        }
-
-        .collection-card:focus-visible {
-          outline: 3px solid var(--color-accent);
-          outline-offset: 3px;
-        }
-
-        .collection-card-content {
-          position: absolute;
-          inset: auto 16px 24px;
-          z-index: 2;
-          display: grid;
-          justify-items: center;
-          gap: 6px;
-          text-align: center;
-          color: #ffffff;
-        }
-
-        .collection-card-icon {
-          position: relative;
-          width: 30px;
-          height: 24px;
-          display: inline-grid;
-          place-items: center;
-          border: 2px solid rgba(255, 255, 255, 0.85);
-          border-radius: 5px;
-          background: rgba(8, 12, 17, 0.25);
-          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-          margin-bottom: 6px;
-        }
-
-        .collection-card-icon::before {
-          content: '';
-          position: absolute;
-          top: -7px;
-          width: 12px;
-          height: 6px;
-          border: 2px solid rgba(255, 255, 255, 0.85);
-          border-bottom: 0;
-          border-radius: 4px 4px 0 0;
-        }
-
-        .collection-card-icon span {
-          width: 8px;
-          height: 8px;
-          border-right: 2px solid rgba(255, 255, 255, 0.9);
-          border-bottom: 2px solid rgba(255, 255, 255, 0.9);
-          transform: rotate(45deg) translate(-1px, -1px);
-        }
-
-        .collection-card-title {
-          margin: 0;
-          font-family: "Italiana", sans-serif;
-          font-size: clamp(14px, 1.4vw, 18px);
-          font-weight: 800;
-          line-height: 1.15;
-          text-transform: uppercase;
-          text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
-          letter-spacing: 0.3px;
-        }
-
-        .collection-card-subtitle {
-          margin: 0;
-          color: rgba(255, 255, 255, 0.85);
-          font-size: clamp(11px, 1vw, 13px);
+          justify-content: flex-start;
+          gap: 10px;
+          font-size: 15px;
+          color: #374151;
           font-weight: 500;
-          line-height: 1.2;
-          font-style: italic;
-          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
         }
 
-        /* Tablet */
+        .highlight-icon {
+          color: #8dc63f; /* Green checkmark color */
+          flex-shrink: 0;
+        }
+
+        .btn-explore {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 14px 32px;
+          background: #8dc63f; /* Using a vibrant green button matching the screenshot */
+          color: #ffffff;
+          font-weight: 600;
+          font-size: 15px;
+          border-radius: 8px;
+          text-decoration: none;
+          transition: background 0.3s ease, transform 0.3s ease;
+          align-self: center;
+          margin-top: auto;
+        }
+
+        .btn-explore:hover {
+          background: #7bb532;
+          transform: translateY(-2px);
+        }
+
+        .collection-image-wrapper {
+          flex: 0 0 55%;
+          position: relative;
+          aspect-ratio: 16 / 10;
+          border-radius: 12px;
+          overflow: hidden;
+          box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+        }
+
+        .collection-image {
+          object-fit: cover;
+          transition: transform 0.7s ease;
+        }
+
+        .collection-image-wrapper:hover .collection-image {
+          transform: scale(1.03);
+        }
+
         @media (max-width: 900px) {
-          .collections-grid {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
+          .collection-block, .collection-block:nth-of-type(even) {
+            flex-direction: column-reverse; /* Stack with text on bottom, image on top */
+            gap: 30px;
+            margin-bottom: 50px;
           }
-          .collection-card {
+          .collection-image-wrapper {
             aspect-ratio: 4 / 3;
+            width: 100%;
+          }
+          .collection-heading {
+            margin-top: 0;
+          }
+          .btn-explore {
+            margin-top: 30px;
           }
         }
 
-        /* Mobile */
         @media (max-width: 540px) {
+          .collection-highlights {
+            grid-template-columns: repeat(2, max-content);
+            gap: 10px 15px; /* slightly smaller gap on mobile */
+          }
           .collections-section {
-            padding: 32px 0 40px;
-          }
-          .collections-inner {
-            padding: 0 16px;
-          }
-          .collections-grid {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-          }
-          .collection-card {
-            aspect-ratio: 3 / 4;
-            border-radius: 10px;
-          }
-          .collection-card-content {
-            inset: auto 10px 16px;
-            gap: 4px;
-          }
-          .collection-card-icon {
-            width: 26px;
-            height: 20px;
-            margin-bottom: 4px;
-          }
-          .collection-card-icon {
-            width: 26px;
-            height: 20px;
-            margin-bottom: 4px;
+            padding: 40px 0;
           }
         }
       `}</style>
 
-      <div className="collections-inner">
+      <div className="container">
         <h2 className="collections-title" id="collections-title">
-          Discover Our Collections
+          DISCOVER OUR COLLECTIONS
         </h2>
 
-        <div className="collections-grid">
-          {collections.map((collection) => (
-            <Link
-              key={collection.title}
-              className="collection-card"
-              href={`/collections/${collection.slug}`}
-            >
+        {collections.map((collection) => (
+          <div key={collection.id} className="collection-block">
+            <div className="collection-text">
+              <h3 className="collection-heading">{collection.title}</h3>
+              <p className="collection-desc">{collection.description}</p>
+              
+              <div className="collection-highlights">
+                {collection.highlights?.map((highlight, idx) => (
+                  <div key={idx} className="highlight-item">
+                    <svg className="highlight-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    {highlight}
+                  </div>
+                ))}
+              </div>
+
+              <Link href={`/collections/${collection.slug}`} className="btn-explore">
+                Explore Collection
+              </Link>
+            </div>
+
+            <div className="collection-image-wrapper">
               <Image
                 src={collection.image}
                 alt={collection.title}
                 fill
-                sizes="(max-width: 540px) 45vw, (max-width: 900px) 45vw, 25vw"
-                priority={false}
+                className="collection-image"
+                sizes="(max-width: 900px) 100vw, 55vw"
               />
-              <span className="collection-card-content">
-                <CollectionIcon />
-                <span className="collection-card-title">{collection.title}</span>
-                <span className="collection-card-subtitle">{collection.subtitle}</span>
-              </span>
-            </Link>
-          ))}
-        </div>
+            </div>
+          </div>
+        ))}
       </div>
     </section>
   );

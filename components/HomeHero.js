@@ -43,7 +43,7 @@ export default function HomeHero() {
       } else if (w <= 1024) {  // Tablet
         setHeroHeight('100vh');
       } else {                // Desktop
-        setHeroHeight('100vh');
+        setHeroHeight('99vh');
       }
     };
 

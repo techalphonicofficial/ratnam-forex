@@ -536,7 +536,6 @@ function SideDrawer({ isOpen, onClose, allCategories, isLoggedIn, currentUser, o
       })),
     },
     { label: 'Hotels', href: HOTEL_HREF },
-    { label: 'Forex', action: onForexOpen },
     { label: 'Testimonial', href: '/testimonials' },
     { label: 'FAQ', href: '/contact#faq' },
     { label: 'Contact us', href: '/contact' },
@@ -1723,27 +1722,6 @@ export default function Navbar({ brand, companyInfo }) {
                   </div>
                 </div>
 
-                {/* Forex Modal Button */}
-                <button
-                  type="button"
-                  className="d-none d-lg-inline-flex"
-                  onClick={() => setForexOpen(true)}
-                  style={{
-                    padding: '8px 14px',
-                    borderRadius: 6,
-                    border: '1px solid #d1d5db',
-                    background: '#f9fafb',
-                    color: '#374151',
-                    fontWeight: 700,
-                    fontSize: '12px',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--brand-primary-light)'; e.currentTarget.style.borderColor = 'var(--brand-primary-border)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = '#d1d5db'; }}
-                >
-                  Forex
-                </button>
 
                 {/* Desktop Hamburger button */}
                 <button
