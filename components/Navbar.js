@@ -1691,36 +1691,43 @@ export default function Navbar({ brand, companyInfo }) {
               {/* Right Side Call Section & Mobile Trigger Controls */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)', flexShrink: 0 }}>
                 {/* Call section */}
-                <div className="d-none d-md-flex" style={{ alignItems: 'center', gap: 'var(--space-3)' }}>
+                <a
+                  href={`https://wa.me/${String(companyInfo?.contact?.whatsapp || companyInfo?.contact?.phone || '+919876543210').replace(/[^\d+]/g, '')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', textDecoration: 'none' }}
+                  onMouseEnter={(e) => { e.currentTarget.querySelector('.whatsapp-nav-icon').style.transform = 'scale(1.05)'; e.currentTarget.querySelector('.whatsapp-nav-icon').style.background = 'var(--color-primary)'; e.currentTarget.querySelector('.whatsapp-nav-icon').style.color = 'var(--color-card)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.querySelector('.whatsapp-nav-icon').style.transform = 'scale(1)'; e.currentTarget.querySelector('.whatsapp-nav-icon').style.background = 'color-mix(in srgb, var(--color-primary) 12%, transparent)'; e.currentTarget.querySelector('.whatsapp-nav-icon').style.color = 'var(--color-primary)'; }}
+                >
                   <div
+                    className="whatsapp-nav-icon"
                     style={{
                       width: 38,
                       height: 38,
                       borderRadius: '50%',
-                      background: 'rgba(163, 198, 68, 0.12)',
+                      background: 'color-mix(in srgb, var(--color-primary) 12%, transparent)',
                       border: '1.5px solid var(--color-primary)',
                       color: 'var(--color-primary)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
+                      transition: 'all var(--transition-fast)',
                     }}
                   >
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                      <path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21" />
+                      <path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1a5 5 0 0 0 5 5h1a.5.5 0 0 0 0-1h-1a.5.5 0 0 0 0 1" />
                     </svg>
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <a
-                      href={`tel:${companyInfo?.contact?.phone || '+91 98765 43210'}`}
-                      style={{ fontSize: '14.5px', fontWeight: 800, color: 'var(--color-text-primary)', textDecoration: 'none', lineHeight: 1.1 }}
-                    >
-                      {companyInfo?.contact?.phone || '+91 98765 43210'}
-                    </a>
+                  <div className="d-none d-xl-flex" style={{ flexDirection: 'column' }}>
+                    <span style={{ fontSize: '14.5px', fontWeight: 800, color: 'var(--color-text-primary)', lineHeight: 1.1 }}>
+                      {companyInfo?.contact?.whatsapp || companyInfo?.contact?.phone || '+91 98765 43210'}
+                    </span>
                     <span style={{ fontSize: '10.5px', fontWeight: 600, color: 'var(--color-text-muted)', marginTop: '2px' }}>
-                      Call Us Anytime
+                      WhatsApp Us
                     </span>
                   </div>
-                </div>
+                </a>
 
 
                 {/* Desktop Hamburger button */}
