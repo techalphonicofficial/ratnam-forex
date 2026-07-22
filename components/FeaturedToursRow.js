@@ -959,7 +959,7 @@ export function BookingCardV2({ pkg, animDelay }) {
         />
         <div style={{
           position: 'absolute', top: 12, left: 12,
-          background: 'var(--color-primary)', color: 'white',
+          background: '#FF6600', color: '#FFFFFF',
           padding: '4px 10px', fontSize: 10, fontWeight: 800,
           borderRadius: 4, letterSpacing: 0.5, textTransform: 'uppercase',
           boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
@@ -1029,10 +1029,10 @@ export function BookingCardV2({ pkg, animDelay }) {
         </div>
         
         <div style={{ display: 'flex', gap: 8 }}>
-          <Link href={href} style={{ flex: 1, textAlign: 'center', background: 'var(--color-primary)', color: 'white', padding: '12px 0', borderRadius: 8, fontSize: 13, fontWeight: 800, textDecoration: 'none', transition: 'all 0.2s', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.15)'; e.currentTarget.style.opacity = '0.9'; }} onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)'; e.currentTarget.style.opacity = '1'; }}>
+          <Link href={href} className="book-now-leaf" style={{ flex: 1, textAlign: 'center', background: 'var(--color-primary)', color: 'white', padding: '12px 0', fontSize: 13, fontWeight: 800, textDecoration: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.15)'; e.currentTarget.style.opacity = '0.9'; }} onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)'; e.currentTarget.style.opacity = '1'; }}>
             View Tour
           </Link>
-          <Link href={`/customize?step=0&subStep=room-config`} style={{ flex: 1, textAlign: 'center', background: 'var(--color-text-primary)', color: 'white', padding: '12px 0', borderRadius: 8, fontSize: 13, fontWeight: 800, textDecoration: 'none', transition: 'all 0.2s', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.15)'; e.currentTarget.style.opacity = '0.9'; }} onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)'; e.currentTarget.style.opacity = '1'; }}>
+          <Link href={`/customize?step=0&subStep=room-config`} className="book-now-leaf" style={{ flex: 1, textAlign: 'center', background: '#FF6600', color: 'white', padding: '12px 0', fontSize: 13, fontWeight: 800, textDecoration: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.15)'; e.currentTarget.style.opacity = '0.9'; }} onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)'; e.currentTarget.style.opacity = '1'; }}>
             Book Now
           </Link>
         </div>

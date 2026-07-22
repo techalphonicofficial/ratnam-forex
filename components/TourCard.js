@@ -147,7 +147,7 @@ export default function TourCard({ tour, className = '' }) {
             )}
             <div style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>per person</div>
           </div>
-          <Link href={getTourViewHref(tour)} className="btn-primary btn-sm">
+          <Link href={getTourViewHref(tour)} className="btn-primary btn-sm book-now-leaf">
             View Tour
           </Link>
         </div>

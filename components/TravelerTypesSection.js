@@ -71,8 +71,19 @@ export default function TravelerTypesSection() {
           position: relative;
         }
         .sec-traveller-swiper {
-          overflow: visible !important;
+          padding-top: 20px !important;
           padding-bottom: 20px !important;
+          margin-top: -20px; /* Offset the padding so layout doesn't shift */
+        }
+        @media (max-width: 1023px) {
+          .sec-traveller-swiper {
+            overflow: visible !important;
+          }
+        }
+        @media (min-width: 1024px) {
+          .sec-traveller-swiper {
+            overflow: hidden !important;
+          }
         }
       `}</style>
 
@@ -146,7 +157,8 @@ export default function TravelerTypesSection() {
         
         {/* View More Button */}
         <div style={{ textAlign: 'center', marginTop: 40 }}>
-          <Link href="/categories" className="btn-primary" style={{ display: 'inline-block', width: 'auto', minWidth: '160px', padding: '12px 32px' }}>
+          <Link href="/categories" className="btn-primary circle-btn-hover" style={{ display: 'inline-flex', width: 'auto', minWidth: '160px' }}>
+            <svg className="circle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
             View More
           </Link>
         </div>

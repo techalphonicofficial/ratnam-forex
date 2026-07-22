@@ -393,7 +393,8 @@ export default function BlogSection() {
             <div className="desktop-banner-content">
               <h3>Explore Stories</h3>
               <p>Get the latest city insights, expert travel guides, and incredible stories from our global explorers.</p>
-              <Link href="/blog" className="btn-primary">
+              <Link href="/blog" className="btn-primary circle-btn-hover">
+                <svg className="circle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
                 Read Blog
               </Link>
             </div>
@@ -412,7 +413,8 @@ export default function BlogSection() {
             <div className="mobile-banner-content">
               <h3>Explore Stories</h3>
               <p>Get the latest city insights, expert travel guides, and incredible stories from our global explorers.</p>
-              <Link href="/blog" className="home-blog-banner-btn">
+              <Link href="/blog" className="home-blog-banner-btn circle-btn-hover">
+                <svg className="circle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
                 Read Blog
               </Link>
             </div>

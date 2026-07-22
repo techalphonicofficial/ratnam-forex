@@ -33,6 +33,7 @@ export default function HomeHero() {
   const [isMobile, setIsMobile] = useState(false);
   const [heroImages, setHeroImages] = useState([]);
 
+
   /* Handle dynamic hero height for responsive devices */
   useEffect(() => {
     const updateHeight = () => {
@@ -62,7 +63,7 @@ export default function HomeHero() {
 
         const sliderBlock = getHomeSection(page, 'hero-slider', 'hero-slider');
         const legacyHeader = getHomeSection(page, 'header_key', 'image_text') || getHomeSection(page, 'header_key', 'story_grid');
-        
+
         let fetchedImages = [];
         if (sliderBlock?.json_data?.images && Array.isArray(sliderBlock.json_data.images)) {
           fetchedImages = sliderBlock.json_data.images;

@@ -587,6 +587,177 @@ nav,
   transform: translateX(2px);
 }
 
+.book-now-leaf {
+  border-radius: 10px !important;
+  transition: border-radius 3s, transform 0.2s, box-shadow 0.2s, opacity 0.2s !important;
+  -webkit-transition: border-radius 3s, transform 0.2s, box-shadow 0.2s, opacity 0.2s !important;
+}
+
+.book-now-leaf:hover {
+  border-bottom-right-radius: 50px !important;
+  border-top-left-radius: 50px !important;
+  border-bottom-left-radius: 10px !important;
+  border-top-right-radius: 10px !important;
+}
+
+.circle-btn-hover {
+  position: relative !important;
+  border: 0 !important;
+  border-radius: 50px !important;
+  color: white !important;
+  padding: 15px 20px 16px 60px !important;
+  text-transform: uppercase !important;
+  background: linear-gradient(to right, color-mix(in srgb, var(--color-primary) 70%, black) 50%, var(--color-primary) 50%) !important;
+  background-size: 200% 100% !important;
+  background-position: right bottom !important;
+  transition: all 1.5s ease !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-weight: bold !important;
+  overflow: hidden !important;
+  z-index: 1 !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+}
+
+.circle-btn-hover:hover {
+  background-position: left bottom !important;
+}
+
+.circle-btn-hover svg.circle-icon {
+  background: color-mix(in srgb, var(--color-primary) 70%, black) !important;
+  padding: 6px !important;
+  border-radius: 50% !important;
+  position: absolute !important;
+  left: 6px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 32px !important;
+  height: 32px !important;
+  color: white !important;
+  transition: all 1.5s ease !important;
+}
+
+.send-button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+  position: relative !important;
+  transition: all 0.3s ease !important;
+}
+
+.send-button .animation-zone {
+  position: relative;
+  width: 74px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-left: 8px;
+}
+
+.send-button .plane-icon {
+  width: 20px;
+  height: 20px;
+  color: inherit;
+  fill: currentColor;
+  position: absolute;
+  right: 0;
+  transition: transform 0.6s cubic-bezier(0.6, -0.28, 0.735, 0.045), opacity 0.4s ease-in;
+}
+
+.send-button .success-state {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: inherit;
+  font-weight: 600;
+  font-size: 15px;
+  position: absolute;
+  right: 0;
+  opacity: 0;
+  transform: translateX(20px);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
+  transition-delay: 0.3s;
+}
+
+.send-button .check-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.send-button.sent .plane-icon {
+  transform: translateX(60px) translateY(-10px) scale(0.5) rotate(15deg);
+  opacity: 0;
+}
+
+.send-button.sent .success-state {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.btn-flip {
+  opacity: 1;
+  outline: 0;
+  position: relative;
+  text-align: center;
+  letter-spacing: 1px;
+  display: inline-block;
+  text-decoration: none;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  cursor: pointer;
+}
+
+.btn-flip.sent:after {
+  opacity: 1;
+  transform: translateY(0) rotateX(0);
+}
+
+.btn-flip.sent:before {
+  opacity: 0;
+  transform: translateY(50%) rotateX(90deg);
+}
+
+.btn-flip:after {
+  top: 0;
+  left: 0;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.5s;
+  position: absolute;
+  background: var(--color-primary-hover, var(--color-primary));
+  content: attr(data-back);
+  transform: translateY(-50%) rotateX(90deg);
+  border-radius: var(--radius-md, 5px);
+  font-weight: bold;
+}
+
+.btn-flip:before {
+  top: 0;
+  left: 0;
+  opacity: 1;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 30px;
+  transition: 0.5s;
+  position: relative;
+  background: var(--color-primary);
+  content: attr(data-front);
+  transform: translateY(0) rotateX(0);
+  border-radius: var(--radius-md, 5px);
+  font-weight: bold;
+}
+
 .btn-outline-white {
   display: inline-flex;
   align-items: center;

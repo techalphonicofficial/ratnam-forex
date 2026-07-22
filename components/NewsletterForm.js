@@ -83,6 +83,8 @@ export default function NewsletterForm() {
           borderRadius: 'var(--radius-2xl)',
           padding: 'var(--space-2)',
           boxShadow: 'var(--shadow-lg)',
+          overflow: 'hidden',
+          position: 'relative',
         }}
       >
         <input
@@ -101,8 +103,14 @@ export default function NewsletterForm() {
             color: 'var(--color-text-primary)',
           }}
         />
-        <button type="submit" className="btn-primary" disabled={loading} style={{ opacity: loading ? 0.75 : 1 }}>
-          {loading ? 'Subscribing...' : 'Subscribe'}
+        <button 
+          type="submit" 
+          className={`btn-flip ${(loading || result?.success) ? 'sent' : ''}`} 
+          disabled={loading || result?.success} 
+          style={{ opacity: loading ? 0.75 : 1, minWidth: 160 }}
+          data-front={loading ? 'Subscribing...' : 'Subscribe'}
+          data-back="Done"
+        >
         </button>
       </form>
 
