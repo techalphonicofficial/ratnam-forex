@@ -129,7 +129,7 @@ export default function DescribeSection() {
         }
 
         .highlight-icon {
-          color: var(--color-primary);
+          color: #FF6000;
           flex-shrink: 0;
         }
 
@@ -203,7 +203,7 @@ export default function DescribeSection() {
 
       <div className="container">
         <h2 className="collections-title" id="collections-title">
-          DISCOVER OUR COLLECTIONS
+          Distinct Journey Collections
         </h2>
 
         {collections.map((collection) => (

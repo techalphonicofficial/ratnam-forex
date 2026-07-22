@@ -114,7 +114,7 @@ export default function TourCard({ tour, className = '' }) {
           {tour.location}
         </div>
 
-        <h3 className="tour-card-title line-clamp-2">{tour.title}</h3>
+        <h3 className="tour-card-title line-clamp-2 anonymous-pro-bold">{tour.title}</h3>
 
         {/* Meta */}
         <div className="tour-card-meta">

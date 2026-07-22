@@ -225,8 +225,7 @@ function PackageCard({ pkg }) {
 
       {/* Body */}
       <div style={{ padding: '14px 16px' }}>
-        <p style={{
-          fontFamily: '"Italiana", sans-serif', fontWeight: 700,
+        <p className="anonymous-pro-bold" style={{
           fontSize: 14, color: '#111827', margin: '0 0 6px', lineHeight: 1.4,
           display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
         }}>

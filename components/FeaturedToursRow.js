@@ -847,7 +847,7 @@ export default function RecommendedPackages() {
           
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'var(--color-primary-light)', border: '1px solid #fbcfe8', padding: '4px 12px', borderRadius: 999, marginBottom: 24 }}>
              <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--color-secondary)' }}></div>
-             <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-primary)', letterSpacing: 0.5 }}>
+             <span style={{ fontSize: 11, fontWeight: 700, color: '#FF6000', letterSpacing: 0.5 }}>
                {liveBookings.length ? `${liveBookings.length}+ recent trip requests` : '20+ recent trip requests'}
              </span>
           </div>
