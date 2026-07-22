@@ -234,7 +234,7 @@ function BookingCardV2({ pkg, animDelay }) {
       </div>
 
       <div className="recent-card-body">
-        <p className="recent-card-title">{pkg.title}</p>
+        <p className="recent-card-title anonymous-pro-bold" style={{ fontSize: 18, color: 'var(--color-text-primary)' }}>{pkg.title}</p>
         <p className="recent-card-location">
           <svg viewBox="0 0 24 24" fill="currentColor" width="11" height="11" aria-hidden="true">
             <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />

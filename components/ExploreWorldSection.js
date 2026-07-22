@@ -342,9 +342,9 @@ export default function ExploreWorldSection() {
         }
 
         .ew-dropdown-item--active {
-          color: var(--color-accent);
+          color: white;
           font-weight: 700;
-          background: var(--color-secondary-hover);
+          background: var(--color-primary);
         }
 
         /* ── Scroll area ──────────────── */

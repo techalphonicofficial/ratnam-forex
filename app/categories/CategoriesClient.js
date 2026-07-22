@@ -20,10 +20,10 @@ export default function CategoriesClient() {
               .slice()
               .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
               .map((cat) => ({
-                id: cat.id || cat.slug || cat.name?.toLowerCase(),
-                label: cat.name,
-                image: getMediaUrl(cat.feature_image) || getFallbackCategoryImage(cat.name),
-                alt: cat.feature_image_alt || cat.name,
+                id: cat.id || cat.slug || (cat.name || cat.title)?.toLowerCase(),
+                label: cat.name || cat.title,
+                image: getMediaUrl(cat.feature_image || cat.image) || getFallbackCategoryImage(cat.name || cat.title),
+                alt: cat.feature_image_alt || cat.name || cat.title,
               }))
           );
         }

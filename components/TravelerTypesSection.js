@@ -34,10 +34,10 @@ export default function TravelerTypesSection() {
               .slice()
               .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
               .map((cat, idx) => ({
-                id: cat.id || cat.slug || cat.name?.toLowerCase(),
-                label: cat.name,
-                image: getMediaUrl(cat.feature_image) || getFallbackCategoryImage(cat.name),
-                alt: cat.feature_image_alt || cat.name,
+                id: cat.id || cat.slug || (cat.name || cat.title)?.toLowerCase(),
+                label: cat.name || cat.title,
+                image: getMediaUrl(cat.feature_image || cat.image) || getFallbackCategoryImage(cat.name || cat.title),
+                alt: cat.feature_image_alt || cat.name || cat.title,
               }))
           );
         }
@@ -110,7 +110,7 @@ export default function TravelerTypesSection() {
             textTransform: 'uppercase',
             letterSpacing: 0.5
           }}>
-            Who is traveling with you?
+            Choose the Experience You Love
           </h2>
           <p style={{
             color: 'var(--color-text-secondary)',
@@ -118,7 +118,7 @@ export default function TravelerTypesSection() {
             maxWidth: 580,
             margin: '0 auto'
           }}>
-            Select your travel companionship to view itineraries custom-crafted for your vibe.
+            From romantic escapes to family vacations, explore experiences crafted just for you.
           </p>
         </div>
 

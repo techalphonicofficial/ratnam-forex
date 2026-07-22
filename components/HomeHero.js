@@ -243,10 +243,10 @@ export default function HomeHero() {
                 display: 'flex',
                 alignItems: 'stretch',
                 background: 'rgba(255,255,255,0.97)',
-                border: '2.5px solid var(--color-secondary)',
+                border: '2.5px solid white',
                 borderRadius: 999,
                 overflow: 'hidden',
-                boxShadow: '0 0 0 5px color-mix(in srgb, var(--color-secondary) 18%, transparent), 0 12px 40px rgba(0,0,0,0.45)',
+                boxShadow: '0 0 0 5px rgba(255,255,255,0.18), 0 12px 40px rgba(0,0,0,0.45)',
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0, padding: isMobile ? '0 8px 0 16px' : '0 10px 0 20px' }}>
@@ -256,7 +256,7 @@ export default function HomeHero() {
               </div>
               <input
                 type="text"
-                placeholder="Search countries, cities"
+                placeholder="Search countries, cities, Tour Packages"
                 value={destination}
                 onChange={(event) => {
                   const nextDestination = event.target.value;

@@ -351,25 +351,22 @@ function CustomDropdown({ label, currentValue, onChange, options }) {
                   setOpen(false);
                 }}
                 style={{
-                  display: 'flex', alignItems: 'center', gap: 12,
+                  display: 'block',
                   width: '100%', padding: '10px 18px',
-                  background: 'none', border: 'none',
-                  borderBottom: i < options.length - 1 ? '1px solid var(--color-bg-soft)' : 'none',
+                  background: isActive ? 'var(--color-primary)' : 'none', border: 'none',
+                  borderBottom: i < options.length - 1 && !isActive ? '1px solid var(--color-bg-soft)' : 'none',
                   textAlign: 'left', cursor: 'pointer',
-                  color: 'var(--color-text-primary)', fontSize: 13.5, fontWeight: isActive ? 600 : 400,
+                  color: isActive ? 'white' : 'var(--color-text-primary)',
+                  fontSize: 13.5, fontWeight: isActive ? 700 : 500,
                   transition: 'background 0.15s',
                 }}
-                onMouseEnter={e => e.currentTarget.style.background = 'var(--color-bg-soft)'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                onMouseEnter={e => {
+                  if (!isActive) e.currentTarget.style.background = 'var(--color-bg-soft)';
+                }}
+                onMouseLeave={e => {
+                  if (!isActive) e.currentTarget.style.background = 'none';
+                }}
               >
-                {/* Radio circle matching screenshot */}
-                <div style={{
-                  width: 18, height: 18, borderRadius: '50%',
-                  border: isActive ? '2px solid #16a34a' : '1.5px solid var(--color-border)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                }}>
-                  {isActive && <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#16a34a' }} />}
-                </div>
                 {d}
               </button>
             );
@@ -932,6 +929,14 @@ export default function RecommendedPackages() {
           </button>
         </div>
 
+        {/* View More Button */}
+        <div style={{ textAlign: 'center', marginTop: 40 }}>
+          <Link href="/packages" className="btn-primary circle-btn-hover" style={{ display: 'inline-flex', width: 'auto', minWidth: '160px' }}>
+            <svg className="circle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            View All Hot Deals
+          </Link>
+        </div>
+
       </div>
     </section>
   
@@ -970,7 +975,7 @@ export function BookingCardV2({ pkg, animDelay }) {
 
       {/* Info Section */}
       <div style={{ padding: '16px 16px 12px', background: 'white', flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <h3 style={{ fontFamily: '"Italiana", sans-serif', fontSize: 20, fontWeight: 900, color: 'var(--color-text-primary)', margin: '0 0 8px', lineHeight: 1.2 }}>
+        <h3 className="anonymous-pro-bold" style={{ fontSize: 20, color: 'var(--color-text-primary)', margin: '0 0 8px', lineHeight: 1.2 }}>
           {titleText}
         </h3>
         

@@ -27,27 +27,103 @@ export const getFallbackCategoryImage = (name) => {
 
 export const getCategoryIcon = (label) => {
   const l = String(label || '').toLowerCase();
-  if (l.includes('couple') || l.includes('friends')) {
+  
+  if (l.includes('couple') || l.includes('honeymoon')) {
     return (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="6" y="8" width="12" height="14" rx="2" ry="2" />
-        <path d="M16 8V6a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
-        <path d="M10 12v6" />
-        <path d="M14 12v6" />
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
       </svg>
     );
   }
   if (l.includes('family')) {
     return (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.2-1.1.5l-1 2c-.2.5 0 1 .5 1.3L9 13l-4 4-2.5-.5c-.3-.1-.6 0-.8.2l-1 1c-.3.3-.3.8 0 1.1l3.5 1.5 1.5 3.5c.3.3.8.3 1.1 0l1-1c.2-.2.3-.5.2-.8L7.5 19l4-4 3 5.8c.3.5.8.7 1.3.5l2-1c.3-.2.6-.6.5-1.1z"/>
+        <circle cx="7" cy="8" r="3" />
+        <path d="M2 21v-2a4 4 0 0 1 4-4h2" />
+        <circle cx="17" cy="8" r="3" />
+        <path d="M22 21v-2a4 4 0 0 0-4-4h-2" />
+        <circle cx="12" cy="13" r="2" />
+        <path d="M9 21v-2a3 3 0 0 1 3-3 3 3 0 0 1 3 3v2" />
       </svg>
     );
   }
+  if (l.includes('friends') || l.includes('group')) {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+      </svg>
+    );
+  }
+  if (l.includes('solo')) {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+      </svg>
+    );
+  }
+  if (l.includes('adventure')) {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="m8 3 4 8 5-5 5 15H2L8 3z"/>
+      </svg>
+    );
+  }
+  if (l.includes('spiritual')) {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="4"/>
+        <path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
+      </svg>
+    );
+  }
+  if (l.includes('luxury')) {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+      </svg>
+    );
+  }
+  if (l.includes('nri') || l.includes('international') || l.includes('world')) {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+        <circle cx="12" cy="10" r="3" />
+      </svg>
+    );
+  }
+  if (l.includes('pilgrim')) {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="4"/>
+        <path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
+      </svg>
+    );
+  }
+  if (l.includes('budget') || l.includes('affordable')) {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" />
+        <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" />
+        <path d="M18 12a2 2 0 0 0 0 4h4v-4Z" />
+      </svg>
+    );
+  }
+  if (l.includes('trend') || l.includes('hot')) {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
+      </svg>
+    );
+  }
+  
+  // Default (Navigation Arrow)
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10" />
-      <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
+      <polygon points="3 11 22 2 13 21 11 13 3 11" />
     </svg>
   );
 };
@@ -199,12 +275,13 @@ export default function CategoryCard({ id, label, image, alt, isActive, onMouseE
           height: 48px;
           background: var(--color-card);
           border-radius: 50%;
+          border: 2px solid var(--color-primary);
           display: flex;
           align-items: center;
           justify-content: center;
           box-shadow: var(--shadow-sm);
           z-index: 10;
-          color: var(--color-primary);
+          color: #FF6000;
           transition: all var(--transition-base);
         }
 
@@ -214,9 +291,9 @@ export default function CategoryCard({ id, label, image, alt, isActive, onMouseE
           background: var(--color-primary-light);
         }
 
-        .sec-traveller-badge svg {
-          width: 22px;
-          height: 22px;
+        :global(.sec-traveller-badge svg) {
+          width: 20px;
+          height: 20px;
         }
 
         .sec-traveller-label {
@@ -253,7 +330,7 @@ export default function CategoryCard({ id, label, image, alt, isActive, onMouseE
           .usp-text { font-size: 12px; }
           .sec-traveller-label { font-size: 15px; }
           .sec-traveller-badge { width: 40px; height: 40px; bottom: -18px; }
-          .sec-traveller-badge svg { width: 18px; height: 18px; }
+          :global(.sec-traveller-badge svg) { width: 18px; height: 18px; }
         }
       `}</style>
       <button

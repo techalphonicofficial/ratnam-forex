@@ -684,21 +684,6 @@ function PackagesContent({ destParam, packages, basePath = '/packages' }) {
         </div>
       </div>
 
-      {/* ══════════════════════════════════════════════════════
-          2. PYT EXCLUSIVE & TRUST BANNER
-      ══════════════════════════════════════════════════════ */}
-      <PytExclusive />
-      <TrustBanner />
-
-      {/* ══════════════════════════════════════════════════════
-          3. RECENTLY BOOKED ITINERARIES (Horizontal Slider)
-      ══════════════════════════════════════════════════════ */}
-      <RecommendedPackages />
-
-      {/* ══════════════════════════════════════════════════════
-          4. BRANDS LOGO CLOUD
-      ══════════════════════════════════════════════════════ */}
-      <BrandsRow />
 
       {/* ══════════════════════════════════════════════════════
           5. PACKAGE GRID SECTION WITH ADVANCED FILTERS
@@ -908,7 +893,7 @@ function PackagesContent({ destParam, packages, basePath = '/packages' }) {
                 transition: 'opacity 0.18s ease',
               }}
             >
-              {filtered.map(pkg => (
+              {filtered.slice(0, 10).map(pkg => (
                 <PackageCard key={pkg.id} pkg={pkg} />
               ))}
             </div>
@@ -939,16 +924,6 @@ function PackagesContent({ destParam, packages, basePath = '/packages' }) {
           )}
         </div>
       </section>
-
-      {/* ══════════════════════════════════════════════════════
-          6. CATEGORY BLOCKS (Family, Budget, Duration)
-      ══════════════════════════════════════════════════════ */}
-      <CategoryBlocks destination={destFilter} />
-
-      {/* ══════════════════════════════════════════════════════
-          7. GOOGLE REVIEWS BLOCK
-      ══════════════════════════════════════════════════════ */}
-      <BottomReviews destination={destFilter !== 'All' ? destFilter : 'Worldwide'} />
     </>
   );
 }
