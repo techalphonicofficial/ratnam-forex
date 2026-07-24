@@ -509,7 +509,10 @@ export const getHomePage = async () => {
 
 export const getPageBySlug = async (slug) => {
   try {
-    const response = await apiClient.get(`/pages/slug/${slug}`);
+    const response = await apiClient.get(`/pages/slug/${slug}`, {
+      params: { _t: Date.now() },
+      validateStatus: () => true,
+    });
     return normalizeApiData(response);
   } catch (error) {
     console.error(`Error fetching page "${slug}":`, error);
@@ -1074,13 +1077,8 @@ export const getPackageBySlug = async (slug) => {
   if (!slug) return null;
 
   try {
-    const response = await axios.get(`/api/packages/${encodeURIComponent(slug)}`, {
+    const response = await apiClient.get(`/packages/${encodeURIComponent(slug)}`, {
       params: { _t: Date.now() },
-      headers: {
-        accept: '*/*',
-        'Cache-Control': 'no-cache',
-        Pragma: 'no-cache',
-      },
       validateStatus: () => true,
     });
 
@@ -1105,6 +1103,52 @@ export const getPackagesByDestination = async (slug) => {
     console.error(`Error fetching destinations for category ${slug}:`, error);
     return [];
   }
+};
+export const parseList = (data) => {
+  if (!data) return [];
+  if (Array.isArray(data)) {
+    return data.map((item) => (typeof item === 'string' ? { text: item } : item));
+  }
+  if (typeof data === 'string') {
+    return data
+      .split('\n')
+      .map((t) => t.trim())
+      .filter((t) => t.length > 0)
+      .map((t) => ({ text: t }));
+  }
+  return [];
+};
+
+export const normalizePackageToTour = (pkg) => {
+  if (!pkg) return null;
+
+  const inclusions = parseList(pkg.inclusions);
+  const exclusions = parseList(pkg.exclusions);
+
+  return {
+    ...pkg,
+    id: pkg.id,
+    slug: pkg.slug,
+    title: pkg.name || pkg.title || 'Travel Package',
+    description: pkg.description || 'Amazing travel experience.',
+    price: Number(pkg.price) || 0,
+    duration: Number(pkg.duration_days) || (pkg.nights ? pkg.nights + 1 : 1),
+    gallery: pkg.gallery && Array.isArray(pkg.gallery) && pkg.gallery.length > 0
+      ? pkg.gallery.map((g) => g.url || g.image || g)
+      : (pkg.main_image ? [pkg.main_image] : []),
+    image: pkg.main_image || (pkg.gallery && pkg.gallery[0] ? pkg.gallery[0].url || pkg.gallery[0].image : null),
+    highlights: inclusions.length > 0 ? inclusions.map(i => i.text) : ['Inclusive Breakfast', 'Expert Local Guide', 'Premium Stay'],
+    included: inclusions.length > 0 ? inclusions.map(i => i.text) : ['Accommodation', 'Daily Breakfast', 'Sightseeing'],
+    excluded: exclusions.length > 0 ? exclusions.map(i => i.text) : ['Round-trip airfare', 'Travel insurance', 'Personal expenses'],
+    groupSize: pkg.group_size || 12,
+    location: pkg.destinations?.[0]?.destination?.name || pkg.destination || pkg.location || 'Beautiful Destination',
+    dest: pkg.destinations?.[0]?.destination?.name || pkg.destination || pkg.location || 'Beautiful Destination',
+    rating: Number(pkg.rating) || 4.8,
+    reviews: Number(pkg.reviews_count) || (pkg.reviews ? pkg.reviews.length : 0),
+    type: pkg.category || pkg.type || 'Package',
+    isPackage: true,
+    trending: Boolean(pkg.show_in_home_page || pkg.is_trending),
+  };
 };
 
 export default apiClient;

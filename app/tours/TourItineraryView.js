@@ -1204,6 +1204,15 @@ export default function TourItineraryView({ destination, packageSlug }) {
     return () => window.clearTimeout(redirectTimer);
   }, [bookingResult, router]);
 
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.location.hash === '#booking-sidebar' && pkg) {
+      const timer = setTimeout(() => {
+        setBookingModalOpen(true);
+      }, 400);
+      return () => clearTimeout(timer);
+    }
+  }, [pkg]);
+
   const media = useMemo(() => getPackageMedia(pkg), [pkg]);
   const mediaItems = useMemo(() => [...media.images, ...media.videos], [media]);
   const destinations = useMemo(() => sortByOrder(pkg?.destinations), [pkg]);
@@ -2026,6 +2035,9 @@ export default function TourItineraryView({ destination, packageSlug }) {
                   </label>
                 </div>
               ) : null}
+              <a href="#highlights" style={{ display: 'block', textAlign: 'center', padding: '10px 0', border: '1px solid #b98c56', color: '#b98c56', borderRadius: '8px', fontWeight: 600, fontSize: '13px', textDecoration: 'none', marginBottom: '12px' }}>
+                Trip Highlights
+              </a>
               <button type="button" onClick={openBookingModal}>
                 <span>{amountToPay > 0 ? `Book Now - Pay ${amountToPayLabel}` : 'Book Now'}</span>
                 {partialBookingEnabled ? <small>{isPartialPayment ? `${partialBookingPercentage}% of total booking amount` : '100% of total booking amount'}</small> : null}

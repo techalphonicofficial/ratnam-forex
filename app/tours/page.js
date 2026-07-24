@@ -5,7 +5,7 @@ import { useState, useMemo, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import TourCard from '@/components/TourCard';
 import { TourCardSkeleton } from '@/components/SkeletonLoader';
-import { getMediaUrl, getPackageFilters, getPackages } from '@/utils/api';
+import { getMediaUrl, getPackageFilters, getPackages, normalizePackageToTour } from '@/utils/api';
 import TourItineraryView from './TourItineraryView';
 
 const DEFAULT_TOUR_TYPES = [{ key: 'all', label: 'All', count: 0 }];
@@ -24,51 +24,7 @@ const SORT_OPTIONS = [
   { value: 'duration-asc', label: 'Shortest First' },
 ];
 const MAX_PRICE = 1000000;
-const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80';
 const formatPriceNumber = (value) => Number(value || 0).toLocaleString('en-IN');
-
-const getFirstDestination = (pkg) => pkg?.destinations?.[0]?.destination || null;
-
-const getLocationParts = (pkg) => {
-  const destination = getFirstDestination(pkg);
-  const mapping = destination?.mappings?.[0];
-  const city = mapping?.city?.name || destination?.name || '';
-  const country = mapping?.city?.country?.name || '';
-  const continent = mapping?.city?.country?.continent?.name || '';
-
-  return { city, country, continent, destination };
-};
-
-const normalizePackageToTour = (pkg) => {
-  const { city, country, continent, destination } = getLocationParts(pkg);
-  const destinationNames = (pkg?.destinations || [])
-    .map((item) => item?.destination?.name)
-    .filter(Boolean);
-  const location = destinationNames.length ? destinationNames.join(', ') : city || country || 'Destination';
-  const price = Number(pkg?.price) || 0;
-  const duration = Number(pkg?.duration_days) || 1;
-  const destinationType = destination?.type || '';
-
-  return {
-    id: pkg?.id,
-    slug: pkg?.slug || `package-${pkg?.id}`,
-    title: pkg?.name || 'Travel Package',
-    location,
-    country: country || city || location,
-    continent,
-    type: destinationType ? destinationType.charAt(0).toUpperCase() + destinationType.slice(1) : 'Package',
-    duration,
-    groupSize: 12,
-    rating: Number(pkg?.rating) || 4.6,
-    reviews: Number(pkg?.reviews_count) || Number(pkg?.reviews) || 0,
-    price,
-    originalPrice: price ? Math.round(price * 1.18) : 0,
-    image: getMediaUrl(pkg?.main_image) || getMediaUrl(destination?.feature_image) || FALLBACK_IMAGE,
-    featured: Boolean(pkg?.show_in_home_page),
-    trending: Boolean(destination?.is_trending || pkg?.show_in_home_page),
-    description: pkg?.description || destination?.title || '',
-  };
-};
 
 const buildApiQueryFromFilters = (filters) => {
   const query = {};
@@ -394,10 +350,10 @@ function ToursContent() {
       const q = filters.search.toLowerCase();
       result = result.filter(
         (t) =>
-          t.title.toLowerCase().includes(q) ||
-          t.location.toLowerCase().includes(q) ||
-          t.country.toLowerCase().includes(q) ||
-          t.continent.toLowerCase().includes(q)
+          (t.title || '').toLowerCase().includes(q) ||
+          (t.location || '').toLowerCase().includes(q) ||
+          (t.country || '').toLowerCase().includes(q) ||
+          (t.continent || '').toLowerCase().includes(q)
       );
     }
 

@@ -199,9 +199,9 @@ export default function GramSection() {
         <div style={{ textAlign: 'center', marginBottom: 48 }}>
           <h2 style={{
             fontFamily: '"Italiana", sans-serif', fontWeight: 900,
-            fontSize: 40, color: 'var(--color-text-primary)', margin: '0 0 16px', textTransform: 'uppercase', letterSpacing: 1
+            fontSize: 40, color: 'var(--color-text-primary)', margin: '0 0 16px', textTransform: 'uppercase', letterSpacing: 1, textDecoration: 'underline', textDecorationColor: 'var(--color-secondary)', textDecorationThickness: '2px', textUnderlineOffset: '6px'
           }}>
-            Explore Incredible India
+            From Social Media : video,Reels & Podcast
           </h2>
           
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 32 }}>

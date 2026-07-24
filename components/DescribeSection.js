@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { getMediaUrl } from '@/utils/api';
 
 const collections = [
   {
@@ -53,7 +54,10 @@ const collections = [
   }
 ];
 
-export default function DescribeSection() {
+export default function DescribeSection({ sectionData }) {
+  const dataToMap = sectionData?.json_data?.collections || collections;
+  const sectionTitle = sectionData?.title || 'Distinct Journey Collections';
+
   return (
     <section className="collections-section" aria-labelledby="collections-title">
       <style>{`
@@ -202,44 +206,59 @@ export default function DescribeSection() {
       `}</style>
 
       <div className="container">
-        <h2 className="collections-title" id="collections-title">
-          Distinct Journey Collections
+        <h2 className="collections-title" id="collections-title" style={{ textDecoration: 'underline', textDecorationColor: 'var(--color-secondary)', textDecorationThickness: '2px', textUnderlineOffset: '6px' }}>
+          {sectionTitle}
         </h2>
 
-        {collections.map((collection) => (
-          <div key={collection.id} className="collection-block">
-            <div className="collection-text">
-              <h3 className="collection-heading">{collection.title}</h3>
-              <p className="collection-desc">{collection.description}</p>
-              
-              <div className="collection-highlights">
-                {collection.highlights?.map((highlight, idx) => (
-                  <div key={idx} className="highlight-item">
-                    <svg className="highlight-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                    {highlight}
-                  </div>
-                ))}
+        {dataToMap.map((collection, index) => {
+          const id = collection.id || index;
+          const title = collection.label || collection.title;
+          const description = collection.description;
+          const rawImage = collection.image;
+          const imageSrc = rawImage && rawImage.startsWith('http') ? rawImage : (rawImage ? getMediaUrl(rawImage) : '');
+          const buttonLink = collection.button_link || (collection.slug ? `/collections/${collection.slug}` : '');
+          const buttonLabel = collection.button_label || 'Explore Collection';
+          const highlights = collection.features ? collection.features.map(f => f.label) : collection.highlights;
+
+          return (
+            <div key={id} className="collection-block">
+              <div className="collection-text">
+                <h3 className="collection-heading">{title}</h3>
+                <p className="collection-desc">{description}</p>
+                
+                <div className="collection-highlights">
+                  {highlights?.map((highlight, idx) => (
+                    <div key={idx} className="highlight-item">
+                      <svg className="highlight-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                      {highlight}
+                    </div>
+                  ))}
+                </div>
+
+                {buttonLink && (
+                  <Link href={buttonLink} className="btn-explore circle-btn-hover">
+                    <svg className="circle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    {buttonLabel}
+                  </Link>
+                )}
               </div>
 
-              <Link href={`/collections/${collection.slug}`} className="btn-explore circle-btn-hover">
-                <svg className="circle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                Explore Collection
-              </Link>
+              <div className="collection-image-wrapper">
+                {imageSrc && (
+                  <Image
+                    src={imageSrc}
+                    alt={title || 'Collection Image'}
+                    fill
+                    className="collection-image"
+                    sizes="(max-width: 900px) 100vw, 55vw"
+                  />
+                )}
+              </div>
             </div>
-
-            <div className="collection-image-wrapper">
-              <Image
-                src={collection.image}
-                alt={collection.title}
-                fill
-                className="collection-image"
-                sizes="(max-width: 900px) 100vw, 55vw"
-              />
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </section>
   );

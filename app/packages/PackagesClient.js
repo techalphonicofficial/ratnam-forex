@@ -691,7 +691,8 @@ function PackagesContent({ destParam, packages, basePath = '/packages' }) {
         <div className='container' style={{ margin: '0 auto', padding: '0 24px' }}>
 
           {/* ── Filter bar ── */}
-          <div style={{
+          {searchParams?.get('hideFilters') !== 'true' && (
+            <div style={{
             background: 'white', borderRadius: 18,
             border: '1px solid #e5e7eb',
             padding: '20px 24px',
@@ -840,6 +841,7 @@ function PackagesContent({ destParam, packages, basePath = '/packages' }) {
               )}
             </div>
           </div>
+          )}
 
           {/* ── Result count ── */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24 }}>

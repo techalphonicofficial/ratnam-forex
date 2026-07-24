@@ -3,8 +3,9 @@
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { getFeaturedTourHref, BookingCardV2 } from '@/components/FeaturedToursRow';
-import { getTripInquiries, getMediaUrl } from '@/utils/api';
+import { getFeaturedTourHref } from '@/components/FeaturedToursRow';
+import TourCard from '@/components/TourCard';
+import { getTripInquiries, getMediaUrl, getPackages, normalizePackageToTour } from '@/utils/api';
 
 /* ── Filter options ──────────────────────────────────── */
 const FILTER_OPTIONS = {
@@ -30,129 +31,38 @@ const FILTER_OPTIONS = {
   },
 };
 
-/* ── India tour data ─────────────────────────────────── */
-export const indiaTours = [
-  {
-    id: 'ei1',
-    title: 'Kashmir Paradise',
-    dest: 'India',
-    locations: ['Srinagar (2N)', 'Pahalgam (2N)', 'Gulmarg (1N)'],
-    image: 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=600&q=80',
-    nights: 5, days: 6, price: 28999, rating: 4.8,
-    priceCategory: 'under50',
-    type: 'COUPLE', typeColor: 'var(--color-secondary)',
-    theme: 'couple', season: 'summer',
-    user: { name: 'Riya', city: 'Delhi', avatar: 'R', avatarBg: 'var(--color-secondary)', ago: '2hr ago' },
-  },
-  {
-    id: 'ei2',
-    title: 'Himachal Escape',
-    dest: 'India',
-    locations: ['Shimla (2N)', 'Manali (2N)'],
-    image: 'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?w=600&q=80',
-    nights: 4, days: 5, price: 18999, rating: 4.6,
-    priceCategory: 'under50',
-    type: 'FAMILY', typeColor: 'var(--color-primary)',
-    theme: 'family', season: 'summer',
-    user: { name: 'Vikram', city: 'Chandigarh', avatar: 'V', avatarBg: 'var(--color-primary)', ago: '4hr ago' },
-  },
-  {
-    id: 'ei3',
-    title: 'Kerala Backwaters',
-    dest: 'India',
-    locations: ['Kochi (2N)', 'Alleppey (2N)', 'Munnar (1N)'],
-    image: 'https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=600&q=80',
-    nights: 4, days: 5, price: 22999, rating: 4.7,
-    priceCategory: 'under50',
-    type: 'COUPLE', typeColor: 'var(--color-secondary)',
-    theme: 'couple', season: 'monsoon',
-    user: { name: 'Suresh', city: 'Chennai', avatar: 'S', avatarBg: 'var(--color-primary)', ago: '5hr ago' },
-  },
-  {
-    id: 'ei4',
-    title: 'Rajasthan Royal',
-    dest: 'India',
-    locations: ['Jaipur (2N)', 'Jodhpur (2N)', 'Udaipur (2N)'],
-    image: 'https://images.unsplash.com/photo-1477587458883-47145ed94245?w=600&q=80',
-    nights: 6, days: 7, price: 35999, rating: 4.8,
-    priceCategory: 'under50',
-    type: 'FAMILY', typeColor: 'var(--color-primary)',
-    theme: 'family', season: 'winter',
-    user: { name: 'Anita', city: 'Jaipur', avatar: 'A', avatarBg: 'var(--color-primary)', ago: '6hr ago' },
-  },
-  {
-    id: 'ei5',
-    title: 'Goa Beach Bliss',
-    dest: 'India',
-    locations: ['North Goa (3N)', 'South Goa (2N)'],
-    image: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?w=600&q=80',
-    nights: 5, days: 6, price: 19999, rating: 4.5,
-    priceCategory: 'under50',
-    type: 'ADVENTURE', typeColor: 'var(--color-primary)',
-    theme: 'adventure', season: 'winter',
-    user: { name: 'Kiran', city: 'Mumbai', avatar: 'K', avatarBg: 'var(--color-secondary)', ago: '3hr ago' },
-  },
-  {
-    id: 'ei6',
-    title: 'Andaman Islands',
-    dest: 'India',
-    locations: ['Port Blair (2N)', 'Havelock (3N)', 'Neil Island (1N)'],
-    image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&q=80',
-    nights: 6, days: 7, price: 42999, rating: 4.9,
-    priceCategory: 'under50',
-    type: 'COUPLE', typeColor: 'var(--color-secondary)',
-    theme: 'couple', season: 'winter',
-    user: { name: 'Pooja', city: 'Bangalore', avatar: 'P', avatarBg: 'var(--color-primary)', ago: '8hr ago' },
-  },
-  {
-    id: 'ei7',
-    title: 'Leh Ladakh Adventure',
-    dest: 'India',
-    locations: ['Leh (3N)', 'Nubra Valley (2N)', 'Pangong (1N)'],
-    image: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=600&q=80',
-    nights: 6, days: 7, price: 38999, rating: 4.8,
-    priceCategory: 'under50',
-    type: 'ADVENTURE', typeColor: 'var(--color-primary)',
-    theme: 'adventure', season: 'summer',
-    user: { name: 'Arjun', city: 'Pune', avatar: 'A', avatarBg: 'var(--color-primary)', ago: '1hr ago' },
-  },
-  {
-    id: 'ei8',
-    title: 'Varanasi Spiritual',
-    dest: 'India',
-    locations: ['Varanasi (3N)', 'Prayagraj (1N)'],
-    image: 'https://images.unsplash.com/photo-1561361513-2d000a50f0dc?w=600&q=80',
-    nights: 4, days: 5, price: 15999, rating: 4.6,
-    priceCategory: 'under50',
-    type: 'SOLO', typeColor: 'var(--color-secondary)',
-    theme: 'spiritual', season: 'winter',
-    user: { name: 'Deepak', city: 'Lucknow', avatar: 'D', avatarBg: 'var(--color-primary)', ago: '7hr ago' },
-  },
-  {
-    id: 'ei9',
-    title: 'Sikkim Serenity',
-    dest: 'India',
-    locations: ['Gangtok (3N)', 'Pelling (2N)', 'Darjeeling (2N)'],
-    image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80',
-    nights: 7, days: 8, price: 32999, rating: 4.7,
-    priceCategory: 'under50',
-    type: 'FAMILY', typeColor: 'var(--color-primary)',
-    theme: 'family', season: 'spring',
-    user: { name: 'Sneha', city: 'Kolkata', avatar: 'S', avatarBg: 'var(--color-primary)', ago: '9hr ago' },
-  },
-  {
-    id: 'ei10',
-    title: 'Rishikesh Thrills',
-    dest: 'India',
-    locations: ['Rishikesh (3N)', 'Haridwar (1N)'],
-    image: 'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=600&q=80',
-    nights: 4, days: 5, price: 16999, rating: 4.5,
-    priceCategory: 'under50',
-    type: 'ADVENTURE', typeColor: 'var(--color-primary)',
-    theme: 'adventure', season: 'spring',
-    user: { name: 'Nikhil', city: 'Delhi', avatar: 'N', avatarBg: 'var(--color-primary)', ago: '12hr ago' },
-  },
-];
+/* ── Filter Logic ────────────────────────────────────── */
+function applyFilters(tours, filters) {
+  let list = [...tours];
+
+  if (filters.theme !== 'All') {
+    list = list.filter(t => t.theme?.toLowerCase() === filters.theme.toLowerCase());
+  }
+
+  if (filters.season !== 'All') {
+    list = list.filter(t => t.season?.toLowerCase() === filters.season.toLowerCase());
+  }
+
+  if (filters.travelClass !== 'All') {
+    if (filters.travelClass === 'Economy') list = list.filter(t => t.price < 50000);
+    else if (filters.travelClass === 'Standard') list = list.filter(t => t.price >= 50000 && t.price < 150000);
+    else if (filters.travelClass === 'Luxury') list = list.filter(t => t.price >= 150000);
+  }
+
+  if (filters.duration !== 'All') {
+    if (filters.duration === '1-3 Nights') list = list.filter(t => t.nights <= 3);
+    else if (filters.duration === '4-6 Nights') list = list.filter(t => t.nights >= 4 && t.nights <= 6);
+    else if (filters.duration === '7-10 Nights') list = list.filter(t => t.nights >= 7 && t.nights <= 10);
+    else if (filters.duration === '10+ Nights') list = list.filter(t => t.nights > 10);
+  }
+
+  // Mock Hot Deal logic
+  if (filters.hotDeal === 'Yes') {
+    list = list.filter((t, i) => i % 2 === 0);
+  }
+
+  return list;
+}
 
 /* ── Dropdown Filter Component ───────────────────────── */
 function FilterDropdown({ label, items, value, onChange }) {
@@ -202,39 +112,6 @@ function FilterDropdown({ label, items, value, onChange }) {
   );
 }
 
-/* ── Filter Logic ────────────────────────────────────── */
-function applyFilters(tours, filters) {
-  let list = [...tours];
-
-  if (filters.theme !== 'All') {
-    list = list.filter(t => t.theme === filters.theme.toLowerCase());
-  }
-
-  if (filters.season !== 'All') {
-    list = list.filter(t => t.season === filters.season.toLowerCase());
-  }
-
-  if (filters.travelClass !== 'All') {
-    if (filters.travelClass === 'Economy') list = list.filter(t => t.price < 50000);
-    else if (filters.travelClass === 'Standard') list = list.filter(t => t.price >= 50000 && t.price < 150000);
-    else if (filters.travelClass === 'Luxury') list = list.filter(t => t.price >= 150000);
-  }
-
-  if (filters.duration !== 'All') {
-    if (filters.duration === '1-3 Nights') list = list.filter(t => t.nights <= 3);
-    else if (filters.duration === '4-6 Nights') list = list.filter(t => t.nights >= 4 && t.nights <= 6);
-    else if (filters.duration === '7-10 Nights') list = list.filter(t => t.nights >= 7 && t.nights <= 10);
-    else if (filters.duration === '10+ Nights') list = list.filter(t => t.nights > 10);
-  }
-
-  // Mock Hot Deal logic
-  if (filters.hotDeal === 'Yes') {
-    list = list.filter((t, i) => i % 2 === 0);
-  }
-
-  return list;
-}
-
 /* ── Main Section ────────────────────────────────────── */
 export default function ExploreIndiaSection() {
   const [filters, setFilters] = useState({
@@ -244,13 +121,34 @@ export default function ExploreIndiaSection() {
     travelClass: 'All',
     season: 'All',
   });
+  const [indiaPackages, setIndiaPackages] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const scrollRef = useRef(null);
+
+  useEffect(() => {
+    let mounted = true;
+    const fetchIndiaPackages = async () => {
+      setIsLoading(true);
+      try {
+        const result = await getPackages({ country: 'india' });
+        if (!mounted) return;
+        const pkgs = Array.isArray(result) ? result.map(normalizePackageToTour) : [];
+        setIndiaPackages(pkgs);
+      } catch (err) {
+        console.error('Failed to load India packages', err);
+      } finally {
+        if (mounted) setIsLoading(false);
+      }
+    };
+    fetchIndiaPackages();
+    return () => { mounted = false; };
+  }, []);
 
   const updateFilter = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));
   };
 
-  const filtered = applyFilters(indiaTours, filters);
+  const filtered = applyFilters(indiaPackages, filters);
 
   const scroll = (dir) => {
     if (!scrollRef.current) return;
@@ -275,8 +173,8 @@ export default function ExploreIndiaSection() {
         .ei-title {
           margin: 0 0 24px;
           color: #151922;
-          font-family: "Italiana", sans-serif;
-          font-size: clamp(18px, 2vw, 22px);
+          font-family: 'Hoefler Text', 'Voga', serif;
+          font-size: clamp(28px, 4vw, 36px);
           font-weight: 800;
           line-height: 1.2;
           text-transform: uppercase;
@@ -452,7 +350,7 @@ export default function ExploreIndiaSection() {
       `}</style>
 
       <div className="ei-inner">
-        <h2 className="ei-title" id="ei-title">
+        <h2 className="ei-title" id="ei-title" style={{ textDecoration: 'underline', textDecorationColor: 'var(--color-secondary)', textDecorationThickness: '2px', textUnderlineOffset: '6px' }}>
           Explore India
         </h2>
 
@@ -480,10 +378,16 @@ export default function ExploreIndiaSection() {
           </button>
 
           <div ref={scrollRef} className="ei-scroll-area">
-            {filtered.length > 0 ? (
+            {isLoading ? (
+              <div className="ei-empty" style={{ border: 'none', background: 'transparent' }}>
+                <span style={{ display: 'inline-block', animation: 'pulse 1.5s infinite', color: '#FF6000' }}>
+                  Loading Incredible India Packages...
+                </span>
+              </div>
+            ) : filtered.length > 0 ? (
               filtered.map((tour, idx) => (
-                <div key={tour.id} style={{ width: 320, flexShrink: 0 }}>
-                  <BookingCardV2 pkg={tour} animDelay={idx * 50} />
+                <div key={tour.id} style={{ width: 300, flexShrink: 0 }}>
+                  <TourCard tour={tour} />
                 </div>
               ))
             ) : (

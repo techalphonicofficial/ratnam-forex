@@ -6,9 +6,10 @@ import ExploreWorldSection from '@/components/ExploreWorldSection';
 import ExploreIndiaSection from '@/components/ExploreIndiaSection';
 import BlogSection from '@/components/BlogSection';
 import WhyChooseSection from '@/components/WhyChooseSection';
+import DynamicCarouselBanner from '@/components/DynamicCarouselBanner';
 import GramSection from '@/components/GramSection';
 import AppBanner from '@/components/AppBanner';
-import TrustSection from '@/components/TrustSection';
+
 import NewsletterForm from '@/components/NewsletterForm';
 import { getHomePage } from '@/utils/api';
 
@@ -26,6 +27,9 @@ export default async function HomePage() {
   const trustSection = homePage?.details?.find(
     (detail) => detail?.section === 'gallery' && detail?.key === 'our_trusted_partner'
   );
+  const journeyCollections = homePage?.details?.find(
+    (detail) => detail?.section === 'journey_collections'
+  );
 
   return (
     <>
@@ -37,13 +41,16 @@ export default async function HomePage() {
 
       {/* 2. RECOMMENDED PACKAGES — horizontal scroll cards */}
       <RecommendedPackages />
-      <DescribeSection />
+      <DescribeSection sectionData={journeyCollections} />
       <ExploreWorldSection />
       <ExploreIndiaSection />
       <BlogSection />
 
       {/* 3. WHY CHOOSE — stats + features + image collage */}
       <WhyChooseSection />
+
+      {/* 4. DYNAMIC CAROUSEL BANNER */}
+      <DynamicCarouselBanner />
 
       {/* 5. LOVE FROM THE GRAM — dark, Instagram photo strip */}
       <GramSection />
@@ -53,7 +60,6 @@ export default async function HomePage() {
       {/* <AppBanner /> */}
 
       {/* 8. TRUST LOGOS + AWARDS */}
-      <TrustSection section={trustSection} />
 
       {/* 9. NEWSLETTER */}
       <section style={{ background: 'var(--color-primary)', padding: '48px 0' }}>
@@ -64,11 +70,11 @@ export default async function HomePage() {
           <h2 style={{ fontFamily: '"Italiana", sans-serif', fontWeight: 800, fontSize: 26, color: 'white', marginBottom: 10, lineHeight: 1.2 }}>
             Get Exclusive Deals & Travel Inspiration
           </h2>
-          <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14, marginBottom: 24 }}>
+          <p style={{ color: 'rgba(255,255,255,0.95)', fontSize: 14, marginBottom: 24 }}>
             Early-bird discounts, curated guides & weekly travel ideas.
           </p>
           <NewsletterForm />
-          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, marginTop: 10 }}>
+          <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: 12, marginTop: 10 }}>
             No spam. Unsubscribe anytime.
           </p>
         </div>

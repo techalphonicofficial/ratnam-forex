@@ -211,9 +211,8 @@ export default function GlobalInquiryModal({ brand, companyInfo }) {
 
           <div style={{ maxWidth: '100%', margin: 'auto 0' }}>
             <div className="mb-4">
-              <h2 style={{ fontFamily: '"Italiana", sans-serif', fontWeight: 'bold', fontSize: '26px', color: 'var(--color-text-primary)', marginBottom: '8px', lineHeight: '1.2' }}>
-                Plan your next journey with <br/>
-                <span style={{ color: 'var(--color-primary)', fontWeight: 'bold' }}>{brandName}</span>
+              <h2 style={{ fontFamily: '"Italiana", sans-serif', fontWeight: 'bold', fontSize: '26px', color: '#FF6000', marginBottom: '8px', lineHeight: '1.2' }}>
+                Plan Your Trip, Your Way
               </h2>
               <p style={{ fontFamily: '"Gilda Display", serif', fontWeight: 400, color: 'var(--color-text-muted)', fontSize: '14px', marginTop: '10px' }}>
                 Share your details and preferred destination. Our experts will curate the perfect package for you.

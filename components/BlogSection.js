@@ -81,7 +81,6 @@ export default function BlogSection() {
           align-items: stretch;
         }
 
-        /* ── Desktop Banner ─────────────── */
         .desktop-banner {
           position: relative;
           border-radius: var(--radius-lg, 16px);
@@ -89,7 +88,7 @@ export default function BlogSection() {
           box-shadow: var(--shadow-sm, 0 6px 20px rgba(0,0,0,0.08));
           display: flex;
           flex-direction: column;
-          justify-content: center;
+          justify-content: space-between;
           align-items: center;
           text-align: center;
           padding: 40px 24px;
@@ -112,6 +111,53 @@ export default function BlogSection() {
         .desktop-banner:hover .desktop-banner-img {
           transform: scale(1.04);
         }
+        .blog-search-wrapper {
+          position: relative;
+          width: 100%;
+          max-width: 260px;
+        }
+        .blog-search-icon {
+          position: absolute;
+          left: 16px;
+          top: 50%;
+          transform: translateY(-50%);
+          color: #9ca3af;
+          pointer-events: none;
+        }
+        .blog-search-input {
+          width: 100%;
+          padding: 12px 90px 12px 44px;
+          border: 1px solid #e5e7eb;
+          border-radius: 999px;
+          font-size: 14px;
+          color: #374151;
+          outline: none;
+          transition: border-color 0.2s, box-shadow 0.2s;
+          background: #f9fafb;
+        }
+        .blog-search-input:focus {
+          border-color: var(--color-primary);
+          box-shadow: 0 0 0 3px rgba(1, 53, 103, 0.1);
+          background: #fff;
+        }
+        .blog-search-button {
+          position: absolute;
+          right: 4px;
+          top: 50%;
+          transform: translateY(-50%);
+          background: var(--color-primary);
+          color: white;
+          border: none;
+          padding: 8px 16px;
+          border-radius: 999px;
+          font-size: 12px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: background 0.2s ease;
+        }
+        .blog-search-button:hover {
+          background: color-mix(in srgb, var(--color-primary) 85%, black);
+        }
         .desktop-banner-content {
           position: relative;
           z-index: 2;
@@ -119,6 +165,8 @@ export default function BlogSection() {
           display: flex;
           flex-direction: column;
           align-items: center;
+          justify-content: center;
+          flex: 1;
           text-align: center;
         }
         .desktop-banner-content h3 {
@@ -136,7 +184,6 @@ export default function BlogSection() {
           line-height: 1.5;
         }
 
-        /* ── Mobile Banner ─────────────── */
         .mobile-banner {
           position: relative;
           border-radius: var(--radius-lg, 16px);
@@ -144,7 +191,7 @@ export default function BlogSection() {
           box-shadow: var(--shadow-sm, 0 6px 20px rgba(0,0,0,0.08));
           display: flex;
           flex-direction: column;
-          justify-content: center;
+          justify-content: space-between;
           min-height: 200px;
           background: var(--color-card);
           align-items: center;
@@ -162,6 +209,8 @@ export default function BlogSection() {
           display: flex;
           flex-direction: column;
           align-items: center;
+          justify-content: center;
+          flex: 1;
           text-align: center;
         }
         .mobile-banner-content h3 {
@@ -367,7 +416,7 @@ export default function BlogSection() {
 
       <div className="home-blog-inner">
         <div className="home-blog-header">
-          <h2 className="home-blog-title" id="home-blog-title">
+          <h2 className="home-blog-title" id="home-blog-title" style={{ fontFamily: "'Hoefler Text', 'Voga', serif", fontWeight: 800, fontSize: 'clamp(28px, 4vw, 36px)', textTransform: 'uppercase', letterSpacing: 0.5, color: 'var(--color-text-primary)', lineHeight: 1.2, margin: 0, textDecoration: 'underline', textDecorationColor: 'var(--color-secondary)', textDecorationThickness: '2px', textUnderlineOffset: '6px' }}>
             BLOG : CITY INFO, TRAVEL TIPS : STORIES &amp; ARTICLES
           </h2>
           <Link href="/blog" className="home-blog-view-all">
@@ -381,43 +430,51 @@ export default function BlogSection() {
         <div className="home-blog-grid">
           {/* Desktop Banner */}
           <div className="desktop-banner desktop-only">
-            <Image
-              src="/logooo.png"
-              alt="Travel & Holiday Logo"
-              width={260}
-              height={100}
-              priority={false}
-              className="desktop-banner-img"
-            />
+            <div className="blog-search-wrapper">
+              <svg className="blog-search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input 
+                type="text" 
+                className="blog-search-input" 
+                placeholder="Search travel stories..." 
+              />
+              <button className="blog-search-button">Search</button>
+            </div>
             <div className="desktop-banner-bg" />
             <div className="desktop-banner-content">
               <h3>Explore Stories</h3>
               <p>Get the latest city insights, expert travel guides, and incredible stories from our global explorers.</p>
-              <Link href="/blog" className="btn-primary circle-btn-hover">
-                <svg className="circle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                Read Blog
-              </Link>
             </div>
+            <Link href="/blog" className="btn-primary circle-btn-hover">
+              <svg className="circle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              Read Blog
+            </Link>
           </div>
 
           {/* Mobile Banner */}
           <div className="mobile-banner mobile-only">
-            <Image
-              src="/logooo.png"
-              alt="Travel & Holiday Logo"
-              width={200}
-              height={80}
-              priority={false}
-              className="mobile-banner-img"
-            />
+            <div className="blog-search-wrapper">
+              <svg className="blog-search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input 
+                type="text" 
+                className="blog-search-input" 
+                placeholder="Search travel stories..." 
+              />
+              <button className="blog-search-button">Search</button>
+            </div>
             <div className="mobile-banner-content">
               <h3>Explore Stories</h3>
               <p>Get the latest city insights, expert travel guides, and incredible stories from our global explorers.</p>
-              <Link href="/blog" className="home-blog-banner-btn circle-btn-hover">
-                <svg className="circle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                Read Blog
-              </Link>
             </div>
+            <Link href="/blog" className="home-blog-banner-btn circle-btn-hover">
+              <svg className="circle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              Read Blog
+            </Link>
           </div>
 
           {/* Desktop Cards (3 Stacked) */}

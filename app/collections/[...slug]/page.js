@@ -3,9 +3,10 @@
 import { use, useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { allBookings, getFeaturedTourHref } from '@/components/FeaturedToursRow';
+import TourCard from '@/components/TourCard';
+import CollectionDetails from '@/components/CollectionDetails';
 import { CardLink, SectionIntro, SoftBadge, FilterPill, CircleButton } from '@/components/ui/TravelPrimitives';
-import { getTripInquiries, getMediaUrl } from '@/utils/api';
+import { getTripInquiries, getPackages, getMediaUrl, normalizePackageToTour } from '@/utils/api';
 
 /* ── Collection metadata ─────────────────────────────── */
 const COLLECTION_META = {
@@ -14,28 +15,28 @@ const COLLECTION_META = {
     subtitle: 'Timeless. Diverse. Incredible.',
     description: 'Explore the rich heritage, diverse culture, and breathtaking landscapes of India.',
     banner: 'https://images.unsplash.com/photo-1477587458883-47145ed94245?w=1400&q=80',
-    filterFn: (b) => b.dest === 'India',
+    filterFn: (b) => String(b.country).toLowerCase() === 'india' || String(b.dest).toLowerCase() === 'india',
   },
   'international': {
     title: 'International',
     subtitle: 'Explore Beyond Borders',
     description: 'Discover stunning destinations across the globe with curated international tour packages.',
     banner: 'https://images.unsplash.com/photo-1488085061387-422e29b40080?w=1400&q=80',
-    filterFn: (b) => b.dest !== 'India',
+    filterFn: (b) => String(b.country).toLowerCase() !== 'india' && String(b.dest).toLowerCase() !== 'india',
   },
   'india-unlimited': {
     title: 'India Unlimited',
     subtitle: 'Endless Journeys Within',
     description: 'Unlimited adventures across every corner of India — from mountains to beaches.',
     banner: 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=1400&q=80',
-    filterFn: (b) => b.dest === 'India',
+    filterFn: (b) => String(b.country).toLowerCase() === 'india' || String(b.dest).toLowerCase() === 'india',
   },
   'trans-india': {
     title: 'Trans India',
     subtitle: 'Crossing Landscapes',
     description: 'Journey across the vast and varied landscapes of the Indian subcontinent.',
     banner: 'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=1400&q=80',
-    filterFn: (b) => b.dest === 'India',
+    filterFn: (b) => String(b.country).toLowerCase() === 'india' || String(b.dest).toLowerCase() === 'india',
   },
 };
 
@@ -268,10 +269,49 @@ function BookingCardV2({ pkg, animDelay }) {
   );
 }
 
+const normalizePackage = (pkg) => {
+  const destName = pkg.destinations?.[0]?.destination?.name || 'Destination';
+  const cities = pkg.destinations?.map(d => d.destination?.name).filter(Boolean) || [destName];
+  const price = Number(pkg.price || 0);
+  
+  return {
+    id: pkg.id,
+    slug: pkg.slug,
+    isInquiry: false,
+    isPackage: true,
+    dest: destName,
+    title: pkg.name || 'Tour Package',
+    locations: cities.length ? cities.map(name => titleCase(name)) : [destName],
+    image: getMediaUrl(pkg.main_image) || 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=600&q=80',
+    nights: pkg.duration_days || 1,
+    price: price,
+    priceCategory: getPriceCategory(price),
+    type: String(pkg.package_type || 'PACKAGE').toUpperCase(),
+    typeColor: getTypeColor(pkg.package_type),
+    user: {
+      name: 'Travel Expert',
+      city: 'Local',
+      avatar: 'E',
+      avatarBg: getTypeColor(pkg.package_type),
+      ago: 'Verified',
+    },
+  };
+};
+
 /* ── Main Page Component ─────────────────────────────── */
 export default function CollectionPage({ params }) {
   const { slug } = use(params);
-  const meta = COLLECTION_META[slug];
+  const slugArray = Array.isArray(slug) ? slug : [slug];
+  const mainSlug = slugArray[0];
+  const queryParam = slugArray[1];
+
+  const meta = COLLECTION_META[mainSlug] || {
+    title: titleCase(mainSlug),
+    subtitle: queryParam ? titleCase(queryParam) : 'Explore the Collection',
+    description: `Discover amazing journeys related to ${titleCase(queryParam || mainSlug)}.`,
+    banner: 'https://images.unsplash.com/photo-1477587458883-47145ed94245?w=1400&q=80',
+    filterFn: () => true,
+  };
 
   const [activeBudget, setActiveBudget] = useState('all');
   const [activeDest, setActiveDest] = useState('All Destinations');
@@ -291,19 +331,35 @@ export default function CollectionPage({ params }) {
   useEffect(() => {
     let mounted = true;
 
-    const loadTripInquiries = async () => {
+    const loadData = async () => {
       setInquiriesLoading(true);
-      const result = await getTripInquiries({ page: 1, limit: 20 });
-      if (!mounted) return;
 
-      const rows = Array.isArray(result?.rows) ? result.rows : [];
-      setLiveBookings(rows.map(normalizeInquiry));
+      let fetchParams = {};
+      if (queryParam) {
+        if (mainSlug === 'trans-india' || mainSlug === 'international') {
+           fetchParams.continent = queryParam;
+        } else {
+           fetchParams.country = queryParam;
+        }
+      } else {
+        if (mainSlug === 'incredible-india' || mainSlug === 'india-unlimited' || mainSlug === 'trans-india') {
+           fetchParams.country = 'india';
+        }
+      }
+
+      const result = await getPackages(fetchParams);
+      if (!mounted) return;
+      const packages = Array.isArray(result) ? result : (result?.data || []);
+      const livePackages = packages.map(normalizePackageToTour);
+      
+      setLiveBookings(livePackages);
+      
       setInquiriesLoading(false);
     };
 
-    loadTripInquiries();
+    loadData();
     return () => { mounted = false; };
-  }, []);
+  }, [mainSlug, queryParam]);
 
   if (!meta) {
     return (
@@ -317,10 +373,9 @@ export default function CollectionPage({ params }) {
     );
   }
 
-  /* Apply collection filter to live bookings first, fallback to allBookings */
-  const collectionLive = liveBookings.filter(meta.filterFn);
-  const collectionFallback = allBookings.filter(meta.filterFn);
-  const bookingSource = collectionLive.length ? collectionLive : collectionFallback;
+  /* Apply collection filter to live bookings */
+  const collectionBookings = liveBookings.length > 0 ? liveBookings.filter(b => b.isPackage || queryParam ? true : meta.filterFn(b)) : [];
+  const bookingSource = collectionBookings;
 
   const destinationOptions = [
     'All Destinations',
@@ -381,7 +436,7 @@ export default function CollectionPage({ params }) {
         
         .recent-bookings-section {
           background: #ffffff;
-          padding: 60px 0;
+          padding: 140px 0 60px;
         }
         
         .recent-filters {
@@ -625,37 +680,41 @@ export default function CollectionPage({ params }) {
         <SectionIntro
           eyebrow={meta.subtitle}
           title={meta.title}
-          subtitle={meta.description}
-          meta={(
-            <SoftBadge tone="primary">
-              {collectionLive.length ? `${collectionLive.length}+ recent trip requests` : `${collectionFallback.length}+ tour packages`}
-            </SoftBadge>
-          )}
-          actions={(
-            <>
-              <div className="recent-filters">
-                <DestinationDropdown currentDest={activeDest} onChange={handleDestChange} destinations={destinationOptions} />
-                {BUDGET_FILTERS.map((filter) => (
-                  <FilterPill
-                    key={filter.key}
-                    active={activeBudget === filter.key}
-                    onClick={() => handleBudgetSort(filter.key)}
-                  >
-                    {getBudgetLabel(filter.key, filter.label)}
-                  </FilterPill>
-                ))}
-              </div>
-              <div className="recent-scroll-actions">
-                <CircleButton label="Previous itineraries" onClick={() => scroll(-1)}>
-                  &lt;
-                </CircleButton>
-                <CircleButton label="Next itineraries" onClick={() => scroll(1)}>
-                  &gt;
-                </CircleButton>
-              </div>
-            </>
-          )}
         />
+
+        <CollectionDetails slug={slugArray.join('/')} />
+
+        <div style={{ textAlign: 'center', margin: '32px 0 20px' }}>
+          <p style={{ color: '#4b5563', fontSize: 16, marginBottom: 12 }}>{meta.description}</p>
+          <SoftBadge tone="primary">
+            {bookingSource.length}+ tour packages
+          </SoftBadge>
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16, marginTop: 10, marginBottom: 24 }}>
+          <div className="recent-filters" style={{ margin: 0 }}>
+            <DestinationDropdown currentDest={activeDest} onChange={handleDestChange} destinations={destinationOptions} />
+            {BUDGET_FILTERS.map((filter) => (
+              <FilterPill
+                key={filter.key}
+                active={activeBudget === filter.key}
+                onClick={() => handleBudgetSort(filter.key)}
+              >
+                {getBudgetLabel(filter.key, filter.label)}
+              </FilterPill>
+            ))}
+          </div>
+          <div className="recent-scroll-actions">
+            <CircleButton label="Previous itineraries" onClick={() => scroll(-1)}>
+              &lt;
+            </CircleButton>
+            <CircleButton label="Next itineraries" onClick={() => scroll(1)}>
+              &gt;
+            </CircleButton>
+          </div>
+        </div>
+
+
 
         {/* ── Result count badge ── */}
         <div className="recent-result-row">
@@ -670,7 +729,7 @@ export default function CollectionPage({ params }) {
               {inquiriesLoading
                 ? 'loading latest trips'
                 : activeDest === 'All Destinations' && activeBudget === 'all'
-                  ? (collectionLive.length ? 'showing latest saved trips' : 'showing all tours')
+                  ? (bookingSource.length ? 'showing latest saved trips' : 'showing all tours')
                   : 'filtered results'}
           </span>
         </div>
@@ -681,11 +740,9 @@ export default function CollectionPage({ params }) {
           className={`booking-cards-wrap ${visible ? 'shown' : 'hidden'}`}
         >
           {filtered.map((pkg, idx) => (
-            <BookingCardV2
-              key={pkg.id}
-              pkg={pkg}
-              animDelay={idx * 40}
-            />
+            <div key={pkg.id} style={{ width: 320, flexShrink: 0 }}>
+              <TourCard tour={pkg} />
+            </div>
           ))}
           {!inquiriesLoading && filtered.length === 0 && (
             <div className="recent-empty-state">

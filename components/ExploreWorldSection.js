@@ -3,8 +3,9 @@
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { allBookings, getFeaturedTourHref, BookingCardV2 } from '@/components/FeaturedToursRow';
-import { getTripInquiries, getMediaUrl } from '@/utils/api';
+import { getFeaturedTourHref } from '@/components/FeaturedToursRow';
+import TourCard from '@/components/TourCard';
+import { getTripInquiries, getMediaUrl, getPackages, normalizePackageToTour } from '@/utils/api';
 
 /* ── Filter options ──────────────────────────────────── */
 const FILTER_OPTIONS = {
@@ -29,106 +30,6 @@ const FILTER_OPTIONS = {
     items: ['All', 'Summer', 'Winter', 'Monsoon', 'Spring'],
   },
 };
-
-/* ── Explore world tour data ─────────────────────────── */
-export const exploreTours = [
-  {
-    id: 'ew1',
-    title: 'Switzerland Spectacular',
-    dest: 'Europe',
-    locations: ['Zurich (2N)', 'Interlaken (3N)', 'Lucerne (2N)'],
-    image: 'https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?w=600&q=80',
-    nights: 6, days: 7, price: 135999, rating: 4.8,
-    priceCategory: '50to150',
-    type: 'COUPLE', typeColor: 'var(--color-secondary)',
-    theme: 'couple', season: 'summer',
-    user: { name: 'Priya', city: 'Bangalore', avatar: 'P', avatarBg: 'var(--color-primary)', ago: '2hr ago' },
-  },
-  {
-    id: 'ew2',
-    title: 'Thailand Tropical',
-    dest: 'Thailand',
-    locations: ['Bangkok (3N)', 'Phuket (2N)'],
-    image: 'https://images.unsplash.com/photo-1519451241324-20b4ea2c4220?w=600&q=80',
-    nights: 5, days: 6, price: 45999, rating: 4.6,
-    priceCategory: 'under50',
-    type: 'FAMILY', typeColor: 'var(--color-primary)',
-    theme: 'family', season: 'winter',
-    user: { name: 'Hema', city: 'Chennai', avatar: 'H', avatarBg: 'var(--color-primary)', ago: '5hr ago' },
-  },
-  {
-    id: 'ew3',
-    title: 'Turkey Delight',
-    dest: 'Turkey',
-    locations: ['Istanbul (3N)', 'Cappadocia (3N)', 'Antalya (1N)'],
-    image: 'https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=600&q=80',
-    nights: 6, days: 7, price: 68999, rating: 4.7,
-    priceCategory: '50to150',
-    type: 'ADVENTURE', typeColor: 'var(--color-primary)',
-    theme: 'adventure', season: 'spring',
-    user: { name: 'Rahul', city: 'Hyderabad', avatar: 'R', avatarBg: 'var(--color-primary)', ago: '3hr ago' },
-  },
-  {
-    id: 'ew4',
-    title: 'Bali Bliss',
-    dest: 'Bali',
-    locations: ['Ubud (3N)', 'Seminyak (3N)', 'Nusa Dua (2N)'],
-    image: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=600&q=80',
-    nights: 8, days: 9, price: 75656, rating: 4.9,
-    priceCategory: '50to150',
-    type: 'COUPLE', typeColor: 'var(--color-secondary)',
-    theme: 'couple', season: 'summer',
-    user: { name: 'Gaurav', city: 'Mumbai', avatar: 'G', avatarBg: 'var(--color-secondary)', ago: '10hr ago' },
-  },
-  {
-    id: 'ew5',
-    title: 'Japan Cherry Blossom',
-    dest: 'Japan',
-    locations: ['Tokyo (4N)', 'Kyoto (3N)', 'Osaka (3N)'],
-    image: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=600&q=80',
-    nights: 10, days: 11, price: 145000, rating: 4.8,
-    priceCategory: '50to150',
-    type: 'SOLO', typeColor: 'var(--color-secondary)',
-    theme: 'solo', season: 'spring',
-    user: { name: 'Arjun', city: 'Hyderabad', avatar: 'A', avatarBg: 'var(--color-secondary)', ago: '5hr ago' },
-  },
-  {
-    id: 'ew6',
-    title: 'Dubai Dazzle',
-    dest: 'Dubai',
-    locations: ['Dubai (5N)', 'Abu Dhabi (3N)'],
-    image: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=600&q=80',
-    nights: 8, days: 9, price: 110000, rating: 4.5,
-    priceCategory: '50to150',
-    type: 'FAMILY', typeColor: 'var(--color-primary)',
-    theme: 'family', season: 'winter',
-    user: { name: 'Ramesh', city: 'Kolkata', avatar: 'R', avatarBg: 'var(--color-primary)', ago: '20hr ago' },
-  },
-  {
-    id: 'ew7',
-    title: 'Maldives Luxury',
-    dest: 'Maldives',
-    locations: ['Malé (2N)', 'Resort Island (6N)'],
-    image: 'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=600&q=80',
-    nights: 8, days: 9, price: 325000, rating: 4.9,
-    priceCategory: 'luxury',
-    type: 'LUXURY', typeColor: 'var(--color-secondary)',
-    theme: 'luxury', season: 'winter',
-    user: { name: 'Mayank', city: 'Delhi', avatar: 'M', avatarBg: 'var(--color-primary)', ago: '13hr ago' },
-  },
-  {
-    id: 'ew8',
-    title: 'Paris Romance',
-    dest: 'Europe',
-    locations: ['Paris (4N)', 'Nice (3N)'],
-    image: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=600&q=80',
-    nights: 7, days: 8, price: 189000, rating: 4.7,
-    priceCategory: '150to250',
-    type: 'COUPLE', typeColor: 'var(--color-secondary)',
-    theme: 'couple', season: 'spring',
-    user: { name: 'Deepak', city: 'Delhi', avatar: 'D', avatarBg: 'var(--color-secondary)', ago: '1hr ago' },
-  },
-];
 
 /* ── Dropdown Filter Component ───────────────────────── */
 function FilterDropdown({ label, items, value, onChange }) {
@@ -220,13 +121,36 @@ export default function ExploreWorldSection() {
     travelClass: 'All',
     season: 'All',
   });
+  const [worldPackages, setWorldPackages] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const scrollRef = useRef(null);
+
+  useEffect(() => {
+    let mounted = true;
+    const fetchWorldPackages = async () => {
+      setIsLoading(true);
+      try {
+        const result = await getPackages();
+        if (!mounted) return;
+        const pkgs = Array.isArray(result) ? result.map(normalizePackageToTour) : [];
+        // Filter out India packages to show only international
+        const intlPkgs = pkgs.filter(pkg => pkg.country?.toLowerCase() !== 'india');
+        setWorldPackages(intlPkgs);
+      } catch (err) {
+        console.error('Failed to load international packages', err);
+      } finally {
+        if (mounted) setIsLoading(false);
+      }
+    };
+    fetchWorldPackages();
+    return () => { mounted = false; };
+  }, []);
 
   const updateFilter = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));
   };
 
-  const filtered = applyFilters(exploreTours, filters);
+  const filtered = applyFilters(worldPackages, filters);
 
   const scroll = (dir) => {
     if (!scrollRef.current) return;
@@ -251,8 +175,8 @@ export default function ExploreWorldSection() {
         .ew-title {
           margin: 0 0 24px;
           color: #151922;
-          font-family: "Italiana", sans-serif;
-          font-size: clamp(18px, 2vw, 22px);
+          font-family: 'Hoefler Text', 'Voga', serif;
+          font-size: clamp(28px, 4vw, 36px);
           font-weight: 800;
           line-height: 1.2;
           text-transform: uppercase;
@@ -490,7 +414,7 @@ export default function ExploreWorldSection() {
       `}</style>
 
       <div className="ew-inner">
-        <h2 className="ew-title" id="ew-title">
+        <h2 className="ew-title" id="ew-title" style={{ textDecoration: 'underline', textDecorationColor: 'var(--color-secondary)', textDecorationThickness: '2px', textUnderlineOffset: '6px' }}>
           Explore The World
         </h2>
 
@@ -518,10 +442,16 @@ export default function ExploreWorldSection() {
           </button>
 
           <div ref={scrollRef} className="ew-scroll-area">
-            {filtered.length > 0 ? (
+            {isLoading ? (
+              <div className="ew-empty" style={{ border: 'none', background: 'transparent' }}>
+                <span style={{ display: 'inline-block', animation: 'pulse 1.5s infinite', color: '#FF6000' }}>
+                  Loading International Packages...
+                </span>
+              </div>
+            ) : filtered.length > 0 ? (
               filtered.map((tour, idx) => (
-                <div key={tour.id} style={{ width: 320, flexShrink: 0 }}>
-                  <BookingCardV2 pkg={tour} animDelay={idx * 50} />
+                <div key={tour.id} style={{ width: 300, flexShrink: 0 }}>
+                  <TourCard tour={tour} />
                 </div>
               ))
             ) : (

@@ -4,7 +4,8 @@ const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://ratnamfore
 export const dynamic = 'force-dynamic';
 
 export async function GET(request, { params }) {
-  const { slug } = await params;
+  const slugArray = (await params).slug || [];
+  const slug = slugArray.join('/');
   const incomingUrl = new URL(request.url);
   const backendUrl = new URL(`/api/v1/pages/slug/${encodeURIComponent(slug)}`, BACKEND_BASE_URL.replace(/\/api\/v1\/?$/, ''));
 
