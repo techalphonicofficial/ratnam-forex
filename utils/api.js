@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 const BASE_IMAGE_URL = process.env.NEXT_PUBLIC_BASE_IMAGE_URL;
-const DEFAULT_API_BASE_URL = 'http://localhost:3011/api/v1';
+const DEFAULT_API_BASE_URL = 'https://ratnamforex.yber.in/api/v1';
 const DEFAULT_MEDIA_BASE_URL = 'http://localhost:3011';
 const API_BASE_URL = BASE_URL || DEFAULT_API_BASE_URL;
 export const AUTH_STORAGE_KEY = 'wl_auth';
