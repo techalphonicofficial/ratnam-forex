@@ -1,17 +1,19 @@
 import 'server-only';
 
-const COMPANY_INFO_ENDPOINT = 'https://ratnamforex.yber.in/api/v1/crm/settings/company-info';
+import { apiFetchOptions, buildBackendUrl } from '@/utils/backendConfig';
+
+const COMPANY_INFO_ENDPOINT = buildBackendUrl('/api/v1/crm/settings/company-info');
 const COMPANY_INFO_API_KEY = process.env.CRM_COMPANY_INFO_API_KEY || 'pt_dc9eae82075b27c1408392fa7d7e0e632ef9e846f6e4e33e';
 
 export const getCompanyInfo = async () => {
   try {
-    const response = await fetch(COMPANY_INFO_ENDPOINT, {
+    const response = await fetch(COMPANY_INFO_ENDPOINT, apiFetchOptions({
       headers: {
         accept: 'application/json',
         'x-api-key': COMPANY_INFO_API_KEY,
       },
       cache: 'no-store',
-    });
+    }));
 
     if (!response.ok) return null;
 

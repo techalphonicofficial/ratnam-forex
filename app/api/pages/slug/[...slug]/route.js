@@ -1,5 +1,4 @@
-
-const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://ratnamforex.yber.in/api/v1';
+import { apiFetchOptions, buildBackendUrl } from '@/utils/backendConfig';
 
 export const dynamic = 'force-dynamic';
 
@@ -7,7 +6,7 @@ export async function GET(request, { params }) {
   const slugArray = (await params).slug || [];
   const slug = slugArray.join('/');
   const incomingUrl = new URL(request.url);
-  const backendUrl = new URL(`/api/v1/pages/slug/${encodeURIComponent(slug)}`, BACKEND_BASE_URL.replace(/\/api\/v1\/?$/, ''));
+  const backendUrl = new URL(buildBackendUrl(`/api/v1/pages/slug/${encodeURIComponent(slug)}`));
 
   incomingUrl.searchParams.forEach((value, key) => {
     if (key !== '_t') backendUrl.searchParams.set(key, value);
@@ -15,13 +14,13 @@ export async function GET(request, { params }) {
   backendUrl.searchParams.set('_t', String(Date.now()));
 
   try {
-    const response = await fetch(backendUrl.toString(), {
+    const response = await fetch(backendUrl.toString(), apiFetchOptions({
       headers: {
         accept: 'application/json',
         'ngrok-skip-browser-warning': 'true',
       },
       cache: 'no-store',
-    });
+    }));
 
     const data = await response.json().catch(() => null);
 

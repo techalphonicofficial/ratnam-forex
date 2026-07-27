@@ -1,9 +1,10 @@
 import 'server-only';
 
+import { apiFetchOptions, buildBackendUrl } from '@/utils/backendConfig';
 import { normalizeThemePayload } from '@/utils/themeVariables';
 
 
-const THEME_COLOURS_ENDPOINT = 'https://ratnamforex.yber.in/api/v1/crm/settings/theme-colours';
+const THEME_COLOURS_ENDPOINT = buildBackendUrl('/api/v1/crm/settings/theme-colours');
 const THEME_COLOURS_API_KEY =
   process.env.CRM_THEME_COLOURS_API_KEY ||
   process.env.CRM_COMPANY_INFO_API_KEY ||
@@ -13,13 +14,13 @@ const THEME_COLOURS_API_KEY =
 
 export const getThemeColours = async () => {
   try {
-    const response = await fetch(THEME_COLOURS_ENDPOINT, {
+    const response = await fetch(THEME_COLOURS_ENDPOINT, apiFetchOptions({
       headers: {
         accept: 'application/json',
         'x-api-key': THEME_COLOURS_API_KEY,
       },
       cache: 'no-store',
-    });
+    }));
 
     if (!response.ok) return {};
 

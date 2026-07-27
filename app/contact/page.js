@@ -1,10 +1,11 @@
 import ContactClient from './ContactClient';
 import { getMediaUrl, getPageBySlug } from '@/utils/api';
+import { apiFetchOptions, buildBackendUrl } from '@/utils/backendConfig';
 
 export const dynamic = 'force-dynamic';
 
-const PIPELINE_FORM_ENDPOINT = 'https://ratnamforex.yber.in/api/v1/crm/pipelines/3/form';
-const COMPANY_INFO_ENDPOINT = 'https://ratnamforex.yber.in/api/v1/crm/settings/company-info';
+const PIPELINE_FORM_ENDPOINT = buildBackendUrl('/api/v1/crm/pipelines/3/form');
+const COMPANY_INFO_ENDPOINT = buildBackendUrl('/api/v1/crm/settings/company-info');
 const CRM_API_KEY = process.env.CRM_PIPELINE_FORM_API_KEY || process.env.CRM_COMPANY_INFO_API_KEY || 'pt_4135380196590f3b81d68d8b5acbc883b3ee46ccbb77e73e';
 
 const fallbackHero = {
@@ -24,13 +25,13 @@ const findSection = (page, section) => page?.details?.find((item) => item.sectio
 
 const getPipelineForm = async () => {
   try {
-    const response = await fetch(PIPELINE_FORM_ENDPOINT, {
+    const response = await fetch(PIPELINE_FORM_ENDPOINT, apiFetchOptions({
       headers: {
         accept: 'application/json',
         'x-api-key': CRM_API_KEY,
       },
       cache: 'no-store',
-    });
+    }));
 
     if (!response.ok) return null;
 
@@ -44,13 +45,13 @@ const getPipelineForm = async () => {
 
 const getCompanyInfo = async () => {
   try {
-    const response = await fetch(COMPANY_INFO_ENDPOINT, {
+    const response = await fetch(COMPANY_INFO_ENDPOINT, apiFetchOptions({
       headers: {
         accept: 'application/json',
         'x-api-key': CRM_API_KEY,
       },
       cache: 'no-store',
-    });
+    }));
 
     if (!response.ok) return null;
 

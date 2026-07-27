@@ -1,7 +1,7 @@
 import { normalizeThemePayload } from '@/utils/themeVariables';
+import { apiFetchOptions, buildBackendUrl } from '@/utils/backendConfig';
 
 
-const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://ratnamforex.yber.in/api/v1';
 const THEME_COLOURS_API_KEY =
   process.env.CRM_THEME_COLOURS_API_KEY ||
   process.env.CRM_COMPANY_INFO_API_KEY ||
@@ -12,17 +12,17 @@ const THEME_COLOURS_API_KEY =
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const backendUrl = new URL('/api/v1/crm/settings/theme-colours', BACKEND_BASE_URL.replace(/\/api\/v1\/?$/, ''));
+  const backendUrl = buildBackendUrl('/api/v1/crm/settings/theme-colours');
 
   try {
-    const response = await fetch(backendUrl.toString(), {
+    const response = await fetch(backendUrl, apiFetchOptions({
       headers: {
         accept: 'application/json',
         'x-api-key': THEME_COLOURS_API_KEY,
         'ngrok-skip-browser-warning': 'true',
       },
       cache: 'no-store',
-    });
+    }));
     const payload = await response.json().catch(() => null);
 
     return Response.json(
