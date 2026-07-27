@@ -22,6 +22,16 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'ratnamforex.yber.in',
       },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '3011',
+      },
+      {
+        protocol: 'http',
+        hostname: '127.0.0.1',
+        port: '3011',
+      },
     ],
     qualities: [25, 50, 75, 100],
     formats: ['image/avif', 'image/webp'],

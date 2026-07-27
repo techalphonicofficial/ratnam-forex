@@ -64,6 +64,69 @@ const packageCols = [
   ],
 ];
 
+const packageCategoryToMenuItem = (category = {}) => {
+  const title = String(category.title || category.name || '').trim();
+  const slug = String(category.slug || '').trim();
+  const id = category.id;
+
+  return {
+    name: title,
+    href: slug
+      ? `/packages?package_category_slug=${encodeURIComponent(slug)}`
+      : id
+        ? `/packages?category_id=${encodeURIComponent(id)}`
+        : '',
+  };
+};
+
+const buildPackageCategoryCols = (rows = []) => {
+  const items = rows
+    .map(packageCategoryToMenuItem)
+    .filter((item) => item.name && item.href);
+
+  if (!items.length) return [];
+
+  const menuItems = [
+    ...items,
+    { name: 'View All Packages →', href: '/packages', isExplore: true },
+  ];
+  const columnCount = 3;
+  const itemsPerCol = Math.ceil(menuItems.length / columnCount) || 1;
+  const cols = [];
+
+  for (let i = 0; i < menuItems.length; i += itemsPerCol) {
+    cols.push(menuItems.slice(i, i + itemsPerCol));
+  }
+
+  return cols;
+};
+
+
+const buildDestinationCols = (destinations = [], exploreHref, exploreLabel) => {
+  const items = destinations.map(d => ({
+    name: d.name,
+    tag: d.is_trending ? 'TRENDING' : null,
+    tagClr: 'var(--color-card)',
+    tagBg: 'var(--color-secondary)',
+    href: `/tour?search=${encodeURIComponent(d.name)}`
+  }));
+  
+  if (!items.length) return [];
+  
+  const menuItems = [
+    ...items,
+    { name: exploreLabel, href: exploreHref, isExplore: true }
+  ];
+  
+  const columnCount = 3;
+  const itemsPerCol = Math.ceil(menuItems.length / columnCount) || 1;
+  const cols = [];
+  for (let i = 0; i < menuItems.length; i += itemsPerCol) {
+    cols.push(menuItems.slice(i, i + itemsPerCol));
+  }
+  return cols;
+};
+
 const HOTEL_HREF = '/hotels';
 
 const currencyOptions = [
@@ -776,6 +839,7 @@ import {
   getForexRateByCode,
   getForexRates,
   getForexServiceCharge,
+  getPackageCategories,
   getStoredAuth,
   getStoredToken,
 } from '@/utils/api';
@@ -785,16 +849,35 @@ const getLogoUrl = (logo) => {
   if (/^(https?:|data:|blob:)/i.test(logo)) return logo;
   if (!String(logo).startsWith('/uploads')) return logo;
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_IMAGE_URL || 'https://ratnamforex.yber.in';
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_IMAGE_URL || 'http://localhost:3011';
   return `${baseUrl.replace(/\/$/, '')}/${String(logo).replace(/^\//, '')}`;
 };
 
 export default function Navbar({ brand, companyInfo }) {
+  const [navDomesticCols, setNavDomesticCols] = useState(indiaDropdownCols);
+  const [navInternationalCols, setNavInternationalCols] = useState(destinationCols);
+
+  useEffect(() => {
+    import('@/utils/api').then(({ getDestinations }) => {
+      getDestinations({ type: 'domestic' }).then(res => {
+        if (res && res.length) {
+          setNavDomesticCols(buildDestinationCols(res, '/packages?destination=India', 'Explore All India →'));
+        }
+      });
+      getDestinations({ type: 'international' }).then(res => {
+        if (res && res.length) {
+          setNavInternationalCols(buildDestinationCols(res, '/tours?destination', 'Explore 40+ Destinations →'));
+        }
+      });
+    }).catch(console.error);
+  }, []);
+
   const [scrolled, setScrolled] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [atHero, setAtHero] = useState(true);
   const [categories, setCategories] = useState([]);
   const [allCategories, setAllCategories] = useState([]);
+  const [packageCategories, setPackageCategories] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [forexOpen, setForexOpen] = useState(false);
@@ -810,10 +893,18 @@ export default function Navbar({ brand, companyInfo }) {
   const pathname = usePathname();
 
   const isHeroPage = pathname === '/' || pathname === '/packages' || pathname.startsWith('/package') || pathname.startsWith('/tours') || pathname.startsWith('/hotels') || pathname.startsWith('/about') || pathname.startsWith('/blog') || pathname.startsWith('/contact');
+  const navbarPackageCols = useMemo(() => {
+    const liveCols = buildPackageCategoryCols(packageCategories);
+    return liveCols.length ? liveCols : packageCols;
+  }, [packageCategories]);
 
   useEffect(() => {
     const fetchNavbarCategoriesAndDests = async () => {
-      const allCats = await getCategories();
+      const [allCats, packageCats] = await Promise.all([
+        getCategories(),
+        getPackageCategories(),
+      ]);
+      setPackageCategories(packageCats);
 
       // Helper to fetch destinations for a list of categories
       const enrichCategories = async (cats) => {
@@ -1632,9 +1723,9 @@ export default function Navbar({ brand, companyInfo }) {
                 }}
                 className="d-none d-lg-flex"
               >
-                <MegaDropdown label="Packages" cols={packageCols} isTransparent={false} />
-                <MegaDropdown label="India Tours" cols={indiaDropdownCols} isTransparent={false} />
-                <MegaDropdown label="International Tours" cols={destinationCols} isTransparent={false} />
+                <MegaDropdown label="Packages" cols={navbarPackageCols} isTransparent={false} />
+                <MegaDropdown label="India Tours" cols={navDomesticCols} isTransparent={false} />
+                <MegaDropdown label="International Tours" cols={navInternationalCols} isTransparent={false} />
 
                 <li>
                   <Link

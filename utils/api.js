@@ -2,14 +2,15 @@ import axios from 'axios';
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 const BASE_IMAGE_URL = process.env.NEXT_PUBLIC_BASE_IMAGE_URL;
-const DEFAULT_API_BASE_URL = 'https://ratnamforex.yber.in/api/v1';
-const DEFAULT_MEDIA_BASE_URL = 'https://ratnamforex.yber.in';
+const DEFAULT_API_BASE_URL = 'http://localhost:3011/api/v1';
+const DEFAULT_MEDIA_BASE_URL = 'http://localhost:3011';
+const API_BASE_URL = BASE_URL || DEFAULT_API_BASE_URL;
 export const AUTH_STORAGE_KEY = 'wl_auth';
 export const TOKEN_STORAGE_KEY = 'wl_token';
 export const AUTH_CHANGED_EVENT = 'wl_auth_changed';
 
 const apiClient = axios.create({
-  baseURL: BASE_URL || DEFAULT_API_BASE_URL,
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
     'ngrok-skip-browser-warning': 'true',
@@ -61,6 +62,8 @@ apiClient.interceptors.request.use((config) => {
   const publicContentUrls = [
     '/pages',
     '/categories',
+    '/package-category',
+    '/package-categories',
     '/destinations',
     '/blogs',
     '/reviews',
@@ -145,6 +148,7 @@ export const changeCustomerPassword = async ({ password }) => {
 };
 
 let categoriesCache = null;
+let packageCategoriesCache = null;
 
 export const getCategories = async () => {
   if (categoriesCache) return categoriesCache;
@@ -1149,6 +1153,30 @@ export const normalizePackageToTour = (pkg) => {
     isPackage: true,
     trending: Boolean(pkg.show_in_home_page || pkg.is_trending),
   };
+};
+
+export const getPackageCategories = async () => {
+  if (packageCategoriesCache) return packageCategoriesCache;
+
+  try {
+    const response = await axios.get('/api/package-category', {
+        params: { _t: Date.now() },
+        headers: {
+          accept: 'application/json',
+          'ngrok-skip-browser-warning': 'true',
+        },
+        validateStatus: () => true,
+      });
+
+    if (response.data && response.data.success) {
+      packageCategoriesCache = Array.isArray(response.data.data) ? response.data.data : [];
+      return packageCategoriesCache;
+    }
+    return [];
+  } catch (error) {
+    console.warn('Package categories unavailable:', error?.message || error);
+    return [];
+  }
 };
 
 export default apiClient;

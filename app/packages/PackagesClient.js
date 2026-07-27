@@ -8,7 +8,7 @@ import { DEST_FILTERS, PRICE_FILTERS } from '@/data/packages';
 import RecommendedPackages from '@/components/FeaturedToursRow';
 import { PytExclusive, TrustBanner, BrandsRow, CategoryBlocks, BottomReviews } from '@/components/PackagePageSections';
 import { useWishlist } from '@/components/WishlistProvider';
-import { getMediaUrl, getPackages } from '@/utils/api';
+import { getDestinations, getMediaUrl, getPackages } from '@/utils/api';
 
 /* ── Video clips per "scene" ──────────────────────────── */
 const SCENES = [
@@ -46,13 +46,15 @@ const SCENES = [
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_IMAGE_URL;
 const FALLBACK_PACKAGE_IMAGE = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&q=80';
-const ADVANCED_FILTER_KEYS = ['minPrice', 'maxPrice', 'duration', 'startDate', 'endDate', 'city', 'country', 'continent', 'destination', 'category'];
+const ADVANCED_FILTER_KEYS = ['minPrice', 'maxPrice', 'duration', 'startDate', 'endDate', 'city', 'country', 'continent', 'destination', 'category', 'package_category_slug'];
 const PRICE_FILTER_QUERY = {
   under50: { minPrice: 1, maxPrice: 49999 },
   '50to150': { minPrice: 50000, maxPrice: 149999 },
   '150to250': { minPrice: 150000, maxPrice: 249999 },
   luxury: { minPrice: 250000 },
 };
+
+const isVideoMediaUrl = (url) => /\.(mp4|webm|ogg|mov|avi|m4v)(\?|#|$)/i.test(String(url || ''));
 
 const getPriceCategory = (price) => {
   if (price < 50000) return 'under50';
@@ -68,8 +70,13 @@ const toSlug = (value) => String(value || '')
   .replace(/[^a-z0-9]+/g, '-')
   .replace(/^-+|-+$/g, '');
 
+const getDestinationLabel = (destination) => (
+  destination?.name || destination?.title || destination?.destination || destination?.slug || ''
+).trim();
+
 const normalizeApiPackage = (pkg) => {
   const destinationItems = pkg.destinations || [];
+  const packageCategories = Array.isArray(pkg.package_categories) ? pkg.package_categories : [];
   const firstDestinationItem = destinationItems[0];
   const firstDestination = firstDestinationItem?.destination;
   const firstMapping = firstDestination?.mappings?.[0];
@@ -104,6 +111,7 @@ const normalizeApiPackage = (pkg) => {
     rating: 4.6,
     reviews: 0,
     description: pkg.description,
+    packageCategories,
   };
 };
 
@@ -120,6 +128,10 @@ const buildPackageQuery = ({ destFilter, priceFilter, typeFilter, advancedFilter
     Object.assign(query, PRICE_FILTER_QUERY[priceFilter]);
   }
   if (typeFilter && typeFilter !== 'All') query.category = typeFilter;
+  if (advancedFilters?.package_category_slug) {
+    query.package_category_slug = advancedFilters.package_category_slug;
+    delete query.category;
+  }
 
   return query;
 };
@@ -300,7 +312,8 @@ function PackagesContent({ destParam, packages, basePath = '/packages' }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialDest = destParam || searchParams?.get('destination') || searchParams?.get('dest') || searchParams?.get('search') || 'All';
-  const initialType = searchParams?.get('category') || searchParams?.get('type') || 'All';
+  const initialPackageCategorySlug = searchParams?.get('package_category_slug') || '';
+  const initialType = initialPackageCategorySlug ? 'All' : (searchParams?.get('category') || searchParams?.get('type') || 'All');
   // Banner state
   const videoRef = useRef(null);
   const [sceneIdx, setSceneIdx] = useState(0);
@@ -317,14 +330,36 @@ function PackagesContent({ destParam, packages, basePath = '/packages' }) {
   const [sortBy, setSortBy] = useState('popular');
   const [advancedFilters, setAdvancedFilters] = useState(() => getInitialAdvancedFilters(searchParams));
   const [apiPackages, setApiPackages] = useState([]);
+  const [apiDestinations, setApiDestinations] = useState([]);
   const [apiLoading, setApiLoading] = useState(true);
   const [apiError, setApiError] = useState('');
 
-  const heroScenes = packages?.gallery?.length ? packages.gallery : SCENES;
+  const selectedPackageCategorySlug = advancedFilters.package_category_slug || '';
+  const selectedPackageCategory = useMemo(() => {
+    if (!selectedPackageCategorySlug) return null;
+
+    return apiPackages
+      .flatMap((pkg) => pkg.packageCategories || [])
+      .find((category) => category.slug === selectedPackageCategorySlug) || null;
+  }, [apiPackages, selectedPackageCategorySlug]);
+  const categoryHeroMedia = selectedPackageCategory?.feature_image ? getMediaUrl(selectedPackageCategory.feature_image) : '';
+  const categoryHeroTitle = selectedPackageCategory?.title || '';
+  const categoryHeroScenes = categoryHeroMedia
+    ? [{
+        label: categoryHeroTitle || 'Packages',
+        ...(isVideoMediaUrl(categoryHeroMedia)
+          ? { video: categoryHeroMedia, media_type: 'video' }
+          : { image: categoryHeroMedia, media_type: 'image' }),
+        dest: categoryHeroTitle || 'Packages',
+      }]
+    : null;
+  const heroScenes = categoryHeroScenes || (packages?.gallery?.length ? packages.gallery : SCENES);
   const scene = heroScenes[sceneIdx % heroScenes.length];
   const sceneVideoSrc = scene?.url ? getMediaUrl(scene.url) : scene?.video;
+  const sceneImageSrc = scene?.image || (scene?.media_type === 'image' && scene?.url ? getMediaUrl(scene.url) : '');
   const scenePosterSrc = scene?.poster_url ? getMediaUrl(scene.poster_url) : scene?.poster;
   const sceneLabel = scene?.dest || scene?.label || 'Holiday';
+  const heroTitle = categoryHeroTitle || 'Holiday Tour Packages';
 
   /* ── Video auto-advance ───────────────────────────────── */
   const handleEnded = useCallback(() => {
@@ -411,6 +446,24 @@ function PackagesContent({ destParam, packages, basePath = '/packages' }) {
   useEffect(() => {
     let mounted = true;
 
+    const loadDestinations = async () => {
+      const data = await getDestinations();
+
+      if (!mounted) return;
+
+      setApiDestinations(Array.isArray(data) ? data : []);
+    };
+
+    loadDestinations();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+
     const loadPackages = async () => {
       setApiLoading(true);
       setApiError('');
@@ -432,14 +485,30 @@ function PackagesContent({ destParam, packages, basePath = '/packages' }) {
     };
   }, [activePackageQuery]);
 
-  const apiDestinationFilters = Array.from(new Set(apiPackages.map((pkg) => pkg.destination).filter(Boolean)));
-  const destinationFilters = Array.from(new Set([...DEST_FILTERS, ...apiDestinationFilters]));
+  const destinationFilters = useMemo(() => {
+    const apiDestinationFilters = apiDestinations
+      .map(getDestinationLabel)
+      .filter(Boolean);
+    const packageDestinationFilters = apiPackages
+      .map((pkg) => pkg.destination)
+      .filter(Boolean);
+    const options = apiDestinationFilters.length
+      ? ['All', ...apiDestinationFilters]
+      : [...DEST_FILTERS, ...packageDestinationFilters];
+
+    return Array.from(new Map(options.map((label) => [toSlug(label) || label, label])).values());
+  }, [apiDestinations, apiPackages]);
+
+  const isDestinationSelected = (destination) => (
+    destination === 'All'
+      ? destFilter === 'All'
+      : toSlug(destFilter) === toSlug(destination)
+  );
   let filtered = apiPackages;
   if (sortBy === 'price-asc') filtered = [...filtered].sort((a, b) => a.price - b.price);
   if (sortBy === 'price-desc') filtered = [...filtered].sort((a, b) => b.price - a.price);
   if (sortBy === 'rating') filtered = [...filtered].sort((a, b) => b.rating - a.rating);
   const activeQueryEntries = Object.entries(activePackageQuery);
-  const activeQueryString = new URLSearchParams(activePackageQuery).toString();
 
   return (
     <>
@@ -492,6 +561,18 @@ function PackagesContent({ destParam, packages, basePath = '/packages' }) {
           >
             <source src={sceneVideoSrc} type={scene.media_type === 'video' || scene.video ? 'video/mp4' : undefined} />
           </video>
+        ) : sceneImageSrc ? (
+          <Image
+            src={sceneImageSrc}
+            alt={heroTitle}
+            fill
+            priority
+            sizes="100vw"
+            style={{
+              objectFit: 'cover',
+              zIndex: 0,
+            }}
+          />
         ) : (
           <div style={{ position: 'absolute', inset: 0, background: '#111827' }} />
         )}
@@ -531,7 +612,7 @@ function PackagesContent({ destParam, packages, basePath = '/packages' }) {
             textTransform: 'uppercase', letterSpacing: 2,
             textShadow: '0 4px 30px rgba(0,0,0,0.6)',
           }}>
-            Holiday Tour Packages
+            {heroTitle}
           </h1>
           <p style={{
             color: 'rgba(255,255,255,0.75)', fontSize: 17,
@@ -572,6 +653,8 @@ function PackagesContent({ destParam, packages, basePath = '/packages' }) {
           position: 'absolute', bottom: 160, right: 20, zIndex: 5,
           display: 'flex', flexDirection: 'column', gap: 10,
         }}>
+          {sceneVideoSrc ? (
+          <>
           <button
             className="ctrl-btn"
             onClick={toggleMute}
@@ -621,6 +704,8 @@ function PackagesContent({ destParam, packages, basePath = '/packages' }) {
               </svg>
             )}
           </button>
+          </>
+          ) : null}
         </div>
 
         {/* ── Scene tab strip (bottom) ── */}
@@ -712,10 +797,10 @@ function PackagesContent({ destParam, packages, basePath = '/packages' }) {
                     onClick={() => applyFilter(d, priceFilter, typeFilter)}
                     style={{
                       padding: '6px 16px', borderRadius: 999,
-                      border: destFilter === d ? '2px solid var(--color-primary)' : '1.5px solid #d1d5db',
-                      background: destFilter === d ? 'var(--color-primary)' : 'white',
-                      color: destFilter === d ? 'white' : '#374151',
-                      fontWeight: destFilter === d ? 700 : 500,
+                      border: isDestinationSelected(d) ? '2px solid var(--color-primary)' : '1.5px solid #d1d5db',
+                      background: isDestinationSelected(d) ? 'var(--color-primary)' : 'white',
+                      color: isDestinationSelected(d) ? 'white' : '#374151',
+                      fontWeight: isDestinationSelected(d) ? 700 : 500,
                       fontSize: 13, cursor: 'pointer', transition: 'all 0.18s',
                       whiteSpace: 'nowrap',
                     }}
@@ -793,20 +878,6 @@ function PackagesContent({ destParam, packages, basePath = '/packages' }) {
                     Matches backend query keys like destination, country, maxPrice, and duration.
                   </p>
                 </div>
-                {activeQueryString && (
-                  <code style={{
-                    background: '#8EB69B',
-                    color: '#FFFFFF',
-                    border: '1px solid #8EB69B',
-                    borderRadius: 8,
-                    padding: '7px 10px',
-                    fontSize: 12,
-                    maxWidth: '100%',
-                    overflowX: 'auto',
-                  }}>
-                    ?{activeQueryString}
-                  </code>
-                )}
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 10 }}>
