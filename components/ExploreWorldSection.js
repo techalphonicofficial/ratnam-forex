@@ -386,8 +386,8 @@ export default function ExploreWorldSection() {
 
         /* ── Responsive ───────────────── */
         @media (max-width: 768px) {
-          .ew-scroll-btn--left { left: 4px; }
-          .ew-scroll-btn--right { right: 4px; }
+          .ew-scroll-btn--left { left: 4px; top: 108px !important; }
+          .ew-scroll-btn--right { right: 4px; top: 108px !important; }
           
           .ew-section {
             padding: 32px 0 40px;
@@ -414,7 +414,7 @@ export default function ExploreWorldSection() {
       `}</style>
 
       <div className="ew-inner">
-        <h2 className="ew-title" id="ew-title" style={{ textDecoration: 'underline', textDecorationColor: 'var(--color-secondary)', textDecorationThickness: '2px', textUnderlineOffset: '6px' }}>
+        <h2 className="ew-title theme-underline-heading" id="ew-title">
           Explore The World
         </h2>
 

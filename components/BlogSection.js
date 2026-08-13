@@ -416,7 +416,7 @@ export default function BlogSection() {
 
       <div className="home-blog-inner">
         <div className="home-blog-header">
-          <h2 className="home-blog-title" id="home-blog-title" style={{ fontFamily: "'Hoefler Text', 'Voga', serif", fontWeight: 800, fontSize: 'clamp(28px, 4vw, 36px)', textTransform: 'uppercase', letterSpacing: 0.5, color: 'var(--color-text-primary)', lineHeight: 1.2, margin: 0, textDecoration: 'underline', textDecorationColor: 'var(--color-secondary)', textDecorationThickness: '2px', textUnderlineOffset: '6px' }}>
+          <h2 className="home-blog-title theme-underline-heading" id="home-blog-title" style={{ fontFamily: "'Hoefler Text', 'Voga', serif", fontWeight: 800, fontSize: 'clamp(28px, 4vw, 36px)', textTransform: 'uppercase', letterSpacing: 0.5, color: 'var(--color-text-primary)', lineHeight: 1.2, margin: 0 }}>
             BLOG : CITY INFO, TRAVEL TIPS : STORIES &amp; ARTICLES
           </h2>
           <Link href="/blog" className="home-blog-view-all">

@@ -206,9 +206,11 @@ export default function DescribeSection({ sectionData }) {
       `}</style>
 
       <div className="container">
-        <h2 className="collections-title" id="collections-title" style={{ textDecoration: 'underline', textDecorationColor: 'var(--color-secondary)', textDecorationThickness: '2px', textUnderlineOffset: '6px' }}>
-          {sectionTitle}
-        </h2>
+        <div style={{ textAlign: 'center' }}>
+          <h2 className="collections-title theme-underline-heading" id="collections-title">
+            {sectionTitle}
+          </h2>
+        </div>
 
         {dataToMap.map((collection, index) => {
           const id = collection.id || index;

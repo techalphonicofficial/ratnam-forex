@@ -34,26 +34,99 @@ export const getFeaturedTourHref = (title) => {
 };
 
 function CustomDropdown({ label, options, currentValue, onChange }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const displayValue = currentValue;
+
   return (
-    <select 
-      value={currentValue}
-      onChange={(e) => onChange(e.target.value)}
-      style={{
-        background: 'var(--color-card)',
-        border: '1px solid var(--color-border)',
-        borderRadius: 4,
-        padding: '6px 12px',
-        fontSize: 13,
-        color: 'var(--color-text-muted)',
-        cursor: 'pointer',
-        appearance: 'none'
-      }}
-    >
-      {label && <option disabled value={label}>{label}</option>}
-      {options.map(opt => (
-        <option key={opt} value={opt}>{opt}</option>
-      ))}
-    </select>
+    <div ref={dropdownRef} style={{ position: 'relative', display: 'inline-block', minWidth: '130px', textAlign: 'left' }}>
+      <div
+        onClick={() => setIsOpen(!isOpen)}
+        style={{
+          background: 'var(--color-card)',
+          border: '1px solid var(--color-border)',
+          borderRadius: 4,
+          padding: '6px 28px 6px 12px',
+          fontSize: 13,
+          color: 'var(--color-text-muted)',
+          cursor: 'pointer',
+          position: 'relative',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          userSelect: 'none'
+        }}
+      >
+        <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{displayValue}</span>
+        <svg style={{ position: 'absolute', right: 8, transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </div>
+      
+      {isOpen && (
+        <div style={{
+          position: 'absolute',
+          top: 'calc(100% + 4px)',
+          left: 0,
+          width: '100%',
+          minWidth: '150px',
+          maxHeight: '160px',
+          overflowY: 'auto',
+          background: 'var(--color-card)',
+          border: '1px solid var(--color-border)',
+          borderRadius: 4,
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+          zIndex: 100
+        }}>
+          {label && (
+            <div
+              style={{
+                padding: '8px 12px',
+                fontSize: 12,
+                fontWeight: 'bold',
+                color: 'var(--color-text-muted)',
+                borderBottom: '1px solid var(--color-bg-soft)',
+                background: 'var(--color-bg-soft)'
+              }}
+            >
+              {label}
+            </div>
+          )}
+          {options.map(opt => (
+            <div
+              key={opt}
+              onClick={() => { onChange(opt); setIsOpen(false); }}
+              style={{
+                padding: '8px 12px',
+                fontSize: 13,
+                color: opt === currentValue ? 'var(--color-primary)' : 'var(--color-text-primary)',
+                background: opt === currentValue ? 'var(--color-bg-soft)' : 'transparent',
+                cursor: 'pointer',
+                transition: 'background 0.2s',
+                whiteSpace: 'nowrap'
+              }}
+              onMouseEnter={(e) => {
+                if (opt !== currentValue) e.currentTarget.style.background = 'var(--color-bg-soft)';
+              }}
+              onMouseLeave={(e) => {
+                if (opt !== currentValue) e.currentTarget.style.background = 'transparent';
+              }}
+            >
+              {opt}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -399,22 +472,22 @@ export default function RecommendedPackages() {
            }
         }
         @media (max-width: 991px) {
-          .th-scroll-btn-pos--left { left: 4px; }
-          .th-scroll-btn-pos--right { right: 4px; }
+          .th-scroll-btn-pos--left { left: 4px; top: 108px !important; }
+          .th-scroll-btn-pos--right { right: 4px; top: 108px !important; }
         }
       `}</style>
 
       <div className="container">
         {/* ── Centered Header Section matching design ── */}
         <div style={{ textAlign: 'center', marginBottom: 40 }}>
-          <h2 style={{ fontFamily: '"Italiana", sans-serif', fontSize: 'clamp(28px, 4vw, 36px)', fontWeight: 900, color: 'var(--color-text-primary)', margin: '0 0 8px', textDecoration: 'underline', textDecorationColor: 'var(--color-secondary)', textDecorationThickness: '2px', textUnderlineOffset: '6px' }}>
+          <h2 className="theme-underline-heading" style={{ fontFamily: '"Italiana", sans-serif', fontSize: 'clamp(28px, 4vw, 36px)', fontWeight: 900, color: 'var(--color-text-primary)', margin: '0 0 8px' }}>
             Hot Deals
           </h2>
           <p style={{ color: 'var(--color-text-muted)', fontSize: '15px', margin: '0 0 20px' }}>
             Unbeatable prices for unforgettable places creates a nice, memorable rhythm!
           </p>
           
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'var(--color-primary-light)', border: '1px solid #fbcfe8', padding: '4px 12px', borderRadius: 999, marginBottom: 24 }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'var(--color-primary-light)', border: '1px solid var(--color-secondary)', padding: '4px 12px', borderRadius: 999, marginBottom: 24 }}>
              <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--color-secondary)' }}></div>
              <span style={{ fontSize: 11, fontWeight: 700, color: '#FF6000', letterSpacing: 0.5 }}>
                {liveBookings.length ? `${liveBookings.length}+ tour packages` : '20+ tour packages'}

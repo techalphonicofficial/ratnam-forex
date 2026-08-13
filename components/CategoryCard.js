@@ -322,11 +322,11 @@ export default function CategoryCard({ id, label, image, alt, isActive, onMouseE
             width: 100%;
             max-width: 100%;
           }
-          .sec-traveller-visual { height: 220px; margin-bottom: var(--space-6); }
-          .sec-traveller-border-wrap { border-radius: 100px; padding: var(--space-1); border-width: 2px; }
-          .sec-traveller-photo-wrap { border-radius: 96px; }
-          .sec-traveller-photo-wrap img { border-radius: 96px; }
-          .overlay-content { border-radius: 96px; padding-bottom: var(--space-6); }
+          .sec-traveller-visual { height: auto; aspect-ratio: 22 / 32; margin-bottom: var(--space-6); }
+          .sec-traveller-border-wrap { border-radius: 999px; padding: var(--space-1); border-width: 2px; }
+          .sec-traveller-photo-wrap { border-radius: 999px; }
+          .sec-traveller-photo-wrap img { border-radius: 999px; }
+          .overlay-content { border-radius: 999px; padding-bottom: var(--space-6); }
           .usp-text { font-size: 12px; }
           .sec-traveller-label { font-size: 15px; }
           .sec-traveller-badge { width: 40px; height: 40px; bottom: -18px; }

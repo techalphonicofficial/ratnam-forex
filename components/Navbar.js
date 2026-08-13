@@ -570,6 +570,35 @@ function SideDrawer({ isOpen, onClose, allCategories, isLoggedIn, currentUser, o
   const firstName = isLoggedIn ? currentUser?.name?.split(' ')[0] || 'Traveler' : 'Guest';
   const userInitial = firstName.charAt(0).toUpperCase() || 'G';
 
+  useEffect(() => {
+    if (isOpen) {
+      const scrollY = window.scrollY;
+      document.body.dataset.scrollY = scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+    } else {
+      const scrollY = document.body.dataset.scrollY;
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+      if (scrollY) {
+        window.scrollTo(0, parseInt(scrollY || '0'));
+      }
+    }
+    return () => {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+    };
+  }, [isOpen]);
+
   const getNavIcon = (label = '') => {
     const key = label.toLowerCase();
     if (key.includes('holiday') || key.includes('package')) return 'HP';
@@ -641,7 +670,7 @@ function SideDrawer({ isOpen, onClose, allCategories, isLoggedIn, currentUser, o
       <div
         style={{
           position: 'fixed', top: 0, right: 0,
-          width: '100%', maxWidth: 360, height: '100vh',
+          width: '75vw', maxWidth: '320px', height: '100vh',
           background: 'linear-gradient(180deg, var(--color-card) 0%, var(--color-bg-soft) 100%)', zIndex: 2001,
           transform: isOpen ? 'translateX(0)' : 'translateX(100%)',
           transition: 'transform var(--transition-slow)',
@@ -650,8 +679,8 @@ function SideDrawer({ isOpen, onClose, allCategories, isLoggedIn, currentUser, o
         }}
       >
         {/* Header */}
-        <div style={{ padding: 'var(--space-5) var(--space-5) var(--space-4)', borderBottom: '1px solid var(--color-border)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-5)' }}>
+        <div style={{ padding: 'var(--space-4)', borderBottom: '1px solid var(--color-border)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-4)' }}>
             <span style={{ color: 'var(--color-primary)', fontSize: 11, fontWeight: 900, letterSpacing: 1.6, textTransform: 'uppercase' }}>
               Travel Menu
             </span>
@@ -661,7 +690,7 @@ function SideDrawer({ isOpen, onClose, allCategories, isLoggedIn, currentUser, o
               </svg>
             </button>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', padding: 'var(--space-4)', borderRadius: 'var(--radius-xl)', background: 'var(--gradient-primary)', color: 'white', boxShadow: '0 14px 30px color-mix(in srgb, var(--color-primary) 24%, transparent)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', padding: 'var(--space-3)', borderRadius: 'var(--radius-xl)', background: 'var(--gradient-primary)', color: 'white', boxShadow: '0 14px 30px color-mix(in srgb, var(--color-primary) 24%, transparent)' }}>
             <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'rgba(255,255,255,0.18)', border: '1px solid rgba(255,255,255,0.28)', display: 'grid', placeItems: 'center', fontSize: 15, fontWeight: 900 }}>
               {userInitial}
             </div>
@@ -677,7 +706,7 @@ function SideDrawer({ isOpen, onClose, allCategories, isLoggedIn, currentUser, o
         </div>
 
         {/* Scrollable Content */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: 'var(--space-4) var(--space-4) var(--space-3)' }}>
+        <div style={{ flex: 1, overflowY: 'auto', padding: 'var(--space-3)' }}>
           {navGroups?.map((group, idx) => {
             const isExpanded = expanded === group.label;
             const hasHref = !!group.href;
@@ -792,8 +821,8 @@ function SideDrawer({ isOpen, onClose, allCategories, isLoggedIn, currentUser, o
         </div>
 
         {/* Footer */}
-        <div style={{ padding: 'var(--space-4) var(--space-5) var(--space-5)', background: 'var(--color-card)', borderTop: '1px solid var(--color-border)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 'var(--space-3)' }}>
+        <div style={{ padding: 'var(--space-3) var(--space-4)', background: 'var(--color-card)', borderTop: '1px solid var(--color-border)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 'var(--space-2)' }}>
             <div>
               <div style={{ color: 'var(--color-text-primary)', fontSize: 12, fontWeight: 900 }}>Need help planning?</div>
               <div style={{ marginTop: 2, color: 'var(--color-text-muted)', fontSize: 12, fontWeight: 700 }}>{displayPhone}</div>
@@ -1648,7 +1677,7 @@ export default function Navbar({ brand, companyInfo }) {
                   <path d="M10 14.66V17c0 .55-.45 1-1 1H4v2h16v-2h-5c-.55 0-1-.45-1-1v-2.34" />
                   <path d="M12 2a4 4 0 0 0-4 4v6a4 4 0 0 0 8 0V6a4 4 0 0 0-4-4z" />
                 </svg>
-                20+ Years of Excellence in Travel
+                20+ Years of Excellence
               </span>
               <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">

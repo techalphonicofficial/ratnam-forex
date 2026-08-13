@@ -331,8 +331,8 @@ export default function ExploreIndiaSection() {
 
         /* ── Responsive ───────────────── */
         @media (max-width: 768px) {
-          .ei-scroll-btn--left { left: 4px; }
-          .ei-scroll-btn--right { right: 4px; }
+          .ei-scroll-btn--left { left: 4px; top: 108px !important; }
+          .ei-scroll-btn--right { right: 4px; top: 108px !important; }
           
           .ei-section {
             padding: 32px 0 40px;
@@ -350,7 +350,7 @@ export default function ExploreIndiaSection() {
       `}</style>
 
       <div className="ei-inner">
-        <h2 className="ei-title" id="ei-title" style={{ textDecoration: 'underline', textDecorationColor: 'var(--color-secondary)', textDecorationThickness: '2px', textUnderlineOffset: '6px' }}>
+        <h2 className="ei-title theme-underline-heading" id="ei-title">
           Explore India
         </h2>
 

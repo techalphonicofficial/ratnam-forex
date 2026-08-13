@@ -78,7 +78,7 @@ const getLogoUrl = (logo) => {
 export default function GlobalInquiryModal({ brand, companyInfo }) {
   const [isOpen, setIsOpen] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
-  
+
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState(countries[0]);
   const dropdownRef = useRef(null);
@@ -92,7 +92,7 @@ export default function GlobalInquiryModal({ brand, companyInfo }) {
       if (typeof window !== 'undefined' && window.sessionStorage) {
         isClosed = sessionStorage.getItem('inquiryModalClosed');
       }
-    } catch (e) {}
+    } catch (e) { }
 
     if (!isClosed) {
       const timer = setTimeout(() => setIsOpen(true), 3000);
@@ -124,7 +124,7 @@ export default function GlobalInquiryModal({ brand, companyInfo }) {
       if (typeof window !== 'undefined' && window.sessionStorage) {
         sessionStorage.setItem('inquiryModalClosed', 'true');
       }
-    } catch (e) {}
+    } catch (e) { }
   };
 
   if (!isOpen) return null;
@@ -147,7 +147,7 @@ export default function GlobalInquiryModal({ brand, companyInfo }) {
 
       {/* Main Modal Container */}
       <div className="modal-container">
-        
+
         {/* Left Panel (Visual Content) */}
         <div className="left-panel d-none d-md-flex">
           {carouselSlides.map((slide, index) => (
@@ -180,20 +180,20 @@ export default function GlobalInquiryModal({ brand, companyInfo }) {
             <p style={{ color: 'var(--color-bg-soft)', fontSize: '15px', lineHeight: '1.6', marginBottom: '24px', minHeight: '48px', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>
               {activeSlide.desc}
             </p>
-            
+
             <div className="d-flex gap-2">
               {carouselSlides.map((_, index) => (
-                <div 
-                  key={index} 
+                <div
+                  key={index}
                   onClick={() => setCurrentSlide(index)}
-                  style={{ 
-                    width: currentSlide === index ? '24px' : '8px', 
-                    height: '8px', 
-                    borderRadius: '10px', 
+                  style={{
+                    width: currentSlide === index ? '24px' : '8px',
+                    height: '8px',
+                    borderRadius: '10px',
                     background: currentSlide === index ? 'var(--color-card)' : 'rgba(255,255,255,0.3)',
                     transition: 'all 0.4s ease',
                     cursor: 'pointer'
-                  }} 
+                  }}
                 />
               ))}
             </div>
@@ -202,14 +202,14 @@ export default function GlobalInquiryModal({ brand, companyInfo }) {
 
         {/* Right Panel (Form Content) */}
         <div className="right-panel">
-          
+
           <button onClick={handleClose} className="close-btn">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="20" height="20">
               <path d="M18 6L6 18M6 6l12 12" />
             </svg>
           </button>
 
-          <div style={{ maxWidth: '100%', margin: 'auto 0' }}>
+          <div style={{ maxWidth: '100%', paddingBottom: '24px', paddingTop: '8px' }}>
             <div className="mb-4">
               <h2 style={{ fontFamily: '"Italiana", sans-serif', fontWeight: 'bold', fontSize: '26px', color: '#FF6000', marginBottom: '8px', lineHeight: '1.2' }}>
                 Plan Your Trip, Your Way
@@ -219,17 +219,17 @@ export default function GlobalInquiryModal({ brand, companyInfo }) {
               </p>
             </div>
 
-            <form onSubmit={e => { e.preventDefault(); handleClose(); }} className="d-flex flex-column gap-3">
-              
+            <form onSubmit={e => { e.preventDefault(); handleClose(); }} className="d-flex flex-column gap-2">
+
               <div>
                 <input type="text" className="form-control px-4" placeholder="Full Name" style={formInputStyle} required />
               </div>
 
               <div className="d-flex gap-2 position-relative align-items-center">
-                
+
                 {/* Fixed Custom Dropdown Trigger */}
                 <div ref={dropdownRef} style={{ width: '110px', minWidth: '110px', flexShrink: 0, position: 'relative' }}>
-                  <div 
+                  <div
                     className="form-control px-2 d-flex align-items-center justify-content-between"
                     style={{ ...formInputStyle, cursor: 'pointer', userSelect: 'none', background: isDropdownOpen ? 'var(--color-bg-soft)' : 'var(--color-card)' }}
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -239,7 +239,7 @@ export default function GlobalInquiryModal({ brand, companyInfo }) {
                       <span style={{ fontSize: '14px', fontWeight: '500', color: 'var(--color-text-muted)' }}>{selectedCountry.code}</span>
                     </div>
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ transform: isDropdownOpen ? 'rotate(180deg)' : 'rotate(0)', transition: '0.2s', color: 'var(--color-text-muted)', flexShrink: 0 }}>
-                      <path d="M6 9l6 6 6-6"/>
+                      <path d="M6 9l6 6 6-6" />
                     </svg>
                   </div>
 
@@ -252,7 +252,7 @@ export default function GlobalInquiryModal({ brand, companyInfo }) {
                       animation: 'dropdownFade 0.2s ease'
                     }}>
                       {countries.map((c, i) => (
-                        <div 
+                        <div
                           key={i}
                           className="country-option"
                           onClick={() => { setSelectedCountry(c); setIsDropdownOpen(false); }}
@@ -290,7 +290,7 @@ export default function GlobalInquiryModal({ brand, companyInfo }) {
               </div>
 
               <div>
-                <textarea className="form-control px-4 py-2" placeholder="Text / Requirement" style={{ ...formInputStyle, height: '80px', resize: 'none' }}></textarea>
+                <textarea className="form-control px-4 py-2" placeholder="Text / Requirement" style={{ ...formInputStyle, height: '60px', resize: 'none' }}></textarea>
               </div>
 
               <button type="submit" className="btn-primary mt-3 w-100" style={{ justifyContent: 'center' }}>
@@ -298,7 +298,7 @@ export default function GlobalInquiryModal({ brand, companyInfo }) {
               </button>
             </form>
 
-            <div className="mt-4 text-center pt-3 border-top">
+            <div className="mt-3 text-center pt-2 border-top">
               <p style={{ fontSize: '13px', color: 'var(--color-text-muted)', marginBottom: 0, fontWeight: 500 }}>
                 15+ Yrs Experiences &nbsp;|&nbsp; 400+ Travel Experts &nbsp;|&nbsp; 1000+ Destinations
               </p>
@@ -324,10 +324,10 @@ export default function GlobalInquiryModal({ brand, companyInfo }) {
             left: 50%;
             transform: translate(-50%, -50%);
             width: 90vw;
-            max-width: 950px;
-            height: 85vh;
-            max-height: 650px;
-            min-height: 500px;
+            max-width: 900px;
+            height: auto;
+            max-height: 95vh;
+            min-height: 450px;
             background: white; 
             border-radius: var(--radius-2xl);
             box-shadow: var(--shadow-xl);
@@ -342,13 +342,13 @@ export default function GlobalInquiryModal({ brand, companyInfo }) {
             flex: 0 0 45%;
             position: relative;
             flex-direction: column;
-            padding: var(--space-8) var(--space-7);
+            padding: var(--space-6);
             overflow: hidden;
           }
 
           .right-panel {
             flex: 1;
-            padding: var(--space-8) var(--space-8);
+            padding: var(--space-6) var(--space-8);
             position: relative;
             display: flex;
             flex-direction: column;
@@ -392,27 +392,34 @@ export default function GlobalInquiryModal({ brand, companyInfo }) {
           }
 
           @media (max-width: 992px) {
-            .modal-container { width: 95vw; height: 90vh; max-height: none; }
-            .right-panel { padding: var(--space-8) var(--space-7); }
+            .modal-container { width: 95vw; height: auto; max-height: 95vh; }
+            .right-panel { padding: var(--space-6); }
           }
 
           /* Mobile CSS Updated */
           @media (max-width: 768px) {
             .modal-container { 
               flex-direction: column; 
-              width: 95vw; 
-              height: auto; /* Hugs form content, removes dead space */
-              min-height: auto;
-              max-height: 95vh; 
+              width: 85vw; 
+              height: auto !important; 
+              min-height: 0 !important;
+              max-height: 90vh; 
             }
             .left-panel { 
-              display: none !important; /* Strictly respects bootstrap classes */
+              display: none !important; 
             }
             .right-panel { 
-              flex: 1; 
-              padding: var(--space-8) var(--space-6) var(--space-7) var(--space-6); 
+              flex: none !important;
+              height: auto !important;
+              padding: 16px 12px; 
             }
-            .close-btn { top: 12px; right: 12px; background: var(--color-bg-soft); }
+            .right-panel h2 { font-size: 18px !important; margin-bottom: 4px !important; }
+            .right-panel p { font-size: 11px !important; margin-top: 4px !important; margin-bottom: 12px !important; line-height: 1.3 !important; }
+            .right-panel input, .right-panel .form-control { height: 36px !important; font-size: 12px !important; padding-left: 12px !important; padding-right: 12px !important; }
+            .right-panel button[type="submit"] { padding: 10px !important; font-size: 14px !important; margin-top: 0 !important; }
+            .right-panel label { font-size: 9px !important; }
+            .right-panel .text-center p { font-size: 9px !important; }
+            .close-btn { top: 8px; right: 8px; width: 26px; height: 26px; padding: 4px; background: var(--color-bg-soft); }
           }
         `}</style>
       </div>
@@ -424,8 +431,8 @@ const formInputStyle = {
   borderRadius: 'var(--radius-xl)',
   background: 'var(--color-card)',
   border: '1.5px solid var(--color-border)',
-  fontSize: '14.5px',
-  height: '52px',
+  fontSize: '14px',
+  height: '44px',
   boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.02)',
   transition: 'all 0.2s ease',
   outline: 'none'

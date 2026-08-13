@@ -55,6 +55,11 @@ export default function TourCard({ tour, className = '' }) {
         .popover-box::after { content: ''; position: absolute; top: 100%; border-width: 8px; border-style: solid; border-color: white transparent transparent transparent; }
         .popover-box.align-left::after { left: 24px; }
         .popover-box.align-right::after { right: 30px; }
+        /* New image wrapper height */
+        .tour-card-image-wrap { height: 150px; }
+        @media (min-width: 1024px) {
+          .tour-card-image-wrap { height: 240px; }
+        }
       `}</style>
       {/* Image */}
       <div className="tour-card-image-wrap" style={{ position: 'relative' }}>
@@ -72,16 +77,18 @@ export default function TourCard({ tour, className = '' }) {
 
         {/* Badges */}
         <div className="tour-card-badges">
-          <span className="badge" style={{ background: 'var(--color-primary)', color: 'white', fontSize: 11 }}>
-            {tour.type}
-          </span>
+          {tour.type && tour.type.toLowerCase() !== 'package' && tour.type.replace(/package/i, '').trim() !== '' && (
+            <span className="badge" style={{ background: 'var(--color-primary)', color: 'white', fontSize: 11 }}>
+              {tour.type.replace(/package/i, '').trim()}
+            </span>
+          )}
           {discount > 0 && (
             <span className="badge" style={{ background: 'var(--color-secondary)', color: 'white', fontSize: 11 }}>
               -{discount}%
             </span>
           )}
           {tour.trending && (
-            <span className="badge" style={{ background: 'rgba(255,255,255,0.2)', color: 'white', fontSize: 11, backdropFilter: 'blur(8px)' }}>
+            <span className="badge" style={{ background: 'rgba(255,255,255,0.2)', color: '#FF6000', fontSize: 11, backdropFilter: 'blur(8px)', fontWeight: 'bold' }}>
               🔥 Hot
             </span>
           )}
@@ -138,16 +145,9 @@ export default function TourCard({ tour, className = '' }) {
           </div>
         </div>
 
-        <div className="tour-card-footer" style={{ padding: '12px 16px', borderTop: '1px solid var(--color-border)', flexDirection: 'column', gap: 12, alignItems: 'stretch' }}>
+        <div className="tour-card-footer" style={{ padding: '12px 16px', flexDirection: 'column', gap: 12, alignItems: 'stretch' }}>
           
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', fontWeight: 600, borderBottom: '1px solid var(--color-border)', paddingBottom: '6px', marginBottom: '-4px' }}>
-            <div style={{ display: 'flex', gap: '8px', color: '#333' }}>
-              <span>{tour.duration}D</span>
-              <span>{tour.groupSize} max</span>
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', fontWeight: 700, paddingBottom: '6px', borderBottom: '1px solid var(--color-border)', marginBottom: '-4px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', fontWeight: 700, paddingBottom: '6px', marginBottom: '-4px' }}>
             <div className="popover-container" onClick={(e) => e.stopPropagation()}>
               <span className="popover-trigger">Tour Includes</span>
               <div className="popover-box align-left">
