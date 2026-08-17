@@ -1127,6 +1127,17 @@ export const normalizePackageToTour = (pkg) => {
   const inclusions = parseList(pkg.inclusions);
   const exclusions = parseList(pkg.exclusions);
 
+  let packageIcons = [];
+  let packageTripHighlights = [];
+  if (pkg.highlights) {
+    if (Array.isArray(pkg.highlights.content)) {
+      packageIcons = pkg.highlights.content;
+    }
+    if (Array.isArray(pkg.highlights.trip_highlights)) {
+      packageTripHighlights = pkg.highlights.trip_highlights.map(h => h.title);
+    }
+  }
+
   return {
     ...pkg,
     id: pkg.id,
@@ -1139,7 +1150,8 @@ export const normalizePackageToTour = (pkg) => {
       ? pkg.gallery.map((g) => g.url || g.image || g)
       : (pkg.main_image ? [pkg.main_image] : []),
     image: pkg.main_image || (pkg.gallery && pkg.gallery[0] ? pkg.gallery[0].url || pkg.gallery[0].image : null),
-    highlights: inclusions.length > 0 ? inclusions.map(i => i.text) : ['Inclusive Breakfast', 'Expert Local Guide', 'Premium Stay'],
+    icons: packageIcons.length > 0 ? packageIcons : undefined,
+    highlights: packageTripHighlights.length > 0 ? packageTripHighlights : (inclusions.length > 0 ? inclusions.map(i => i.text) : ['Inclusive Breakfast', 'Expert Local Guide', 'Premium Stay']),
     included: inclusions.length > 0 ? inclusions.map(i => i.text) : ['Accommodation', 'Daily Breakfast', 'Sightseeing'],
     excluded: exclusions.length > 0 ? exclusions.map(i => i.text) : ['Round-trip airfare', 'Travel insurance', 'Personal expenses'],
     groupSize: pkg.group_size || 12,

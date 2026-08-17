@@ -229,7 +229,7 @@ export default function RecommendedPackages() {
         
         .recent-bookings-section {
           background: var(--color-card);
-          padding: 60px 0;
+          padding: 100px 0 60px 0;
         }
         
         .recent-filters {
@@ -301,13 +301,14 @@ export default function RecommendedPackages() {
           border-radius: 8px;
           background: var(--color-card);
           box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
+          transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
           scroll-snap-align: start;
         }
         
         .recent-booking-card:hover {
           transform: translateY(-4px);
-          box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+          box-shadow: 0 12px 35px rgba(255, 96, 0, 0.25), 0 4px 15px rgba(255, 96, 0, 0.15);
+          border-color: var(--color-secondary, #FF6000);
         }
         
         .recent-card-media {
@@ -531,7 +532,7 @@ export default function RecommendedPackages() {
             aria-label="Previous"
             className="th-scroll-btn-pos--left"
             style={{
-              position: 'absolute', top: '50%', transform: 'translateY(-50%)',
+              position: 'absolute', top: '35%', transform: 'translateY(-50%)',
               width: 44, height: 44, borderRadius: '50%', border: '1.5px solid var(--color-border, #E5E5E5)',
               background: 'var(--color-card)', color: 'var(--color-text-primary)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -549,7 +550,7 @@ export default function RecommendedPackages() {
             aria-label="Next"
             className="th-scroll-btn-pos--right"
             style={{
-              position: 'absolute', top: '50%', transform: 'translateY(-50%)',
+              position: 'absolute', top: '35%', transform: 'translateY(-50%)',
               width: 44, height: 44, borderRadius: '50%', border: '1.5px solid var(--color-border, #E5E5E5)',
               background: 'var(--color-card)', color: 'var(--color-text-primary)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',

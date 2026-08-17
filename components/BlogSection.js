@@ -5,13 +5,35 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { blogsData } from '@/data/blogs';
 
-export default function BlogSection() {
+export default function BlogSection({ title = 'BLOG : CITY INFO, TRAVEL TIPS : STORIES & ARTICLES' }) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const blog = blogsData[currentIndex];
-  const featuredBlogs = blogsData.slice(0, 3);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const nextBlog = () => setCurrentIndex((prev) => (prev + 1) % blogsData.length);
-  const prevBlog = () => setCurrentIndex((prev) => (prev - 1 + blogsData.length) % blogsData.length);
+  const filteredBlogs = searchQuery 
+    ? blogsData.filter(b => 
+        b.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        b.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        b.category.toLowerCase().includes(searchQuery.toLowerCase())
+      ).slice(0, 3)
+    : blogsData;
+
+  const featuredBlogs = searchQuery ? filteredBlogs : blogsData.slice(0, 3);
+  const desktopDisplayBlogs = featuredBlogs.length > 0 && featuredBlogs.length < 3
+    ? [...featuredBlogs, ...blogsData.slice(featuredBlogs.length, 3).map(b => ({ ...b, isPlaceholder: true }))]
+    : featuredBlogs;
+  const blog = filteredBlogs.length > 0 ? filteredBlogs[currentIndex % filteredBlogs.length] : null;
+
+  const nextBlog = () => {
+    if (filteredBlogs.length > 0) {
+      setCurrentIndex((prev) => (prev + 1) % filteredBlogs.length);
+    }
+  };
+  
+  const prevBlog = () => {
+    if (filteredBlogs.length > 0) {
+      setCurrentIndex((prev) => (prev - 1 + filteredBlogs.length) % filteredBlogs.length);
+    }
+  };
 
   return (
     <section className="home-blog-section" aria-labelledby="home-blog-title">
@@ -411,13 +433,36 @@ export default function BlogSection() {
           .home-blog-card-media {
             height: 160px;
           }
+          .mobile-banner {
+            width: 75% !important;
+            max-width: 300px !important;
+            margin: 0 auto 32px auto !important;
+            min-height: 120px !important;
+            padding: 20px 16px !important;
+            gap: 16px !important;
+          }
+          .home-blog-banner-btn-mobile {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: fit-content;
+            padding: 8px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            background: var(--color-primary);
+            color: #fff;
+            border-radius: 999px;
+            text-decoration: none;
+            margin: 0 auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+          }
         }
       `}</style>
 
       <div className="home-blog-inner">
         <div className="home-blog-header">
           <h2 className="home-blog-title theme-underline-heading" id="home-blog-title" style={{ fontFamily: "'Hoefler Text', 'Voga', serif", fontWeight: 800, fontSize: 'clamp(28px, 4vw, 36px)', textTransform: 'uppercase', letterSpacing: 0.5, color: 'var(--color-text-primary)', lineHeight: 1.2, margin: 0 }}>
-            BLOG : CITY INFO, TRAVEL TIPS : STORIES &amp; ARTICLES
+            {title}
           </h2>
           <Link href="/blog" className="home-blog-view-all">
             View All
@@ -435,10 +480,15 @@ export default function BlogSection() {
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
               </svg>
-              <input 
-                type="text" 
-                className="blog-search-input" 
-                placeholder="Search travel stories..." 
+              <input
+                type="text"
+                className="blog-search-input"
+                placeholder="Search travel stories..."
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setCurrentIndex(0);
+                }}
               />
               <button className="blog-search-button">Search</button>
             </div>
@@ -460,47 +510,94 @@ export default function BlogSection() {
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
               </svg>
-              <input 
-                type="text" 
-                className="blog-search-input" 
-                placeholder="Search travel stories..." 
+              <input
+                type="text"
+                className="blog-search-input"
+                placeholder="Search travel stories..."
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setCurrentIndex(0);
+                }}
               />
               <button className="blog-search-button">Search</button>
             </div>
-            <div className="mobile-banner-content">
-              <h3>Explore Stories</h3>
-              <p>Get the latest city insights, expert travel guides, and incredible stories from our global explorers.</p>
+            <div className="mobile-banner-content" style={{ display: 'none' }}>
             </div>
-            <Link href="/blog" className="home-blog-banner-btn circle-btn-hover">
-              <svg className="circle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            <Link href="/blog" className="home-blog-banner-btn-mobile">
               Read Blog
+              <svg style={{ marginLeft: 4 }} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </Link>
           </div>
 
           {/* Desktop Cards (3 Stacked) */}
           <div className="home-blog-cards-container desktop-only">
-            {featuredBlogs.map((b) => (
-              <Link key={b.id} href={`/blog/${b.slug}`} className="home-blog-card">
-                <div className="home-blog-card-media">
-                  <Image
-                    src={b.image}
-                    alt={b.title}
-                    fill
-                    sizes="(max-width: 640px) 100vw, 200px"
-                    loading="lazy"
-                  />
+            {desktopDisplayBlogs.length > 0 ? (
+              desktopDisplayBlogs.map((b, index) => {
+                if (b.isPlaceholder) {
+                  return (
+                    <div key={`placeholder-${index}`} className="home-blog-card" style={{ visibility: 'hidden', pointerEvents: 'none' }}>
+                      <div className="home-blog-card-media"></div>
+                      <div className="home-blog-card-body">
+                        <span className="home-blog-card-tag">{b.category}</span>
+                        <h4 className="home-blog-card-title">{b.title}</h4>
+                        <p className="home-blog-card-excerpt">{b.excerpt}</p>
+                        <div className="home-blog-card-footer">
+                          <span className="home-blog-card-author">By {b.author}</span>
+                          <span>{b.date} • {b.readTime || '5 min read'}</span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }
+                return (
+                  <Link key={b.id} href={`/blog/${b.slug}`} className="home-blog-card">
+                    <div className="home-blog-card-media">
+                      <Image
+                        src={b.image}
+                        alt={b.title}
+                        fill
+                        sizes="(max-width: 640px) 100vw, 200px"
+                        loading="lazy"
+                      />
+                    </div>
+                    <div className="home-blog-card-body">
+                      <span className="home-blog-card-tag">{b.category}</span>
+                      <h4 className="home-blog-card-title">{b.title}</h4>
+                      <p className="home-blog-card-excerpt">{b.excerpt}</p>
+                      <div className="home-blog-card-footer">
+                        <span className="home-blog-card-author">By {b.author}</span>
+                        <span>{b.date} • {b.readTime || '5 min read'}</span>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })
+            ) : (
+              <div style={{ position: 'relative', width: '100%', display: 'flex', flexDirection: 'column', gap: 'var(--space-5, 20px)' }}>
+                {/* Invisible placeholders to force height */}
+                <div style={{ visibility: 'hidden', pointerEvents: 'none', display: 'flex', flexDirection: 'column', gap: 'var(--space-5, 20px)' }}>
+                  {blogsData.slice(0, 3).map((b, index) => (
+                    <div key={`empty-placeholder-${index}`} className="home-blog-card">
+                      <div className="home-blog-card-media"></div>
+                      <div className="home-blog-card-body">
+                        <span className="home-blog-card-tag">{b.category}</span>
+                        <h4 className="home-blog-card-title">{b.title}</h4>
+                        <p className="home-blog-card-excerpt">{b.excerpt}</p>
+                        <div className="home-blog-card-footer">
+                          <span className="home-blog-card-author">By {b.author}</span>
+                          <span>{b.date} • {b.readTime || '5 min read'}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <div className="home-blog-card-body">
-                  <span className="home-blog-card-tag">{b.category}</span>
-                  <h4 className="home-blog-card-title">{b.title}</h4>
-                  <p className="home-blog-card-excerpt">{b.excerpt}</p>
-                  <div className="home-blog-card-footer">
-                    <span className="home-blog-card-author">By {b.author}</span>
-                    <span>{b.date} • {b.readTime || '5 min read'}</span>
-                  </div>
+                {/* Visible empty state overlay */}
+                <div style={{ position: 'absolute', inset: 0, padding: '40px', textAlign: 'center', background: 'var(--color-card)', borderRadius: '12px', border: '1px solid var(--color-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 5 }}>
+                  <p style={{ margin: 0, fontSize: '16px', fontWeight: '500' }}>No stories found for "{searchQuery}"</p>
                 </div>
-              </Link>
-            ))}
+              </div>
+            )}
           </div>
 
           {/* Mobile Cards (1 with Arrows) */}
@@ -518,26 +615,48 @@ export default function BlogSection() {
               </button>
             </div>
 
-            <Link key={blog.id} href={`/blog/${blog.slug}`} className="home-blog-card" style={{ flex: 1, gridTemplateColumns: '1fr', gridTemplateRows: 'auto 1fr' }}>
-              <div className="home-blog-card-media" style={{ height: '240px' }}>
-                <Image
-                  src={blog.image}
-                  alt={blog.title}
-                  fill
-                  sizes="(max-width: 640px) 100vw, 400px"
-                  loading="lazy"
-                />
-              </div>
-              <div className="home-blog-card-body">
-                <span className="home-blog-card-tag">{blog.category}</span>
-                <h4 className="home-blog-card-title" style={{ fontSize: '18px', marginBottom: '12px' }}>{blog.title}</h4>
-                <p className="home-blog-card-excerpt" style={{ fontSize: '15px', marginBottom: 'auto' }}>{blog.excerpt}</p>
-                <div className="home-blog-card-footer" style={{ marginTop: '20px' }}>
-                  <span className="home-blog-card-author">By {blog.author}</span>
-                  <span>{blog.date} • {blog.readTime || '5 min read'}</span>
+            {blog ? (
+              <Link key={blog.id} href={`/blog/${blog.slug}`} className="home-blog-card" style={{ flex: 1, gridTemplateColumns: '1fr', gridTemplateRows: 'auto 1fr' }}>
+                <div className="home-blog-card-media" style={{ height: '240px' }}>
+                  <Image
+                    src={blog.image}
+                    alt={blog.title}
+                    fill
+                    sizes="(max-width: 640px) 100vw, 400px"
+                    loading="lazy"
+                  />
+                </div>
+                <div className="home-blog-card-body">
+                  <span className="home-blog-card-tag">{blog.category}</span>
+                  <h4 className="home-blog-card-title" style={{ fontSize: '18px', marginBottom: '12px' }}>{blog.title}</h4>
+                  <p className="home-blog-card-excerpt" style={{ fontSize: '15px', marginBottom: 'auto' }}>{blog.excerpt}</p>
+                  <div className="home-blog-card-footer" style={{ marginTop: '20px' }}>
+                    <span className="home-blog-card-author">By {blog.author}</span>
+                    <span>{blog.date} • {blog.readTime || '5 min read'}</span>
+                  </div>
+                </div>
+              </Link>
+            ) : (
+              <div style={{ position: 'relative', width: '100%', flex: 1 }}>
+                {/* Invisible placeholder */}
+                <div className="home-blog-card" style={{ visibility: 'hidden', pointerEvents: 'none', gridTemplateColumns: '1fr', gridTemplateRows: 'auto 1fr', opacity: 0 }}>
+                  <div className="home-blog-card-media" style={{ height: '240px' }}></div>
+                  <div className="home-blog-card-body">
+                    <span className="home-blog-card-tag">{blogsData[0].category}</span>
+                    <h4 className="home-blog-card-title" style={{ fontSize: '18px', marginBottom: '12px' }}>{blogsData[0].title}</h4>
+                    <p className="home-blog-card-excerpt" style={{ fontSize: '15px', marginBottom: 'auto' }}>{blogsData[0].excerpt}</p>
+                    <div className="home-blog-card-footer" style={{ marginTop: '20px' }}>
+                      <span className="home-blog-card-author">By {blogsData[0].author}</span>
+                      <span>{blogsData[0].date}</span>
+                    </div>
+                  </div>
+                </div>
+                {/* Visible empty state */}
+                <div style={{ position: 'absolute', inset: 0, padding: '40px', textAlign: 'center', background: 'var(--color-card)', borderRadius: '12px', border: '1px solid var(--color-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 5 }}>
+                  <p style={{ margin: 0, fontSize: '16px', fontWeight: '500' }}>No stories found for "{searchQuery}"</p>
                 </div>
               </div>
-            </Link>
+            )}
           </div>
         </div>
       </div>

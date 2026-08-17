@@ -154,7 +154,9 @@ export default function ExploreWorldSection() {
 
   const scroll = (dir) => {
     if (!scrollRef.current) return;
-    scrollRef.current.scrollBy({ left: dir * 340, behavior: 'smooth' });
+    const firstCard = scrollRef.current.firstElementChild;
+    const cardWidth = firstCard ? firstCard.offsetWidth + 24 : scrollRef.current.offsetWidth;
+    scrollRef.current.scrollBy({ left: dir * cardWidth, behavior: 'smooth' });
   };
 
   return (
@@ -283,14 +285,18 @@ export default function ExploreWorldSection() {
           padding: 8px 4px 24px;
           scrollbar-width: none;
           -ms-overflow-style: none;
-          scroll-snap-type: x proximity;
+          scroll-snap-type: x mandatory;
+        }
+
+        .ew-card-wrap {
+          scroll-snap-align: start;
         }
 
         .ew-scroll-area::-webkit-scrollbar { display: none; }
 
         .ew-scroll-btn {
           position: absolute;
-          top: 50%;
+          top: 35%;
           transform: translateY(-50%);
           width: 44px;
           height: 44px;
@@ -404,6 +410,17 @@ export default function ExploreWorldSection() {
           .ew-card {
             width: calc(100vw - 40px);
           }
+          .ew-card-wrap {
+            width: calc(100vw - 40px);
+            flex-shrink: 0;
+          }
+        }
+
+        @media (min-width: 769px) {
+          .ew-card-wrap {
+            width: 300px;
+            flex-shrink: 0;
+          }
         }
 
         @media (max-width: 420px) {
@@ -450,7 +467,7 @@ export default function ExploreWorldSection() {
               </div>
             ) : filtered.length > 0 ? (
               filtered.map((tour, idx) => (
-                <div key={tour.id} style={{ width: 300, flexShrink: 0 }}>
+                <div key={tour.id} className="ew-card-wrap">
                   <TourCard tour={tour} />
                 </div>
               ))

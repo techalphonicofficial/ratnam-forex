@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
-import { getHomePage, getMediaUrl, getBlogs } from '@/utils/api';
+import { getHomePage, getMediaUrl, getPackageReviews } from '@/utils/api';
 
 const statIcons = ['✈️', '😊', '⭐'];
 
@@ -28,12 +28,7 @@ const fallbackGallery = [
 ];
 
 export default function WhyChooseSection() {
-  const [content, setContent] = useState({
-    title: "Why Choose Travel & Holiday",
-    stats: fallbackStats,
-    features: fallbackFeatures,
-    gallery: fallbackGallery,
-  });
+  const [content, setContent] = useState(null);
   const [blogs, setBlogs] = useState([]);
   const [currentBlogIndex, setCurrentBlogIndex] = useState(0);
   const [currentFeatureIndex, setCurrentFeatureIndex] = useState(0);
@@ -82,12 +77,12 @@ export default function WhyChooseSection() {
       });
 
       try {
-        const blogsRes = await getBlogs();
-        if (blogsRes?.data) {
-          setBlogs(blogsRes.data);
+        const reviewsRes = await getPackageReviews({ packageSlug: 'thailand-beach-combo-7n8d', status: 'approved' });
+        if (reviewsRes?.reviews) {
+          setBlogs(reviewsRes.reviews);
         }
       } catch (err) {
-        console.error("Failed to fetch blogs for why choose section", err);
+        console.error("Failed to fetch reviews for why choose section", err);
       }
     };
 
@@ -99,6 +94,7 @@ export default function WhyChooseSection() {
   }, []);
 
   const sliderItems = useMemo(() => {
+    if (!content) return [];
     const items = [...(content.features || [])];
     const appRating = content.stats?.find(stat => stat.label.toLowerCase().includes('app rating'));
     if (appRating) {
@@ -110,7 +106,7 @@ export default function WhyChooseSection() {
       });
     }
     return items;
-  }, [content.features, content.stats]);
+  }, [content]);
 
   const renderItems = sliderItems.length > 0 ? [...sliderItems, sliderItems[0]] : [];
 
@@ -135,6 +131,10 @@ export default function WhyChooseSection() {
       return () => clearTimeout(timeout);
     }
   }, [currentFeatureIndex, sliderItems.length]);
+
+  if (!content) {
+    return null; // Don't render until dynamic content is loaded
+  }
 
   return (
     <section style={{ background: 'var(--color-bg)', padding: '52px 0 56px' }}>
@@ -169,10 +169,46 @@ export default function WhyChooseSection() {
           .section-title {
             font-size: 24px !important;
           }
+          .feature-scroller-container {
+            width: 90% !important;
+            max-width: 400px !important;
+            margin: 0 auto 32px auto !important;
+            border-radius: 12px !important;
+          }
+          .blog-slider-container {
+            width: 90% !important;
+            max-width: 320px !important;
+            margin: 0 auto 32px auto !important;
+          }
+          .blog-card {
+            flex-direction: row !important;
+            align-items: center !important;
+            gap: 12px !important;
+            padding: 12px !important;
+          }
+          .blog-card-right {
+            width: 80px !important;
+          }
+          .blog-card-img-wrapper {
+            width: 80px !important;
+            height: 80px !important;
+          }
+          .blog-card-excerpt {
+            display: none !important;
+          }
+          .blog-card-date-badge {
+            font-size: 9px !important;
+            padding: 2px 6px !important;
+            bottom: -6px !important;
+          }
+          .auto-scroll-item {
+            padding: 8px 12px !important;
+            gap: 12px !important;
+          }
         }
         .feature-scroller-container {
           width: 100%;
-          max-width: 320px;
+          max-width: 480px;
           overflow: hidden;
           position: relative;
           margin-bottom: 40px;
@@ -180,6 +216,13 @@ export default function WhyChooseSection() {
           box-shadow: 0 8px 24px rgba(0,0,0,0.06);
           background: #fff;
           border: 1px solid rgba(0,0,0,0.04);
+        }
+        .auto-scroll-item {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 16px;
+          padding: 12px 24px;
         }
         
         /* ── Progress Bar Animation ── */
@@ -199,7 +242,7 @@ export default function WhyChooseSection() {
         /* ── Blog Slider ───────────────── */
         .blog-slider-container {
           width: 100%;
-          max-width: 500px;
+          max-width: 460px;
           margin: 0 auto 32px auto;
           position: relative;
         }
@@ -298,23 +341,25 @@ export default function WhyChooseSection() {
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
               <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2.5, textTransform: 'uppercase', color: 'var(--color-accent)', margin: '0 0 8px' }}>OUR TRACK RECORD</p>
-              <h2 className="section-title" style={{ fontFamily: "'Hoefler Text', 'Voga', serif", fontWeight: 800, fontSize: 'clamp(28px, 4vw, 36px)', textTransform: 'uppercase', letterSpacing: 0.5, color: 'var(--color-text-primary)', lineHeight: 1.2, margin: '0 0 28px' }}>
+              <h2 className="section-title theme-underline-heading" style={{ fontFamily: "'Hoefler Text', 'Voga', serif", fontWeight: 800, fontSize: 'clamp(28px, 4vw, 36px)', textTransform: 'uppercase', letterSpacing: 0.5, color: 'var(--color-text-primary)', lineHeight: 1.2, margin: '0 0 28px' }}>
                 {content.title}
               </h2>
             </div>
 
-            <div className="stats-grid">
-              {content.stats
-                .filter(stat => stat.label && !stat.label.toLowerCase().includes('app rating'))
-                .slice(0, 2)
-                .map(({ number, label, icon }, index) => (
-                <div key={`stat-${index}-${label}`} style={{ textAlign: 'center', padding: '18px 24px', background: 'var(--color-primary-light)', borderRadius: 14, border: '1px solid var(--brand-primary-border)', minWidth: '180px' }}>
-                  <div style={{ fontSize: 24, marginBottom: 4 }}>{icon}</div>
-                  <div style={{ fontFamily: '"Italiana", sans-serif', fontWeight: 800, fontSize: 24, color: 'var(--color-primary)', lineHeight: 1 }}>{number}</div>
-                  <div style={{ fontSize: 11, color: 'var(--color-text-muted)', marginTop: 5, whiteSpace: 'pre-line', lineHeight: 1.4 }}>{label}</div>
-                </div>
-              ))}
-            </div>
+            {content.stats && content.stats.filter(stat => stat.label && !stat.label.toLowerCase().includes('app rating')).slice(0, 2).length > 0 && (
+              <div className="stats-grid">
+                {content.stats
+                  .filter(stat => stat.label && !stat.label.toLowerCase().includes('app rating'))
+                  .slice(0, 2)
+                  .map(({ number, label, icon }, index) => (
+                  <div key={`stat-${index}-${label}`} style={{ textAlign: 'center', padding: '18px 24px', background: 'var(--color-primary-light)', borderRadius: 14, border: '1px solid var(--brand-primary-border)', minWidth: '180px' }}>
+                    <div style={{ fontSize: 24, marginBottom: 4 }}>{icon}</div>
+                    <div style={{ fontFamily: '"Italiana", sans-serif', fontWeight: 800, fontSize: 24, color: 'var(--color-primary)', lineHeight: 1 }}>{number}</div>
+                    <div style={{ fontSize: 11, color: 'var(--color-text-muted)', marginTop: 5, whiteSpace: 'pre-line', lineHeight: 1.4 }}>{label}</div>
+                  </div>
+                ))}
+              </div>
+            )}
 
             {/* Auto Scrolling Features Container */}
             {sliderItems?.length > 0 && (
@@ -329,13 +374,10 @@ export default function WhyChooseSection() {
                   {renderItems.map(({ icon, title, desc, isStat }, idx) => (
                     <div 
                       key={`${title}-${idx}`} 
+                      className="auto-scroll-item"
                       style={{ 
                         width: '100%', 
                         flexShrink: 0, 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        gap: '16px', 
-                        padding: '12px 24px',
                         background: 'linear-gradient(135deg, #ffffff 0%, var(--color-primary-light) 200%)'
                       }}
                     >
@@ -344,7 +386,7 @@ export default function WhyChooseSection() {
                           <div style={{ fontSize: 24, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             {icon}
                           </div>
-                          <div style={{ textAlign: 'left' }}>
+                          <div style={{ textAlign: 'center' }}>
                             <div style={{ fontFamily: '"Italiana", sans-serif', fontWeight: 800, fontSize: '20px', color: 'var(--color-primary)', lineHeight: 1.1 }}>
                               {desc}
                             </div>
@@ -371,7 +413,7 @@ export default function WhyChooseSection() {
                           }}>
                             {icon}
                           </div>
-                          <div style={{ textAlign: 'left', flex: 1 }}>
+                          <div style={{ textAlign: 'center' }}>
                             <div style={{ fontWeight: 800, fontSize: '14px', color: 'var(--color-text-primary)', lineHeight: 1.2 }}>
                               {title}
                             </div>
@@ -402,70 +444,45 @@ export default function WhyChooseSection() {
                 
                 <div style={{ overflow: 'hidden', borderRadius: 12, padding: '10px 0' }}>
                   <div style={{ display: 'flex', transition: 'transform 0.4s ease', transform: `translateX(-${currentBlogIndex * 100}%)` }}>
-                    {blogs.map((blog) => {
-                      const dateObj = new Date(blog.created_at);
+                    {blogs.map((review) => {
+                      const dateObj = new Date(review.created_at);
                       const month = dateObj.toLocaleString('en-US', { month: 'short' });
-                      const imgSrc = blog.featured_image ? getMediaUrl(blog.featured_image) : (blog.details?.[0]?.image || 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=400&q=80');
+                      const rating = review.rating || 5;
+                      const stars = '⭐'.repeat(rating);
                       
                       return (
-                        <div key={blog.id} style={{ width: '100%', flexShrink: 0, padding: '0 4px' }}>
+                        <div key={review.id} style={{ width: '100%', flexShrink: 0, padding: '0 4px' }}>
                           <div className="blog-card">
                             <div className="blog-card-left">
                               <h4 style={{ fontSize: 15, fontWeight: 800, color: '#151922', marginBottom: 4, lineHeight: 1.2, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                                {blog.title}
+                                {review.title}
                               </h4>
                               <div style={{ fontSize: 12, color: 'var(--color-text-muted)', marginBottom: 8, fontWeight: 500 }}>
-                                {blog.author?.name || 'System Admin'}
+                                {review.reviewer_name}
                               </div>
-                              <div style={{ fontSize: 12, fontStyle: 'italic', color: '#666', lineHeight: 1.4, marginBottom: 8, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                                {blog.summary?.replace(/<[^>]+>/g, '') || blog.content?.replace(/<[^>]+>/g, '') || ''}
+                              <div className="blog-card-excerpt" style={{ fontSize: 12, fontStyle: 'italic', color: '#666', lineHeight: 1.4, marginBottom: 8, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                                "{review.comment || ''}"
                               </div>
-                              <Link href={`/blog/${blog.slug}`} style={{ fontSize: 12, color: 'var(--color-primary)', fontWeight: 700, textDecoration: 'none', marginBottom: 12 }}>
-                                Read More
-                              </Link>
-                              
                               <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginTop: 'auto' }}>
-                                <div style={{ fontSize: 11, color: '#666', display: 'flex', alignItems: 'center', gap: 4 }}>
-                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-                                  {blog.category?.name || 'General'}
+                                <div style={{ fontSize: 12, color: '#FFB800', display: 'flex', alignItems: 'center', gap: 4 }}>
+                                  {stars}
                                 </div>
                               </div>
                             </div>
                             <div className="blog-card-right">
-                              <div style={{ position: 'relative' }}>
-                                <div className="blog-card-img-wrapper">
-                                  <img src={imgSrc} alt={blog.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                              <div style={{ position: 'relative', width: '100%' }}>
+                                <div className="blog-card-img-wrapper" style={{ background: 'var(--color-primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-primary)' }}>
+                                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                                 </div>
                                 <div className="blog-card-date-badge">
                                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
                                   {month}
                                 </div>
                               </div>
-                              
-                              <Link 
-                                href={`/blog/${blog.slug}`}
-                                style={{
-                                  background: 'var(--color-primary-light)',
-                                  color: 'var(--color-primary)',
-                                  border: 'none',
-                                  padding: '6px 12px',
-                                  borderRadius: '8px',
-                                  fontSize: '11px',
-                                  fontWeight: 700,
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  gap: 6,
-                                  textDecoration: 'none',
-                                  width: '100%',
-                                  justifyContent: 'center'
-                                }}
-                              >
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                                Read Post
-                              </Link>
+                              </div>
                             </div>
                           </div>
-                        </div>
+
                       );
                     })}
                   </div>

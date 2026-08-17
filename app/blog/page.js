@@ -1,6 +1,5 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import Navbar from '@/components/Navbar';
 import { blogsData } from '@/data/blogs';
 import { getBlogs, getMediaUrl, getPageBySlug } from '@/utils/api';
 
@@ -98,7 +97,6 @@ export default async function BlogPage({ searchParams }) {
 
   return (
     <main style={{ background: 'var(--color-bg)', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Navbar />
 
       <div style={{ position: 'relative', overflow: 'hidden', padding: '112px 24px 72px', textAlign: 'center', background: 'var(--color-text-primary)' }}>
         <Image
@@ -111,7 +109,7 @@ export default async function BlogPage({ searchParams }) {
         />
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(17,24,39,0.58), rgba(17,24,39,0.92))' }} />
         <div style={{ position: 'relative', zIndex: 1 }}>
-          <h1 style={{ fontFamily: '"Italiana", sans-serif', fontSize: 'clamp(34px, 5vw, 56px)', fontWeight: 900, color: 'white', margin: '0 0 16px' }}>
+          <h1 style={{ fontFamily: '"Italiana", sans-serif', fontSize: 'clamp(34px, 5vw, 56px)', fontWeight: 900, color: 'white', margin: '60px 0 16px' }}>
             {standardSection?.title || 'Travel Inspiration & Stories'}
           </h1>
           <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 18, maxWidth: 680, margin: '0 auto', lineHeight: 1.7 }}>

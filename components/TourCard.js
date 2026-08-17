@@ -14,7 +14,7 @@ const getTourViewHref = (tour, view = 'itinerary') => {
   if (tour.slug) {
     return `/package/${tour.slug}`;
   }
-  
+
   const fallback = tour.title ? tour.title.toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'package';
   return `/package/${fallback}`;
 };
@@ -37,21 +37,22 @@ export default function TourCard({ tour, className = '' }) {
   const discount = tour.originalPrice
     ? Math.round(((tour.originalPrice - tour.price) / tour.originalPrice) * 100)
     : 0;
-  
+
   const tripHighlights = Array.isArray(tour?.highlights) ? tour.highlights : [];
-  const tourIncludes = Array.isArray(tour?.inclusions) ? tour.inclusions : [];
+  const tourIcons = Array.isArray(tour?.icons) ? tour.icons : [];
   const router = useRouter();
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
   return (
     <div className={`tour-card ${className}`} onClick={() => router.push(getTourViewHref(tour, 'itinerary'))} style={{ cursor: 'pointer' }}>
       <style>{`
         .popover-container { position: relative; }
         .popover-trigger { cursor: pointer; color: #333; padding: 2px 8px; border-radius: 4px; transition: all 0.2s; }
-        .popover-container:hover .popover-trigger { background: #e11d48; color: white; }
+        .popover-container:hover .popover-trigger, .popover-container.popover-open .popover-trigger { background: #e11d48; color: white; }
         .popover-box { position: absolute; bottom: calc(100% + 8px); background: white; border-radius: 8px; padding: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); width: max-content; min-width: 220px; max-width: 280px; opacity: 0; visibility: hidden; transition: all 0.2s ease; z-index: 100; pointer-events: none; border: 1px solid #eaeaea; }
         .popover-box.align-left { left: 0; transform: translateY(10px); }
         .popover-box.align-right { right: -10px; transform: translateY(10px); }
-        .popover-container:hover .popover-box { opacity: 1; visibility: visible; transform: translateY(0); pointer-events: auto; }
+        .popover-container:hover .popover-box, .popover-container.popover-open .popover-box { opacity: 1; visibility: visible; transform: translateY(0); pointer-events: auto; }
         .popover-box::after { content: ''; position: absolute; top: 100%; border-width: 8px; border-style: solid; border-color: white transparent transparent transparent; }
         .popover-box.align-left::after { left: 24px; }
         .popover-box.align-right::after { right: 30px; }
@@ -60,6 +61,44 @@ export default function TourCard({ tour, className = '' }) {
         @media (min-width: 1024px) {
           .tour-card-image-wrap { height: 240px; }
         }
+        /* Interactive Buttons */
+        .tc-btn-view {
+          flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
+          padding: 9px 0; border-radius: 8px; font-weight: 700; font-size: 12px;
+          text-decoration: none; letter-spacing: 0.4px; transition: all 0.25s ease;
+          background: linear-gradient(135deg, #b98c56, #d4a96a);
+          color: white; box-shadow: 0 3px 10px rgba(185,140,86,0.35);
+          border: 1px solid rgba(255,255,255,0.15);
+        }
+        .tc-btn-view:hover {
+          background: linear-gradient(135deg, #a07a46, #c49a56);
+          transform: translateY(-2px);
+          box-shadow: 0 6px 18px rgba(185,140,86,0.45);
+          color: white;
+        }
+        .tc-btn-view:active { transform: translateY(0); }
+        .tc-btn-book {
+          flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
+          padding: 9px 0; border-radius: 8px; font-weight: 700; font-size: 12px;
+          text-decoration: none; letter-spacing: 0.4px; transition: all 0.25s ease;
+          background: linear-gradient(135deg, #FF6000, #ff8a3d);
+          color: white; box-shadow: 0 3px 10px rgba(255,96,0,0.35);
+          border: 1px solid rgba(255,255,255,0.15);
+          position: relative; overflow: hidden;
+        }
+        .tc-btn-book::before {
+          content: ''; position: absolute; inset: 0;
+          background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+          opacity: 0; transition: opacity 0.25s ease;
+        }
+        .tc-btn-book:hover {
+          background: linear-gradient(135deg, #e55500, #FF6000);
+          transform: translateY(-2px);
+          box-shadow: 0 6px 18px rgba(255,96,0,0.45);
+          color: white;
+        }
+        .tc-btn-book:hover::before { opacity: 1; }
+        .tc-btn-book:active { transform: translateY(0); }
       `}</style>
       {/* Image */}
       <div className="tour-card-image-wrap" style={{ position: 'relative' }}>
@@ -87,29 +126,9 @@ export default function TourCard({ tour, className = '' }) {
               -{discount}%
             </span>
           )}
-          {tour.trending && (
-            <span className="badge" style={{ background: 'rgba(255,255,255,0.2)', color: '#FF6000', fontSize: 11, backdropFilter: 'blur(8px)', fontWeight: 'bold' }}>
-              🔥 Hot
-            </span>
-          )}
+
         </div>
 
-        {/* Wishlist Button */}
-        <button
-          className="tour-card-wishlist"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            toggleWishlist(wishlistItem);
-          }}
-          aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
-          aria-pressed={wishlisted}
-          style={{ color: 'white', background: wishlisted ? 'var(--color-secondary)' : 'rgba(255,255,255,0.2)' }}
-        >
-          <svg viewBox="0 0 24 24" fill={wishlisted ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" width="16" height="16">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-          </svg>
-        </button>
 
       </div>
 
@@ -122,10 +141,10 @@ export default function TourCard({ tour, className = '' }) {
           {tour.location}
         </div>
 
-        <h3 className="tour-card-title line-clamp-2 anonymous-pro-bold" style={{ fontSize: '14px', marginBottom: '8px' }}>{tour.title}</h3>
+        <h3 className="tour-card-title line-clamp-2 anonymous-pro-bold" style={{ fontSize: '14px', marginBottom: '4px' }}>{tour.title}</h3>
 
         {/* Meta */}
-        <div className="tour-card-meta" style={{ gap: '8px', marginBottom: '8px' }}>
+        <div className="tour-card-meta" style={{ gap: '6px', marginBottom: '6px' }}>
           <div className="tour-card-meta-item" style={{ fontSize: '11px' }}>
             <svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12" style={{ color: 'var(--color-text-muted)' }}>
               <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z" />
@@ -145,30 +164,14 @@ export default function TourCard({ tour, className = '' }) {
           </div>
         </div>
 
-        <div className="tour-card-footer" style={{ padding: '12px 16px', flexDirection: 'column', gap: 12, alignItems: 'stretch' }}>
-          
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', fontWeight: 700, paddingBottom: '6px', marginBottom: '-4px' }}>
-            <div className="popover-container" onClick={(e) => e.stopPropagation()}>
-              <span className="popover-trigger">Tour Includes</span>
-              <div className="popover-box align-left">
-                <div style={{ fontWeight: 700, marginBottom: 8, color: '#333', fontSize: 12 }}>Tour Includes</div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px 16px', whiteSpace: 'normal', textAlign: 'left' }}>
-                  {tourIncludes.length > 0 ? tourIncludes.slice(0, 6).map((inc, i) => (
-                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: 'var(--color-text-muted)', fontWeight: 500 }}>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#013567" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                      <span>{inc}</span>
-                    </div>
-                  )) : (
-                    <div style={{ color: 'var(--color-text-muted)', fontSize: 12, fontWeight: 500 }}>No inclusions specified.</div>
-                  )}
-                </div>
-              </div>
-            </div>
-            <div style={{ display: 'flex', gap: '6px', color: '#013567' }}>
-              {tourIncludes.slice(0, 4).map((inc, i) => (
-                <svg key={i} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
-              ))}
-            </div>
+        <div className="tour-card-footer" style={{ padding: '10px 12px', flexDirection: 'column', gap: 10, alignItems: 'stretch' }}>
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '18px', paddingBottom: '6px', marginBottom: '-4px', width: '100%', color: 'var(--color-secondary, #FF6000)', minHeight: '24px' }}>
+            {tourIcons.length > 0 && (
+              tourIcons.slice(0, 5).map((iconObj, i) => (
+                <i key={i} className={`bi ${iconObj.icon}`} title={iconObj.title || iconObj.description}></i>
+              ))
+            )}
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', width: '100%', paddingBottom: 4 }}>
@@ -180,7 +183,15 @@ export default function TourCard({ tour, className = '' }) {
               </div>
             </div>
 
-            <div className="popover-container" style={{ paddingBottom: 2 }} onClick={(e) => e.stopPropagation()}>
+            <div
+              className={`popover-container ${isPopoverOpen ? 'popover-open' : ''}`}
+              style={{ paddingBottom: 2 }}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsPopoverOpen(!isPopoverOpen);
+              }}
+            >
               <span className="popover-trigger" style={{ border: '1px solid #b98c56', color: '#b98c56', borderRadius: 4, padding: '4px 8px', fontSize: 10, fontWeight: 700 }}>Trip Highlights</span>
               <div className="popover-box align-right">
                 <div style={{ fontWeight: 700, marginBottom: 8, color: '#333', fontSize: 12 }}>Trip Highlights</div>
@@ -194,19 +205,21 @@ export default function TourCard({ tour, className = '' }) {
               </div>
             </div>
           </div>
-          
+
           <div style={{ display: 'flex', gap: 8, width: '100%' }}>
-            <Link href={getTourViewHref(tour, 'itinerary')} onClick={(e) => e.stopPropagation()} style={{ flex: 1, textAlign: 'center', padding: '8px 0', background: '#b98c56', color: 'white', borderRadius: 6, fontWeight: 600, fontSize: 12, textDecoration: 'none' }}>
+            <Link href={getTourViewHref(tour, 'itinerary')} onClick={(e) => e.stopPropagation()} className="tc-btn-view">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
               View Tour
             </Link>
-            <Link href={getTourViewHref(tour, 'itinerary') + '#booking-sidebar'} onClick={(e) => e.stopPropagation()} style={{ flex: 1, textAlign: 'center', padding: '8px 0', background: '#ff6600', color: 'white', borderRadius: 6, fontWeight: 600, fontSize: 12, textDecoration: 'none' }}>
+            <Link href={getTourViewHref(tour, 'itinerary') + '#booking-sidebar'} onClick={(e) => e.stopPropagation()} className="tc-btn-book">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>
               Book Now
             </Link>
           </div>
-          
+
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px dashed var(--color-border)', paddingTop: 10, width: '100%' }}>
             <a href={`https://wa.me/919876543210?text=${encodeURIComponent('I am interested in ' + tour.title)}`} onClick={(e) => e.stopPropagation()} target="_blank" rel="noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'var(--color-text-primary)', fontSize: 11, fontWeight: 600, textDecoration: 'none' }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" /></svg>
               Request Callback
             </a>
             <Link href={getTourViewHref(tour, 'itinerary')} onClick={(e) => e.stopPropagation()} style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'var(--color-text-primary)', fontSize: 11, fontWeight: 600, textDecoration: 'none' }}>

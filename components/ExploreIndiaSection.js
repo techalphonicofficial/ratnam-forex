@@ -152,7 +152,9 @@ export default function ExploreIndiaSection() {
 
   const scroll = (dir) => {
     if (!scrollRef.current) return;
-    scrollRef.current.scrollBy({ left: dir * 340, behavior: 'smooth' });
+    const firstCard = scrollRef.current.firstElementChild;
+    const cardWidth = firstCard ? firstCard.offsetWidth + 24 : scrollRef.current.offsetWidth;
+    scrollRef.current.scrollBy({ left: dir * cardWidth, behavior: 'smooth' });
   };
 
   return (
@@ -281,14 +283,18 @@ export default function ExploreIndiaSection() {
           padding: 8px 4px 24px;
           scrollbar-width: none;
           -ms-overflow-style: none;
-          scroll-snap-type: x proximity;
+          scroll-snap-type: x mandatory;
+        }
+
+        .ei-card-wrap {
+          scroll-snap-align: start;
         }
 
         .ei-scroll-area::-webkit-scrollbar { display: none; }
 
         .ei-scroll-btn {
           position: absolute;
-          top: 50%;
+          top: 35%;
           transform: translateY(-50%);
           width: 44px;
           height: 44px;
@@ -346,6 +352,17 @@ export default function ExploreIndiaSection() {
             justify-content: center;
           }
           .ei-filter-bar::-webkit-scrollbar { display: none; }
+          .ei-card-wrap {
+            width: calc(100vw - 40px);
+            flex-shrink: 0;
+          }
+        }
+
+        @media (min-width: 769px) {
+          .ei-card-wrap {
+            width: 300px;
+            flex-shrink: 0;
+          }
         }
       `}</style>
 
@@ -386,7 +403,7 @@ export default function ExploreIndiaSection() {
               </div>
             ) : filtered.length > 0 ? (
               filtered.map((tour, idx) => (
-                <div key={tour.id} style={{ width: 300, flexShrink: 0 }}>
+                <div key={tour.id} className="ei-card-wrap">
                   <TourCard tour={tour} />
                 </div>
               ))

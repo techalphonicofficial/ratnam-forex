@@ -3,15 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { gramReels } from '@/data/gramReels';
-import { getReviews, getMediaUrl, likeReview } from '@/utils/api';
-
-const FALLBACK_VIDEO_SOURCES = [
-  'https://res.cloudinary.com/demo/video/upload/q_auto,f_auto/elephants.mp4',
-  'https://res.cloudinary.com/demo/video/upload/q_auto,f_auto/sea_turtle.mp4',
-  'https://media.w3.org/2010/05/sintel/trailer.mp4',
-  'https://www.w3schools.com/html/mov_bbb.mp4',
-];
+import { getMediaUrl, likeReview, getHomePage } from '@/utils/api';
 
 const REVIEW_LIKES_STORAGE_KEY = 'travel_holiday_liked_video_reviews';
 
@@ -41,53 +33,7 @@ const getVideoType = (src) => {
   return src.toLowerCase().endsWith('.webm') ? 'video/webm' : 'video/mp4';
 };
 
-const getReviewVideoUrl = (review) => {
-  const mediaUrl = review.media_url || review.mediaUrl || review.media?.url;
-  const mediaType = review.media_type || review.mediaType || review.media?.type || '';
-  const looksLikeVideo = /\.(mp4|webm|mov|m4v)(\?|#|$)/i.test(String(mediaUrl || ''));
-  const directVideo =
-    review.video ||
-    review.video_url ||
-    review.videoUrl ||
-    review.reel ||
-    review.reel_url ||
-    review.media_video;
 
-  const video = directVideo || (/video/i.test(mediaType) || looksLikeVideo ? mediaUrl : '');
-  return video ? getMediaUrl(video) : '';
-};
-
-const normalizeReviewsToReels = (reviews) => {
-  if (!reviews?.length) {
-    return gramReels.map((reel, index) => ({
-      ...reel,
-      posterSrc: reel.src,
-      videoSrc: reel.videoSrc || FALLBACK_VIDEO_SOURCES[index % FALLBACK_VIDEO_SOURCES.length],
-    }));
-  }
-
-  return reviews.map((review, index) => {
-    const fallback = gramReels[index % gramReels.length];
-    const packageName = review.package?.name || review.title || fallback.tag;
-
-    return {
-      ...fallback,
-      id: review.id ?? fallback.id,
-      src: fallback.src,
-      posterSrc: getMediaUrl(review.thumbnail || review.poster || review.image) || fallback.src,
-      userAvatar: getMediaUrl(review.user_avatar),
-      user: review.user_handle || review.user_name || fallback.user,
-      likes: Number(review.likes_count ?? review.likes ?? fallback.likes ?? 0) || 0,
-      caption: review.description || review.title || fallback.caption,
-      location: review.location || fallback.location,
-      title: review.title || packageName,
-      description: review.description || fallback.description,
-      videoSrc: getReviewVideoUrl(review) || fallback.videoSrc || FALLBACK_VIDEO_SOURCES[index % FALLBACK_VIDEO_SOURCES.length],
-      tag: packageName,
-      tagColor: fallback.tagColor,
-    };
-  });
-};
 
 function ReelMedia({ reel, active = true, muted = true, paused = false, videoRef, onTogglePlay, style }) {
   if (reel?.videoSrc) {
@@ -194,10 +140,10 @@ export default function ReelsViewer() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const startIdx = parseInt(searchParams.get('idx') || '0', 10);
-  const [reels, setReels] = useState(() => normalizeReviewsToReels([]));
+  const [reels, setReels] = useState([]);
 
   const [current, setCurrent] = useState(
-    isNaN(startIdx) || startIdx < 0 || startIdx >= gramReels.length ? 0 : startIdx
+    isNaN(startIdx) || startIdx < 0 ? 0 : startIdx
   );
   const [animDir, setAnimDir] = useState(null); // 'up' | 'down'
   const [liked, setLiked] = useState({});
@@ -216,10 +162,47 @@ export default function ReelsViewer() {
     let mounted = true;
 
     const loadReviews = async () => {
-      const reviews = await getReviews();
+      let nextReels = [];
+      try {
+        const homePage = await getHomePage();
+        const videoReviewsData = homePage?.details?.find(
+          (detail) => detail?.key === 'video_reviews'
+        );
+        if (videoReviewsData?.json_data?.images?.length) {
+          nextReels = videoReviewsData.json_data.images.map((item, index) => {
+            let user = '@user';
+            let location = '';
+
+            if (item.lbl) {
+              const parts = item.lbl.split(',');
+              user = parts[0].trim();
+              if (parts.length > 1) {
+                location = parts.slice(1).join(', ').trim();
+              }
+            }
+
+            return {
+              id: `cms-${index}`,
+              user: user,
+              location: location,
+              videoSrc: getMediaUrl(item.img),
+              title: item.lbl || 'Review',
+              likes: '350', // dummy likes since we don't have them in cms
+              caption: item.lbl || 'Amazing experience',
+              description: item.lbl || 'Amazing experience',
+              tag: 'Customer Review',
+              tagColor: '#00b894',
+              tour: '#',
+              posterSrc: getMediaUrl(item.img),
+            };
+          });
+        }
+      } catch (err) {
+        console.error("Error fetching homepage for reels:", err);
+      }
+
       if (!mounted) return;
 
-      const nextReels = normalizeReviewsToReels(reviews);
       setReels(nextReels);
       setLiked(nextReels.reduce((likedMap, item) => {
         if (hasLikedReview(item.id)) likedMap[item.id] = true;
@@ -369,7 +352,23 @@ export default function ReelsViewer() {
     touchStartY.current = null;
   };
 
+  /* ── Loading State ─────────────────────────── */
+  if (!reel) {
+    return (
+      <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: '#0a0a0a', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
+        <style>{`
+          @keyframes spin { 100% { transform: rotate(360deg); } }
+        `}</style>
+        <div style={{
+          width: 40, height: 40, borderRadius: '50%', border: '3px solid rgba(255,255,255,0.2)',
+          borderTopColor: '#00b894', animation: 'spin 1s linear infinite'
+        }} />
+      </div>
+    );
+  }
+
   /* ── Slide animation style ─────────────────────────── */
+
   const slideStyle = animDir === 'up'
     ? { opacity: 0, transform: 'translateY(40px)' }
     : animDir === 'down'
@@ -514,7 +513,7 @@ export default function ReelsViewer() {
                 </button>
 
                 <button
-                  onClick={() => {}}
+                  onClick={() => { }}
                   style={{
                     display: 'none',
                     width: 44, height: 44, borderRadius: '50%',
@@ -735,16 +734,16 @@ export default function ReelsViewer() {
               disabled={liked[reel.id] || likeLoading[reel.id]}
               aria-label={liked[reel.id] ? 'Video review already liked' : 'Like video review'}
               style={{
-              position: 'absolute', top: 14, right: 14,
-              background: liked[reel.id] ? 'rgba(239,68,68,.86)' : 'rgba(0,0,0,0.5)',
-              backdropFilter: 'blur(8px)',
-              borderRadius: 999, padding: '4px 10px',
-              display: 'flex', alignItems: 'center', gap: 4,
-              border: `1px solid ${liked[reel.id] ? 'rgba(239,68,68,.72)' : 'rgba(255,255,255,.18)'}`,
-              color: '#fff',
-              cursor: liked[reel.id] ? 'default' : 'pointer',
-              opacity: likeLoading[reel.id] ? .75 : 1,
-            }}>
+                position: 'absolute', top: 14, right: 14,
+                background: liked[reel.id] ? 'rgba(239,68,68,.86)' : 'rgba(0,0,0,0.5)',
+                backdropFilter: 'blur(8px)',
+                borderRadius: 999, padding: '4px 10px',
+                display: 'flex', alignItems: 'center', gap: 4,
+                border: `1px solid ${liked[reel.id] ? 'rgba(239,68,68,.72)' : 'rgba(255,255,255,.18)'}`,
+                color: '#fff',
+                cursor: liked[reel.id] ? 'default' : 'pointer',
+                opacity: likeLoading[reel.id] ? .75 : 1,
+              }}>
               <span style={{ fontSize: 12 }}>{liked[reel.id] ? '♥' : '♡'}</span>
               <span style={{ color: 'white', fontSize: 11, fontWeight: 700 }}>{reel.likes}</span>
             </button>
@@ -818,7 +817,7 @@ export default function ReelsViewer() {
 
             {/* Share */}
             <button
-              onClick={() => {}}
+              onClick={() => { }}
               style={{
                 background: 'none', border: 'none', cursor: 'pointer',
                 display: 'none', flexDirection: 'column', alignItems: 'center', gap: 4,

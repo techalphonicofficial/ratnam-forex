@@ -11,7 +11,7 @@ import GramSection from '@/components/GramSection';
 import AppBanner from '@/components/AppBanner';
 
 import NewsletterForm from '@/components/NewsletterForm';
-import { getHomePage } from '@/utils/api';
+import { getHomePage, getPageBySlug } from '@/utils/api';
 
 export const dynamic = 'force-dynamic';
 
@@ -30,6 +30,40 @@ export default async function HomePage() {
   const journeyCollections = homePage?.details?.find(
     (detail) => detail?.section === 'journey_collections'
   );
+  const videoReviewsData = homePage?.details?.find(
+    (detail) => detail?.key === 'video_reviews'
+  );
+
+  // Fetch all pages and build a map of collection-slug → description
+  let collectionDescriptions = [];
+  try {
+    const pagesRes = await fetch(
+      `http://localhost:${process.env.PORT || 3000}/api/pages?_t=${Date.now()}`,
+      { cache: 'no-store', headers: { accept: 'application/json' } }
+    );
+    const pagesJson = await pagesRes.json();
+    const allPages = Array.isArray(pagesJson?.data) ? pagesJson.data : [];
+    // Filter to collection pages (slug starts with "collections/")
+    collectionDescriptions = allPages
+      .filter((p) => p.slug && p.slug.startsWith('collections/'))
+      .map((p) => ({
+        slug: p.slug,
+        // Strip 'collections/' prefix so it matches the collection.slug in DescribeSection
+        key: p.slug.replace(/^collections\//, '').split('/')[0],
+        description: p.description || null,
+      }));
+  } catch {
+    collectionDescriptions = [];
+  }
+
+  let blogHeading = 'BLOG : CITY INFO, TRAVEL TIPS : STORIES & ARTICLES';
+  try {
+    const blogPage = await getPageBySlug('blog');
+    const dynamicHeading = blogPage?.details?.find((detail) => detail.key === 'blog_key_1')?.title;
+    if (dynamicHeading) blogHeading = dynamicHeading;
+  } catch (error) {
+    // Keep fallback
+  }
 
   return (
     <>
@@ -41,10 +75,10 @@ export default async function HomePage() {
 
       {/* 2. RECOMMENDED PACKAGES — horizontal scroll cards */}
       <RecommendedPackages />
-      <DescribeSection sectionData={journeyCollections} />
+      <DescribeSection sectionData={journeyCollections} collectionDescriptions={collectionDescriptions} />
       <ExploreWorldSection />
       <ExploreIndiaSection />
-      <BlogSection />
+      <BlogSection title={blogHeading} />
 
       {/* 3. WHY CHOOSE — stats + features + image collage */}
       <WhyChooseSection />
@@ -53,7 +87,7 @@ export default async function HomePage() {
       <DynamicCarouselBanner />
 
       {/* 5. LOVE FROM THE GRAM — dark, Instagram photo strip */}
-      <GramSection />
+      <GramSection videoReviewsData={videoReviewsData} />
 
       {/* 6. PLAN ADVENTURES + POPULAR HAND-PICKED */}
       {/* 7. APP BANNER — dark green */}
@@ -62,7 +96,24 @@ export default async function HomePage() {
       {/* 8. TRUST LOGOS + AWARDS */}
 
       {/* 9. NEWSLETTER */}
-      <section style={{ background: 'var(--color-primary)', padding: '48px 0' }}>
+      <section className="newsletter-section">
+        <style>{`
+          .newsletter-section {
+            background: var(--color-primary);
+            padding: 48px 16px;
+            margin: 0 16px 40px;
+            border-radius: 24px;
+          }
+          @media (min-width: 768px) {
+            .newsletter-section {
+              margin: 0 auto 60px;
+              max-width: 1200px;
+              width: calc(100% - 64px);
+              padding: 64px 20px;
+              border-radius: 32px;
+            }
+          }
+        `}</style>
         <div className="container" style={{ textAlign: 'center', maxWidth: 600 }}>
           <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2.5, textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', marginBottom: 8 }}>
             STAY IN THE LOOP

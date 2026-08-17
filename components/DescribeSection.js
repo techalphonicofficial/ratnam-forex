@@ -4,59 +4,17 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { getMediaUrl } from '@/utils/api';
 
-const collections = [
-  {
-    id: 1,
-    title: 'Incredible India',
-    slug: 'incredible-india',
-    description: "Handcrafted journeys across India's most iconic destinations designed especially for NRIs, international travellers and luxury explorers.",
-    image: 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=1200&q=80',
-    highlights: [
-      'Luxury Hotels', 'Festival Experiences', 'Jungle Safari', 'Elephant Ride',
-      'Local Culture', 'Yoga Retreats', 'Ganga Aarti',
-      'Village Stay', 'Heritage Walks', 'Traditional Cuisine'
-    ]
-  },
-  {
-    id: 2,
-    title: 'International',
-    slug: 'international',
-    description: "Discover breathtaking landscapes, world-class luxury, and immersive experiences across Europe, Asia, and beyond.",
-    image: 'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=1200&q=80',
-    highlights: [
-      'Premium Flights', 'Private Guides', 'Iconic Landmarks', 'Gourmet Dining',
-      'Luxury Transfers', 'Exclusive Access', 'Wine Tasting', 'Cultural Shows',
-      'Scenic Train Rides', 'Visa Assistance'
-    ]
-  },
-  {
-    id: 3,
-    title: 'India Unlimited',
-    slug: 'india-unlimited',
-    description: "Uncover the hidden gems of India with deeply authentic itineraries that go beyond the usual tourist trails.",
-    image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80',
-    highlights: [
-      'Offbeat Trails', 'Boutique Stays', 'Wildlife Photography', 'Houseboat Cruise',
-      'Tribal Village Tour', 'Desert Safari', 'Mountain Trekking', 'Spice Plantation'
-    ]
-  },
-  {
-    id: 4,
-    title: 'Trans India',
-    slug: 'trans-india',
-    description: "Epic cross-country expeditions covering the diverse topography, climate, and traditions of the Indian subcontinent.",
-    image: 'https://images.unsplash.com/photo-1517427677506-ade074eb1432?w=1200&q=80',
-    highlights: [
-      'Luxury Train Journeys', 'Multi-city Tours', 'Domestic Flights Included',
-      'Seamless Logistics', 'Expert Escorts', 'Pan-India Cuisine', 'Historical Monuments',
-      'Diverse Landscapes'
-    ]
-  }
-];
-
-export default function DescribeSection({ sectionData }) {
-  const dataToMap = sectionData?.json_data?.collections || collections;
+export default function DescribeSection({ sectionData, collectionDescriptions = [] }) {
+  const dataToMap = sectionData?.json_data?.collections || [];
   const sectionTitle = sectionData?.title || 'Distinct Journey Collections';
+
+  // Build a map: slug-key -> description for quick lookup
+  const descriptionBySlug = {};
+  collectionDescriptions.forEach((item) => {
+    // Use item.key if available (new format), otherwise strip 'collections/' from slug
+    const k = item.key || (item.slug || '').replace(/^collections\//, '').split('/')[0];
+    if (k) descriptionBySlug[k] = item.description;
+  });
 
   return (
     <section className="collections-section" aria-labelledby="collections-title">
@@ -150,7 +108,7 @@ export default function DescribeSection({ sectionData }) {
           text-decoration: none;
           transition: background 0.3s ease, transform 0.3s ease;
           align-self: center;
-          margin-top: auto;
+          margin-top: 32px;
         }
 
         .btn-explore:hover {
@@ -165,6 +123,7 @@ export default function DescribeSection({ sectionData }) {
           border-radius: var(--radius-xl);
           overflow: hidden;
           box-shadow: var(--shadow-md);
+          transition: box-shadow 0.4s ease;
         }
 
         .collection-image {
@@ -172,8 +131,29 @@ export default function DescribeSection({ sectionData }) {
           transition: transform 0.7s ease;
         }
 
+        .collection-image-wrapper:hover {
+          box-shadow: 0 12px 35px rgba(255, 96, 0, 0.25), 0 4px 15px rgba(255, 96, 0, 0.15);
+        }
+
         .collection-image-wrapper:hover .collection-image {
           transform: scale(1.03);
+        }
+
+        .collection-badge {
+          position: absolute;
+          top: 14px;
+          right: 14px;
+          z-index: 10;
+          background: var(--color-secondary, #FF6000);
+          color: #ffffff;
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 1.2px;
+          text-transform: uppercase;
+          padding: 5px 12px;
+          border-radius: 4px;
+          pointer-events: none;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.18);
         }
 
         @media (max-width: 900px) {
@@ -190,7 +170,7 @@ export default function DescribeSection({ sectionData }) {
             margin-top: 0;
           }
           .btn-explore {
-            margin-top: 30px;
+            margin-top: 40px;
           }
         }
 
@@ -221,6 +201,11 @@ export default function DescribeSection({ sectionData }) {
           const buttonLink = collection.button_link || (collection.slug ? `/collections/${collection.slug}` : '');
           const buttonLabel = collection.button_label || 'Explore Collection';
           const highlights = collection.features ? collection.features.map(f => f.label) : collection.highlights;
+          // Get the page description for this collection (from API) – falls back to null
+          // Try collection.slug first, then extract last segment from button_link
+          const collectionSlugKey = collection.slug ||
+            (collection.button_link ? collection.button_link.replace(/^\/collections\//, '').split('/')[0] : '');
+          const badgeText = descriptionBySlug[collectionSlugKey] || null;
 
           return (
             <div key={id} className="collection-block">
@@ -256,6 +241,9 @@ export default function DescribeSection({ sectionData }) {
                     className="collection-image"
                     sizes="(max-width: 900px) 100vw, 55vw"
                   />
+                )}
+                {badgeText && (
+                  <span className="collection-badge">{badgeText}</span>
                 )}
               </div>
             </div>

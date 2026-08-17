@@ -199,8 +199,8 @@ export default function CategoryCard({ id, label, image, alt, isActive, onMouseE
 
         .sec-traveller-option:hover .sec-traveller-border-wrap,
         .sec-traveller-option.is-active .sec-traveller-border-wrap {
-          border-color: var(--color-primary);
-          box-shadow: var(--shadow-lg);
+          border-color: var(--color-secondary, #FF6000);
+          box-shadow: 0 12px 35px rgba(255, 96, 0, 0.25), 0 4px 15px rgba(255, 96, 0, 0.15);
         }
 
         .sec-traveller-photo-wrap {
