@@ -37,8 +37,9 @@ export default async function HomePage() {
   // Fetch all pages and build a map of collection-slug → description
   let collectionDescriptions = [];
   try {
+    const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : `http://localhost:${process.env.PORT || 3000}`;
     const pagesRes = await fetch(
-      `http://localhost:${process.env.PORT || 3000}/api/pages?_t=${Date.now()}`,
+      `${baseUrl}/api/pages?_t=${Date.now()}`,
       { cache: 'no-store', headers: { accept: 'application/json' } }
     );
     const pagesJson = await pagesRes.json();

@@ -488,7 +488,7 @@ export const getForexServiceCharge = async () => {
 export const getHomePage = async () => {
   try {
     const response = await axios.get('/api/pages/slug/home', {
-      baseURL: typeof window === 'undefined' ? 'http://localhost:3000' : undefined,
+      baseURL: typeof window === 'undefined' ? (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000') : undefined,
       params: { _t: Date.now() },
       headers: {
         'Cache-Control': 'no-cache',
