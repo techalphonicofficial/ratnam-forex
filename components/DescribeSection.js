@@ -51,7 +51,7 @@ export default function DescribeSection({ sectionData, collectionDescriptions = 
         }
 
         .collection-text {
-          flex: 0 0 45%;
+          flex: 0 0 calc(45% - 25px);
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -117,7 +117,7 @@ export default function DescribeSection({ sectionData, collectionDescriptions = 
         }
 
         .collection-image-wrapper {
-          flex: 0 0 55%;
+          flex: 0 0 calc(55% - 25px);
           position: relative;
           aspect-ratio: 16 / 10;
           border-radius: var(--radius-xl);
