@@ -12,6 +12,7 @@ import AppBanner from '@/components/AppBanner';
 
 import NewsletterForm from '@/components/NewsletterForm';
 import { getHomePage, getPageBySlug } from '@/utils/api';
+import { API_BASE_URL } from '@/utils/backendConfig';
 
 export const dynamic = 'force-dynamic';
 
@@ -37,9 +38,8 @@ export default async function HomePage() {
   // Fetch all pages and build a map of collection-slug → description
   let collectionDescriptions = [];
   try {
-    const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : `http://localhost:${process.env.PORT || 3000}`;
     const pagesRes = await fetch(
-      `${baseUrl}/api/pages?_t=${Date.now()}`,
+      `${API_BASE_URL}/pages?_t=${Date.now()}`,
       { cache: 'no-store', headers: { accept: 'application/json' } }
     );
     const pagesJson = await pagesRes.json();
