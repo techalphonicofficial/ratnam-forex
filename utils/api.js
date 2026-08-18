@@ -686,11 +686,11 @@ export const searchAirports = async ({ search = '', lat, lng, page = 1, limit = 
     const pagination = normalizeApiPagination(response) || (
       rawData?.count !== undefined
         ? {
-            page,
-            limit,
-            total: Number(rawData.count) || 0,
-            total_pages: Math.ceil((Number(rawData.count) || 0) / limit),
-          }
+          page,
+          limit,
+          total: Number(rawData.count) || 0,
+          total_pages: Math.ceil((Number(rawData.count) || 0) / limit),
+        }
         : null
     );
 
@@ -1169,13 +1169,13 @@ export const getPackageCategories = async () => {
 
   try {
     const response = await axios.get('/api/package-category', {
-        params: { _t: Date.now() },
-        headers: {
-          accept: 'application/json',
-          'ngrok-skip-browser-warning': 'true',
-        },
-        validateStatus: () => true,
-      });
+      params: { _t: Date.now() },
+      headers: {
+        accept: 'application/json',
+        'ngrok-skip-browser-warning': 'true',
+      },
+      validateStatus: () => true,
+    });
 
     if (response.data && response.data.success) {
       packageCategoriesCache = Array.isArray(response.data.data) ? response.data.data : [];

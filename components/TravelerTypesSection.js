@@ -154,7 +154,7 @@ export default function TravelerTypesSection() {
             ))}
           </Swiper>
         </div>
-        
+
         {/* View More Button */}
         <div style={{ textAlign: 'center', marginTop: 40 }}>
           <Link href="/categories" className="btn-primary circle-btn-hover" style={{ display: 'inline-flex', width: 'auto', minWidth: '160px' }}>
