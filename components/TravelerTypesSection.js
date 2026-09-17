@@ -33,12 +33,19 @@ export default function TravelerTypesSection() {
             data
               .slice()
               .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
-              .map((cat, idx) => ({
-                id: cat.id || cat.slug || (cat.name || cat.title)?.toLowerCase(),
-                label: cat.name || cat.title,
-                image: getMediaUrl(cat.feature_image || cat.image) || getFallbackCategoryImage(cat.name || cat.title),
-                alt: cat.feature_image_alt || cat.name || cat.title,
-              }))
+              .map((cat, idx) => {
+                const descParts = cat.description ? cat.description.split(',') : [];
+                const uspText = descParts.length > 0 && descParts[0].trim() !== '' ? descParts[0].trim() : null;
+                const iconClass = descParts.length > 1 ? descParts[descParts.length - 1].trim() : null;
+                return {
+                  id: cat.id || cat.slug || (cat.name || cat.title)?.toLowerCase(),
+                  label: cat.name || cat.title,
+                  image: getMediaUrl(cat.feature_image || cat.image) || getFallbackCategoryImage(cat.name || cat.title),
+                  alt: cat.feature_image_alt || cat.name || cat.title,
+                  iconClass,
+                  uspText,
+                };
+              })
           );
         }
       } catch (err) {
@@ -137,13 +144,15 @@ export default function TravelerTypesSection() {
             centerInsufficientSlides={true}
             className="sec-traveller-swiper"
           >
-            {categories.map(({ id, label, image, alt }, index) => (
+            {categories.map(({ id, label, image, alt, iconClass, uspText }, index) => (
               <SwiperSlide key={id} style={{ display: 'flex', justifyContent: 'center', height: 'auto' }}>
                 <CategoryCard
                   id={id}
                   label={label}
                   image={image}
                   alt={alt}
+                  iconClass={iconClass}
+                  uspText={uspText}
                   isActive={activeTraveler === id}
                   onMouseEnter={() => setActiveTraveler(id)}
                   onFocus={() => setActiveTraveler(id)}

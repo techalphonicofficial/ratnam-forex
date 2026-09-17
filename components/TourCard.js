@@ -47,8 +47,8 @@ export default function TourCard({ tour, className = '' }) {
     <div className={`tour-card ${className}`} onClick={() => router.push(getTourViewHref(tour, 'itinerary'))} style={{ cursor: 'pointer' }}>
       <style>{`
         .popover-container { position: relative; }
-        .popover-trigger { cursor: pointer; color: #333; padding: 2px 8px; border-radius: 4px; transition: all 0.2s; }
-        .popover-container:hover .popover-trigger, .popover-container.popover-open .popover-trigger { background: #e11d48; color: white; }
+        .popover-trigger { cursor: pointer; color: #b98c56; padding: 4px 8px; border: 1px solid #b98c56; border-radius: 4px; font-size: 10px; font-weight: 700; transition: all 0.2s; }
+        .popover-container:hover .popover-trigger, .popover-container.popover-open .popover-trigger { background: #e11d48; color: white; border-color: #e11d48; }
         .popover-box { position: absolute; bottom: calc(100% + 8px); background: white; border-radius: 8px; padding: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); width: max-content; min-width: 220px; max-width: 280px; opacity: 0; visibility: hidden; transition: all 0.2s ease; z-index: 100; pointer-events: none; border: 1px solid #eaeaea; }
         .popover-box.align-left { left: 0; transform: translateY(10px); }
         .popover-box.align-right { right: -10px; transform: translateY(10px); }
@@ -192,7 +192,7 @@ export default function TourCard({ tour, className = '' }) {
                 setIsPopoverOpen(!isPopoverOpen);
               }}
             >
-              <span className="popover-trigger" style={{ border: '1px solid #b98c56', color: '#b98c56', borderRadius: 4, padding: '4px 8px', fontSize: 10, fontWeight: 700 }}>Trip Highlights</span>
+              <span className="popover-trigger">Trip Highlights</span>
               <div className="popover-box align-right">
                 <div style={{ fontWeight: 700, marginBottom: 8, color: '#333', fontSize: 12 }}>Trip Highlights</div>
                 <ul style={{ margin: 0, paddingLeft: 16, color: 'var(--color-text-muted)', fontSize: 12, lineHeight: 1.5, whiteSpace: 'normal', textAlign: 'left', fontWeight: 500 }}>

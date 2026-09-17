@@ -34,98 +34,33 @@ export const getFeaturedTourHref = (title) => {
 };
 
 function CustomDropdown({ label, options, currentValue, onChange }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef(null);
-
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const displayValue = currentValue;
-
   return (
-    <div ref={dropdownRef} style={{ position: 'relative', display: 'inline-block', minWidth: '130px', textAlign: 'left' }}>
-      <div
-        onClick={() => setIsOpen(!isOpen)}
+    <div style={{ position: 'relative', display: 'inline-block', textAlign: 'left' }}>
+      <select
+        value={currentValue}
+        onChange={(e) => onChange(e.target.value)}
         style={{
+          appearance: 'none',
+          WebkitAppearance: 'none',
           background: 'var(--color-card)',
           border: '1px solid var(--color-border)',
           borderRadius: 4,
-          padding: '6px 28px 6px 12px',
-          fontSize: 13,
+          padding: '6px 24px 6px 10px',
+          fontSize: 12,
           color: 'var(--color-text-muted)',
           cursor: 'pointer',
-          position: 'relative',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          userSelect: 'none'
+          width: '100%',
+          outline: 'none',
         }}
       >
-        <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{displayValue}</span>
-        <svg style={{ position: 'absolute', right: 8, transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-      </div>
-      
-      {isOpen && (
-        <div style={{
-          position: 'absolute',
-          top: 'calc(100% + 4px)',
-          left: 0,
-          width: '100%',
-          minWidth: '150px',
-          maxHeight: '160px',
-          overflowY: 'auto',
-          background: 'var(--color-card)',
-          border: '1px solid var(--color-border)',
-          borderRadius: 4,
-          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-          zIndex: 100
-        }}>
-          {label && (
-            <div
-              style={{
-                padding: '8px 12px',
-                fontSize: 12,
-                fontWeight: 'bold',
-                color: 'var(--color-text-muted)',
-                borderBottom: '1px solid var(--color-bg-soft)',
-                background: 'var(--color-bg-soft)'
-              }}
-            >
-              {label}
-            </div>
-          )}
-          {options.map(opt => (
-            <div
-              key={opt}
-              onClick={() => { onChange(opt); setIsOpen(false); }}
-              style={{
-                padding: '8px 12px',
-                fontSize: 13,
-                color: opt === currentValue ? 'var(--color-primary)' : 'var(--color-text-primary)',
-                background: opt === currentValue ? 'var(--color-bg-soft)' : 'transparent',
-                cursor: 'pointer',
-                transition: 'background 0.2s',
-                whiteSpace: 'nowrap'
-              }}
-              onMouseEnter={(e) => {
-                if (opt !== currentValue) e.currentTarget.style.background = 'var(--color-bg-soft)';
-              }}
-              onMouseLeave={(e) => {
-                if (opt !== currentValue) e.currentTarget.style.background = 'transparent';
-              }}
-            >
-              {opt}
-            </div>
-          ))}
-        </div>
-      )}
+        {label && <option disabled value="">{label}</option>}
+        {options.map((opt) => (
+          <option key={opt} value={opt}>
+            {opt}
+          </option>
+        ))}
+      </select>
+      <svg style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
     </div>
   );
 }
@@ -236,8 +171,14 @@ export default function RecommendedPackages() {
           display: flex;
           align-items: center;
           gap: 12px;
-          flex-wrap: wrap;
-          min-width: 0;
+          flex-wrap: nowrap;
+          overflow-x: auto;
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+          justify-content: center;
+        }
+        .recent-filters::-webkit-scrollbar {
+          display: none;
         }
         
         /* Styled to match the dropdown filters in the design */
@@ -442,10 +383,9 @@ export default function RecommendedPackages() {
            }
            .recent-filters {
              width: 100%;
-             flex-wrap: wrap;
              justify-content: center;
+             padding-bottom: 8px;
            }
-           .recent-filters::-webkit-scrollbar { display: none; }
            .recent-scroll-actions { display: none; }
            .recent-booking-card { width: calc(100vw - 40px); }
            .responsive-header-row {
@@ -495,7 +435,7 @@ export default function RecommendedPackages() {
              </span>
           </div>
 
-          <div className="recent-filters" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 16 }}>
+          <div className="recent-filters" style={{ marginBottom: 16 }}>
              <CustomDropdown currentValue={activeDest} onChange={handleDestChange} options={DEST_FILTERS} />
              <CustomDropdown currentValue={activeDuration} onChange={handleDurationChange} options={['DURATION', '1-3 Days', '4-7 Days', '8+ Days']} />
              <CustomDropdown label="TRAVEL CLASS" currentValue={activeClass} onChange={handleClassSort} options={CLASS_FILTERS} />

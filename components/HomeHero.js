@@ -32,7 +32,9 @@ export default function HomeHero() {
   const [heroHeight, setHeroHeight] = useState('100vh');
   const [isMobile, setIsMobile] = useState(false);
   const [heroImages, setHeroImages] = useState([]);
-
+  const [heroMedia, setHeroMedia] = useState(null); // { type: 'video'|'image'|'slider', url: '', items: [] }
+  const [heroTitle, setHeroTitle] = useState('');
+  const [heroHeadingContent, setHeroHeadingContent] = useState('');
 
   /* Handle dynamic hero height for responsive devices */
   useEffect(() => {
@@ -64,32 +66,48 @@ export default function HomeHero() {
         const sliderBlock = getHomeSection(page, 'hero-slider', 'hero-slider');
         const legacyHeader = getHomeSection(page, 'header_key', 'image_text') || getHomeSection(page, 'header_key', 'story_grid');
 
-        let fetchedImages = [];
-        if (sliderBlock?.json_data?.images && Array.isArray(sliderBlock.json_data.images)) {
-          fetchedImages = sliderBlock.json_data.images;
-        } else if (sliderBlock?.images && Array.isArray(sliderBlock.images)) {
-          fetchedImages = sliderBlock.images;
-        } else if (legacyHeader?.json_data?.images && Array.isArray(legacyHeader.json_data.images)) {
-          fetchedImages = legacyHeader.json_data.images;
-        } else if (legacyHeader?.json_data?.gallery && Array.isArray(legacyHeader.json_data.gallery)) {
-          fetchedImages = legacyHeader.json_data.gallery;
+        if (legacyHeader) {
+          setHeroTitle(legacyHeader.title || '');
+          setHeroHeadingContent(legacyHeader.json_data?.heading_content || '');
         }
 
-        // Map them to ensure they have the 'image' property
-        fetchedImages = fetchedImages.map(item => ({
-          image: item.image || item.img,
-          alt: item.alt || 'Travel destination'
-        })).filter(item => item.image);
-
-        if (fetchedImages.length > 0) {
-          setHeroImages(fetchedImages);
+        // Check if legacyHeader has media_url (like a video or single image)
+        if (legacyHeader?.json_data?.media_url) {
+          const mUrl = legacyHeader.json_data.media_url;
+          const isVideo = mUrl.match(/\.(mp4|webm|ogg)$/i);
+          setHeroMedia({
+            type: isVideo ? 'video' : 'image',
+            url: getMediaUrl(mUrl)
+          });
         } else {
-          // Fallback image (if none available)
-          const fallbackMediaUrl = getMediaUrl(legacyHeader?.image || page?.feature_image);
-          if (fallbackMediaUrl) {
-            setHeroImages([{ image: fallbackMediaUrl, alt: 'Travel destination' }]);
+          let fetchedImages = [];
+          if (sliderBlock?.json_data?.images && Array.isArray(sliderBlock.json_data.images)) {
+            fetchedImages = sliderBlock.json_data.images;
+          } else if (sliderBlock?.images && Array.isArray(sliderBlock.images)) {
+            fetchedImages = sliderBlock.images;
+          } else if (legacyHeader?.json_data?.images && Array.isArray(legacyHeader.json_data.images)) {
+            fetchedImages = legacyHeader.json_data.images;
+          } else if (legacyHeader?.json_data?.gallery && Array.isArray(legacyHeader.json_data.gallery)) {
+            fetchedImages = legacyHeader.json_data.gallery;
+          }
+
+          // Map them to ensure they have the 'image' property
+          fetchedImages = fetchedImages.map(item => ({
+            image: item.image || item.img,
+            alt: item.alt || 'Travel destination'
+          })).filter(item => item.image);
+
+          if (fetchedImages.length > 0) {
+            setHeroMedia({ type: 'slider', items: fetchedImages });
+            setHeroImages(fetchedImages); // fallback for legacy code
           } else {
-            setHeroImages([{ image: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1920&q=80', alt: 'Fallback Hero' }]);
+            // Fallback image (if none available)
+            const fallbackMediaUrl = getMediaUrl(legacyHeader?.image || page?.feature_image);
+            if (fallbackMediaUrl) {
+              setHeroMedia({ type: 'image', url: fallbackMediaUrl });
+            } else {
+              setHeroMedia({ type: 'image', url: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1920&q=80' });
+            }
           }
         }
       } catch (error) {
@@ -180,19 +198,44 @@ export default function HomeHero() {
           background: 'var(--color-text-primary)',
         }}
       >
-        {/* CAROUSEL background */}
-        {heroImages.length > 0 && (
+        {/* CAROUSEL / VIDEO / IMAGE background */}
+        {heroMedia?.type === 'video' && (
+          <video
+            src={heroMedia.url}
+            autoPlay
+            loop
+            muted
+            playsInline
+            style={{
+              position: 'absolute', inset: 0, width: '100%', height: '100%',
+              objectFit: 'cover', zIndex: 0
+            }}
+          />
+        )}
+
+        {heroMedia?.type === 'image' && (
+          <Image
+            src={heroMedia.url}
+            alt="Hero Background"
+            fill
+            priority
+            style={{ objectFit: 'cover', zIndex: 0 }}
+            sizes="100vw"
+          />
+        )}
+
+        {heroMedia?.type === 'slider' && (
           <Swiper
             modules={[Autoplay, EffectFade]}
             effect="fade"
             autoplay={{ delay: 5000, disableOnInteraction: false }}
-            loop={heroImages.length > 1}
+            loop={heroMedia.items.length > 1}
             speed={1000}
             slidesPerView={1}
             allowTouchMove={true}
             style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 0 }}
           >
-            {heroImages.map((imgData, index) => (
+            {heroMedia.items.map((imgData, index) => (
               <SwiperSlide key={index}>
                 <Image
                   src={getMediaUrl(imgData.image) || imgData.image}
@@ -221,7 +264,7 @@ export default function HomeHero() {
           style={{
             position: 'absolute', inset: 0, zIndex: 1,
             background:
-              'linear-gradient(180deg, rgba(0,0,0,0.48) 0%, rgba(0,0,0,0.32) 48%, rgba(0, 0, 0,0.92) 100%)',
+              'linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.03) 48%, rgba(0, 0, 0,0.09) 100%)',
           }}
         />
 

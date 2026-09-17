@@ -19,12 +19,19 @@ export default function CategoriesClient() {
             data
               .slice()
               .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
-              .map((cat) => ({
-                id: cat.id || cat.slug || (cat.name || cat.title)?.toLowerCase(),
-                label: cat.name || cat.title,
-                image: getMediaUrl(cat.feature_image || cat.image) || getFallbackCategoryImage(cat.name || cat.title),
-                alt: cat.feature_image_alt || cat.name || cat.title,
-              }))
+              .map((cat) => {
+                const descParts = cat.description ? cat.description.split(',') : [];
+                const uspText = descParts.length > 0 && descParts[0].trim() !== '' ? descParts[0].trim() : null;
+                const iconClass = descParts.length > 1 ? descParts[descParts.length - 1].trim() : null;
+                return {
+                  id: cat.id || cat.slug || (cat.name || cat.title)?.toLowerCase(),
+                  label: cat.name || cat.title,
+                  image: getMediaUrl(cat.feature_image || cat.image) || getFallbackCategoryImage(cat.name || cat.title),
+                  alt: cat.feature_image_alt || cat.name || cat.title,
+                  uspText,
+                  iconClass,
+                };
+              })
           );
         }
       } catch (err) {
@@ -89,13 +96,15 @@ export default function CategoriesClient() {
           </div>
         ) : (
           <div className="categories-grid">
-            {categories.map(({ id, label, image, alt }) => (
+            {categories.map(({ id, label, image, alt, uspText, iconClass }) => (
               <div key={id} className="category-grid-item">
                 <CategoryCard
                   id={id}
                   label={label}
                   image={image}
                   alt={alt}
+                  uspText={uspText}
+                  iconClass={iconClass}
                   isActive={activeTraveler === id}
                   onMouseEnter={() => setActiveTraveler(id)}
                   onFocus={() => setActiveTraveler(id)}

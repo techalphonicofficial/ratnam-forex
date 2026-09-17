@@ -53,12 +53,12 @@ export default function WhyChooseSection() {
         title: fetchedTitle,
         stats: data.stats?.length
           ? data.stats
-              .filter(item => item.value?.trim() || item.label?.trim())
-              .map((item, index) => ({
-                number: item.value,
-                label: item.label,
-                icon: statIcons[index] || statIcons[0],
-              }))
+            .filter(item => item.value?.trim() || item.label?.trim())
+            .map((item, index) => ({
+              number: item.value,
+              label: item.label,
+              icon: statIcons[index] || statIcons[0],
+            }))
           : fallbackStats,
         features: data.features?.length
           ? data.features.map((item, index) => ({
@@ -112,12 +112,12 @@ export default function WhyChooseSection() {
 
   useEffect(() => {
     if (!sliderItems || sliderItems.length <= 1) return;
-    
+
     const interval = setInterval(() => {
       setIsTransitioning(true);
       setCurrentFeatureIndex((prev) => prev + 1);
     }, 2500); // 2.5s loop
-    
+
     return () => clearInterval(interval);
   }, [sliderItems]);
 
@@ -352,32 +352,32 @@ export default function WhyChooseSection() {
                   .filter(stat => stat.label && !stat.label.toLowerCase().includes('app rating'))
                   .slice(0, 2)
                   .map(({ number, label, icon }, index) => (
-                  <div key={`stat-${index}-${label}`} style={{ textAlign: 'center', padding: '18px 24px', background: 'var(--color-primary-light)', borderRadius: 14, border: '1px solid var(--brand-primary-border)', minWidth: '180px' }}>
-                    <div style={{ fontSize: 24, marginBottom: 4 }}>{icon}</div>
-                    <div style={{ fontFamily: '"Italiana", sans-serif', fontWeight: 800, fontSize: 24, color: 'var(--color-primary)', lineHeight: 1 }}>{number}</div>
-                    <div style={{ fontSize: 11, color: 'var(--color-text-muted)', marginTop: 5, whiteSpace: 'pre-line', lineHeight: 1.4 }}>{label}</div>
-                  </div>
-                ))}
+                    <div key={`stat-${index}-${label}`} style={{ textAlign: 'center', padding: '18px 24px', background: 'var(--color-primary-light)', borderRadius: 14, border: '1px solid var(--brand-primary-border)', minWidth: '180px' }}>
+                      <div style={{ fontSize: 24, marginBottom: 4 }}>{icon}</div>
+                      <div style={{ fontFamily: '"Italiana", sans-serif', fontWeight: 800, fontSize: 24, color: 'var(--color-primary)', lineHeight: 1 }}>{number}</div>
+                      <div style={{ fontSize: 11, color: 'var(--color-text-muted)', marginTop: 5, whiteSpace: 'pre-line', lineHeight: 1.4 }}>{label}</div>
+                    </div>
+                  ))}
               </div>
             )}
 
             {/* Auto Scrolling Features Container */}
             {sliderItems?.length > 0 && (
               <div className="feature-scroller-container">
-                <div 
+                <div
                   className="feature-scroller-inner"
-                  style={{ 
+                  style={{
                     transform: `translateX(-${currentFeatureIndex * 100}%)`,
                     transition: isTransitioning ? 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)' : 'none'
                   }}
                 >
                   {renderItems.map(({ icon, title, desc, isStat }, idx) => (
-                    <div 
-                      key={`${title}-${idx}`} 
+                    <div
+                      key={`${title}-${idx}`}
                       className="auto-scroll-item"
-                      style={{ 
-                        width: '100%', 
-                        flexShrink: 0, 
+                      style={{
+                        width: '100%',
+                        flexShrink: 0,
                         background: 'linear-gradient(135deg, #ffffff 0%, var(--color-primary-light) 200%)'
                       }}
                     >
@@ -397,16 +397,16 @@ export default function WhyChooseSection() {
                         </>
                       ) : (
                         <>
-                          <div style={{ 
-                            width: '36px', 
-                            height: '36px', 
-                            borderRadius: '50%', 
-                            background: 'var(--color-primary)', 
-                            color: '#fff', 
-                            display: 'flex', 
-                            alignItems: 'center', 
-                            justifyContent: 'center', 
-                            fontSize: '16px', 
+                          <div style={{
+                            width: '36px',
+                            height: '36px',
+                            borderRadius: '50%',
+                            background: 'var(--color-primary)',
+                            color: '#fff',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '16px',
                             fontWeight: 800,
                             boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
                             flexShrink: 0
@@ -435,13 +435,13 @@ export default function WhyChooseSection() {
             {/* Manual Blog Slider */}
             {blogs.length > 0 && (
               <div className="blog-slider-container">
-                <button 
+                <button
                   className="blog-nav-btn blog-nav-left"
                   onClick={() => setCurrentBlogIndex((prev) => (prev - 1 + blogs.length) % blogs.length)}
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
                 </button>
-                
+
                 <div style={{ overflow: 'hidden', borderRadius: 12, padding: '10px 0' }}>
                   <div style={{ display: 'flex', transition: 'transform 0.4s ease', transform: `translateX(-${currentBlogIndex * 100}%)` }}>
                     {blogs.map((review) => {
@@ -449,7 +449,7 @@ export default function WhyChooseSection() {
                       const month = dateObj.toLocaleString('en-US', { month: 'short' });
                       const rating = review.rating || 5;
                       const stars = '⭐'.repeat(rating);
-                      
+
                       return (
                         <div key={review.id} style={{ width: '100%', flexShrink: 0, padding: '0 4px' }}>
                           <div className="blog-card">
@@ -479,16 +479,16 @@ export default function WhyChooseSection() {
                                   {month}
                                 </div>
                               </div>
-                              </div>
                             </div>
                           </div>
+                        </div>
 
                       );
                     })}
                   </div>
                 </div>
 
-                <button 
+                <button
                   className="blog-nav-btn blog-nav-right"
                   onClick={() => setCurrentBlogIndex((prev) => (prev + 1) % blogs.length)}
                 >

@@ -9,21 +9,17 @@ import { getTripInquiries, getMediaUrl, getPackages, normalizePackageToTour } fr
 
 /* ── Filter options ──────────────────────────────────── */
 const FILTER_OPTIONS = {
-  hotDeal: {
-    label: 'Hot Deal',
-    items: ['All', 'Yes', 'No'],
-  },
   duration: {
     label: 'Duration',
     items: ['All', '1-3 Nights', '4-6 Nights', '7-10 Nights', '10+ Nights'],
   },
-  theme: {
-    label: 'Theme',
-    items: ['All', 'Couple', 'Family', 'Adventure', 'Solo', 'Spiritual'],
-  },
   travelClass: {
     label: 'Travel Class',
     items: ['All', 'Economy', 'Standard', 'Luxury'],
+  },
+  theme: {
+    label: 'Theme',
+    items: ['All', 'Couple', 'Family', 'Adventure', 'Solo', 'Spiritual'],
   },
   season: {
     label: 'Season',
@@ -56,58 +52,35 @@ function applyFilters(tours, filters) {
     else if (filters.duration === '10+ Nights') list = list.filter(t => t.nights > 10);
   }
 
-  // Mock Hot Deal logic
-  if (filters.hotDeal === 'Yes') {
-    list = list.filter((t, i) => i % 2 === 0);
-  }
-
   return list;
 }
 
 /* ── Dropdown Filter Component ───────────────────────── */
 function FilterDropdown({ label, items, value, onChange }) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef(null);
-
-  useEffect(() => {
-    const handler = (e) => {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
-
   return (
-    <div ref={ref} className="ei-dropdown">
-      <button
-        className={`ei-dropdown-btn ${open ? 'ei-dropdown-btn--open' : ''} ${value !== 'All' ? 'ei-dropdown-btn--active' : ''}`}
-        onClick={() => setOpen(!open)}
+    <div className="ei-dropdown" style={{ position: 'relative', display: 'inline-block', flex: '0 1 auto', minWidth: 0 }}>
+      <select
+        className="ei-dropdown-btn"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        style={{
+          appearance: 'none',
+          WebkitAppearance: 'none',
+          padding: '6px 18px 6px 8px',
+          fontSize: '12px',
+          width: '100%',
+          outline: 'none',
+          textOverflow: 'ellipsis'
+        }}
       >
-        <span>{value !== 'All' ? value : label}</span>
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
-          <polyline points="6 9 12 15 18 9" />
-        </svg>
-      </button>
-
-      {open && (
-        <div className="ei-dropdown-menu">
-          {items.map((item) => {
-            const isActive = item === value;
-            return (
-              <button
-                key={item}
-                className={`ei-dropdown-item ${isActive ? 'ei-dropdown-item--active' : ''}`}
-                onClick={() => {
-                  onChange(item);
-                  setOpen(false);
-                }}
-              >
-                {item}
-              </button>
-            );
-          })}
-        </div>
-      )}
+        <option disabled value="">{label}</option>
+        {items.map((item) => (
+          <option key={item} value={item}>
+            {item === 'All' ? label : item}
+          </option>
+        ))}
+      </select>
+      <svg style={{ position: 'absolute', right: '6px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="6 9 12 15 18 9" /></svg>
     </div>
   );
 }
@@ -115,7 +88,6 @@ function FilterDropdown({ label, items, value, onChange }) {
 /* ── Main Section ────────────────────────────────────── */
 export default function ExploreIndiaSection() {
   const [filters, setFilters] = useState({
-    hotDeal: 'All',
     duration: 'All',
     theme: 'All',
     travelClass: 'All',
@@ -194,7 +166,8 @@ export default function ExploreIndiaSection() {
           justify-content: center;
           gap: 12px;
           margin-bottom: 28px;
-          flex-wrap: wrap;
+          flex-wrap: nowrap;
+          width: 100%;
         }
 
         .ei-dropdown {
@@ -221,48 +194,6 @@ export default function ExploreIndiaSection() {
         .ei-dropdown-btn:hover {
           border-color: var(--color-text-muted);
           background: #fafafa;
-        }
-
-        .ei-dropdown-btn--open {
-          border-color: var(--color-accent);
-          box-shadow: 0 0 0 3px rgba(209, 180, 100, 0.12);
-        }
-
-        .ei-dropdown-menu {
-          position: absolute;
-          top: calc(100% + 8px);
-          left: 0;
-          background: var(--color-card);
-          border: 1px solid var(--color-border);
-          border-radius: 12px;
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-          min-width: 180px;
-          z-index: 50;
-          padding: 6px 0;
-          animation: eiDropIn 0.2s ease;
-        }
-
-        @keyframes eiDropIn {
-          from { opacity: 0; transform: translateY(6px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-
-        .ei-dropdown-item {
-          display: block;
-          width: 100%;
-          padding: 10px 18px;
-          border: none;
-          background: none;
-          text-align: left;
-          font-size: 13px;
-          font-weight: 500;
-          color: var(--color-text-primary);
-          cursor: pointer;
-          transition: background 0.15s;
-        }
-
-        .ei-dropdown-item:hover {
-          background: var(--color-bg-soft);
         }
 
         .ei-dropdown-item--active {
@@ -347,11 +278,11 @@ export default function ExploreIndiaSection() {
             padding: 0 16px;
           }
           .ei-filter-bar {
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
             padding-bottom: 8px;
-            justify-content: center;
+            justify-content: space-between;
+            gap: 4px;
           }
-          .ei-filter-bar::-webkit-scrollbar { display: none; }
           .ei-card-wrap {
             width: calc(100vw - 40px);
             flex-shrink: 0;

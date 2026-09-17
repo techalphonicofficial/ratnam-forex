@@ -142,7 +142,7 @@ export const getCategoryUSP = (label) => {
   return '🌟 Handpicked Journey';
 };
 
-export default function CategoryCard({ id, label, image, alt, isActive, onMouseEnter, onMouseLeave, onFocus, onBlur }) {
+export default function CategoryCard({ id, label, image, alt, iconClass, uspText, isActive, onMouseEnter, onMouseLeave, onFocus, onBlur }) {
   const router = useRouter();
 
   const handleSelect = () => {
@@ -347,12 +347,12 @@ export default function CategoryCard({ id, label, image, alt, isActive, onMouseE
             <div className="sec-traveller-photo-wrap">
               <img src={image} alt={alt || label} loading="lazy" />
               <div className="overlay-content">
-                <span className="usp-text">{getCategoryUSP(label)}</span>
+                <span className="usp-text">{uspText ? uspText : getCategoryUSP(label)}</span>
               </div>
             </div>
           </div>
           <span className="sec-traveller-badge">
-            {getCategoryIcon(label)}
+            {iconClass ? <i className={`bi ${iconClass}`} style={{ fontSize: '20px' }}></i> : getCategoryIcon(label)}
           </span>
         </div>
         <span className="sec-traveller-label">
