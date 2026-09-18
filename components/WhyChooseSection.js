@@ -143,8 +143,8 @@ export default function WhyChooseSection() {
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 40px;
-          max-width: 800px;
+          gap: 24px;
+          max-width: 1000px;
           margin: 0 auto;
         }
         .stats-grid {
@@ -152,187 +152,271 @@ export default function WhyChooseSection() {
           justify-content: center;
           flex-wrap: wrap;
           gap: 16px;
-          margin-bottom: 32px;
+          margin-bottom: 24px;
         }
-        @media (max-width: 1024px) {
-          .why-choose-grid {
-            gap: 32px;
-          }
-        }
-
-        @media (max-width: 640px) {
-          .stats-grid {
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-          }
-          .section-title {
-            font-size: 24px !important;
-          }
-          .feature-scroller-container {
-            width: 90% !important;
-            max-width: 400px !important;
-            margin: 0 auto 32px auto !important;
-            border-radius: 12px !important;
-          }
-          .blog-slider-container {
-            width: 90% !important;
-            max-width: 320px !important;
-            margin: 0 auto 32px auto !important;
-          }
-          .blog-card {
-            flex-direction: row !important;
-            align-items: center !important;
-            gap: 12px !important;
-            padding: 12px !important;
-          }
-          .blog-card-right {
-            width: 80px !important;
-          }
-          .blog-card-img-wrapper {
-            width: 80px !important;
-            height: 80px !important;
-          }
-          .blog-card-excerpt {
-            display: none !important;
-          }
-          .blog-card-date-badge {
-            font-size: 9px !important;
-            padding: 2px 6px !important;
-            bottom: -6px !important;
-          }
-          .auto-scroll-item {
-            padding: 8px 12px !important;
-            gap: 12px !important;
-          }
-        }
+        
+        /* ── Feature Ticket (Premium Style) ── */
         .feature-scroller-container {
           width: 100%;
-          max-width: 480px;
+          max-width: 945px;
           overflow: hidden;
           position: relative;
-          margin-bottom: 40px;
-          border-radius: 100px;
-          box-shadow: 0 8px 24px rgba(0,0,0,0.06);
-          background: #fff;
+          margin-bottom: 32px;
+          border-radius: 16px;
+          box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+          background: #FDFBF7;
           border: 1px solid rgba(0,0,0,0.04);
         }
+        .feature-scroller-inner {
+          display: flex;
+          flex-direction: row;
+          width: 100%;
+        }
         .auto-scroll-item {
+          width: 100%;
+          flex-shrink: 0;
+          display: flex;
+          align-items: stretch;
+          position: relative;
+        }
+        .ticket-left {
+          background: var(--color-primary, #b8860b);
+          color: #fff;
+          width: 105px;
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 16px;
-          padding: 12px 24px;
+          font-family: "Italiana", serif;
+          font-size: 42px;
+          font-weight: 800;
+          position: relative;
         }
-        
-        /* ── Progress Bar Animation ── */
+        .ticket-left::after {
+          content: '';
+          position: absolute;
+          right: -5px;
+          top: 0;
+          bottom: 0;
+          width: 10px;
+          background-image: radial-gradient(circle at 10px 50%, transparent 4px, #FDFBF7 4.5px);
+          background-size: 10px 20px;
+          background-position: -5px 0;
+        }
+        .ticket-center {
+          flex: 1;
+          padding: 24px 30px;
+          text-align: left;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+        }
+        .ticket-title {
+          font-weight: 800;
+          font-size: 22px;
+          color: var(--color-text-primary, #151922);
+          margin-bottom: 6px;
+        }
+        .ticket-desc {
+          font-size: 16px;
+          color: var(--color-text-muted, #666);
+          line-height: 1.5;
+        }
+        .ticket-right {
+          width: 90px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-left: 2px dashed rgba(0,0,0,0.1);
+          padding: 12px;
+        }
+        .ticket-barcode {
+          width: 100%;
+          height: 60%;
+          background: repeating-linear-gradient(90deg, #151922, #151922 2px, transparent 2px, transparent 4px, #151922 4px, #151922 5px, transparent 5px, transparent 8px);
+          opacity: 0.2;
+        }
         .scroller-progress {
           position: absolute;
           bottom: 0;
           left: 0;
           height: 3px;
-          background: var(--color-primary);
+          background: var(--color-primary, #b8860b);
           animation: progress 2.5s linear infinite;
+          z-index: 2;
         }
         @keyframes progress {
           0% { width: 0%; }
           100% { width: 100%; }
         }
-        
-        /* ── Blog Slider ───────────────── */
+
+        /* ── Wide Review Slider ── */
         .blog-slider-container {
           width: 100%;
-          max-width: 460px;
+          max-width: 520px;
           margin: 0 auto 32px auto;
           position: relative;
         }
-        .blog-card {
+        .premium-review-card {
           background: #ffffff;
-          border-radius: 12px;
-          padding: 16px;
-          display: flex;
-          gap: 16px;
-          box-shadow: 0 8px 24px rgba(0,0,0,0.06);
-          border: 1px solid var(--color-border);
-          position: relative;
-        }
-        .blog-card-left {
-          flex: 1;
+          border-radius: 16px;
+          padding: 16px 32px;
+          box-shadow: 0 12px 32px rgba(0,0,0,0.08);
+          border: 1px solid var(--color-border, #eee);
           display: flex;
           flex-direction: column;
+          position: relative;
           text-align: left;
+          height: 100%;
         }
-        .blog-card-right {
-          width: 110px;
+        .review-eyebrow {
+          position: absolute;
+          top: 16px;
+          right: 32px;
+          font-size: 10px;
+          font-weight: 700;
+          letter-spacing: 1.5px;
+          color: var(--color-text-muted, #666);
+          text-transform: uppercase;
+        }
+        .review-quote-icon {
+          font-family: serif;
+          font-size: 48px;
+          color: var(--color-primary, #b8860b);
+          line-height: 1;
+          height: 24px;
+          margin-bottom: 8px;
+          opacity: 0.8;
+        }
+        .review-comment {
+          font-size: 16px;
+          font-style: normal;
+          color: var(--color-text-primary, #151922);
+          line-height: 1.5;
+          margin-bottom: 12px;
+          font-weight: 500;
+        }
+        .review-bottom {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          border-top: 1px solid rgba(0,0,0,0.05);
+          padding-top: 12px;
+          margin-top: auto;
+        }
+        .reviewer-info {
           display: flex;
           flex-direction: column;
-          align-items: center;
-          gap: 12px;
+          gap: 4px;
         }
-        .blog-card-img-wrapper {
-          width: 110px;
-          height: 110px;
-          border-radius: 8px;
-          position: relative;
-          overflow: hidden;
+        .reviewer-name {
+          font-size: 14px;
+          font-weight: 700;
+          color: var(--color-text-primary, #151922);
         }
-        .blog-card-date-badge {
-          position: absolute;
-          bottom: -10px;
-          left: 50%;
-          transform: translateX(-50%);
-          background: #fff;
-          border-radius: 12px;
-          padding: 2px 8px;
-          font-size: 11px;
-          font-weight: 600;
-          color: var(--color-text-primary);
+        .reviewer-stars {
+          font-size: 12px;
+          color: #FFB800;
+          letter-spacing: 2px;
+        }
+        .reviewer-avatar {
+          width: 48px;
+          height: 48px;
+          border-radius: 50%;
+          background: var(--color-primary-light, #fdf8e7);
           display: flex;
           align-items: center;
-          gap: 4px;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-          white-space: nowrap;
+          justify-content: center;
+          color: var(--color-primary, #b8860b);
+          font-weight: 700;
+          font-size: 18px;
+          border: 2px solid #fff;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
+
+        /* ── Nav Buttons ── */
         .blog-nav-btn {
           position: absolute;
           top: 50%;
           transform: translateY(-50%);
-          width: 36px;
-          height: 36px;
+          width: 40px;
+          height: 40px;
           border-radius: 50%;
           background: #fff;
-          border: 1px solid var(--color-border);
+          border: 1px solid var(--color-border, #eee);
           display: flex;
           align-items: center;
           justify-content: center;
           cursor: pointer;
           z-index: 2;
           box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-          color: var(--color-primary);
+          color: var(--color-primary, #b8860b);
+          transition: all 0.2s ease;
         }
         .blog-nav-btn:hover {
-          background: var(--color-primary);
+          background: var(--color-primary, #b8860b);
           color: #fff;
+          transform: translateY(-50%) scale(1.05);
         }
-        .blog-nav-left { left: -18px; }
-        .blog-nav-right { right: -18px; }
-        .feature-scroller-inner {
-          display: flex;
-          flex-direction: row;
-          width: 100%;
-        }
-        .feature-scroll-item {
-          width: 100%;
-          height: 140px;
-          background: var(--color-primary-light);
-          border: 1px solid var(--brand-primary-border);
-          flex-shrink: 0;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          text-align: center;
-          padding: 16px 20px;
+        .blog-nav-left { left: -20px; }
+        .blog-nav-right { right: -20px; }
+
+        /* ── Responsive ── */
+        @media (max-width: 640px) {
+          .feature-scroller-container {
+            width: 90% !important;
+            max-width: 340px !important;
+          }
+          .blog-slider-container {
+            width: 85% !important;
+            max-width: 380px !important;
+          }
+          .premium-review-card {
+            padding: 12px 16px;
+          }
+          .review-eyebrow {
+            right: 16px;
+            top: 12px;
+            font-size: 9px;
+          }
+          .review-quote-icon {
+            font-size: 32px;
+            height: 16px;
+            margin-bottom: 4px;
+          }
+          .review-comment {
+            font-size: 12px;
+            margin-bottom: 8px;
+          }
+          .review-bottom {
+            padding-top: 8px;
+          }
+          .reviewer-avatar {
+            width: 32px;
+            height: 32px;
+            font-size: 14px;
+          }
+          .ticket-left {
+            width: 50px;
+            font-size: 20px;
+          }
+          .ticket-center {
+            padding: 12px 12px;
+          }
+          .ticket-title {
+            font-size: 14px;
+            margin-bottom: 2px;
+          }
+          .ticket-desc {
+            font-size: 11px;
+            line-height: 1.3;
+          }
+          .ticket-right {
+            width: 30px;
+            padding: 6px;
+          }
+          .blog-nav-left { left: -16px; width: 32px; height: 32px; }
+          .blog-nav-right { right: -16px; width: 32px; height: 32px; }
+          .blog-nav-btn svg { width: 16px; height: 16px; }
         }
       `}</style>
 
@@ -375,56 +459,17 @@ export default function WhyChooseSection() {
                     <div
                       key={`${title}-${idx}`}
                       className="auto-scroll-item"
-                      style={{
-                        width: '100%',
-                        flexShrink: 0,
-                        background: 'linear-gradient(135deg, #ffffff 0%, var(--color-primary-light) 200%)'
-                      }}
                     >
-                      {isStat ? (
-                        <>
-                          <div style={{ fontSize: 24, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            {icon}
-                          </div>
-                          <div style={{ textAlign: 'center' }}>
-                            <div style={{ fontFamily: '"Italiana", sans-serif', fontWeight: 800, fontSize: '20px', color: 'var(--color-primary)', lineHeight: 1.1 }}>
-                              {desc}
-                            </div>
-                            <div style={{ fontSize: '11px', color: 'var(--color-text-muted)', marginTop: '4px', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: 600 }}>
-                              {title}
-                            </div>
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <div style={{
-                            width: '36px',
-                            height: '36px',
-                            borderRadius: '50%',
-                            background: 'var(--color-primary)',
-                            color: '#fff',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontSize: '16px',
-                            fontWeight: 800,
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                            flexShrink: 0
-                          }}>
-                            {icon}
-                          </div>
-                          <div style={{ textAlign: 'center' }}>
-                            <div style={{ fontWeight: 800, fontSize: '14px', color: 'var(--color-text-primary)', lineHeight: 1.2 }}>
-                              {title}
-                            </div>
-                            {desc && (
-                              <div style={{ fontSize: '11px', color: 'var(--color-text-muted)', marginTop: '2px', lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                                {desc}
-                              </div>
-                            )}
-                          </div>
-                        </>
-                      )}
+                      <div className="ticket-left">
+                        {isStat ? icon : String(idx).padStart(2, '0')}
+                      </div>
+                      <div className="ticket-center">
+                        <div className="ticket-title">{isStat ? desc : title}</div>
+                        <div className="ticket-desc">{isStat ? title : desc}</div>
+                      </div>
+                      <div className="ticket-right">
+                        <div className="ticket-barcode"></div>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -452,32 +497,19 @@ export default function WhyChooseSection() {
 
                       return (
                         <div key={review.id} style={{ width: '100%', flexShrink: 0, padding: '0 4px' }}>
-                          <div className="blog-card">
-                            <div className="blog-card-left">
-                              <h4 style={{ fontSize: 15, fontWeight: 800, color: '#151922', marginBottom: 4, lineHeight: 1.2, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                                {review.title}
-                              </h4>
-                              <div style={{ fontSize: 12, color: 'var(--color-text-muted)', marginBottom: 8, fontWeight: 500 }}>
-                                {review.reviewer_name}
-                              </div>
-                              <div className="blog-card-excerpt" style={{ fontSize: 12, fontStyle: 'italic', color: '#666', lineHeight: 1.4, marginBottom: 8, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                                "{review.comment || ''}"
-                              </div>
-                              <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginTop: 'auto' }}>
-                                <div style={{ fontSize: 12, color: '#FFB800', display: 'flex', alignItems: 'center', gap: 4 }}>
-                                  {stars}
-                                </div>
-                              </div>
+                          <div className="premium-review-card">
+                            <div className="review-eyebrow">Happy Traveler</div>
+                            <div className="review-quote-icon">“</div>
+                            <div className="review-comment">
+                              {review.comment || 'Great experience from planning to the trip. Everything was seamless!'}
                             </div>
-                            <div className="blog-card-right">
-                              <div style={{ position: 'relative', width: '100%' }}>
-                                <div className="blog-card-img-wrapper" style={{ background: 'var(--color-primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-primary)' }}>
-                                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                                </div>
-                                <div className="blog-card-date-badge">
-                                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                                  {month}
-                                </div>
+                            <div className="review-bottom">
+                              <div className="reviewer-info">
+                                <div className="reviewer-name">{review.reviewer_name}</div>
+                                <div className="reviewer-stars">{stars}</div>
+                              </div>
+                              <div className="reviewer-avatar">
+                                {review.reviewer_name ? review.reviewer_name.charAt(0).toUpperCase() : 'T'}
                               </div>
                             </div>
                           </div>

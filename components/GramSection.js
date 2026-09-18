@@ -1,6 +1,6 @@
 /* GramSection Redesign */
 'use client';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { gramReels } from '@/data/gramReels';
 import { getReviews, getMediaUrl } from '@/utils/api';
@@ -41,12 +41,12 @@ function GramCard({ photo, index }) {
   return (
     <Link
       href={`/reels?idx=${index}`}
+      className="gram-card"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       aria-label={`Play ${photo.title || photo.user || 'travel reel'}`}
       style={{
         flexShrink: 0,
-        width: 220,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -57,10 +57,9 @@ function GramCard({ photo, index }) {
       }}
     >
       {/* Arched Image Container */}
-      <div style={{
+      <div className="gram-card-img" style={{
         width: '100%',
-        height: 380,
-        borderRadius: '110px 110px 16px 16px',
+        borderRadius: '200px 200px 16px 16px',
         overflow: 'hidden',
         position: 'relative',
         boxShadow: hovered ? '0 10px 30px rgba(255,255,255,0.05)' : 'none',
@@ -142,6 +141,15 @@ function GramCard({ photo, index }) {
 export default function GramSection({ videoReviewsData }) {
   const scrollRef = useRef(null);
   const [reels, setReels] = useState(gramReels);
+  const [mobileIndex, setMobileIndex] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 640);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -212,10 +220,19 @@ export default function GramSection({ videoReviewsData }) {
     };
   }, [videoReviewsData]);
 
-  const scroll = (dir) => {
-    if (!scrollRef.current) return;
-    scrollRef.current.scrollBy({ left: dir * 500, behavior: 'smooth' });
-  };
+  const scroll = useCallback((dir) => {
+    if (isMobile) {
+      setMobileIndex(prev => {
+        const next = prev + dir;
+        if (next < 0) return 0;
+        if (next >= reels.length) return prev;
+        return next;
+      });
+    } else {
+      if (!scrollRef.current) return;
+      scrollRef.current.scrollBy({ left: dir * 500, behavior: 'smooth' });
+    }
+  }, [isMobile, reels.length]);
 
   const headingText = videoReviewsData?.json_data?.heading_content || videoReviewsData?.title || 'From Social Media : video,Reels & Podcast';
 
@@ -254,7 +271,13 @@ export default function GramSection({ videoReviewsData }) {
           text-transform: uppercase;
           letter-spacing: 1px;
         }
-        @media (max-width: 768px) {
+        .gram-card {
+          width: 220px;
+        }
+        .gram-card-img {
+          height: 380px;
+        }
+        @media (max-width: 640px) {
           .gram-heading {
             font-size: 26px;
             padding: 0 16px;
@@ -331,24 +354,44 @@ export default function GramSection({ videoReviewsData }) {
           >❯</button>
 
           {/* Cards Wrapper */}
-          <div
-            ref={scrollRef}
-            className="gram-scroll-area"
-            style={{
-              display: 'flex', gap: 24, overflowX: 'auto', padding: '24px 24px 40px',
-              scrollbarWidth: 'none', msOverflowStyle: 'none',
-              scrollSnapType: 'x mandatory'
-            }}
-          >
-            {reels.map((photo, i) => (
-              <div key={i} style={{ scrollSnapAlign: 'start' }}>
-                <GramCard
-                  photo={photo}
-                  index={i}
-                />
+          {isMobile ? (
+            <div style={{
+              overflow: 'hidden',
+              width: '100%',
+              padding: '24px 0 40px',
+              display: 'flex',
+              justifyContent: 'center',
+            }}>
+              <div style={{
+                display: 'flex',
+                transition: 'transform 0.4s ease',
+                transform: `translateX(-${mobileIndex * 100}%)`,
+                width: '100%',
+              }}>
+                {reels.map((photo, i) => (
+                  <div key={i} style={{ width: '100%', flexShrink: 0, display: 'flex', justifyContent: 'center' }}>
+                    <GramCard photo={photo} index={i} />
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </div>
+          ) : (
+            <div
+              ref={scrollRef}
+              className="gram-scroll-area"
+              style={{
+                display: 'flex', gap: 24, overflowX: 'auto', padding: '24px 24px 40px',
+                scrollbarWidth: 'none', msOverflowStyle: 'none',
+                scrollSnapType: 'x mandatory'
+              }}
+            >
+              {reels.map((photo, i) => (
+                <div key={i} style={{ scrollSnapAlign: 'start' }}>
+                  <GramCard photo={photo} index={i} />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
       </div>
