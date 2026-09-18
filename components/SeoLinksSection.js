@@ -41,7 +41,7 @@ export default async function SeoLinksSection() {
 
         .seo-category-title {
           font-family: "Italiana", sans-serif;
-          font-size: 22px;
+          font-size: 36px;
           margin-bottom: 36px; /* Increased margin-bottom for laptop */
           color: var(--color-text-primary, #1F2A44); /* Dark dynamic text color */
           font-weight: 600;
@@ -59,7 +59,7 @@ export default async function SeoLinksSection() {
         .seo-link {
           color: #1F2A44; /* Dark Navy text for light background */
           text-decoration: none;
-          font-size: 14px;
+          font-size: 18px;
           font-weight: 400;
           transition: color 0.2s ease, transform 0.2s ease;
         }
@@ -84,7 +84,7 @@ export default async function SeoLinksSection() {
 
         @media (max-width: 768px) {
           .seo-category-title {
-            font-size: 20px;
+            font-size: 28px;
             margin-bottom: 24px;
           }
           .seo-links-section {
@@ -104,7 +104,7 @@ export default async function SeoLinksSection() {
             gap: 12px 10px;
           }
           .seo-link {
-            font-size: 12px;
+            font-size: 14px;
           }
         }
       `}</style>
