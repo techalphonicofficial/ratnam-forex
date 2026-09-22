@@ -240,19 +240,19 @@ export default function TrendingToursSection({ themeClass = '' }) {
                 <div style={{ fontSize: '14px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '16px' }}>
                   Tour Type
                 </div>
-                <div className="tour-filter-list" style={{ display: 'flex', gap: '12px', maxHeight: '300px', overflowY: 'auto' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '300px', overflowY: 'auto' }}>
                   {filterOptions.tourTypes.map((type) => (
-                    <label key={type.key} className="tour-filter-item" style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', fontSize: '13px', color: '#555' }}>
+                    <label key={type.key} style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', fontSize: '13px', color: '#555', width: '100%' }}>
                       <input
                         type="radio"
                         name="trendingTourType"
                         value={type.key}
                         checked={filters.type === type.key}
                         onChange={() => setFilters(prev => ({ ...prev, type: type.key }))}
-                        style={{ accentColor: '#b98c56', marginRight: '10px', width: '16px', height: '16px' }}
+                        style={{ accentColor: '#b98c56', marginRight: '10px', width: '16px', height: '16px', flexShrink: 0 }}
                       />
-                      <span className="tour-filter-label">{type.label}</span>
-                      <span className="tour-filter-count" style={{ marginLeft: 'auto', fontSize: '11px', background: '#f5f5f5', padding: '2px 8px', borderRadius: '12px', color: '#888', fontWeight: 600 }}>
+                      <span>{type.label}</span>
+                      <span style={{ marginLeft: 'auto', fontSize: '11px', background: '#f5f5f5', padding: '2px 8px', borderRadius: '12px', color: '#888', fontWeight: 600 }}>
                         {type.count}
                       </span>
                     </label>
@@ -273,11 +273,11 @@ export default function TrendingToursSection({ themeClass = '' }) {
                   </svg>
                 </div>
                 {expandedSections.duration && (
-                  <div className="tour-filter-list" style={{ marginTop: '12px', display: 'flex', gap: '8px', paddingLeft: '8px' }}>
+                  <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '10px', paddingLeft: '8px' }}>
                     {filterOptions.durations.map(dur => (
-                      <label key={dur.key} className="tour-filter-item" style={{ display: 'flex', alignItems: 'center', fontSize: '13px', color: '#666', cursor: 'pointer' }}>
-                        <input type="checkbox" style={{ marginRight: '8px', accentColor: '#b98c56' }} />
-                        <span className="tour-filter-label">{dur.label}</span>
+                      <label key={dur.key} style={{ display: 'flex', alignItems: 'center', fontSize: '13px', color: '#666', cursor: 'pointer', width: '100%' }}>
+                        <input type="checkbox" style={{ marginRight: '8px', accentColor: '#b98c56', flexShrink: 0 }} />
+                        <span>{dur.label}</span>
                       </label>
                     ))}
                   </div>
