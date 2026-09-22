@@ -1067,7 +1067,7 @@ export default function Navbar({ brand, companyInfo }) {
     return null;
   }
 
-  const brandLogo = getLogoUrl(companyInfo?.company_logo_url) || brand?.logo || '/logooo.png';
+  const brandLogo = getLogoUrl(companyInfo?.company_logo_url) || brand?.logo || '';
   const brandName = brand?.legalName || 'ITS TRAVELS AND TOURS';
   const isTransparent = isHeroPage && atHero && !scrolled && !drawerOpen;
   const isLightHeader = isTransparent || scrolled;

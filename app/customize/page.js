@@ -3,7 +3,8 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import DestinationPicker from '@/components/DestinationPicker';
-import { customizeBooking, getCrowdLevelsBySlug, getDestinations, getHomeCategories, getMediaUrl, getRelatedDestinationsByCountry, getStoredAuth, searchAirports } from '@/utils/api';
+import PremiumDestinationLayout from '@/components/PremiumDestinationLayout';
+import { customizeBooking, getCrowdLevelsBySlug, getDestinations, getHomeDestinations, getHomeCategories, getMediaUrl, getRelatedDestinationsByCountry, getStoredAuth, searchAirports } from '@/utils/api';
 import { getProjectConfig } from '@/utils/projectConfig';
 
 const TRAVELLERS = [
@@ -275,19 +276,48 @@ export default function CustomizeFlow() {
       setDestinationsLoading(true);
       setDestinationsError('');
 
-      const destinations = await getDestinations();
-      console.log('Destinations API response:', destinations);
+      try {
+        const [destinations, trending, visaFree] = await Promise.all([
+          getDestinations(),
+          getHomeDestinations('trending'),
+          getHomeDestinations('visa-free')
+        ]);
 
-      if (!mounted) return;
+        if (!mounted) return;
 
-      if (destinations.length) {
-        setDestinationOptions(destinations.map(normalizePickerDestination));
-      } else {
-        setDestinationOptions([]);
-        setDestinationsError('No destinations are available right now.');
+        if (destinations && destinations.length) {
+          const imageMap = new Map();
+          [...(trending || []), ...(visaFree || [])].forEach(d => {
+            if (d.id && d.feature_image) {
+              imageMap.set(d.id, d.feature_image);
+            }
+          });
+
+          const defaultFallbacks = [
+            'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=800&q=80',
+            'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=800&q=80',
+            'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80',
+            'https://images.unsplash.com/photo-1488085061387-422e29b40080?auto=format&fit=crop&w=800&q=80'
+          ];
+
+          const merged = destinations.map((dest, i) => ({
+            ...dest,
+            feature_image: imageMap.get(dest.id) || dest.feature_image || defaultFallbacks[i % defaultFallbacks.length]
+          }));
+
+          setDestinationOptions(merged.map(normalizePickerDestination));
+        } else {
+          setDestinationOptions([]);
+          setDestinationsError('No destinations are available right now.');
+        }
+      } catch (err) {
+        if (mounted) {
+          setDestinationOptions([]);
+          setDestinationsError('Failed to load destinations.');
+        }
       }
 
-      setDestinationsLoading(false);
+      if (mounted) setDestinationsLoading(false);
     };
 
     const loadTravellerOptions = async () => {
@@ -500,7 +530,7 @@ export default function CustomizeFlow() {
       }
     };
 
-    loadCrowdLevels(); 
+    loadCrowdLevels();
 
     return () => {
       mounted = false;
@@ -764,16 +794,61 @@ export default function CustomizeFlow() {
   /* ─────────────────────────────────────────────────────────────────
      Step 1: Destination
   ───────────────────────────────────────────────────────────────── */
-  const renderDestination = () => (
-    <div style={{ animation: 'fadeIn 0.3s' }}>
-      <DestinationPicker
-        destinations={destinationOptions}
-        error={destinationsError}
-        loading={destinationsLoading}
-        onPick={handleDestination}
-      />
-    </div>
-  );
+  const renderDestination = () => {
+    if (data.travelWith === 'Honeymoon') {
+      const honeymoonPkg = {
+        name: 'Honeymoon Packages',
+        description: 'A honeymoon is the perfect beginning to a beautiful journey together. Escape to enchanting destinations, discover breathtaking landscapes, explore charming towns, and enjoy intimate moments away from the everyday rush. From relaxing on pristine beaches and watching unforgettable sunsets to experiencing local culture, delicious cuisine, and romantic adventures, every moment becomes a cherished memory. Whether you dream of a peaceful mountain retreat, a luxurious island escape, or an exciting international getaway, our honeymoon packages are thoughtfully designed for couples. Enjoy comfortable stays, memorable experiences, and seamless travel as you celebrate your love and create beautiful stories that you will treasure for a lifetime.',
+        rating: 4.9,
+        review_count: 3200,
+      };
+
+      const media = {
+        images: [
+          { url: '/images/honeymoon_hero_bg.jpg', alt: 'Honeymoon Hero' },
+          { url: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=800&q=80', alt: 'Paris Nav' }
+        ]
+      };
+
+      const renderBottom = () => (
+        <section className="premium-picker-wrapper" style={{ background: '#FFF9FA', borderTop: '1px solid #FCE7ED' }}>
+          <div style={{ maxWidth: 1400, margin: '0 auto', paddingTop: 60, paddingBottom: 60 }}>
+            <DestinationPicker
+              destinations={destinationOptions}
+              error={destinationsError}
+              loading={destinationsLoading}
+              onPick={handleDestination}
+              themeClass="blush-theme"
+            />
+          </div>
+        </section>
+      );
+
+      return (
+        <div style={{ animation: 'fadeIn 0.3s' }}>
+          <PremiumDestinationLayout
+            pkg={honeymoonPkg}
+            media={media}
+            destinationNames={['Vietnam']}
+            includedItems={[]}
+            excludedItems={[]}
+            renderBottom={renderBottom}
+          />
+        </div>
+      );
+    }
+
+    return (
+      <div style={{ animation: 'fadeIn 0.3s' }}>
+        <DestinationPicker
+          destinations={destinationOptions}
+          error={destinationsError}
+          loading={destinationsLoading}
+          onPick={handleDestination}
+        />
+      </div>
+    );
+  };
 
   /* ─────────────────────────────────────────────────────────────────
      Step 2: Travellers & Room Config
@@ -935,8 +1010,8 @@ export default function CustomizeFlow() {
           const city = formatAirportOption(airport);
           return (
             <div key={airport.id || airport.ident || city} onClick={() => handleCity(city)}
-            style={{ padding: '16px 20px', borderBottom: '1px solid #f3f4f6', cursor: 'pointer', fontSize: 14, color: '#374151', fontWeight: 500, transition: 'background 0.2s' }}
-            onMouseEnter={e => e.currentTarget.style.background = '#f9fafb'} onMouseLeave={e => e.currentTarget.style.background = 'white'}>
+              style={{ padding: '16px 20px', borderBottom: '1px solid #f3f4f6', cursor: 'pointer', fontSize: 14, color: '#374151', fontWeight: 500, transition: 'background 0.2s' }}
+              onMouseEnter={e => e.currentTarget.style.background = '#f9fafb'} onMouseLeave={e => e.currentTarget.style.background = 'white'}>
               <div>{city}</div>
               <div style={{ marginTop: 4, fontSize: 12, color: '#9ca3af', fontWeight: 500 }}>
                 {airport.name}{airport.type ? ` · ${airport.type.replace(/_/g, ' ')}` : ''}
@@ -1350,8 +1425,8 @@ export default function CustomizeFlow() {
     const responseData = itinerarySubmitResponse?.data || itinerarySubmitResponse?.booking || itinerarySubmitResponse?.itinerary || itinerarySubmitResponse;
     const responseRows = responseData && typeof responseData === 'object'
       ? Object.entries(responseData)
-          .filter(([, value]) => value !== null && value !== undefined && typeof value !== 'object')
-          .slice(0, 8)
+        .filter(([, value]) => value !== null && value !== undefined && typeof value !== 'object')
+        .slice(0, 8)
       : [];
     const summaryRows = [
       ['Destination', payload.trip.destination],
@@ -1955,37 +2030,23 @@ export default function CustomizeFlow() {
       </div>
 
       {/* Main Content Area */}
-      <main className="cust-content">
-        {step === 0 && renderDestination()}
-        {step === 1 && renderTravellers()}
-        {step === 2 && renderDuration()}
-        {step === 3 && renderDepartureCity()}
-        {step === 4 && renderDepartureDate()}
-        {step === 5 && renderCities()}
-      </main>
-
-      {/* Bottom Review Block */}
-      {step < 5 && (
-        <footer className="cust-review-footer">
-          <div className="cust-review-inner">
-            <div style={{ display: 'flex', gap: 12, flex: 1 }}>
-              <img src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&q=80" style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover' }} alt="User" />
-              <div>
-                <p style={{ margin: 0, fontSize: 12, color: '#4b5563', lineHeight: 1.4 }}>&quot;This is my honest review of my experience with ITS TRAVELS AND TOURS whose services my partner and I used to book our memorable New Zealand honeymoon...&quot;</p>
-                <p style={{ margin: '4px 0 0', fontSize: 11, fontWeight: 700, color: 'var(--color-primary)' }}>Tejas Kinger, New Zealand</p>
-              </div>
-            </div>
-            <div className="cust-review-divider" style={{ width: 1, height: 40, background: '#e5e7eb' }} />
-            <div className="cust-review-score" style={{ flexShrink: 0 }}>
-              <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 2 }}>
-                <span style={{ fontSize: 14, fontWeight: 700 }}>4.6 / 5</span>
-                <span style={{ color: '#fbbf24', fontSize: 14 }}>★</span>
-              </div>
-              <p style={{ margin: 0, fontSize: 11, color: '#6b7280' }}>8250 reviews</p>
-            </div>
-          </div>
-        </footer>
+      {data.travelWith === 'Honeymoon' && step === 0 ? (
+        <main style={{ padding: 0, width: '100vw', maxWidth: '100%' }}>
+          {renderDestination()}
+        </main>
+      ) : (
+        <main className="cust-content">
+          {step === 0 && renderDestination()}
+          {step === 1 && renderTravellers()}
+          {step === 2 && renderDuration()}
+          {step === 3 && renderDepartureCity()}
+          {step === 4 && renderDepartureDate()}
+          {step === 5 && renderCities()}
+        </main>
       )}
+
+
+
     </div>
   );
 }

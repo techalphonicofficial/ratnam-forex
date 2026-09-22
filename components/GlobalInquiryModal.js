@@ -83,7 +83,7 @@ export default function GlobalInquiryModal({ brand, companyInfo }) {
   const [selectedCountry, setSelectedCountry] = useState(countries[0]);
   const dropdownRef = useRef(null);
 
-  const brandLogo = getLogoUrl(companyInfo?.company_logo_url) || brand?.logo || '/logooo.png';
+  const brandLogo = getLogoUrl(companyInfo?.company_logo_url) || brand?.logo || '';
   const brandName = 'Travel Holiday';
 
   useEffect(() => {

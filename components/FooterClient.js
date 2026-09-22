@@ -129,14 +129,14 @@ export default function FooterClient({ brand, companyInfo }) {
   const footerLinks = normalizeColumns(companyInfo?.footer_columns);
   const trustItems = normalizeTrustItems(companyInfo?.footer_columns);
   const socialLinks = normalizeSocialLinks(companyInfo?.social);
-  const brandLogo = getLogoUrl(companyInfo?.company_logo_url) || brand?.logo || '/logooo.png';
+  const brandLogo = getLogoUrl(companyInfo?.company_logo_url) || brand?.logo || '';
   const brandName = brand?.legalName || 'ITS TRAVELS AND TOURS';
   const footerContent = companyInfo?.footer_content || `© ${new Date().getFullYear()} ${brandName}. All rights reserved.`;
   const brandDescription = brand?.description || 'Crafting unforgettable travel experiences since 2015. We believe every journey should be as extraordinary as the destination.';
   const phone = companyInfo?.contact?.phone || '+91 9999457020';
   const email = companyInfo?.contact?.email || 'itstravels.tours@gmail.com';
 
-  if (pathname?.startsWith('/auth') || pathname === '/customize') {
+  if (pathname?.startsWith('/auth')) {
     return null;
   }
 
@@ -181,28 +181,32 @@ export default function FooterClient({ brand, companyInfo }) {
               </div>
             </div>
 
-            {Object.entries(footerLinks).map(([section, links]) => (
-              <div key={section} className="col-6 col-md-3 col-lg-2">
-                <h4 className="footer-heading">{section}</h4>
-                <ul className="list-unstyled mb-0">
-                  {links.map(({ label, href }) => (
-                    <li key={`${section}-${label}`}>
-                      <Link href={href} className="footer-link">{label}</Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-
-            <div className="col-6 col-md-3 col-lg-2 d-flex flex-column align-items-center">
-              <h4 className="footer-heading">Trust & Safety</h4>
-              <div className="d-flex flex-column gap-3">
-                {trustItems.map(({ icon, text }) => (
-                  <div key={text} className="d-flex align-items-center justify-content-center gap-2" style={{ color: 'var(--color-text-secondary)', fontSize: 13 }}>
-                    <TrustIcon icon={icon} />
-                    <span>{text}</span>
+            <div className="col-12 col-lg-8">
+              <div className="footer-links-grid">
+                {Object.entries(footerLinks).map(([section, links]) => (
+                  <div key={section} className="footer-link-col">
+                    <h4 className="footer-heading">{section}</h4>
+                    <ul className="list-unstyled mb-0">
+                      {links.map(({ label, href }) => (
+                        <li key={`${section}-${label}`}>
+                          <Link href={href} className="footer-link">{label}</Link>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 ))}
+
+                <div className="footer-link-col">
+                  <h4 className="footer-heading">Trust & Safety</h4>
+                  <div className="d-flex flex-column gap-3 align-items-center align-items-md-start">
+                    {trustItems.map(({ icon, text }) => (
+                      <div key={text} className="d-flex align-items-center gap-2" style={{ color: 'var(--color-text-secondary)', fontSize: 13 }}>
+                        <TrustIcon icon={icon} />
+                        <span>{text}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -229,6 +233,28 @@ export default function FooterClient({ brand, companyInfo }) {
       </div>
 
       <style jsx>{`
+        .footer-links-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 32px 16px;
+          text-align: left;
+        }
+        .footer-link-col {
+          display: flex;
+          flex-direction: column;
+        }
+        @media (max-width: 767px) {
+          .footer-links-grid {
+            margin-top: 32px;
+            text-align: center;
+          }
+        }
+        @media (min-width: 768px) {
+          .footer-links-grid {
+            grid-template-columns: repeat(4, 1fr);
+            gap: 32px;
+          }
+        }
         .footer-bottom-link {
           color: var(--color-text-muted);
           font-size: 13px;

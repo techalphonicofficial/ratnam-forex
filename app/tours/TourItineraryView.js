@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
+import PremiumDestinationLayout from '@/components/PremiumDestinationLayout';
 import { createPackageBooking, createRazorpayOrder, getMediaUrl, getPackageBySlug, getPackageReviews, getPartialBookingSettings, getStoredAuth, getStoredToken, validateBookingCoupon, verifyRazorpayPayment } from '@/utils/api';
 
 const DEFAULT_PACKAGE_SLUGS = {
@@ -1774,6 +1775,279 @@ export default function TourItineraryView({ destination, packageSlug }) {
     month: 'short',
     year: 'numeric',
   });
+
+  const isHoneymoon = pkg?.categories?.some?.(c => c.slug?.includes('honeymoon') || c.name?.toLowerCase().includes('honeymoon')) || pkg?.slug?.includes('honeymoon') || pkg?.name?.toLowerCase().includes('honeymoon');
+
+  const renderBookingCard = () => (
+    <div className="itn-card itn-price-card" style={{ boxShadow: '0 10px 30px rgba(217, 70, 111, 0.08)', borderRadius: '24px', border: '1px solid #FCE7ED' }}>
+      <div>
+        <span style={{color: '#6B6670'}}>Package price</span>
+        <strong style={{color: '#D9466F', fontSize: '28px'}}>{unitPriceLabel}</strong>
+        <small style={{color: '#6B6670'}}>Per traveller</small>
+        {travellerCount > 1 ? <em className="itn-price-tax" style={{color: '#B8325A'}}>Group base {priceLabel}</em> : null}
+        {taxAmount > 0 ? <em className="itn-price-tax" style={{color: '#B8325A'}}>+ {taxAmountLabel} {taxLabel}</em> : null}
+        {taxAmount > 0 ? <em className="itn-price-tax" style={{color: '#B8325A'}}>Total {packageTotalLabel}</em> : null}
+        <small style={{color: '#6B6670'}}>{getDurationLabel(pkg.duration_days)} · {destinationNames.join(' + ') || 'Custom route'}</small>
+      </div>
+      <div className="itn-price-travellers" aria-label="Travellers for this booking">
+        <span style={{color: '#171717'}}>Travellers</span>
+        <div style={{borderColor: '#FCE7ED'}}>
+          <button type="button" onClick={() => updateTravellerCount(travellerCount - 1)} aria-label="Reduce travellers" style={{color: '#D9466F'}}>-</button>
+          <input
+            type="number"
+            min="1"
+            max="25"
+            value={travellerCount}
+            onChange={(event) => updateTravellerCount(event.target.value)}
+            aria-label="Traveller count"
+            style={{color: '#171717'}}
+          />
+          <button type="button" onClick={() => updateTravellerCount(travellerCount + 1)} aria-label="Add traveller" style={{color: '#D9466F'}}>+</button>
+        </div>
+        <small style={{color: '#6B6670'}}>{travellerLabel} selected</small>
+      </div>
+      {partialBookingEnabled ? (
+        <div className="itn-payment-options" role="radiogroup" aria-label="Choose payment amount">
+          <label className={isPartialPayment ? 'is-selected' : ''} style={isPartialPayment ? {borderColor: '#D9466F', background: '#FCE7ED'} : {}}>
+            <input
+              type="radio"
+              name="sidebar-payment-mode"
+              value="partial"
+              checked={isPartialPayment}
+              onChange={() => updatePaymentMode('partial')}
+            />
+            <span style={{color: '#171717'}}>Pay {partialBookingPercentage}% now</span>
+            <strong style={{color: '#D9466F'}}>{bookingAmountLabel}</strong>
+            <small style={{color: '#6B6670'}}>Balance {partialRemainingAmountLabel}</small>
+          </label>
+          <label className={!isPartialPayment ? 'is-selected' : ''} style={!isPartialPayment ? {borderColor: '#D9466F', background: '#FCE7ED'} : {}}>
+            <input
+              type="radio"
+              name="sidebar-payment-mode"
+              value="full"
+              checked={!isPartialPayment}
+              onChange={() => updatePaymentMode('full')}
+            />
+            <span style={{color: '#171717'}}>Pay full amount</span>
+            <strong style={{color: '#D9466F'}}>{packageTotalLabel}</strong>
+            <small style={{color: '#6B6670'}}>No remaining balance</small>
+          </label>
+        </div>
+      ) : null}
+      <button 
+        type="button" 
+        onClick={openBookingModal}
+        style={{
+          background: '#D9466F',
+          color: 'white',
+          borderRadius: '100px',
+          padding: '16px 24px',
+          fontWeight: '600',
+          fontSize: '16px',
+          marginTop: '16px',
+          width: '100%',
+          border: 'none',
+          cursor: 'pointer',
+          boxShadow: '0 4px 14px rgba(217, 70, 111, 0.3)'
+        }}
+      >
+        <span>{amountToPay > 0 ? `Book Now - Pay ${amountToPayLabel}` : 'Book Now'}</span>
+      </button>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', marginTop: '24px', flexWrap: 'wrap' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: '20px', marginBottom: '4px' }}>🛡️</div>
+          <div style={{ fontSize: '11px', color: '#6B6670' }}>Secure<br/>Payments</div>
+        </div>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: '20px', marginBottom: '4px' }}>🎧</div>
+          <div style={{ fontSize: '11px', color: '#6B6670' }}>24x7<br/>Support</div>
+        </div>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: '20px', marginBottom: '4px' }}>⭐</div>
+          <div style={{ fontSize: '11px', color: '#6B6670' }}>Trusted by<br/>100K+ Travellers</div>
+        </div>
+      </div>
+    </div>
+  );
+
+  if (isHoneymoon) {
+    return (
+      <div className="itn-page">
+        <PremiumDestinationLayout 
+          pkg={pkg}
+          media={media}
+          priceLabel={priceLabel}
+          renderBookingCard={renderBookingCard}
+          destinationNames={destinationNames}
+          includedItems={includedItems}
+          excludedItems={excludedItems}
+        />
+        
+        {/* Modals from existing layout */}
+        {bookingModalOpen ? (
+          <div className="itn-booking-modal" role="dialog" aria-modal="true" aria-label="Complete package booking">
+            {/* Same booking modal content as below */}
+            <div className="itn-booking-panel">
+              <button
+                type="button"
+                className="itn-booking-close"
+                onClick={() => {
+                  if (!paymentProcessing) setBookingModalOpen(false);
+                }}
+                aria-label="Close booking popup"
+              >
+                x
+              </button>
+              <div className="itn-booking-hero">
+                <span>Secure package booking</span>
+                <h2>{pkg.name}</h2>
+                <p>{getDurationLabel(pkg.duration_days)} - {destinationNames.join(' + ') || 'Custom route'}</p>
+              </div>
+              <section className="itn-booking-travellers">
+                <div className="itn-booking-section-title">
+                  <span>Travellers</span>
+                  <strong>Book this package for yourself and friends</strong>
+                </div>
+                <div className="itn-traveller-count-row">
+                  <div>
+                    <span>Total travellers</span>
+                    <strong>{travellerLabel}</strong>
+                    <small>{unitPriceLabel} per traveller before taxes</small>
+                  </div>
+                  <div className="itn-traveller-stepper">
+                    <button type="button" onClick={() => updateTravellerCount(travellerCount - 1)} aria-label="Reduce travellers">-</button>
+                    <input
+                      type="number"
+                      min="1"
+                      max="25"
+                      value={travellerCount}
+                      onChange={(event) => updateTravellerCount(event.target.value)}
+                      aria-label="Total travellers"
+                    />
+                    <button type="button" onClick={() => updateTravellerCount(travellerCount + 1)} aria-label="Add traveller">+</button>
+                  </div>
+                </div>
+                {guestTravellers.length ? (
+                  <div className="itn-guest-list">
+                    {guestTravellers.map((traveller, index) => (
+                      <div className="itn-guest-card" key={`guest-traveller-${index}`}>
+                        <strong>Traveller {index + 2}</strong>
+                        <label>
+                          Name
+                          <input
+                            type="text"
+                            value={traveller.name}
+                            onChange={(event) => updateGuestTraveller(index, 'name', event.target.value)}
+                            placeholder="Friend name"
+                          />
+                        </label>
+                        <label>
+                          Age
+                          <input
+                            type="number"
+                            min="0"
+                            max="120"
+                            value={traveller.age}
+                            onChange={(event) => updateGuestTraveller(index, 'age', event.target.value)}
+                            placeholder="Age"
+                          />
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
+              </section>
+              <div className="itn-booking-summary">
+                <div>
+                  <span>Package base</span>
+                  <strong>{priceLabel}</strong>
+                </div>
+                <div>
+                  <span>Travellers</span>
+                  <strong>{travellerLabel}</strong>
+                </div>
+                <div>
+                  <span>{taxLabel}</span>
+                  <strong>{taxAmountLabel}</strong>
+                </div>
+                <div>
+                  <span>Booking total</span>
+                  <strong>{packageTotalLabel}</strong>
+                </div>
+                <div>
+                  <span>{partialBookingEnabled ? `${duePercentLabel} due now` : 'Amount due now'}</span>
+                  <strong>{amountToPayLabel}</strong>
+                </div>
+                <div>
+                  <span>Remaining balance</span>
+                  <strong>{remainingAmountLabel}</strong>
+                </div>
+              </div>
+              <div className="itn-booking-form">
+                <label>
+                  Lead traveller name
+                  <input
+                    type="text"
+                    value={bookingForm.name}
+                    onChange={(event) => updateBookingField('name', event.target.value)}
+                    placeholder="Your name"
+                  />
+                </label>
+                <label>
+                  Lead traveller email
+                  <input
+                    type="email"
+                    value={bookingForm.email}
+                    onChange={(event) => updateBookingField('email', event.target.value)}
+                    placeholder="you@example.com"
+                  />
+                </label>
+                <label>
+                  Lead traveller phone
+                  <input
+                    type="tel"
+                    value={bookingForm.phone}
+                    onChange={(event) => updateBookingField('phone', event.target.value)}
+                    placeholder="Phone number"
+                  />
+                </label>
+              </div>
+              {paymentError ? <div className="itn-booking-error">{paymentError}</div> : null}
+              {paymentMessage ? <div className="itn-booking-message">{paymentMessage}</div> : null}
+              <div className="itn-booking-actions">
+                <button type="button" onClick={() => setBookingModalOpen(false)} disabled={paymentProcessing}>
+                  Not now
+                </button>
+                <button type="button" onClick={startRazorpayPayment} disabled={paymentProcessing || !amountToPay}>
+                  {paymentProcessing ? 'Please wait...' : `Pay ${amountToPayLabel}`}
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
+
+        {loginPromptOpen ? (
+          <div className="itn-booking-modal" role="dialog" aria-modal="true" aria-label="Login required">
+            <div className="itn-login-panel">
+              <button type="button" className="itn-booking-close" onClick={() => setLoginPromptOpen(false)} aria-label="Close login prompt">
+                x
+              </button>
+              <div className="itn-booking-hero">
+                <span>Login required</span>
+                <h2>Sign in to book this package</h2>
+              </div>
+              <div className="itn-booking-actions">
+                <button type="button" onClick={() => setLoginPromptOpen(false)}>Not now</button>
+                <Link href={`/auth/login?redirect=${encodeURIComponent(loginRedirectUrl)}`}>
+                  Login to continue
+                </Link>
+              </div>
+            </div>
+          </div>
+        ) : null}
+      </div>
+    );
+  }
 
   return (
     <div className="itn-page">

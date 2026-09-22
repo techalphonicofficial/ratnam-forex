@@ -257,7 +257,7 @@ export default function GramSection({ videoReviewsData }) {
 
   return (
     <section style={{
-      background: 'var(--color-bg)',
+      background: 'transparent',
       padding: '80px 0 100px',
       position: 'relative',
       overflow: 'hidden',

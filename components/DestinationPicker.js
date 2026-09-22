@@ -2,16 +2,57 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
+import TrendingToursSection from './TrendingToursSection';
+import HoneymoonToursSection from './HoneymoonToursSection';
+import GramSection from './GramSection';
+import CustomerReviewsSection from './CustomerReviewsSection';
+import FAQSection from './FAQSection';
 
 const skeletonCards = Array.from({ length: 6 }, (_, index) => index);
 
-export default function DestinationPicker({ onPick, destinations: apiDestinations = [], loading = false, error = '' }) {
+export default function DestinationPicker({ onPick, destinations: apiDestinations = [], loading = false, error = '', themeClass = '' }) {
   const scrollRef = useRef(null);
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [search, setSearch] = useState('');
+  const [filterType, setFilterType] = useState('All');
   const [canScroll, setCanScroll] = useState({ prev: false, next: false });
+  const dynamicTabs = useMemo(() => {
+    const tabs = new Set();
+    if (Array.isArray(apiDestinations)) {
+      apiDestinations.forEach(dest => {
+        if (dest.type && typeof dest.type === 'string') {
+          tabs.add(dest.type.trim());
+        }
+        if (Array.isArray(dest.categories)) {
+          dest.categories.forEach(cat => {
+            if (typeof cat === 'string') tabs.add(cat.trim());
+            else if (cat && cat.name) tabs.add(cat.name.trim());
+          });
+        }
+      });
+    }
+    const formattedTabs = Array.from(tabs)
+      .filter(t => Boolean(t) && t.length < 25 && !t.includes('.') && !t.includes(','))
+      .map(t => t.charAt(0).toUpperCase() + t.slice(1).toLowerCase());
+    
+    const uniqueTabs = Array.from(new Set(formattedTabs));
+    return ['All', ...uniqueTabs];
+  }, [apiDestinations]);
+
   const visibleDestinations = useMemo(() => {
-    const rows = Array.isArray(apiDestinations) ? apiDestinations : [];
+    let rows = Array.isArray(apiDestinations) ? apiDestinations : [];
+    
+    if (filterType !== 'All') {
+      const lowerFilter = filterType.toLowerCase();
+      rows = rows.filter(dest => {
+        const destType = (dest.type || '').toLowerCase().trim();
+        const destCats = Array.isArray(dest.categories) 
+          ? dest.categories.map(c => typeof c === 'string' ? c.toLowerCase().trim() : (c?.name || '').toLowerCase().trim()) 
+          : [];
+        return destType === lowerFilter || destCats.includes(lowerFilter);
+      });
+    }
+
     const query = search.trim().toLowerCase();
 
     if (!query) return rows;
@@ -22,7 +63,7 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
       String(dest.type || '').toLowerCase().includes(query) ||
       String(dest.categories || '').toLowerCase().includes(query)
     ));
-  }, [apiDestinations, search]);
+  }, [apiDestinations, search, filterType]);
 
   const updateScrollState = useCallback(() => {
     const row = scrollRef.current;
@@ -46,8 +87,8 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
     }
 
     const card = row.querySelector('.destination-scroll-card');
-    const cardWidth = card ? card.getBoundingClientRect().width + 24 : 300;
-    const distance = Math.max(cardWidth * 2, row.clientWidth * 0.68);
+    const cardWidth = card ? card.getBoundingClientRect().width + 24 : 264;
+    const distance = cardWidth;
     const nextLeft = Math.max(0, Math.min(row.scrollLeft + (direction * distance), maxLeft));
 
     row.scrollTo({ left: nextLeft, behavior: 'smooth' });
@@ -82,7 +123,7 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
     const isHovered = hoveredIndex === index;
 
     return (
-      <div style={{ position: 'relative', width: '100%', paddingBottom: '40px' }}
+      <div style={{ position: 'relative', width: '100%', paddingTop: '40px', paddingBottom: '70px' }}
         onMouseEnter={() => setHoveredIndex(index)}
         onMouseLeave={() => setHoveredIndex(null)}>
 
@@ -136,7 +177,7 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
         {/* Hover Badges Block */}
         <div style={{
           position: 'absolute',
-          bottom: '10px',
+          bottom: '24px',
           left: '50%',
           transform: 'translateX(-50%)',
           display: 'flex',
@@ -167,9 +208,12 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
   };
 
   return (
-    <section style={{
+    <>
+      <HoneymoonToursSection themeClass={themeClass} />
+      <TrendingToursSection themeClass={themeClass} />
+      <section className={themeClass} style={{
       padding: 'var(--space-8) 0 var(--space-10)',
-      background: 'var(--color-card)',
+      background: themeClass.includes('blush') ? 'transparent' : 'var(--color-card)',
       position: 'relative',
       overflow: 'hidden',
       width: '100%',
@@ -196,7 +240,7 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
         <div className="container" style={{ maxWidth: '1400px', marginBottom: '40px' }}>
           <div className="text-center">
             <h2 style={{ fontSize: '32px', fontWeight: 800, color: 'var(--color-text-primary)', fontFamily: '"Italiana", sans-serif' }}>
-              What&apos;s <span style={{ color: 'var(--color-primary)', fontStyle: 'italic', fontWeight: 500 }}> your pick </span> for your next vacation
+              What&apos;s <span style={{ color: themeClass.includes('blush') ? '#D9466F' : 'var(--color-primary)', fontStyle: 'italic', fontWeight: 500 }}> your pick </span> for your next vacation
             </h2>
 
             <div className="mx-auto mt-4" style={{ maxWidth: '620px', position: 'relative' }}>
@@ -222,6 +266,33 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
                 }}
               />
             </div>
+            
+            {/* Filter Pills */}
+            {dynamicTabs.length > 1 && (
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', marginTop: '24px', flexWrap: 'wrap' }}>
+                {dynamicTabs.map(type => (
+                  <button
+                    key={type}
+                    onClick={() => setFilterType(type)}
+                    style={{
+                      padding: '8px 24px',
+                      borderRadius: 'var(--radius-full)',
+                      border: '1.5px solid',
+                      borderColor: filterType === type ? 'var(--color-primary)' : 'var(--color-border)',
+                      background: filterType === type ? 'var(--color-primary)' : 'transparent',
+                      color: filterType === type ? '#fff' : 'var(--color-text-secondary)',
+                      fontSize: '14px',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      boxShadow: filterType === type ? 'var(--shadow-sm)' : 'none'
+                    }}
+                  >
+                    {type}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
@@ -273,7 +344,7 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
               minWidth: 0,
               scrollbarWidth: 'none',
               msOverflowStyle: 'none',
-              padding: 'var(--space-10) 0 var(--space-9)', // Increased top padding to 60px to prevent clipping
+              padding: '0',
               scrollSnapType: 'x mandatory',
               WebkitOverflowScrolling: 'touch',
               scrollBehavior: 'smooth',
@@ -286,11 +357,11 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
               window.requestAnimationFrame(updateScrollState);
             }}
           >
-            {/* Invisble spacers to center initial/final items if needed, or just let it flow */}
-            <div style={{ flex: '0 0 calc((100vw - 1400px) / 2)', minWidth: 40 }} />
+            {/* Spacer to align first item with the 1400px container */}
+            <div style={{ flex: '0 0 max(calc((100vw - 1400px) / 2), 20px)' }} />
 
             {loading ? skeletonCards.map((item) => (
-              <div key={`destination-skeleton-${item}`} className="destination-scroll-card destination-skeleton-card">
+              <div key={`destination-skeleton-${item}`} className="destination-scroll-card destination-skeleton-card" style={{ scrollSnapAlign: 'start' }}>
                 <span className="destination-skeleton-arch" />
                 <span className="destination-skeleton-line is-short" />
                 <span className="destination-skeleton-line" />
@@ -303,7 +374,7 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
               <div key={dest.id || dest.slug || dest.name || i} className="destination-scroll-card" style={{
                 flex: '0 0 auto',
                 width: '240px',
-                scrollSnapAlign: 'center'
+                scrollSnapAlign: 'start'
               }}>
                 {onPick ? (
                   <button
@@ -325,7 +396,7 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
               </div>
             )}
 
-            <div style={{ flex: '0 0 calc((100vw - 1400px) / 2)', minWidth: 40 }} />
+            <div style={{ flex: '0 0 max(calc((100vw - 1400px) / 2), 20px)' }} />
           </div>
         </div>
 
@@ -348,7 +419,8 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
           flex: 0 0 auto;
           width: 240px;
           scroll-snap-align: center;
-          padding-bottom: 40px;
+          padding-top: 40px;
+          padding-bottom: 70px;
         }
         .destination-skeleton-arch,
         .destination-skeleton-line {
@@ -389,6 +461,10 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
           overflow: visible;
         }
       `}</style>
-    </section>
+      </section>
+      <GramSection />
+      <CustomerReviewsSection />
+      <FAQSection />
+    </>
   );
 }
