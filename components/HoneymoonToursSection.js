@@ -86,7 +86,17 @@ export default function HoneymoonToursSection({ themeClass = '' }) {
     return result;
   }, [apiTours, regionFilter, budgetFilter]);
 
-  const displayedTours = showAllTours ? filteredTours : filteredTours.slice(0, 6);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 992);
+    handleResize(); // Initialize on client
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const limit = isMobile ? 6 : 4;
+  const displayedTours = showAllTours ? filteredTours : filteredTours.slice(0, limit);
 
   // Don't render section if no honeymoon tours exist at all (after loading)
   if (!loading && apiTours.length === 0) return null;
@@ -175,7 +185,7 @@ export default function HoneymoonToursSection({ themeClass = '' }) {
               </div>
               
               {/* Show All Toggle Button */}
-              {filteredTours.length > 6 && (
+              {filteredTours.length > limit && (
                 <div className="text-center" style={{ marginTop: '40px' }}>
                   <button 
                     onClick={() => setShowAllTours(!showAllTours)}
