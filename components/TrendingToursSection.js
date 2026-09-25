@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import TrendingTourCard from './TrendingTourCard';
 import { getPackages, getPackageFilters, normalizePackageToTour } from '@/utils/api';
+import CustomSelect from './CustomSelect';
 
 const MAX_PRICE = 1000000;
 const formatPriceNumber = (value) => Number(value || 0).toLocaleString('en-IN');
@@ -39,6 +40,14 @@ export default function TrendingToursSection({ themeClass = '' }) {
 
   const toggleSection = (section) => {
     setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
+  };
+
+  const scrollRef = useRef(null);
+  const scroll = (direction) => {
+    if (scrollRef.current) {
+      const scrollAmount = scrollRef.current.offsetWidth;
+      scrollRef.current.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+    }
   };
 
   useEffect(() => {
@@ -144,16 +153,19 @@ export default function TrendingToursSection({ themeClass = '' }) {
       <div className="container trending-wrapper" style={{ maxWidth: '1400px' }}>
 
         {/* Heading Header matched to screenshot */}
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '30px' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '30px', textAlign: 'center', width: '100%' }}>
           <h2 style={{
             fontSize: '24px',
             fontWeight: 600,
-            color: '#dc2626',
-            border: '2px solid #dc2626',
-            padding: '8px 24px',
+            color: '#D9466F',
+            border: '2px solid #D9466F',
+            borderRadius: '50px',
+            padding: '10px 32px',
             textTransform: 'uppercase',
-            letterSpacing: '1px',
-            margin: 0
+            letterSpacing: '2px',
+            margin: 0,
+            backgroundColor: '#FFF9FA',
+            boxShadow: '0 4px 12px rgba(217, 70, 111, 0.1)'
           }}>
             Trending Tours
           </h2>
@@ -162,104 +174,49 @@ export default function TrendingToursSection({ themeClass = '' }) {
         <div style={{ display: 'flex', gap: '24px', alignItems: 'flex-start' }}>
 
           {/* Sidebar */}
-          <div style={{
+          <div className="trending-sidebar" style={{
             width: '260px',
             flexShrink: 0,
             background: '#fff',
             boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
             padding: '24px',
             position: 'sticky',
-            top: '80px'
+            top: '80px',
+            borderRadius: '50px'
           }}>
 
-            {/* Search */}
-            <div style={{ marginBottom: '30px' }}>
-              <div className="trending-search-heading" style={{ fontSize: '14px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '12px' }}>
-                Search
-              </div>
-              <div style={{ position: 'relative' }}>
-                <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#888' }}>
-                  <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
-                </svg>
-                <input
-                  type="text"
-                  placeholder="Destination, country..."
-                  value={filters.search}
-                  onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                  style={{
-                    width: '100%',
-                    padding: '10px 10px 10px 36px',
-                    border: '1px solid #e0e0e0',
-                    borderRadius: '24px',
-                    fontSize: '13px',
-                    outline: 'none',
-                    background: '#fdfdfd'
-                  }}
-                />
-              </div>
-            </div>
+
 
             <div className="mobile-filters-row">
-              <select 
-                value={filters.type} 
-                onChange={(e) => setFilters(prev => ({ ...prev, type: e.target.value }))}
+              <CustomSelect 
                 className="trending-mobile-select"
-              >
-                {filterOptions.tourTypes.map(t => (
-                  <option key={t.key} value={t.key}>{t.label}</option>
-                ))}
-              </select>
+                value="all"
+                onChange={() => {}}
+                placeholder="Duration"
+                options={[
+                  { value: 'all', label: 'Duration' },
+                  ...filterOptions.durations.map(d => ({ value: d.key, label: d.label }))
+                ]}
+              />
 
-              <select className="trending-mobile-select">
-                <option value="all">Duration</option>
-                {filterOptions.durations.map(d => (
-                  <option key={d.key} value={d.key}>{d.label}</option>
-                ))}
-              </select>
-
-              <select 
+              <CustomSelect 
+                className="trending-mobile-select"
                 value={filters.maxPrice === (filterOptions.priceRange.max || 500000) ? 'Any' : filters.maxPrice}
-                onChange={(e) => {
-                  const val = e.target.value;
+                onChange={(val) => {
                   setFilters(prev => ({ ...prev, maxPrice: val === 'Any' ? (filterOptions.priceRange.max || 500000) : Number(val) }));
                 }}
-                className="trending-mobile-select"
-              >
-                <option value="Any">Budget</option>
-                <option value="50000">Under ₹50k</option>
-                <option value="100000">₹50k - ₹1L</option>
-                <option value="500000">Above ₹1L</option>
-              </select>
+                placeholder="Budget"
+                options={[
+                  { value: 'Any', label: 'Budget' },
+                  { value: '50000', label: 'Under ₹50k' },
+                  { value: '100000', label: '₹50k - ₹1L' },
+                  { value: '500000', label: 'Above ₹1L' }
+                ]}
+              />
             </div>
 
             <div className="desktop-filters">
               <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '0 0 24px 0' }} />
-
-              {/* Tour Type */}
-              <div style={{ marginBottom: '30px' }}>
-                <div style={{ fontSize: '14px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '16px' }}>
-                  Tour Type
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '300px', overflowY: 'auto' }}>
-                  {filterOptions.tourTypes.map((type) => (
-                    <label key={type.key} style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', fontSize: '13px', color: '#555', width: '100%' }}>
-                      <input
-                        type="radio"
-                        name="trendingTourType"
-                        value={type.key}
-                        checked={filters.type === type.key}
-                        onChange={() => setFilters(prev => ({ ...prev, type: type.key }))}
-                        style={{ accentColor: '#b98c56', marginRight: '10px', width: '16px', height: '16px', flexShrink: 0 }}
-                      />
-                      <span>{type.label}</span>
-                      <span style={{ marginLeft: 'auto', fontSize: '11px', background: '#f5f5f5', padding: '2px 8px', borderRadius: '12px', color: '#888', fontWeight: 600 }}>
-                        {type.count}
-                      </span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
 
               {/* Tour Duration Accordion */}
               <div style={{ marginBottom: '16px', marginTop: '20px' }}>
@@ -327,44 +284,33 @@ export default function TrendingToursSection({ themeClass = '' }) {
                 ))}
               </div>
             ) : filteredTours.length > 0 ? (
-              <>
-                <div className="trending-grid">
+              <div style={{ position: 'relative' }}>
+                <div className="trending-grid" ref={scrollRef}>
                   {displayedTours.map((tour) => (
-                    <TrendingTourCard key={tour.id || tour.slug} tour={tour} />
+                    <div key={tour.id || tour.slug} className="trending-card-wrapper">
+                      <TrendingTourCard tour={tour} />
+                    </div>
                   ))}
                 </div>
-                {filteredTours.length > 6 && (
-                  <div style={{ display: 'flex', justifyContent: 'center', marginTop: '32px' }}>
-                    <button
-                      onClick={() => setShowAllTours(!showAllTours)}
-                      style={{
-                        background: 'transparent',
-                        color: 'var(--color-primary)',
-                        border: '2px solid var(--color-primary)',
-                        padding: '10px 32px',
-                        borderRadius: '24px',
-                        fontSize: '14px',
-                        fontWeight: 700,
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.5px',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s',
-                        boxShadow: '0 4px 6px rgba(0,0,0,0.05)'
-                      }}
-                      onMouseOver={(e) => {
-                        e.currentTarget.style.background = 'var(--color-primary)';
-                        e.currentTarget.style.color = '#fff';
-                      }}
-                      onMouseOut={(e) => {
-                        e.currentTarget.style.background = 'transparent';
-                        e.currentTarget.style.color = 'var(--color-primary)';
-                      }}
-                    >
-                      {showAllTours ? 'View Less' : 'View More'}
-                    </button>
-                  </div>
-                )}
-              </>
+
+                {/* Mobile Slider Arrows */}
+                <button
+                  onClick={() => scroll(-1)}
+                  className="hm-scroll-btn hm-scroll-left"
+                  aria-label="Previous"
+                >
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6" /></svg>
+                </button>
+
+                <button
+                  onClick={() => scroll(1)}
+                  className="hm-scroll-btn hm-scroll-right"
+                  aria-label="Next"
+                >
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6" /></svg>
+                </button>
+
+              </div>
             ) : (
               <div style={{ padding: '60px 20px', textAlign: 'center', background: '#fff', borderRadius: '12px', border: '1px solid #eee' }}>
                 <h3 style={{ fontSize: '18px', color: '#555' }}>No trending tours match your filters.</h3>
@@ -394,6 +340,9 @@ export default function TrendingToursSection({ themeClass = '' }) {
           50% { opacity: 0.3; }
           100% { opacity: 0.6; }
         }
+        .hm-scroll-btn {
+          display: none;
+        }
         @media (max-width: 991px) {
           .desktop-filters {
             display: none !important;
@@ -401,7 +350,8 @@ export default function TrendingToursSection({ themeClass = '' }) {
           .mobile-filters-row {
             display: flex;
             gap: 8px;
-            margin-bottom: 24px;
+            margin-top: 8px;
+            margin-bottom: 8px;
             width: 100%;
           }
           .trending-mobile-select {
@@ -432,11 +382,12 @@ export default function TrendingToursSection({ themeClass = '' }) {
           .trending-search-heading {
             text-align: center;
           }
-          .trending-wrapper > div > div:first-child {
+          .trending-sidebar {
             width: 100% !important;
             position: static !important;
             margin-bottom: 24px;
             padding: 16px !important;
+            border-radius: 50px !important;
           }
           .trending-wrapper > div > div:last-child {
             width: 100% !important;
@@ -462,6 +413,46 @@ export default function TrendingToursSection({ themeClass = '' }) {
             border-radius: 20px;
             border: 1px solid #eaeaea;
           }
+          
+          /* Carousel logic for mobile */
+          .trending-grid {
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none;
+            gap: 16px;
+            padding-bottom: 8px;
+            scroll-behavior: smooth;
+          }
+          .trending-grid::-webkit-scrollbar {
+            display: none;
+          }
+          .trending-card-wrapper {
+            flex: 0 0 100%;
+            width: 100%;
+            scroll-snap-align: center;
+          }
+          
+          .hm-scroll-btn {
+            display: flex;
+            position: absolute;
+            top: 35%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1.5px solid var(--color-border, #E5E5E5);
+            background: var(--color-card, #fff);
+            color: var(--color-text-primary, #333);
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+          }
+          .hm-scroll-left { left: -10px; }
+          .hm-scroll-right { right: -10px; }
         }
       `}</style>
     </section>

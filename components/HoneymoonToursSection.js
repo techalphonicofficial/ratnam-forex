@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import TrendingTourCard from './TrendingTourCard';
+import CustomSelect from './CustomSelect';
 import { getPackages, normalizePackageToTour } from '@/utils/api';
 
 const MAX_PRICE = 1000000;
@@ -13,7 +14,7 @@ const INDIAN_LOCATIONS = ['india', 'kashmir', 'kerala', 'goa', 'andaman', 'himac
 const isIndianDestination = (tour) => {
   const loc = (tour.location || tour.country || '').toLowerCase();
   const title = (tour.title || '').toLowerCase();
-  
+
   if (loc.includes('india')) return true;
   for (const city of INDIAN_LOCATIONS) {
     if (loc.includes(city) || title.includes(city)) return true;
@@ -24,30 +25,37 @@ const isIndianDestination = (tour) => {
 export default function HoneymoonToursSection({ themeClass = '' }) {
   const [loading, setLoading] = useState(true);
   const [apiTours, setApiTours] = useState([]);
-  
+
   // Filters
-  const [regionFilter, setRegionFilter] = useState('All'); // 'All', 'Indian', 'International'
+  const [regionFilter, setRegionFilter] = useState('Indian'); // 'Indian', 'International'
   const [budgetFilter, setBudgetFilter] = useState('Any'); // 'Any', 'Under ₹50k', '₹50k - ₹1L', 'Above ₹1L'
 
   const [showAllTours, setShowAllTours] = useState(false);
+  const scrollRef = useRef(null);
+
+  const scroll = (dir) => {
+    if (!scrollRef.current) return;
+    const scrollAmount = scrollRef.current.offsetWidth;
+    scrollRef.current.scrollBy({ left: dir * scrollAmount, behavior: 'smooth' });
+  };
 
   useEffect(() => {
     let isMounted = true;
-    
+
     const fetchData = async () => {
       setLoading(true);
       try {
         const packages = await getPackages({ limit: 200 }); // fetch more to ensure we get enough honeymoons
-        
+
         if (isMounted) {
           const formattedTours = packages.map(normalizePackageToTour);
-          
+
           // Only keep Honeymoon tours (or ones that mention it)
           const honeymoonTours = formattedTours.filter(t => {
             const str = `${t.title} ${t.category} ${t.type} ${t.description}`.toLowerCase();
             return str.includes('honeymoon') || str.includes('romantic') || str.includes('maldives') || str.includes('bali');
           });
-          
+
           setApiTours(honeymoonTours);
         }
       } catch (err) {
@@ -56,9 +64,9 @@ export default function HoneymoonToursSection({ themeClass = '' }) {
         if (isMounted) setLoading(false);
       }
     };
-    
+
     fetchData();
-    
+
     return () => {
       isMounted = false;
     };
@@ -122,7 +130,7 @@ export default function HoneymoonToursSection({ themeClass = '' }) {
       }}>
         {/* Dark overlay for better text contrast */}
         <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.3)' }}></div>
-        
+
         {/* Heading */}
         <div className="text-center" style={{ position: 'relative', zIndex: 1, padding: '0 20px', marginTop: '40px' }}>
           <h2 style={{ fontSize: '42px', fontWeight: 800, color: '#fff', fontFamily: '"Italiana", sans-serif', textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
@@ -130,16 +138,16 @@ export default function HoneymoonToursSection({ themeClass = '' }) {
           </h2>
         </div>
       </div>
-      
+
       <div className="container" style={{ maxWidth: '1400px', marginTop: '-100px', position: 'relative', zIndex: 2 }}>
 
         {/* Horizontal Filter Bar */}
         <div className="honeymoon-filter-bar">
-          
+
           {/* Region Toggle */}
           <div className="honeymoon-region-group">
             <span className="filter-label">Region:</span>
-            {['All', 'Indian', 'International'].map(region => (
+            {['Indian', 'International'].map(region => (
               <button
                 key={region}
                 onClick={() => setRegionFilter(region)}
@@ -154,40 +162,60 @@ export default function HoneymoonToursSection({ themeClass = '' }) {
 
           {/* Budget Dropdown */}
           <div className="honeymoon-budget-group">
-             <span className="filter-label">Budget:</span>
-             <select 
-               value={budgetFilter}
-               onChange={(e) => setBudgetFilter(e.target.value)}
-               className="filter-select"
-             >
-               {['Any', 'Under ₹50k', '₹50k - ₹1L', 'Above ₹1L'].map(budget => (
-                 <option key={budget} value={budget}>{budget}</option>
-               ))}
-             </select>
+            <span className="filter-label">Budget:</span>
+            <CustomSelect
+              value={budgetFilter}
+              onChange={(val) => setBudgetFilter(val)}
+              className="filter-select"
+              placeholder="Budget"
+              options={['Any', 'Under ₹50k', '₹50k - ₹1L', 'Above ₹1L'].map(budget => ({
+                value: budget,
+                label: budget === 'Any' ? 'Budget' : budget
+              }))}
+            />
           </div>
 
         </div>
 
         {/* Main Grid */}
-        <div>
+        <div className="honeymoon-main-grid-wrap" style={{ position: 'relative' }}>
           {loading ? (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
+            <div className="honeymoon-grid-container">
               {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} style={{ height: '360px', background: '#f5f5f5', borderRadius: '12px', animation: 'pulse 1.5s infinite' }} />
+                <div key={i} className="honeymoon-skeleton-card" style={{ height: '360px', background: '#f5f5f5', borderRadius: '12px', animation: 'pulse 1.5s infinite' }} />
               ))}
             </div>
           ) : filteredTours.length > 0 ? (
             <>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
+              <div ref={scrollRef} className="honeymoon-grid-container">
                 {displayedTours.map((tour) => (
-                  <TrendingTourCard key={tour.id || tour.slug} tour={tour} />
+                  <div key={tour.id || tour.slug} className="honeymoon-card-wrapper">
+                    <TrendingTourCard tour={tour} />
+                  </div>
                 ))}
               </div>
-              
+
+              {/* Mobile Slider Arrows */}
+              <button
+                onClick={() => scroll(-1)}
+                className="hm-scroll-btn hm-scroll-left"
+                aria-label="Previous"
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6" /></svg>
+              </button>
+
+              <button
+                onClick={() => scroll(1)}
+                className="hm-scroll-btn hm-scroll-right"
+                aria-label="Next"
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6" /></svg>
+              </button>
+
               {/* Show All Toggle Button */}
               {filteredTours.length > limit && (
-                <div className="text-center" style={{ marginTop: '40px' }}>
-                  <button 
+                <div className="text-center honeymoon-view-all-wrapper" style={{ marginTop: '40px' }}>
+                  <button
                     onClick={() => setShowAllTours(!showAllTours)}
                     style={{
                       background: 'transparent',
@@ -219,8 +247,8 @@ export default function HoneymoonToursSection({ themeClass = '' }) {
           ) : (
             <div className="text-center" style={{ padding: '60px 0', color: '#777' }}>
               <p style={{ fontSize: '18px' }}>No honeymoon tours found for these filters.</p>
-              <button 
-                onClick={() => { setRegionFilter('All'); setBudgetFilter('Any'); }}
+              <button
+                onClick={() => { setRegionFilter('Indian'); setBudgetFilter('Any'); }}
                 style={{ marginTop: '16px', background: 'var(--color-primary)', color: '#fff', border: 'none', padding: '10px 24px', borderRadius: '8px', cursor: 'pointer' }}
               >
                 Clear Filters
@@ -229,8 +257,16 @@ export default function HoneymoonToursSection({ themeClass = '' }) {
           )}
         </div>
       </div>
-      
+
       <style jsx>{`
+        .honeymoon-grid-container {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+          gap: 20px;
+        }
+        .hm-scroll-btn {
+          display: none;
+        }
         .honeymoon-filter-bar {
           display: flex;
           flex-wrap: wrap;
@@ -296,44 +332,90 @@ export default function HoneymoonToursSection({ themeClass = '' }) {
         
         @media (max-width: 768px) {
           .honeymoon-filter-bar {
-            flex-direction: column;
-            border-radius: 32px;
-            padding: 12px 16px;
-            width: 85%;
-            max-width: 300px;
-            gap: 8px;
+            flex-direction: row;
+            flex-wrap: wrap;
+            border-radius: 30px;
+            padding: 10px 16px;
+            width: 95%;
+            max-width: 100%;
+            gap: 12px;
             margin: 0 auto 30px auto;
+            justify-content: center;
           }
           .honeymoon-region-group {
-            flex-wrap: wrap;
-            justify-content: center;
+            flex-wrap: nowrap;
+            justify-content: flex-start;
             gap: 6px;
           }
           .filter-label {
-            width: 100%;
-            text-align: center;
-            margin-right: 0;
-            margin-bottom: 2px;
-            font-size: 10px;
+            display: none;
           }
           .filter-btn {
-            padding: 4px 10px;
-            font-size: 11px;
+            padding: 6px 12px;
+            font-size: 12px;
+            white-space: nowrap;
           }
           .honeymoon-filter-divider {
-            width: 80%;
-            height: 1px;
-            margin: 2px 0;
+            width: 1px;
+            height: 24px;
+            margin: 0 4px;
           }
           .honeymoon-budget-group {
-            width: 100%;
-            flex-direction: column;
+            width: auto;
+            flex-direction: row;
+            flex-wrap: nowrap;
           }
           .filter-select {
-            width: 100%;
-            max-width: 200px;
-            padding: 4px 24px 4px 10px;
+            width: auto;
+            max-width: none;
+            padding: 6px 12px;
             font-size: 12px;
+            white-space: nowrap;
+          }
+          
+          .honeymoon-grid-container {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none;
+            gap: 16px;
+            padding-bottom: 8px;
+            scroll-behavior: smooth;
+          }
+          .honeymoon-grid-container::-webkit-scrollbar {
+            display: none;
+          }
+          .honeymoon-skeleton-card, .honeymoon-card-wrapper {
+            flex: 0 0 100%;
+            width: 100%;
+            scroll-snap-align: center;
+          }
+          
+          .hm-scroll-btn {
+            display: flex;
+            position: absolute;
+            top: 35%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1.5px solid var(--color-border, #E5E5E5);
+            background: var(--color-card, #fff);
+            color: var(--color-text-primary, #333);
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+          }
+          .hm-scroll-left {
+            left: 0px;
+          }
+          .hm-scroll-right {
+            right: 0px;
+          }
+          .honeymoon-view-all-wrapper {
+            display: none !important;
           }
         }
       `}</style>

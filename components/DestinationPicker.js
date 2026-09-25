@@ -5,6 +5,7 @@ import Link from 'next/link';
 import TrendingToursSection from './TrendingToursSection';
 import HoneymoonToursSection from './HoneymoonToursSection';
 import GramSection from './GramSection';
+import LoveStoryDestinations from './LoveStoryDestinations';
 import CustomerReviewsSection from './CustomerReviewsSection';
 import FAQSection from './FAQSection';
 
@@ -34,20 +35,20 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
     const formattedTabs = Array.from(tabs)
       .filter(t => Boolean(t) && t.length < 25 && !t.includes('.') && !t.includes(','))
       .map(t => t.charAt(0).toUpperCase() + t.slice(1).toLowerCase());
-    
+
     const uniqueTabs = Array.from(new Set(formattedTabs));
-    return ['All', ...uniqueTabs];
+    return uniqueTabs;
   }, [apiDestinations]);
 
   const visibleDestinations = useMemo(() => {
     let rows = Array.isArray(apiDestinations) ? apiDestinations : [];
-    
+
     if (filterType !== 'All') {
       const lowerFilter = filterType.toLowerCase();
       rows = rows.filter(dest => {
         const destType = (dest.type || '').toLowerCase().trim();
-        const destCats = Array.isArray(dest.categories) 
-          ? dest.categories.map(c => typeof c === 'string' ? c.toLowerCase().trim() : (c?.name || '').toLowerCase().trim()) 
+        const destCats = Array.isArray(dest.categories)
+          ? dest.categories.map(c => typeof c === 'string' ? c.toLowerCase().trim() : (c?.name || '').toLowerCase().trim())
           : [];
         return destType === lowerFilter || destCats.includes(lowerFilter);
       });
@@ -212,197 +213,197 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
       <HoneymoonToursSection themeClass={themeClass} />
       <TrendingToursSection themeClass={themeClass} />
       <section className={themeClass} style={{
-      padding: 'var(--space-8) 0 var(--space-10)',
-      background: themeClass.includes('blush') ? 'transparent' : 'var(--color-card)',
-      position: 'relative',
-      overflow: 'hidden',
-      width: '100%',
-      maxWidth: '100vw',
-      minWidth: 0
-    }}>
-      {/* World Map Background Icon (Faint) */}
-      <div style={{
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: '120%',
-        opacity: 0.04,
-        pointerEvents: 'none',
-        zIndex: 0
+        padding: 'var(--space-8) 0 var(--space-10)',
+        background: themeClass.includes('blush') ? 'transparent' : 'var(--color-card)',
+        position: 'relative',
+        overflow: 'hidden',
+        width: '100%',
+        maxWidth: '100vw',
+        minWidth: 0
       }}>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/e/ec/World_Map_Blank_Draft5.svg" alt="World Map" style={{ width: '100%' }} />
-      </div>
+        {/* World Map Background Icon (Faint) */}
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: '120%',
+          opacity: 0.04,
+          pointerEvents: 'none',
+          zIndex: 0
+        }}>
+          <img src="https://upload.wikimedia.org/wikipedia/commons/e/ec/World_Map_Blank_Draft5.svg" alt="World Map" style={{ width: '100%' }} />
+        </div>
 
-      <div style={{ position: 'relative', zIndex: 1 }}>
+        <div style={{ position: 'relative', zIndex: 1 }}>
 
-        {/* Heading & Search - Inside Container */}
-        <div className="container" style={{ maxWidth: '1400px', marginBottom: '40px' }}>
-          <div className="text-center">
-            <h2 style={{ fontSize: '32px', fontWeight: 800, color: 'var(--color-text-primary)', fontFamily: '"Italiana", sans-serif' }}>
-              What&apos;s <span style={{ color: themeClass.includes('blush') ? '#D9466F' : 'var(--color-primary)', fontStyle: 'italic', fontWeight: 500 }}> your pick </span> for your next vacation
-            </h2>
+          {/* Heading & Search - Inside Container */}
+          <div className="container" style={{ maxWidth: '1400px', marginBottom: '40px' }}>
+            <div className="text-center">
+              <h2 style={{ fontSize: '32px', fontWeight: 800, color: 'var(--color-text-primary)', fontFamily: '"Italiana", sans-serif' }}>
+                What&apos;s <span style={{ color: themeClass.includes('blush') ? '#D9466F' : 'var(--color-primary)', fontStyle: 'italic', fontWeight: 500 }}> your pick </span> for your next vacation
+              </h2>
 
-            <div className="mx-auto mt-4" style={{ maxWidth: '620px', position: 'relative' }}>
-              <div style={{ position: 'absolute', left: '24px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-secondary)' }}>
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
+              <div className="mx-auto mt-4" style={{ maxWidth: '620px', position: 'relative' }}>
+                <div style={{ position: 'absolute', left: '24px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-secondary)' }}>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                </div>
+                <input
+                  type="text"
+                  placeholder="Pick your destination"
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: 'var(--space-4) var(--space-6) var(--space-4) 60px',
+                    borderRadius: 'var(--radius-full)',
+                    border: '1.5px solid var(--color-secondary)',
+                    fontSize: '16px',
+                    outline: 'none',
+                    background: 'var(--color-card)',
+                    boxShadow: '0 4px 12px color-mix(in srgb, var(--color-primary) 8%, transparent)'
+                  }}
+                />
               </div>
-              <input
-                type="text"
-                placeholder="Pick your destination"
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-                style={{
-                  width: '100%',
-                  padding: 'var(--space-4) var(--space-6) var(--space-4) 60px',
-                  borderRadius: 'var(--radius-full)',
-                  border: '1.5px solid var(--color-secondary)',
-                  fontSize: '16px',
-                  outline: 'none',
-                  background: 'var(--color-card)',
-                  boxShadow: '0 4px 12px color-mix(in srgb, var(--color-primary) 8%, transparent)'
-                }}
-              />
+
+              {/* Filter Pills */}
+              {dynamicTabs.length > 1 && (
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', marginTop: '24px', flexWrap: 'wrap' }}>
+                  {dynamicTabs.map(type => (
+                    <button
+                      key={type}
+                      onClick={() => setFilterType(type)}
+                      style={{
+                        padding: '8px 24px',
+                        borderRadius: 'var(--radius-full)',
+                        border: '1.5px solid',
+                        borderColor: filterType === type ? 'var(--color-primary)' : 'var(--color-border)',
+                        background: filterType === type ? 'var(--color-primary)' : 'transparent',
+                        color: filterType === type ? '#fff' : 'var(--color-text-secondary)',
+                        fontSize: '14px',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                        boxShadow: filterType === type ? 'var(--shadow-sm)' : 'none'
+                      }}
+                    >
+                      {type}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
-            
-            {/* Filter Pills */}
-            {dynamicTabs.length > 1 && (
-              <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', marginTop: '24px', flexWrap: 'wrap' }}>
-                {dynamicTabs.map(type => (
-                  <button
-                    key={type}
-                    onClick={() => setFilterType(type)}
-                    style={{
-                      padding: '8px 24px',
-                      borderRadius: 'var(--radius-full)',
-                      border: '1.5px solid',
-                      borderColor: filterType === type ? 'var(--color-primary)' : 'var(--color-border)',
-                      background: filterType === type ? 'var(--color-primary)' : 'transparent',
-                      color: filterType === type ? '#fff' : 'var(--color-text-secondary)',
-                      fontSize: '14px',
-                      fontWeight: 600,
-                      cursor: 'pointer',
-                      transition: 'all 0.2s ease',
-                      boxShadow: filterType === type ? 'var(--shadow-sm)' : 'none'
-                    }}
-                  >
-                    {type}
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
-        </div>
 
-        {/* Full-Width Slider Area */}
-        <div style={{ position: 'relative' }}>
+          {/* Full-Width Slider Area */}
+          <div style={{ position: 'relative' }}>
 
-          {/* Controls - Floating (Kept within 1400px bounds if possible visually) */}
-          <div className="container" style={{ maxWidth: '1400px', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', height: '100%', pointerEvents: 'none', zIndex: 20 }}>
-            <button
-              type="button"
-              onClick={() => scrollBy(-1)}
-              disabled={!canScroll.prev}
+            {/* Controls - Floating (Kept within 1400px bounds if possible visually) */}
+            <div className="container" style={{ maxWidth: '1400px', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', height: '100%', pointerEvents: 'none', zIndex: 20 }}>
+              <button
+                type="button"
+                onClick={() => scrollBy(-1)}
+                disabled={!canScroll.prev}
+                style={{
+                  position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)',
+                  width: '44px', height: '44px', borderRadius: '50%', background: 'var(--color-card)',
+                  border: 'none', boxShadow: 'var(--shadow-md)', cursor: canScroll.prev ? 'pointer' : 'not-allowed',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'auto',
+                  opacity: canScroll.prev ? 1 : 0.38
+                }}
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-primary)" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => scrollBy(1)}
+                disabled={!canScroll.next}
+                style={{
+                  position: 'absolute', right: '20px', top: '50%', transform: 'translateY(-50%)',
+                  width: '44px', height: '44px', borderRadius: '50%', background: 'var(--color-card)',
+                  border: 'none', boxShadow: 'var(--shadow-md)', cursor: canScroll.next ? 'pointer' : 'not-allowed',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'auto',
+                  opacity: canScroll.next ? 1 : 0.38
+                }}
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-primary)" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
+            </div>
+
+            <div
+              ref={scrollRef}
               style={{
-                position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)',
-                width: '44px', height: '44px', borderRadius: '50%', background: 'var(--color-card)',
-                border: 'none', boxShadow: 'var(--shadow-md)', cursor: canScroll.prev ? 'pointer' : 'not-allowed',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'auto',
-                opacity: canScroll.prev ? 1 : 0.38
+                display: 'flex',
+                gap: '24px',
+                overflowX: 'auto',
+                overflowY: 'visible',
+                width: '100%',
+                maxWidth: '100vw',
+                minWidth: 0,
+                scrollbarWidth: 'none',
+                msOverflowStyle: 'none',
+                padding: '0',
+                scrollSnapType: 'x mandatory',
+                WebkitOverflowScrolling: 'touch',
+                scrollBehavior: 'smooth',
+              }}
+              className="hide-scrollbar"
+              onWheel={(event) => {
+                if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+                event.preventDefault();
+                event.currentTarget.scrollLeft += event.deltaY;
+                window.requestAnimationFrame(updateScrollState);
               }}
             >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-primary)" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
-            </button>
+              {/* Spacer to align first item with the 1400px container */}
+              <div style={{ flex: '0 0 max(calc((100vw - 1400px) / 2), 20px)' }} />
 
-            <button
-              type="button"
-              onClick={() => scrollBy(1)}
-              disabled={!canScroll.next}
-              style={{
-                position: 'absolute', right: '20px', top: '50%', transform: 'translateY(-50%)',
-                width: '44px', height: '44px', borderRadius: '50%', background: 'var(--color-card)',
-                border: 'none', boxShadow: 'var(--shadow-md)', cursor: canScroll.next ? 'pointer' : 'not-allowed',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'auto',
-                opacity: canScroll.next ? 1 : 0.38
-              }}
-            >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-primary)" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
-            </button>
+              {loading ? skeletonCards.map((item) => (
+                <div key={`destination-skeleton-${item}`} className="destination-scroll-card destination-skeleton-card" style={{ scrollSnapAlign: 'start' }}>
+                  <span className="destination-skeleton-arch" />
+                  <span className="destination-skeleton-line is-short" />
+                  <span className="destination-skeleton-line" />
+                </div>
+              )) : error ? (
+                <div style={{ padding: 'var(--space-8) var(--space-6)', color: 'var(--color-secondary)', fontWeight: 800 }}>
+                  {error}
+                </div>
+              ) : visibleDestinations.length ? visibleDestinations.map((dest, i) => (
+                <div key={dest.id || dest.slug || dest.name || i} className="destination-scroll-card" style={{
+                  flex: '0 0 auto',
+                  width: '240px',
+                  scrollSnapAlign: 'start'
+                }}>
+                  {onPick ? (
+                    <button
+                      type="button"
+                      onClick={() => onPick(dest.name)}
+                      style={{ width: '100%', border: 0, background: 'transparent', padding: 0, cursor: 'pointer', textAlign: 'inherit' }}
+                    >
+                      {renderCardContent(dest, i)}
+                    </button>
+                  ) : (
+                    <Link href={`/tour?search=${dest.name}`} style={{ textDecoration: 'none' }}>
+                      {renderCardContent(dest, i)}
+                    </Link>
+                  )}
+                </div>
+              )) : (
+                <div style={{ padding: 'var(--space-8) var(--space-6)', color: 'var(--color-text-muted)', fontWeight: 800 }}>
+                  No destinations found.
+                </div>
+              )}
+
+              <div style={{ flex: '0 0 max(calc((100vw - 1400px) / 2), 20px)' }} />
+            </div>
           </div>
 
-          <div
-            ref={scrollRef}
-            style={{
-              display: 'flex',
-              gap: '24px',
-              overflowX: 'auto',
-              overflowY: 'visible',
-              width: '100%',
-              maxWidth: '100vw',
-              minWidth: 0,
-              scrollbarWidth: 'none',
-              msOverflowStyle: 'none',
-              padding: '0',
-              scrollSnapType: 'x mandatory',
-              WebkitOverflowScrolling: 'touch',
-              scrollBehavior: 'smooth',
-            }}
-            className="hide-scrollbar"
-            onWheel={(event) => {
-              if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
-              event.preventDefault();
-              event.currentTarget.scrollLeft += event.deltaY;
-              window.requestAnimationFrame(updateScrollState);
-            }}
-          >
-            {/* Spacer to align first item with the 1400px container */}
-            <div style={{ flex: '0 0 max(calc((100vw - 1400px) / 2), 20px)' }} />
-
-            {loading ? skeletonCards.map((item) => (
-              <div key={`destination-skeleton-${item}`} className="destination-scroll-card destination-skeleton-card" style={{ scrollSnapAlign: 'start' }}>
-                <span className="destination-skeleton-arch" />
-                <span className="destination-skeleton-line is-short" />
-                <span className="destination-skeleton-line" />
-              </div>
-            )) : error ? (
-              <div style={{ padding: 'var(--space-8) var(--space-6)', color: 'var(--color-secondary)', fontWeight: 800 }}>
-                {error}
-              </div>
-            ) : visibleDestinations.length ? visibleDestinations.map((dest, i) => (
-              <div key={dest.id || dest.slug || dest.name || i} className="destination-scroll-card" style={{
-                flex: '0 0 auto',
-                width: '240px',
-                scrollSnapAlign: 'start'
-              }}>
-                {onPick ? (
-                  <button
-                    type="button"
-                    onClick={() => onPick(dest.name)}
-                    style={{ width: '100%', border: 0, background: 'transparent', padding: 0, cursor: 'pointer', textAlign: 'inherit' }}
-                  >
-                    {renderCardContent(dest, i)}
-                  </button>
-                ) : (
-                  <Link href={`/tour?search=${dest.name}`} style={{ textDecoration: 'none' }}>
-                    {renderCardContent(dest, i)}
-                  </Link>
-                )}
-              </div>
-            )) : (
-              <div style={{ padding: 'var(--space-8) var(--space-6)', color: 'var(--color-text-muted)', fontWeight: 800 }}>
-                No destinations found.
-              </div>
-            )}
-
-            <div style={{ flex: '0 0 max(calc((100vw - 1400px) / 2), 20px)' }} />
-          </div>
         </div>
 
-      </div>
-
-      <style jsx>{`
+        <style jsx>{`
         .hide-scrollbar::-webkit-scrollbar {
           display: none;
         }
@@ -462,6 +463,7 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
         }
       `}</style>
       </section>
+      <LoveStoryDestinations />
       <GramSection />
       <CustomerReviewsSection />
       <FAQSection />

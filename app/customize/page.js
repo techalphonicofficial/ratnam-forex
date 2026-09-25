@@ -798,7 +798,6 @@ export default function CustomizeFlow() {
     if (data.travelWith === 'Honeymoon') {
       const honeymoonPkg = {
         name: 'Honeymoon Packages',
-        description: 'A honeymoon is the perfect beginning to a beautiful journey together. Escape to enchanting destinations, discover breathtaking landscapes, explore charming towns, and enjoy intimate moments away from the everyday rush. From relaxing on pristine beaches and watching unforgettable sunsets to experiencing local culture, delicious cuisine, and romantic adventures, every moment becomes a cherished memory. Whether you dream of a peaceful mountain retreat, a luxurious island escape, or an exciting international getaway, our honeymoon packages are thoughtfully designed for couples. Enjoy comfortable stays, memorable experiences, and seamless travel as you celebrate your love and create beautiful stories that you will treasure for a lifetime.',
         rating: 4.9,
         review_count: 3200,
       };

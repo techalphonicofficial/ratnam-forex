@@ -234,7 +234,7 @@ export default function GramSection({ videoReviewsData }) {
     }
   }, [isMobile, reels.length]);
 
-  const headingText = videoReviewsData?.json_data?.heading_content || videoReviewsData?.title || 'From Social Media : video,Reels & Podcast';
+  const headingText = 'From Social Media';
 
   const description = videoReviewsData?.description || '';
   let googleRating = '4.6';

@@ -4,6 +4,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
 @import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css');
 
+/* Custom Select Highlight to Pink */
+select option:checked,
+select option:hover,
+select option:focus,
+select option:active {
+  background: #D9466F !important;
+  background-color: #D9466F !important;
+  color: #fff !important;
+  box-shadow: 0 0 10px 100px #D9466F inset !important;
+}
+select:focus {
+  outline-color: #D9466F !important;
+  border-color: #D9466F !important;
+}
+
 /* Define Hoefler Text */
 @font-face {
   font-family: 'Hoefler Text';

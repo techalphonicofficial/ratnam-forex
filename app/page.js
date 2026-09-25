@@ -8,6 +8,7 @@ import BlogSection from '@/components/BlogSection';
 import WhyChooseSection from '@/components/WhyChooseSection';
 import DynamicCarouselBanner from '@/components/DynamicCarouselBanner';
 import GramSection from '@/components/GramSection';
+import LoveStoryDestinations from '@/components/LoveStoryDestinations';
 import AppBanner from '@/components/AppBanner';
 
 import NewsletterForm from '@/components/NewsletterForm';
@@ -88,6 +89,7 @@ export default async function HomePage() {
       <DynamicCarouselBanner />
 
       {/* 5. LOVE FROM THE GRAM — dark, Instagram photo strip */}
+      <LoveStoryDestinations />
       <GramSection videoReviewsData={videoReviewsData} />
 
       {/* 6. PLAN ADVENTURES + POPULAR HAND-PICKED */}
