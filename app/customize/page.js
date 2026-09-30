@@ -371,35 +371,39 @@ export default function CustomizeFlow() {
   const isNriGlobal = data?.travelWith === 'NRI Package' || data?.travelWith === 'Nri';
   const isPilgrimGlobal = data?.travelWith === 'Pilgrim' || data?.travelWith === 'Pilgrim Package';
   const isBudgetGlobal = data?.travelWith === 'Budget' || data?.travelWith === 'Budget Package';
+  const isTrendingGlobal = data?.travelWith === 'Trending' || data?.travelWith === 'Trending Package';
 
   useEffect(() => {
     if (typeof document !== 'undefined') {
       if (isFamilyGlobal) {
         document.body.classList.add('teal-theme');
-        document.body.classList.remove('blush-theme', 'purple-theme', 'nri-theme', 'saffron-theme', 'budget-theme');
+        document.body.classList.remove('blush-theme', 'purple-theme', 'nri-theme', 'saffron-theme', 'budget-theme', 'trending-theme');
       } else if (isGroupGlobal) {
         document.body.classList.add('purple-theme');
-        document.body.classList.remove('blush-theme', 'teal-theme', 'nri-theme', 'saffron-theme', 'budget-theme');
+        document.body.classList.remove('blush-theme', 'teal-theme', 'nri-theme', 'saffron-theme', 'budget-theme', 'trending-theme');
       } else if (isNriGlobal) {
         document.body.classList.add('nri-theme');
-        document.body.classList.remove('blush-theme', 'teal-theme', 'purple-theme', 'saffron-theme', 'budget-theme');
+        document.body.classList.remove('blush-theme', 'teal-theme', 'purple-theme', 'saffron-theme', 'budget-theme', 'trending-theme');
       } else if (isPilgrimGlobal) {
         document.body.classList.add('saffron-theme');
-        document.body.classList.remove('blush-theme', 'teal-theme', 'purple-theme', 'nri-theme', 'budget-theme');
+        document.body.classList.remove('blush-theme', 'teal-theme', 'purple-theme', 'nri-theme', 'budget-theme', 'trending-theme');
       } else if (isBudgetGlobal) {
         document.body.classList.add('budget-theme');
-        document.body.classList.remove('blush-theme', 'teal-theme', 'purple-theme', 'nri-theme', 'saffron-theme');
+        document.body.classList.remove('blush-theme', 'teal-theme', 'purple-theme', 'nri-theme', 'saffron-theme', 'trending-theme');
+      } else if (isTrendingGlobal) {
+        document.body.classList.add('trending-theme');
+        document.body.classList.remove('blush-theme', 'teal-theme', 'purple-theme', 'nri-theme', 'saffron-theme', 'budget-theme');
       } else {
         document.body.classList.add('blush-theme');
-        document.body.classList.remove('teal-theme', 'purple-theme', 'nri-theme', 'saffron-theme', 'budget-theme');
+        document.body.classList.remove('teal-theme', 'purple-theme', 'nri-theme', 'saffron-theme', 'budget-theme', 'trending-theme');
       }
     }
     return () => {
       if (typeof document !== 'undefined') {
-        document.body.classList.remove('teal-theme', 'blush-theme', 'purple-theme', 'nri-theme', 'saffron-theme', 'budget-theme');
+        document.body.classList.remove('teal-theme', 'blush-theme', 'purple-theme', 'nri-theme', 'saffron-theme', 'budget-theme', 'trending-theme');
       }
     };
-  }, [isFamilyGlobal, isGroupGlobal, isNriGlobal, isPilgrimGlobal, isBudgetGlobal]);
+  }, [isFamilyGlobal, isGroupGlobal, isNriGlobal, isPilgrimGlobal, isBudgetGlobal, isTrendingGlobal]);
 
   // Load the draft from URL params so the flow can be shared or restored without localStorage.
   useEffect(() => {
@@ -832,34 +836,35 @@ export default function CustomizeFlow() {
      Step 1: Destination
   ───────────────────────────────────────────────────────────────── */
   const renderDestination = () => {
-    if (data.travelWith === 'Honeymoon' || data.travelWith === 'Family' || data.travelWith === 'Group' || data.travelWith === 'NRI Package' || data.travelWith === 'Nri' || data.travelWith === 'Pilgrim' || data.travelWith === 'Budget' || data.travelWith === 'Budget Package') {
+    if (data.travelWith === 'Honeymoon' || data.travelWith === 'Family' || data.travelWith === 'Group' || data.travelWith === 'NRI Package' || data.travelWith === 'Nri' || data.travelWith === 'Pilgrim' || data.travelWith === 'Budget' || data.travelWith === 'Budget Package' || data.travelWith === 'Trending') {
       const isFamily = data.travelWith === 'Family';
       const isGroup = data.travelWith === 'Group';
       const isNri = data.travelWith === 'NRI Package' || data.travelWith === 'Nri';
       const isPilgrim = data.travelWith === 'Pilgrim';
       const isBudget = data.travelWith === 'Budget' || data.travelWith === 'Budget Package';
+      const isTrending = data.travelWith === 'Trending';
       const pkg = {
-        name: isNri ? 'Bringing you closer to your roots' : (isGroup ? 'Group Packages ( 6+ People )' : (isFamily ? 'Family Packages' : (isPilgrim ? 'Pilgrim Packages' : (isBudget ? 'Budget Packages' : 'Honeymoon Packages')))),
+        name: isNri ? 'Bringing you closer to your roots' : (isGroup ? 'Group Packages ( 6+ People )' : (isFamily ? 'Family Packages' : (isPilgrim ? 'Pilgrim Packages' : (isBudget ? 'Budget Packages' : (isTrending ? 'Trending Destinations, Unforgettable Journeys' : 'Honeymoon Packages'))))),
         rating: 4.9,
         review_count: 3200,
       };
 
       const media = {
         images: [
-          { url: isNri ? 'https://images.unsplash.com/photo-1570168007204-dfb528c6958f?auto=format&fit=crop&w=2000&q=80' : (isGroup ? 'https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=2000&q=80' : (isFamily ? 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=2000&q=80' : (isPilgrim ? 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?auto=format&fit=crop&w=2000&q=80' : (isBudget ? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=2000&q=80' : '/images/honeymoon_hero_bg.jpg')))), alt: isNri ? 'NRI Package' : (isGroup ? 'Group Hero' : (isFamily ? 'Family Hero' : (isPilgrim ? 'Pilgrim Hero' : (isBudget ? 'Budget Hero' : 'Honeymoon Hero')))) },
+          { url: isNri ? 'https://images.unsplash.com/photo-1570168007204-dfb528c6958f?auto=format&fit=crop&w=2000&q=80' : (isGroup ? 'https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=2000&q=80' : (isFamily ? 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=2000&q=80' : (isPilgrim ? 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?auto=format&fit=crop&w=2000&q=80' : (isBudget ? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=2000&q=80' : (isTrending ? 'https://images.unsplash.com/photo-1539635278303-d4002c07eae3?auto=format&fit=crop&w=2000&q=80' : '/images/honeymoon_hero_bg.jpg'))))), alt: isNri ? 'NRI Package' : (isGroup ? 'Group Hero' : (isFamily ? 'Family Hero' : (isPilgrim ? 'Pilgrim Hero' : (isBudget ? 'Budget Hero' : (isTrending ? 'Trending Destinations' : 'Honeymoon Hero'))))) },
           { url: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=800&q=80', alt: 'Nav' }
         ]
       };
 
       const renderBottom = () => (
-        <section className="premium-picker-wrapper" style={{ background: isNri ? '#FFFCF5' : (isGroup ? '#FAF5FA' : (isFamily ? '#FFFDF7' : (isPilgrim ? '#FFF9EF' : (isBudget ? '#F8FFF6' : '#FFF9FA')))), borderTop: `1px solid ${isNri ? '#F2D99B' : (isGroup ? '#F5E6F5' : (isFamily ? '#F2F7F4' : (isPilgrim ? '#F3D49A' : (isBudget ? '#E4EDE4' : '#FCE7ED'))))}` }}>
+        <section className="premium-picker-wrapper" style={{ background: isNri ? '#FFFCF5' : (isGroup ? '#FAF5FA' : (isFamily ? '#FFFDF7' : (isPilgrim ? '#FFF9EF' : (isBudget ? '#F8FFF6' : (isTrending ? '#FFF9F7' : '#FFF9FA'))))), borderTop: `1px solid ${isNri ? '#F2D99B' : (isGroup ? '#F5E6F5' : (isFamily ? '#F2F7F4' : (isPilgrim ? '#F3D49A' : (isBudget ? '#E4EDE4' : (isTrending ? '#FFCEC0' : '#FCE7ED')))))}` }}>
           <div style={{ maxWidth: 1400, margin: '0 auto', paddingTop: 60, paddingBottom: 60 }}>
             <DestinationPicker
               destinations={destinationOptions}
               error={destinationsError}
               loading={destinationsLoading}
               onPick={handleDestination}
-              themeClass={isNri ? "nri-theme" : (isGroup ? "purple-theme" : (isFamily ? "teal-theme" : (isPilgrim ? "saffron-theme pilgrim" : (isBudget ? "budget-theme budget" : "blush-theme"))))}
+              themeClass={isNri ? "nri-theme" : (isGroup ? "purple-theme" : (isFamily ? "teal-theme" : (isPilgrim ? "saffron-theme pilgrim" : (isBudget ? "budget-theme budget" : (isTrending ? "trending-theme trending" : "blush-theme")))))}
             />
           </div>
         </section>
@@ -874,7 +879,7 @@ export default function CustomizeFlow() {
             includedItems={[]}
             excludedItems={[]}
             renderBottom={renderBottom}
-            themeType={isNri ? 'nri' : (isGroup ? 'group' : (isFamily ? 'family' : (isPilgrim ? 'pilgrim' : (isBudget ? 'budget' : 'honeymoon'))))}
+            themeType={isNri ? 'nri' : (isGroup ? 'group' : (isFamily ? 'family' : (isPilgrim ? 'pilgrim' : (isBudget ? 'budget' : (isTrending ? 'trending' : 'honeymoon')))))}
           />
         </div>
       );
@@ -1599,10 +1604,10 @@ export default function CustomizeFlow() {
           min-height: 100vh;
           display: flex;
           flex-direction: column;
-          background: ${isNriGlobal ? '#FFFCF5' : (isGroupGlobal ? '#FAF5FA' : (isFamilyGlobal ? '#FFFDF7' : `
+          background: ${isNriGlobal ? '#FFFCF5' : (isGroupGlobal ? '#FAF5FA' : (isFamilyGlobal ? '#FFFDF7' : (isTrendingGlobal ? '#FFF9F7' : `
             radial-gradient(circle at 50% 10%, rgba(254, 240, 138, 0.72) 0%, rgba(254, 252, 232, 0.9) 33%, rgba(255,255,255,0.98) 72%),
             linear-gradient(180deg, #fef9c3 0%, #ffffff 82%)
-          `))};
+          `)))};
           color: #07111f;
         }
 
@@ -2073,7 +2078,7 @@ export default function CustomizeFlow() {
       </div>
 
       {/* Main Content Area */}
-      {(data.travelWith === 'Honeymoon' || data.travelWith === 'Family' || data.travelWith === 'Group' || data.travelWith === 'NRI Package' || data.travelWith === 'Nri' || data.travelWith === 'Pilgrim' || data.travelWith === 'Budget' || data.travelWith === 'Budget Package') && step === 0 ? (
+      {(data.travelWith === 'Honeymoon' || data.travelWith === 'Family' || data.travelWith === 'Group' || data.travelWith === 'NRI Package' || data.travelWith === 'Nri' || data.travelWith === 'Pilgrim' || data.travelWith === 'Budget' || data.travelWith === 'Budget Package' || data.travelWith === 'Trending') && step === 0 ? (
         <main style={{ padding: 0, width: '100vw', maxWidth: '100%' }}>
           {renderDestination()}
         </main>

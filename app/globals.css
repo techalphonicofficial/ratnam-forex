@@ -2436,3 +2436,10 @@ body {
 /* BUDGET THEME UNDERLINE */
 .budget-theme .theme-underline-heading::after, .budget-theme.theme-underline-heading::after { background-color: #2E7D32; }
 .budget-theme .theme-underline-heading::before, .budget-theme.theme-underline-heading::before { border-bottom-color: #2E7D32; }
+
+/* TRENDING THEME */
+.trending-theme { --color-primary: #D32F2F; --color-primary-hover: #B71C1C; --color-text-primary: #8B1E1E; --color-bg: #FFF9F7; --pink-primary: #D32F2F; --pink-dark: #B71C1C; --pink-bg: #FFF9F7; --pink-soft: #FFF2F2; }
+.trending-theme .theme-underline-heading::after, .trending-theme.theme-underline-heading::after { background-color: #D32F2F; }
+.trending-theme .theme-underline-heading::before, .trending-theme.theme-underline-heading::before { border-bottom-color: #D32F2F; }
+.trending-theme .seo-category-title { color: #D32F2F !important; }
+.trending-theme .seo-link:hover { color: #D32F2F !important; }

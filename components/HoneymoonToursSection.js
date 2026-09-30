@@ -27,6 +27,7 @@ export default function HoneymoonToursSection({ themeClass = '' }) {
   const isNri = themeClass.includes('nri');
   const isPilgrim = themeClass.includes('pilgrim') || themeClass.includes('saffron');
   const isBudget = themeClass.includes('budget');
+  const isTrending = themeClass.includes('trending');
   const [loading, setLoading] = useState(true);
   const [apiTours, setApiTours] = useState([]);
 
@@ -65,6 +66,9 @@ export default function HoneymoonToursSection({ themeClass = '' }) {
             if (isBudget) {
                return str.includes('budget') || str.includes('value') || str.includes('economy') || str.includes('affordable') || str.includes('backpack') || str.includes('india') || str.includes('thailand') || str.includes('vietnam');
             }
+            if (isTrending) {
+               return str.includes('trending') || str.includes('popular') || str.includes('hot') || str.includes('dubai') || str.includes('europe') || str.includes('thailand') || str.includes('bali');
+            }
             return str.includes('honeymoon') || str.includes('romantic') || str.includes('maldives') || str.includes('bali');
           });
           setApiTours(themeTours);
@@ -77,7 +81,7 @@ export default function HoneymoonToursSection({ themeClass = '' }) {
     };
     fetchData();
     return () => { isMounted = false; };
-  }, [isFamily, isGroup, isNri, isPilgrim, isBudget]);
+  }, [isFamily, isGroup, isNri, isPilgrim, isBudget, isTrending]);
 
   const filteredTours = useMemo(() => {
     let result = [...apiTours];
@@ -96,7 +100,7 @@ export default function HoneymoonToursSection({ themeClass = '' }) {
   if (!loading && apiTours.length === 0) return null;
 
   const activeTour = filteredTours[activeTourIndex] || filteredTours[0];
-  const primaryColor = isNri ? '#1759A6' : (isGroup ? '#9D4A93' : (isFamily ? '#2F7F7B' : (isPilgrim ? '#E98216' : (isBudget ? '#2E7D32' : '#D9466F'))));
+  const primaryColor = isNri ? '#1759A6' : (isGroup ? '#9D4A93' : (isFamily ? '#2F7F7B' : (isPilgrim ? '#E98216' : (isBudget ? '#2E7D32' : (isTrending ? '#D32F2F' : '#D9466F')))));
 
   return (
     <section className={`honeymoon-section ${themeClass}`} style={{ background: 'transparent', fontFamily: 'var(--font-primary, sans-serif)' }}>
@@ -105,7 +109,7 @@ export default function HoneymoonToursSection({ themeClass = '' }) {
         {/* Header */}
         <div className="hm-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px' }}>
           <h2 className="section-title theme-underline-heading" style={{ margin: 0 }}>
-            {isNri ? 'NRI' : (isGroup ? 'Group' : (isFamily ? 'Family' : (isPilgrim ? 'Pilgrim' : (isBudget ? 'Budget' : 'Honeymoon'))))} <span style={{ color: primaryColor }}>Tour Destinations</span>
+            {isNri ? 'NRI' : (isGroup ? 'Group' : (isFamily ? 'Family' : (isPilgrim ? 'Pilgrim' : (isBudget ? 'Budget' : (isTrending ? 'Trending' : 'Honeymoon')))))} <span style={{ color: primaryColor }}>Tour Destinations</span>
           </h2>
           
           <div className="hm-tabs" style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
@@ -175,9 +179,9 @@ export default function HoneymoonToursSection({ themeClass = '' }) {
             <div className="hm-details" style={{ flex: '1', display: 'flex', flexDirection: 'column', padding: '10px 0 0 10px' }}>
               <h3 className="hm-details-title" style={{ color: '#000', fontWeight: '400', fontFamily: 'Georgia, serif', lineHeight: '1.2' }}>
                 <span style={{ color: primaryColor, fontStyle: 'italic', marginRight: '8px', fontWeight: '600' }}>
-                  {isNri ? 'Journey back' : (isGroup ? 'Share moments' : (isFamily ? 'Make memories' : (isPilgrim ? 'Spiritual journeys' : (isBudget ? 'Travel smart' : 'Fall in Love'))))} 
+                  {isNri ? 'Journey back' : (isGroup ? 'Share moments' : (isFamily ? 'Make memories' : (isPilgrim ? 'Spiritual journeys' : (isBudget ? 'Travel smart' : (isTrending ? 'Experience the' : 'Fall in Love')))))} 
                 </span> 
-                <span style={{ color: '#4a8bb3', fontStyle: 'italic', fontSize: '28px' }}>{isPilgrim || isNri || isBudget ? 'to' : 'with'}</span><br/>
+                <span style={{ color: '#4a8bb3', fontStyle: 'italic', fontSize: '28px' }}>{isPilgrim || isNri || isBudget ? 'to' : (isTrending ? 'best of' : 'with')}</span><br/>
                 <span className="hm-details-loc" style={{ fontWeight: '500', display: 'block' }}>{activeTour.location || activeTour.title.split(' ')[0]}</span>
               </h3>
               
@@ -278,7 +282,7 @@ export default function HoneymoonToursSection({ themeClass = '' }) {
           </div>
         ) : (
           <div className="text-center" style={{ padding: '60px 0', color: '#777' }}>
-            <p style={{ fontSize: '18px' }}>No {isNri ? 'NRI' : (isGroup ? 'group' : (isFamily ? 'family' : 'honeymoon'))} tours found for these filters.</p>
+            <p style={{ fontSize: '18px' }}>No {isNri ? 'NRI' : (isGroup ? 'group' : (isFamily ? 'family' : (isTrending ? 'trending' : 'honeymoon')))} tours found for these filters.</p>
           </div>
         )}
       </div>

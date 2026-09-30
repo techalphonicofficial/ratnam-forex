@@ -64,6 +64,13 @@ export default function PremiumDestinationLayout({
         'Great experiences, great value'
       ];
     }
+    if (themeType === 'trending') {
+      return [
+        pkg?.name || 'Trending Package',
+        'Trending Destinations',
+        'Unforgettable Journeys'
+      ];
+    }
     return [
       pkg?.name || 'Tour Package',
       'Romantic Escapes',
@@ -225,30 +232,30 @@ export default function PremiumDestinationLayout({
 
   return (
     <div className="premium-layout" style={{
-      '--theme-bg': themeType === 'nri' ? '#FFFCF5' : (themeType === 'group' ? '#FAF5FA' : (themeType === 'family' ? '#FFFDF7' : (themeType === 'pilgrim' ? '#FFF9EF' : (themeType === 'budget' ? '#F8FFF6' : 'var(--pink-bg)')))),
-      '--theme-primary': themeType === 'nri' ? '#1759A6' : (themeType === 'group' ? '#9D4A93' : (themeType === 'family' ? '#2F7F7B' : (themeType === 'pilgrim' ? '#E98216' : (themeType === 'budget' ? '#2E7D32' : 'var(--pink-primary)')))),
-      '--theme-dark': themeType === 'nri' ? '#0B2342' : (themeType === 'group' ? '#7D3A75' : (themeType === 'family' ? '#245C59' : (themeType === 'pilgrim' ? '#C9650A' : (themeType === 'budget' ? '#1F3B28' : 'var(--pink-dark)')))),
-      '--theme-soft': themeType === 'nri' ? '#F4F7FA' : (themeType === 'group' ? '#F5E6F5' : (themeType === 'family' ? '#F2F7F4' : (themeType === 'pilgrim' ? '#F3D49A' : (themeType === 'budget' ? '#F1F8EF' : 'var(--pink-soft)')))),
-      '--theme-text-sec': themeType === 'nri' ? '#596575' : (themeType === 'group' ? '#6B5969' : (themeType === 'family' ? '#5E6870' : (themeType === 'pilgrim' ? '#64615D' : (themeType === 'budget' ? '#575F5A' : 'var(--text-sec)')))),
-      '--theme-text-main': themeType === 'nri' ? '#173A63' : (themeType === 'group' ? '#5A2A54' : (themeType === 'family' ? '#245C59' : (themeType === 'pilgrim' ? '#4A2A16' : (themeType === 'budget' ? '#1B5E20' : 'var(--text-main)')))),
+      '--theme-bg': themeType === 'nri' ? '#FFFCF5' : (themeType === 'group' ? '#FAF5FA' : (themeType === 'family' ? '#FFFDF7' : (themeType === 'pilgrim' ? '#FFF9EF' : (themeType === 'budget' ? '#F8FFF6' : (themeType === 'trending' ? '#FFF9F7' : 'var(--pink-bg)'))))),
+      '--theme-primary': themeType === 'nri' ? '#1759A6' : (themeType === 'group' ? '#9D4A93' : (themeType === 'family' ? '#2F7F7B' : (themeType === 'pilgrim' ? '#E98216' : (themeType === 'budget' ? '#2E7D32' : (themeType === 'trending' ? '#D32F2F' : 'var(--pink-primary)'))))),
+      '--theme-dark': themeType === 'nri' ? '#0B2342' : (themeType === 'group' ? '#7D3A75' : (themeType === 'family' ? '#245C59' : (themeType === 'pilgrim' ? '#C9650A' : (themeType === 'budget' ? '#1F3B28' : (themeType === 'trending' ? '#B71C1C' : 'var(--pink-dark)'))))),
+      '--theme-soft': themeType === 'nri' ? '#F4F7FA' : (themeType === 'group' ? '#F5E6F5' : (themeType === 'family' ? '#F2F7F4' : (themeType === 'pilgrim' ? '#F3D49A' : (themeType === 'budget' ? '#F1F8EF' : (themeType === 'trending' ? '#FFCEC0' : 'var(--pink-soft)'))))),
+      '--theme-text-sec': themeType === 'nri' ? '#596575' : (themeType === 'group' ? '#6B5969' : (themeType === 'family' ? '#5E6870' : (themeType === 'pilgrim' ? '#64615D' : (themeType === 'budget' ? '#575F5A' : (themeType === 'trending' ? '#555555' : 'var(--text-sec)'))))),
+      '--theme-text-main': themeType === 'nri' ? '#173A63' : (themeType === 'group' ? '#5A2A54' : (themeType === 'family' ? '#245C59' : (themeType === 'pilgrim' ? '#4A2A16' : (themeType === 'budget' ? '#1B5E20' : (themeType === 'trending' ? '#8B1E1E' : 'var(--text-main)'))))),
     }}>
-      {(themeType === 'pilgrim' || themeType === 'budget') && (
+      {(themeType === 'pilgrim' || themeType === 'budget' || themeType === 'trending') && (
         <style dangerouslySetInnerHTML={{ __html: `
           .seo-category-title::before {
-            border-bottom-color: ${themeType === 'pilgrim' ? '#E98216' : '#2E7D32'} !important;
+            border-bottom-color: ${themeType === 'pilgrim' ? '#E98216' : (themeType === 'trending' ? '#D32F2F' : '#2E7D32')} !important;
           }
           .seo-category-title::after {
-            background-color: ${themeType === 'pilgrim' ? '#E98216' : '#2E7D32'} !important;
+            background-color: ${themeType === 'pilgrim' ? '#E98216' : (themeType === 'trending' ? '#D32F2F' : '#2E7D32')} !important;
           }
         `}} />
       )}
       {/* Hero Section */}
       <section className="premium-hero">
-        {themeType === 'nri' || themeType === 'family' || themeType === 'group' || themeType === 'pilgrim' || themeType === 'budget' ? (
+        {themeType === 'nri' || themeType === 'family' || themeType === 'group' || themeType === 'pilgrim' || themeType === 'budget' || themeType === 'trending' ? (
           <img
             className="hero-img"
             src={heroImage}
-            alt={themeType === 'nri' ? "NRI Package" : (themeType === 'group' ? "Group Adventure" : (themeType === 'pilgrim' ? "Pilgrim Package" : "Family Getaway"))}
+            alt={themeType === 'nri' ? "NRI Package" : (themeType === 'group' ? "Group Adventure" : (themeType === 'pilgrim' ? "Pilgrim Package" : (themeType === 'trending' ? "Trending Destinations" : "Family Getaway")))}
           />
         ) : (
           <video
@@ -275,6 +282,11 @@ export default function PremiumDestinationLayout({
                   (part.toLowerCase() === 'smart budgets') ?
                     <span key={i} style={{ color: '#2E7D32' }}>{part}</span> : part
                 )
+              ) : themeType === 'trending' && typedText === 'Trending Destinations' ? (
+                typedText.split(/(\bTrending Destinations\b)/gi).map((part, i) =>
+                  (part.toLowerCase() === 'trending destinations') ?
+                    <span key={i} style={{ color: '#B71C1C' }}>{part}</span> : part
+                )
               ) : typedText}
             </span>
             <span className="typing-cursor">|</span>
@@ -289,22 +301,22 @@ export default function PremiumDestinationLayout({
         {/* Decorative Multi-Layer Separator */}
         <div className="hero-curved-edge">
           <svg viewBox="0 0 1440 120" preserveAspectRatio="none" className="edge-svg edge-layer edge-layer-1">
-            <path d="M0,120 L0,50 C120,70 240,85 360,80 C480,75 600,55 720,45 C840,35 960,40 1080,55 C1200,70 1320,75 1440,60 L1440,120 Z" fill={themeType === 'nri' ? '#0B2342' : (themeType === 'group' ? '#84397B' : (themeType === 'family' ? '#245C59' : (themeType === 'pilgrim' ? '#E98216' : (themeType === 'budget' ? '#1B5E20' : '#C23B6B'))))} />
+            <path d="M0,120 L0,50 C120,70 240,85 360,80 C480,75 600,55 720,45 C840,35 960,40 1080,55 C1200,70 1320,75 1440,60 L1440,120 Z" fill={themeType === 'nri' ? '#0B2342' : (themeType === 'group' ? '#84397B' : (themeType === 'family' ? '#245C59' : (themeType === 'pilgrim' ? '#E98216' : (themeType === 'budget' ? '#1B5E20' : (themeType === 'trending' ? '#B71C1C' : '#C23B6B')))))} />
           </svg>
           <svg viewBox="0 0 1440 120" preserveAspectRatio="none" className="edge-svg edge-layer edge-layer-2">
-            <path d="M0,120 L0,62 C180,80 360,90 540,82 C720,74 840,55 960,52 C1080,49 1260,65 1440,70 L1440,120 Z" fill={themeType === 'nri' ? '#1759A6' : (themeType === 'group' ? '#C27CBB' : (themeType === 'family' ? '#75AAA3' : (themeType === 'pilgrim' ? '#F3D49A' : (themeType === 'budget' ? '#8BC34A' : '#F2A5BC'))))} />
+            <path d="M0,120 L0,62 C180,80 360,90 540,82 C720,74 840,55 960,52 C1080,49 1260,65 1440,70 L1440,120 Z" fill={themeType === 'nri' ? '#1759A6' : (themeType === 'group' ? '#C27CBB' : (themeType === 'family' ? '#75AAA3' : (themeType === 'pilgrim' ? '#F3D49A' : (themeType === 'budget' ? '#8BC34A' : (themeType === 'trending' ? '#FFCEC0' : '#F2A5BC')))))} />
           </svg>
           <svg viewBox="0 0 1440 120" preserveAspectRatio="none" className="edge-svg edge-layer edge-layer-3">
-            <path d="M0,120 L0,72 C160,92 320,100 480,94 C640,88 760,68 900,62 C1040,56 1200,70 1440,80 L1440,120 Z" fill={themeType === 'nri' ? '#FFFCF5' : (themeType === 'group' ? '#FAF5FA' : (themeType === 'family' ? '#FFFDF7' : (themeType === 'pilgrim' ? '#FFF9EF' : (themeType === 'budget' ? '#F8FFF6' : 'var(--pink-bg)'))))} />
+            <path d="M0,120 L0,72 C160,92 320,100 480,94 C640,88 760,68 900,62 C1040,56 1200,70 1440,80 L1440,120 Z" fill={themeType === 'nri' ? '#FFFCF5' : (themeType === 'group' ? '#FAF5FA' : (themeType === 'family' ? '#FFFDF7' : (themeType === 'pilgrim' ? '#FFF9EF' : (themeType === 'budget' ? '#F8FFF6' : (themeType === 'trending' ? '#FFF9F7' : 'var(--pink-bg)')))))} />
           </svg>
           <svg viewBox="0 0 1440 120" preserveAspectRatio="none" className="edge-svg edge-layer edge-layer-accent">
-            <path d="M0,72 C160,92 320,100 480,94 C640,88 760,68 900,62 C1040,56 1200,70 1440,80" fill="none" stroke={themeType === 'nri' ? '#1759A6' : (themeType === 'group' ? '#9D4A93' : (themeType === 'family' ? '#2F7F7B' : (themeType === 'pilgrim' ? '#E98216' : (themeType === 'budget' ? '#2E7D32' : '#D9466F'))))} strokeWidth="1.5" opacity="0.45" />
+            <path d="M0,72 C160,92 320,100 480,94 C640,88 760,68 900,62 C1040,56 1200,70 1440,80" fill="none" stroke={themeType === 'nri' ? '#1759A6' : (themeType === 'group' ? '#9D4A93' : (themeType === 'family' ? '#2F7F7B' : (themeType === 'pilgrim' ? '#E98216' : (themeType === 'budget' ? '#2E7D32' : (themeType === 'trending' ? '#D32F2F' : '#D9466F')))))} strokeWidth="1.5" opacity="0.45" />
           </svg>
           <div className="edge-flourish">
             <div className="flourish-ornament-group">
-              <div className="flourish-dot-outer" style={themeType === 'nri' ? { background: '#1759A6', borderColor: '#1759A6' } : (themeType === 'group' ? { background: '#9D4A93', borderColor: '#9D4A93' } : (themeType === 'family' ? { background: '#2F7F7B', borderColor: '#2F7F7B' } : (themeType === 'pilgrim' ? { background: '#E98216', borderColor: '#E98216' } : (themeType === 'budget' ? { background: '#2E7D32', borderColor: '#2E7D32' } : {}))))}></div>
-              <div className="flourish-line" style={themeType === 'nri' ? { background: 'linear-gradient(90deg, transparent, #1759A6, transparent)' } : (themeType === 'group' ? { background: 'linear-gradient(90deg, transparent, #9D4A93, transparent)' } : (themeType === 'family' ? { background: 'linear-gradient(90deg, transparent, #2F7F7B, transparent)' } : (themeType === 'pilgrim' ? { background: 'linear-gradient(90deg, transparent, #E98216, transparent)' } : (themeType === 'budget' ? { background: 'linear-gradient(90deg, transparent, #2E7D32, transparent)' } : {}))))}></div>
-              <div className="flourish-dot-inner" style={themeType === 'nri' ? { background: '#1759A6' } : (themeType === 'group' ? { background: '#9D4A93' } : (themeType === 'family' ? { background: '#2F7F7B' } : (themeType === 'pilgrim' ? { background: '#E98216' } : (themeType === 'budget' ? { background: '#2E7D32' } : {}))))}></div>
+              <div className="flourish-dot-outer" style={themeType === 'nri' ? { background: '#1759A6', borderColor: '#1759A6' } : (themeType === 'group' ? { background: '#9D4A93', borderColor: '#9D4A93' } : (themeType === 'family' ? { background: '#2F7F7B', borderColor: '#2F7F7B' } : (themeType === 'pilgrim' ? { background: '#E98216', borderColor: '#E98216' } : (themeType === 'budget' ? { background: '#2E7D32', borderColor: '#2E7D32' } : (themeType === 'trending' ? { background: '#D32F2F', borderColor: '#D32F2F' } : {})))))}></div>
+              <div className="flourish-line" style={themeType === 'nri' ? { background: 'linear-gradient(90deg, transparent, #1759A6, transparent)' } : (themeType === 'group' ? { background: 'linear-gradient(90deg, transparent, #9D4A93, transparent)' } : (themeType === 'family' ? { background: 'linear-gradient(90deg, transparent, #2F7F7B, transparent)' } : (themeType === 'pilgrim' ? { background: 'linear-gradient(90deg, transparent, #E98216, transparent)' } : (themeType === 'budget' ? { background: 'linear-gradient(90deg, transparent, #2E7D32, transparent)' } : (themeType === 'trending' ? { background: 'linear-gradient(90deg, transparent, #D32F2F, transparent)' } : {})))))}></div>
+              <div className="flourish-dot-inner" style={themeType === 'nri' ? { background: '#1759A6' } : (themeType === 'group' ? { background: '#9D4A93' } : (themeType === 'family' ? { background: '#2F7F7B' } : (themeType === 'pilgrim' ? { background: '#E98216' } : (themeType === 'budget' ? { background: '#2E7D32' } : (themeType === 'trending' ? { background: '#D32F2F' } : {})))))}></div>
             </div>
             {themeType === 'nri' ? (
               <svg className="flourish-heart" style={{ filter: 'drop-shadow(0 1px 3px rgba(23, 89, 166, 0.25))' }} width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#1759A6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
@@ -331,15 +343,20 @@ export default function PremiumDestinationLayout({
                 <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
                 <line x1="7" y1="7" x2="7.01" y2="7" />
               </svg>
+            ) : themeType === 'trending' ? (
+              <svg className="flourish-heart" style={{ filter: 'drop-shadow(0 1px 3px rgba(211, 47, 47, 0.25))' }} width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#D32F2F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22 2L11 13" />
+                <polygon points="22 2 15 22 11 13 2 9 22 2" />
+              </svg>
             ) : (
               <svg className="flourish-heart" style={{ filter: 'drop-shadow(0 1px 3px rgba(217, 70, 111, 0.25))' }} width="26" height="26" viewBox="0 0 24 24" fill="#D9466F" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
               </svg>
             )}
             <div className="flourish-ornament-group">
-              <div className="flourish-dot-inner" style={themeType === 'nri' ? { background: '#1759A6' } : (themeType === 'group' ? { background: '#9D4A93' } : (themeType === 'family' ? { background: '#2F7F7B' } : (themeType === 'pilgrim' ? { background: '#E98216' } : (themeType === 'budget' ? { background: '#2E7D32' } : {}))))}></div>
-              <div className="flourish-line" style={themeType === 'nri' ? { background: 'linear-gradient(90deg, transparent, #1759A6, transparent)' } : (themeType === 'group' ? { background: 'linear-gradient(90deg, transparent, #9D4A93, transparent)' } : (themeType === 'family' ? { background: 'linear-gradient(90deg, transparent, #2F7F7B, transparent)' } : (themeType === 'pilgrim' ? { background: 'linear-gradient(90deg, transparent, #E98216, transparent)' } : (themeType === 'budget' ? { background: 'linear-gradient(90deg, transparent, #2E7D32, transparent)' } : {}))))}></div>
-              <div className="flourish-dot-outer" style={themeType === 'nri' ? { background: '#1759A6', borderColor: '#1759A6' } : (themeType === 'group' ? { background: '#9D4A93', borderColor: '#9D4A93' } : (themeType === 'family' ? { background: '#2F7F7B', borderColor: '#2F7F7B' } : (themeType === 'pilgrim' ? { background: '#E98216', borderColor: '#E98216' } : (themeType === 'budget' ? { background: '#2E7D32', borderColor: '#2E7D32' } : {}))))}></div>
+              <div className="flourish-dot-inner" style={themeType === 'nri' ? { background: '#1759A6' } : (themeType === 'group' ? { background: '#9D4A93' } : (themeType === 'family' ? { background: '#2F7F7B' } : (themeType === 'pilgrim' ? { background: '#E98216' } : (themeType === 'budget' ? { background: '#2E7D32' } : (themeType === 'trending' ? { background: '#D32F2F' } : {})))))}></div>
+              <div className="flourish-line" style={themeType === 'nri' ? { background: 'linear-gradient(90deg, transparent, #1759A6, transparent)' } : (themeType === 'group' ? { background: 'linear-gradient(90deg, transparent, #9D4A93, transparent)' } : (themeType === 'family' ? { background: 'linear-gradient(90deg, transparent, #2F7F7B, transparent)' } : (themeType === 'pilgrim' ? { background: 'linear-gradient(90deg, transparent, #E98216, transparent)' } : (themeType === 'budget' ? { background: 'linear-gradient(90deg, transparent, #2E7D32, transparent)' } : (themeType === 'trending' ? { background: 'linear-gradient(90deg, transparent, #D32F2F, transparent)' } : {})))))}></div>
+              <div className="flourish-dot-outer" style={themeType === 'nri' ? { background: '#1759A6', borderColor: '#1759A6' } : (themeType === 'group' ? { background: '#9D4A93', borderColor: '#9D4A93' } : (themeType === 'family' ? { background: '#2F7F7B', borderColor: '#2F7F7B' } : (themeType === 'pilgrim' ? { background: '#E98216', borderColor: '#E98216' } : (themeType === 'budget' ? { background: '#2E7D32', borderColor: '#2E7D32' } : (themeType === 'trending' ? { background: '#D32F2F', borderColor: '#D32F2F' } : {})))))}></div>
             </div>
           </div>
         </div>
@@ -358,7 +375,7 @@ export default function PremiumDestinationLayout({
         <div className="nav-pill-wrapper">
           <nav className="nav-links">
             {[
-              { id: 'overview', label: 'Overview' },
+              { id: 'overview', label: themeType === 'trending' ? 'Trending Package' : 'Overview' },
               { id: 'highlights', label: 'Highlights' },
               { id: 'activities', label: 'Must Do Activities' },
               { id: 'tips', label: 'Travel Tips & Tricks' },
@@ -389,8 +406,8 @@ export default function PremiumDestinationLayout({
           {/* CENTER COLUMN TOP (Overview) */}
           <div className="premium-center-top" style={{ paddingRight: renderBookingCard ? 32 : 0 }}>
             <div id="section-overview" className={`content-section ${!isExpanded ? 'preview-mode' : ''}`}>
-              <h2 className="section-heading serif" style={themeType === 'nri' ? { color: '#173A63' } : (themeType === 'group' ? { color: '#9D4A93' } : (themeType === 'family' ? { color: '#245C59' } : (themeType === 'pilgrim' ? { color: '#C9650A' } : (themeType === 'budget' ? { color: '#2E7D32' } : {}))))}>
-                {themeType === 'nri' ? 'Your journey home, made seamless & special' : (themeType === 'group' ? 'Memories are meant to be shared' : (themeType === 'family' ? 'Together, every journey becomes a memory' : (themeType === 'pilgrim' ? 'Spiritual journeys, divine blessings' : (themeType === 'budget' ? 'Great experiences, great value' : 'Romance, culture & unforgettable escapes'))))}
+              <h2 className="section-heading serif" style={themeType === 'nri' ? { color: '#173A63' } : (themeType === 'group' ? { color: '#9D4A93' } : (themeType === 'family' ? { color: '#245C59' } : (themeType === 'pilgrim' ? { color: '#C9650A' } : (themeType === 'budget' ? { color: '#2E7D32' } : (themeType === 'trending' ? { color: '#8B1E1E' } : {})))))}>
+                {themeType === 'nri' ? 'Your journey home, made seamless & special' : (themeType === 'group' ? 'Memories are meant to be shared' : (themeType === 'family' ? 'Together, every journey becomes a memory' : (themeType === 'pilgrim' ? 'Spiritual journeys, divine blessings' : (themeType === 'budget' ? 'Great experiences, great value' : (themeType === 'trending' ? 'Explore the Most Popular Trending Packages' : 'Romance, culture & unforgettable escapes')))))}
               </h2>
               <div className={`section-text ${!isExpanded ? 'section-text-preview' : ''}`}>
                 {themeType === 'nri' ? (
@@ -479,6 +496,19 @@ export default function PremiumDestinationLayout({
                       </div>
                     )}
                   </>
+                ) : themeType === 'trending' ? (
+                  <>
+                    <p>
+                      {pkg?.description || 'Discover handpicked trending travel packages designed for unforgettable journeys. From scenic getaways and beautiful beaches to vibrant cities and cultural experiences, explore destinations that travelers love.'}
+                    </p>
+                    {!pkg?.description && (
+                      <div className="extended-description">
+                        <p style={{ marginTop: '16px' }}>Whether you are planning a relaxing escape, an adventurous holiday, or a memorable trip with friends and family, our trending packages bring together exciting destinations, comfortable stays, convenient transportation, and memorable sightseeing experiences.</p>
+                        <p style={{ marginTop: '16px' }}>Explore new places, experience different cultures, and create memories that last a lifetime.</p>
+                        <p style={{ marginTop: '16px', fontWeight: 600 }}>Explore more. Experience more. Travel the trend.</p>
+                      </div>
+                    )}
+                  </>
                 ) : (
                   <>
                     <p>
@@ -548,6 +578,14 @@ export default function PremiumDestinationLayout({
                         <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#2E7D32' }}>🚌</span><h4 style={{ fontSize: '15px' }}>Economical Transport Options</h4></div>
                         <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#2E7D32' }}>📸</span><h4 style={{ fontSize: '15px' }}>Exciting Sightseeing Included</h4></div>
                         <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#2E7D32' }}>🎧</span><h4 style={{ fontSize: '15px' }}>24/7 Assistance During Your Trip</h4></div>
+                      </>
+                    ) : themeType === 'trending' ? (
+                      <>
+                        <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#D32F2F' }}>📍</span><h4 style={{ fontSize: '15px' }}>Popular Trending Destinations</h4></div>
+                        <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#D32F2F' }}>🏨</span><h4 style={{ fontSize: '15px' }}>Handpicked Comfortable Stays</h4></div>
+                        <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#D32F2F' }}>🚌</span><h4 style={{ fontSize: '15px' }}>Convenient Transport Options</h4></div>
+                        <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#D32F2F' }}>📸</span><h4 style={{ fontSize: '15px' }}>Must-See Sightseeing Experiences</h4></div>
+                        <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#D32F2F' }}>🎧</span><h4 style={{ fontSize: '15px' }}>24/7 Assistance During Your Trip</h4></div>
                       </>
                     ) : (
                       <>
@@ -747,6 +785,33 @@ export default function PremiumDestinationLayout({
         </div>
       )}
 
+      {themeType === 'trending' && (
+        <div className="trending-benefits-strip-container">
+          <div className="trending-benefits-strip">
+            <div className="trending-benefit">
+              <span className="trending-benefit-icon" style={{ filter: 'grayscale(1)', color: '#D32F2F' }}>📍</span>
+              <span className="trending-benefit-text">Popular Trending<br/>Destinations</span>
+            </div>
+            <div className="trending-benefit">
+              <span className="trending-benefit-icon" style={{ filter: 'grayscale(1)', color: '#D32F2F' }}>🏨</span>
+              <span className="trending-benefit-text">Handpicked<br/>Comfortable Stays</span>
+            </div>
+            <div className="trending-benefit">
+              <span className="trending-benefit-icon" style={{ filter: 'grayscale(1)', color: '#D32F2F' }}>🚌</span>
+              <span className="trending-benefit-text">Convenient Transport<br/>Options</span>
+            </div>
+            <div className="trending-benefit">
+              <span className="trending-benefit-icon" style={{ filter: 'grayscale(1)', color: '#D32F2F' }}>📸</span>
+              <span className="trending-benefit-text">Must-See Sightseeing<br/>Experiences</span>
+            </div>
+            <div className="trending-benefit">
+              <span className="trending-benefit-icon" style={{ filter: 'grayscale(1)', color: '#D32F2F' }}>🎧</span>
+              <span className="trending-benefit-text">24/7 Assistance<br/>During Your Trip</span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Bottom Content / Destination Picker */}
       <div ref={bottomContentRef}>
         {renderBottom ? renderBottom() : null}
@@ -917,6 +982,58 @@ export default function PremiumDestinationLayout({
 
         @media (max-width: 768px) {
           .budget-benefits-strip {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+        }
+
+        /* TRENDING BENEFITS STRIP */
+        .trending-benefits-strip-container {
+          background-color: #FFF2F2;
+          padding: 30px 20px;
+          margin-top: 40px;
+          border-radius: 16px;
+          max-width: 1300px;
+          margin-left: auto;
+          margin-right: auto;
+        }
+        
+        .trending-benefits-strip {
+          display: flex;
+          justify-content: space-around;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 20px;
+        }
+
+        .trending-benefit {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .trending-benefit-icon {
+          font-size: 24px;
+          background: #FFCEC0;
+          color: #D32F2F;
+          padding: 12px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 50px;
+          height: 50px;
+        }
+
+        .trending-benefit-text {
+          font-size: 14px;
+          font-weight: 500;
+          color: #8B1E1E;
+          line-height: 1.4;
+        }
+
+        @media (max-width: 768px) {
+          .trending-benefits-strip {
             flex-direction: column;
             align-items: flex-start;
           }

@@ -11,9 +11,10 @@ export default function LoveStoryDestinations({ themeClass = '', destinationsDat
   const isNri = themeClass.includes('nri');
   const isPilgrim = themeClass.includes('pilgrim') || themeClass.includes('saffron');
   const isBudget = themeClass.includes('budget');
+  const isTrending = themeClass.includes('trending');
   const displayDestinations = destinationsData || [];
-  const themeColor = isNri ? '#1759A6' : (isGroup ? '#9D4A93' : (isFamily ? '#2F7F7B' : (isPilgrim ? '#E98216' : (isBudget ? '#2E7D32' : '#D9466F'))));
-  const shadowColor = isNri ? 'rgba(23, 89, 166, 0.15)' : (isGroup ? 'rgba(157, 74, 147, 0.15)' : (isFamily ? 'rgba(47, 127, 123, 0.15)' : (isPilgrim ? 'rgba(233, 130, 22, 0.15)' : (isBudget ? 'rgba(46, 125, 50, 0.15)' : 'rgba(217, 70, 111, 0.15)'))));
+  const themeColor = isNri ? '#1759A6' : (isGroup ? '#9D4A93' : (isFamily ? '#2F7F7B' : (isPilgrim ? '#E98216' : (isBudget ? '#2E7D32' : (isTrending ? '#D32F2F' : '#D9466F')))));
+  const shadowColor = isNri ? 'rgba(23, 89, 166, 0.15)' : (isGroup ? 'rgba(157, 74, 147, 0.15)' : (isFamily ? 'rgba(47, 127, 123, 0.15)' : (isPilgrim ? 'rgba(233, 130, 22, 0.15)' : (isBudget ? 'rgba(46, 125, 50, 0.15)' : (isTrending ? 'rgba(211, 47, 47, 0.15)' : 'rgba(217, 70, 111, 0.15)')))));
 
   if (!displayDestinations || displayDestinations.length === 0) return null;
 
@@ -23,7 +24,7 @@ export default function LoveStoryDestinations({ themeClass = '', destinationsDat
         
         {/* Header */}
         <div className="love-story-header">
-          <h2 className="love-story-title theme-underline-heading">{isNri ? 'Heritage & Roots' : (isGroup ? 'Group Dreams' : (isFamily ? 'Family Dreams' : (isPilgrim ? 'Spiritual Journeys' : (isBudget ? 'Budget Destinations' : 'Honeymoon Dreams'))))}</h2>
+          <h2 className="love-story-title theme-underline-heading">{isNri ? 'Heritage & Roots' : (isGroup ? 'Group Dreams' : (isFamily ? 'Family Dreams' : (isPilgrim ? 'Spiritual Journeys' : (isBudget ? 'Budget Destinations' : (isTrending ? 'Trending Destinations' : 'Honeymoon Dreams')))))}</h2>
         </div>
 
         {/* Grid */}

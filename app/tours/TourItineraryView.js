@@ -1778,13 +1778,14 @@ export default function TourItineraryView({ destination, packageSlug }) {
 
   const isPilgrim = pkg?.categories?.some?.(c => c.slug?.includes('pilgrim') || c.name?.toLowerCase().includes('pilgrim')) || pkg?.slug?.includes('pilgrim') || pkg?.name?.toLowerCase().includes('pilgrim');
   const isHoneymoon = pkg?.categories?.some?.(c => c.slug?.includes('honeymoon') || c.name?.toLowerCase().includes('honeymoon')) || pkg?.slug?.includes('honeymoon') || pkg?.name?.toLowerCase().includes('honeymoon');
+  const isTrending = pkg?.categories?.some?.(c => c.slug?.includes('trending') || c.name?.toLowerCase().includes('trending')) || pkg?.slug?.includes('trending') || pkg?.name?.toLowerCase().includes('trending');
 
-  const themePrimary = isPilgrim ? '#E98216' : '#D9466F';
-  const themeSoft = isPilgrim ? '#FFF5E5' : '#FCE7ED';
-  const themeDark = isPilgrim ? '#C9650A' : '#B8325A';
+  const themePrimary = isTrending ? '#D32F2F' : (isPilgrim ? '#E98216' : '#D9466F');
+  const themeSoft = isTrending ? '#FFCEC0' : (isPilgrim ? '#FFF5E5' : '#FCE7ED');
+  const themeDark = isTrending ? '#B71C1C' : (isPilgrim ? '#C9650A' : '#B8325A');
 
   const renderBookingCard = () => (
-    <div className="itn-card itn-price-card" style={{ boxShadow: `0 10px 30px ${isPilgrim ? 'rgba(233, 130, 22, 0.08)' : 'rgba(217, 70, 111, 0.08)'}`, borderRadius: '24px', border: `1px solid ${themeSoft}` }}>
+    <div className="itn-card itn-price-card" style={{ boxShadow: `0 10px 30px ${isTrending ? 'rgba(211, 47, 47, 0.08)' : (isPilgrim ? 'rgba(233, 130, 22, 0.08)' : 'rgba(217, 70, 111, 0.08)')}`, borderRadius: '24px', border: `1px solid ${themeSoft}` }}>
       <div>
         <span style={{color: '#6B6670'}}>Package price</span>
         <strong style={{color: themePrimary, fontSize: '28px'}}>{unitPriceLabel}</strong>
@@ -1853,7 +1854,7 @@ export default function TourItineraryView({ destination, packageSlug }) {
           width: '100%',
           border: 'none',
           cursor: 'pointer',
-          boxShadow: `0 4px 14px ${isPilgrim ? 'rgba(233, 130, 22, 0.3)' : 'rgba(217, 70, 111, 0.3)'}`
+          boxShadow: `0 4px 14px ${isTrending ? 'rgba(211, 47, 47, 0.3)' : (isPilgrim ? 'rgba(233, 130, 22, 0.3)' : 'rgba(217, 70, 111, 0.3)')}`
         }}
       >
         <span>{amountToPay > 0 ? `Book Now - Pay ${amountToPayLabel}` : 'Book Now'}</span>
@@ -1875,7 +1876,7 @@ export default function TourItineraryView({ destination, packageSlug }) {
     </div>
   );
 
-  if (isHoneymoon || isPilgrim) {
+  if (isHoneymoon || isPilgrim || isTrending) {
     return (
       <div className="itn-page">
         <PremiumDestinationLayout 
@@ -1886,7 +1887,7 @@ export default function TourItineraryView({ destination, packageSlug }) {
           destinationNames={destinationNames}
           includedItems={includedItems}
           excludedItems={excludedItems}
-          themeType={isPilgrim ? 'pilgrim' : 'honeymoon'}
+          themeType={isTrending ? 'trending' : (isPilgrim ? 'pilgrim' : 'honeymoon')}
         />
         
         {/* Modals from existing layout */}

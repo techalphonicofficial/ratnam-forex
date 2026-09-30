@@ -16,9 +16,9 @@ const getTourViewHref = (tour, view = 'itinerary') => {
   return `/package/${fallback}`;
 };
 
-export default function TrendingTourCard({ tour, className = '', isFamily = false, isGroup = false, isNri = false, isPilgrim = false, isBudget = false }) {
+export default function TrendingTourCard({ tour, className = '', isFamily = false, isGroup = false, isNri = false, isPilgrim = false, isBudget = false, isTrending = false }) {
   const router = useRouter();
-  const primaryColor = isNri ? '#1759A6' : (isGroup ? '#9D4A93' : (isFamily ? '#2F7F7B' : (isPilgrim ? '#E98216' : (isBudget ? '#2E7D32' : '#D9466F'))));
+  const primaryColor = isNri ? '#1759A6' : (isGroup ? '#9D4A93' : (isFamily ? '#2F7F7B' : (isPilgrim ? '#E98216' : (isBudget ? '#2E7D32' : (isTrending ? '#D32F2F' : '#D9466F')))));
   const btnViewColor = '#C19A6B'; // The brown-ish color from image
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
