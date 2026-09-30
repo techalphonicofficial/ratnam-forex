@@ -9,6 +9,15 @@ const MAX_PRICE = 1000000;
 const formatPriceNumber = (value) => Number(value || 0).toLocaleString('en-IN');
 
 export default function TrendingToursSection({ themeClass = '' }) {
+  const isFamily = themeClass.includes('teal');
+  const isGroup = themeClass.includes('purple');
+  const isNri = themeClass.includes('nri');
+  const isBlush = themeClass.includes('blush');
+  const isPilgrim = themeClass.includes('pilgrim') || themeClass.includes('saffron');
+  const isBudget = themeClass.includes('budget');
+  const primaryColor = isNri ? '#1759A6' : (isGroup ? '#9D4A93' : (isFamily ? '#2F7F7B' : (isPilgrim ? '#E98216' : (isBudget ? '#2E7D32' : '#D9466F'))));
+  const bgColor = isNri ? '#FFFCF5' : (isGroup ? '#FAF5FA' : (isFamily ? '#FFFDF7' : (isPilgrim ? '#FFF9EF' : (isBudget ? 'transparent' : (isBlush ? 'transparent' : 'var(--color-bg)')))));
+  const softColor = isNri ? '#E8F1FA' : (isGroup ? '#F5E6F5' : (isFamily ? '#F2F7F4' : (isPilgrim ? '#FFF5E5' : (isBudget ? '#F1F8EF' : '#FFF9FA'))));
   const [loading, setLoading] = useState(true);
   const [apiTours, setApiTours] = useState([]);
   const [filterOptions, setFilterOptions] = useState({
@@ -146,7 +155,7 @@ export default function TrendingToursSection({ themeClass = '' }) {
   return (
     <section className={themeClass} style={{
       padding: '40px 0',
-      background: themeClass.includes('blush') ? 'transparent' : 'var(--color-bg)',
+      background: bgColor,
       position: 'relative',
       width: '100%',
     }}>
@@ -154,18 +163,11 @@ export default function TrendingToursSection({ themeClass = '' }) {
 
         {/* Heading Header matched to screenshot */}
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '30px', textAlign: 'center', width: '100%' }}>
-          <h2 style={{
-            fontSize: '24px',
+          <h2 className={`trending-heading theme-underline-heading ${!isFamily && !isGroup && !isNri ? 'honeymoon-heading' : ''}`} style={{
             fontWeight: 600,
-            color: '#D9466F',
-            border: '2px solid #D9466F',
-            borderRadius: '50px',
-            padding: '10px 32px',
+            color: primaryColor,
             textTransform: 'uppercase',
-            letterSpacing: '2px',
-            margin: 0,
-            backgroundColor: '#FFF9FA',
-            boxShadow: '0 4px 12px rgba(217, 70, 111, 0.1)'
+            margin: 0
           }}>
             Trending Tours
           </h2>
@@ -193,6 +195,8 @@ export default function TrendingToursSection({ themeClass = '' }) {
                 value="all"
                 onChange={() => {}}
                 placeholder="Duration"
+                themeColor={primaryColor}
+                themeBg={softColor}
                 options={[
                   { value: 'all', label: 'Duration' },
                   ...filterOptions.durations.map(d => ({ value: d.key, label: d.label }))
@@ -206,6 +210,8 @@ export default function TrendingToursSection({ themeClass = '' }) {
                   setFilters(prev => ({ ...prev, maxPrice: val === 'Any' ? (filterOptions.priceRange.max || 500000) : Number(val) }));
                 }}
                 placeholder="Budget"
+                themeColor={primaryColor}
+                themeBg={softColor}
                 options={[
                   { value: 'Any', label: 'Budget' },
                   { value: '50000', label: 'Under ₹50k' },
@@ -221,7 +227,7 @@ export default function TrendingToursSection({ themeClass = '' }) {
               {/* Tour Duration Accordion */}
               <div style={{ marginBottom: '16px', marginTop: '20px' }}>
                 <div
-                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', fontSize: '14px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', fontSize: '14px', fontWeight: 600, color: primaryColor, textTransform: 'uppercase', letterSpacing: '0.5px' }}
                   onClick={() => toggleSection('duration')}
                 >
                   TOUR duration
@@ -233,7 +239,7 @@ export default function TrendingToursSection({ themeClass = '' }) {
                   <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '10px', paddingLeft: '8px' }}>
                     {filterOptions.durations.map(dur => (
                       <label key={dur.key} style={{ display: 'flex', alignItems: 'center', fontSize: '13px', color: '#666', cursor: 'pointer', width: '100%' }}>
-                        <input type="checkbox" style={{ marginRight: '8px', accentColor: '#b98c56', flexShrink: 0 }} />
+                        <input type="checkbox" style={{ marginRight: '8px', accentColor: primaryColor, flexShrink: 0 }} />
                         <span>{dur.label}</span>
                       </label>
                     ))}
@@ -245,7 +251,7 @@ export default function TrendingToursSection({ themeClass = '' }) {
               {/* Budget Accordion */}
               <div style={{ marginBottom: '16px', marginTop: '20px' }}>
                 <div
-                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', fontSize: '14px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', fontSize: '14px', fontWeight: 600, color: primaryColor, textTransform: 'uppercase', letterSpacing: '0.5px' }}
                   onClick={() => toggleSection('budget')}
                 >
                   Budget
@@ -255,7 +261,7 @@ export default function TrendingToursSection({ themeClass = '' }) {
                 </div>
                 {expandedSections.budget && (
                   <div style={{ marginTop: '16px', paddingLeft: '8px', paddingRight: '8px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: 600, color: '#b98c56', marginBottom: '8px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: 600, color: primaryColor, marginBottom: '8px' }}>
                       <span>₹{formatPriceNumber(filters.minPrice)}</span>
                       <span>₹{formatPriceNumber(filters.maxPrice)}</span>
                     </div>
@@ -266,7 +272,7 @@ export default function TrendingToursSection({ themeClass = '' }) {
                       step={5000}
                       value={filters.maxPrice}
                       onChange={(e) => setFilters(prev => ({ ...prev, maxPrice: Number(e.target.value) }))}
-                      style={{ width: '100%', accentColor: '#b98c56' }}
+                      style={{ width: '100%', accentColor: primaryColor }}
                     />
                   </div>
                 )}
@@ -288,7 +294,7 @@ export default function TrendingToursSection({ themeClass = '' }) {
                 <div className="trending-grid" ref={scrollRef}>
                   {displayedTours.map((tour) => (
                     <div key={tour.id || tour.slug} className="trending-card-wrapper">
-                      <TrendingTourCard tour={tour} />
+                      <TrendingTourCard tour={tour} isFamily={isFamily} isGroup={isGroup} isNri={isNri} isPilgrim={isPilgrim} isBudget={isBudget} />
                     </div>
                   ))}
                 </div>
@@ -310,13 +316,42 @@ export default function TrendingToursSection({ themeClass = '' }) {
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6" /></svg>
                 </button>
 
+                {filteredTours.length > 6 && (
+                  <div style={{ textAlign: 'center', marginTop: '30px' }}>
+                    <button 
+                      onClick={() => setShowAllTours(!showAllTours)}
+                      style={{
+                        background: 'transparent',
+                        color: primaryColor,
+                        border: `2px solid ${primaryColor}`,
+                        borderRadius: '50px',
+                        padding: '10px 32px',
+                        fontSize: '14px',
+                        fontWeight: '700',
+                        textTransform: 'uppercase',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s'
+                      }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.background = primaryColor;
+                        e.currentTarget.style.color = '#fff';
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.background = 'transparent';
+                        e.currentTarget.style.color = primaryColor;
+                      }}
+                    >
+                      {showAllTours ? 'View Less' : 'View All Packages'}
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               <div style={{ padding: '60px 20px', textAlign: 'center', background: '#fff', borderRadius: '12px', border: '1px solid #eee' }}>
                 <h3 style={{ fontSize: '18px', color: '#555' }}>No trending tours match your filters.</h3>
                 <button
                   onClick={() => setFilters(prev => ({ ...prev, search: '', type: 'all', maxPrice: MAX_PRICE }))}
-                  style={{ marginTop: '16px', padding: '8px 24px', background: '#b98c56', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                  style={{ marginTop: '16px', padding: '8px 24px', background: primaryColor, color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
                 >
                   Clear Filters
                 </button>
@@ -340,10 +375,31 @@ export default function TrendingToursSection({ themeClass = '' }) {
           50% { opacity: 0.3; }
           100% { opacity: 0.6; }
         }
+        .trending-heading {
+          font-size: 24px;
+          padding: 10px 32px;
+          letter-spacing: 2px;
+          width: auto;
+        }
+        .honeymoon-heading {
+          font-size: 28.8px;
+        }
         .hm-scroll-btn {
           display: none;
         }
         @media (max-width: 991px) {
+          .trending-heading {
+            width: max-content !important;
+            font-size: 16px !important;
+            padding: 7px 20px !important;
+            letter-spacing: 1.5px !important;
+            border-width: 1.5px !important;
+            white-space: nowrap !important;
+            margin: 0 auto !important;
+          }
+          .honeymoon-heading {
+            font-size: 19.2px !important;
+          }
           .desktop-filters {
             display: none !important;
           }
@@ -385,9 +441,11 @@ export default function TrendingToursSection({ themeClass = '' }) {
           .trending-sidebar {
             width: 100% !important;
             position: static !important;
-            margin-bottom: 24px;
-            padding: 16px !important;
-            border-radius: 50px !important;
+            margin-bottom: 16px !important;
+            padding: 0 !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
           }
           .trending-wrapper > div > div:last-child {
             width: 100% !important;

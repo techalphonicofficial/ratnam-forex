@@ -1146,9 +1146,9 @@ export const normalizePackageToTour = (pkg) => {
     price: Number(pkg.price) || 0,
     duration: Number(pkg.duration_days) || (pkg.nights ? pkg.nights + 1 : 1),
     gallery: pkg.gallery && Array.isArray(pkg.gallery) && pkg.gallery.length > 0
-      ? pkg.gallery.map((g) => g.url || g.image || g)
-      : (pkg.main_image ? [pkg.main_image] : []),
-    image: pkg.main_image || (pkg.gallery && pkg.gallery[0] ? pkg.gallery[0].url || pkg.gallery[0].image : null),
+      ? pkg.gallery.map((g) => getMediaUrl(g.url || g.image || g))
+      : (pkg.main_image ? [getMediaUrl(pkg.main_image)] : []),
+    image: getMediaUrl(pkg.main_image || (pkg.gallery && pkg.gallery.length > 0 ? (pkg.gallery[0].url || pkg.gallery[0].image || pkg.gallery[0]) : null)),
     icons: packageIcons.length > 0 ? packageIcons : undefined,
     highlights: packageTripHighlights.length > 0 ? packageTripHighlights : (inclusions.length > 0 ? inclusions.map(i => i.text) : ['Inclusive Breakfast', 'Expert Local Guide', 'Premium Stay']),
     included: inclusions.length > 0 ? inclusions.map(i => i.text) : ['Accommodation', 'Daily Breakfast', 'Sightseeing'],

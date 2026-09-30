@@ -2,7 +2,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { getHomeCategories, getMediaUrl } from '@/utils/api';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import Link from 'next/link';
 import CategoryCard, { getFallbackCategoryImage } from './CategoryCard';
@@ -13,6 +12,7 @@ export default function TravelerTypesSection() {
   const [loading, setLoading] = useState(true);
   const [activeTraveler, setActiveTraveler] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [swiperInstance, setSwiperInstance] = useState(null);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
@@ -81,15 +81,55 @@ export default function TravelerTypesSection() {
           padding-top: 20px !important;
           padding-bottom: 20px !important;
           margin-top: -20px; /* Offset the padding so layout doesn't shift */
+          overflow: hidden !important;
         }
-        @media (max-width: 1023px) {
-          .sec-traveller-swiper {
-            overflow: visible !important;
+        .traveller-nav-btn {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          background: #fff;
+          border: 1px solid #eaeaea;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          z-index: 10;
+          color: var(--color-text-primary);
+          transition: all 0.3s ease;
+        }
+        .traveller-nav-btn:hover {
+          background: var(--color-primary);
+          color: #fff;
+          border-color: var(--color-primary);
+        }
+        .traveller-nav-prev {
+          left: -20px;
+        }
+        .traveller-nav-next {
+          right: -20px;
+        }
+        @media (max-width: 768px) {
+          .traveller-nav-prev {
+            left: -16px;
           }
-        }
-        @media (min-width: 1024px) {
+          .traveller-nav-next {
+            right: -16px;
+          }
+          .traveller-nav-btn {
+            width: 32px;
+            height: 32px;
+          }
+          .traveller-nav-btn svg {
+            width: 16px;
+            height: 16px;
+          }
           .sec-traveller-swiper {
-            overflow: hidden !important;
+            padding-left: 12px !important;
+            padding-right: 12px !important;
           }
         }
       `}</style>
@@ -130,12 +170,27 @@ export default function TravelerTypesSection() {
         </div>
 
         {/* Scroll row wrapper */}
-        <div className="sec-traveller-marquee-wrapper">
+        <div className="sec-traveller-marquee-wrapper" style={{ position: 'relative' }}>
+          <button 
+            className="traveller-nav-btn traveller-nav-prev"
+            onClick={() => swiperInstance?.slidePrev()}
+            aria-label="Previous"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+
+          <button 
+            className="traveller-nav-btn traveller-nav-next"
+            onClick={() => swiperInstance?.slideNext()}
+            aria-label="Next"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+
           <Swiper
-            modules={[Autoplay]}
-            loop={isMobile}
+            onSwiper={setSwiperInstance}
+            loop={true}
             speed={500}
-            autoplay={isMobile ? { delay: 2000, disableOnInteraction: false } : false}
             breakpoints={{
               320: { slidesPerView: 2, spaceBetween: 16 },
               768: { slidesPerView: 3, spaceBetween: 24 },

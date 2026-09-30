@@ -19,6 +19,35 @@ select:focus {
   border-color: #D9466F !important;
 }
 
+/* Custom Select Highlight to Teal for Family */
+.teal-theme select option:checked,
+.teal-theme select option:hover,
+.teal-theme select option:focus,
+.teal-theme select option:active {
+  background: #2F7F7B !important;
+  background-color: #2F7F7B !important;
+  color: #fff !important;
+  box-shadow: 0 0 10px 100px #2F7F7B inset !important;
+}
+.teal-theme select:focus {
+  outline-color: #2F7F7B !important;
+  border-color: #2F7F7B !important;
+}
+
+.purple-theme select option:checked,
+.purple-theme select option:hover,
+.purple-theme select option:focus,
+.purple-theme select option:active {
+  background: #9D4A93 !important;
+  background-color: #9D4A93 !important;
+  color: #fff !important;
+  box-shadow: 0 0 10px 100px #9D4A93 inset !important;
+}
+.purple-theme select:focus {
+  outline-color: #9D4A93 !important;
+  border-color: #9D4A93 !important;
+}
+
 /* Define Hoefler Text */
 @font-face {
   font-family: 'Hoefler Text';
@@ -255,7 +284,7 @@ body {
   width: 160px;
   max-width: 80%;
   height: 2px;
-  background-color: var(--color-secondary);
+  background-color: #D9466F;
 }
 
 .theme-underline-heading::before {
@@ -268,7 +297,28 @@ body {
   height: 0;
   border-left: 6px solid transparent;
   border-right: 6px solid transparent;
-  border-bottom: 6px solid var(--color-secondary);
+  border-bottom: 6px solid #D9466F;
+}
+
+/* Teal theme overrides for heading underline */
+.teal-theme .theme-underline-heading::after,
+.teal-theme.theme-underline-heading::after {
+  background-color: #2F7F7B;
+}
+
+.teal-theme .theme-underline-heading::before,
+.teal-theme.theme-underline-heading::before {
+  border-bottom-color: #2F7F7B;
+}
+
+.purple-theme .theme-underline-heading::after,
+.purple-theme.theme-underline-heading::after {
+  background-color: #9D4A93;
+}
+
+.purple-theme .theme-underline-heading::before,
+.purple-theme.theme-underline-heading::before {
+  border-bottom-color: #9D4A93;
 }
 
 img,
@@ -2350,3 +2400,39 @@ body {
   width: 100%;
   position: relative;
 }
+.blush-theme { --color-primary: #D9466F; }
+.teal-theme { --color-primary: #2F7F7B; }
+.purple-theme { --color-primary: #9D4A93; }
+.nri-theme { --color-primary: #1759A6; }
+
+.nri-theme select option:checked,
+.nri-theme select option:hover,
+.nri-theme select option:focus,
+.nri-theme select option:active {
+  background: #1759A6 !important;
+  background-color: #1759A6 !important;
+  color: #fff !important;
+  box-shadow: 0 0 10px 100px #1759A6 inset !important;
+}
+.nri-theme select:focus {
+  outline-color: #1759A6 !important;
+  border-color: #1759A6 !important;
+}
+
+.nri-theme .theme-underline-heading::after,
+.nri-theme.theme-underline-heading::after {
+  background-color: #1759A6;
+}
+
+.nri-theme .theme-underline-heading::before,
+.nri-theme.theme-underline-heading::before {
+  border-bottom-color: #1759A6;
+}
+
+.saffron-theme .theme-underline-heading::after, .saffron-theme.theme-underline-heading::after { background-color: #E98216; }
+.saffron-theme .theme-underline-heading::before, .saffron-theme.theme-underline-heading::before { border-bottom-color: #E98216; }
+
+
+/* BUDGET THEME UNDERLINE */
+.budget-theme .theme-underline-heading::after, .budget-theme.theme-underline-heading::after { background-color: #2E7D32; }
+.budget-theme .theme-underline-heading::before, .budget-theme.theme-underline-heading::before { border-bottom-color: #2E7D32; }

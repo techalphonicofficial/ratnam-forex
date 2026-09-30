@@ -232,6 +232,17 @@ export default function FooterClient({ brand, companyInfo }) {
         </div>
       </div>
 
+      <style>{`
+        @media (min-width: 992px) {
+          .footer .footer-heading { font-size: 17px !important; }
+          .footer .footer-link { font-size: 17px !important; }
+          .footer p { font-size: 18px !important; }
+          .footer a { font-size: 17px !important; }
+          .footer span { font-size: 16px !important; }
+          .footer .footer-bottom-link { font-size: 16px !important; }
+        }
+      `}</style>
+
       <style jsx>{`
         .footer-links-grid {
           display: grid;

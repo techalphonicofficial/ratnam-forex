@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { getReviews, getMediaUrl } from '@/utils/api';
 
-export default function CustomerReviewsSection() {
+export default function CustomerReviewsSection({ themeClass = '' }) {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -61,7 +61,7 @@ export default function CustomerReviewsSection() {
   if (!loading && reviews.length === 0) return null;
 
   return (
-    <section style={{
+    <section className={themeClass} style={{
       padding: '60px 0',
       background: 'transparent',
     }}>
@@ -77,7 +77,7 @@ export default function CustomerReviewsSection() {
 
             {/* Left Side - Heading, Description, Google Rating & Bar Chart */}
             <div className="cr-left-col" style={{ flex: '1 1 340px', minWidth: '280px' }}>
-              <h2 style={{
+              <h2 className="theme-underline-heading" style={{
                 fontSize: '28px',
                 fontWeight: 800,
                 color: 'var(--color-text-primary)',

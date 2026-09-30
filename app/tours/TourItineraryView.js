@@ -1776,23 +1776,28 @@ export default function TourItineraryView({ destination, packageSlug }) {
     year: 'numeric',
   });
 
+  const isPilgrim = pkg?.categories?.some?.(c => c.slug?.includes('pilgrim') || c.name?.toLowerCase().includes('pilgrim')) || pkg?.slug?.includes('pilgrim') || pkg?.name?.toLowerCase().includes('pilgrim');
   const isHoneymoon = pkg?.categories?.some?.(c => c.slug?.includes('honeymoon') || c.name?.toLowerCase().includes('honeymoon')) || pkg?.slug?.includes('honeymoon') || pkg?.name?.toLowerCase().includes('honeymoon');
 
+  const themePrimary = isPilgrim ? '#E98216' : '#D9466F';
+  const themeSoft = isPilgrim ? '#FFF5E5' : '#FCE7ED';
+  const themeDark = isPilgrim ? '#C9650A' : '#B8325A';
+
   const renderBookingCard = () => (
-    <div className="itn-card itn-price-card" style={{ boxShadow: '0 10px 30px rgba(217, 70, 111, 0.08)', borderRadius: '24px', border: '1px solid #FCE7ED' }}>
+    <div className="itn-card itn-price-card" style={{ boxShadow: `0 10px 30px ${isPilgrim ? 'rgba(233, 130, 22, 0.08)' : 'rgba(217, 70, 111, 0.08)'}`, borderRadius: '24px', border: `1px solid ${themeSoft}` }}>
       <div>
         <span style={{color: '#6B6670'}}>Package price</span>
-        <strong style={{color: '#D9466F', fontSize: '28px'}}>{unitPriceLabel}</strong>
+        <strong style={{color: themePrimary, fontSize: '28px'}}>{unitPriceLabel}</strong>
         <small style={{color: '#6B6670'}}>Per traveller</small>
-        {travellerCount > 1 ? <em className="itn-price-tax" style={{color: '#B8325A'}}>Group base {priceLabel}</em> : null}
-        {taxAmount > 0 ? <em className="itn-price-tax" style={{color: '#B8325A'}}>+ {taxAmountLabel} {taxLabel}</em> : null}
-        {taxAmount > 0 ? <em className="itn-price-tax" style={{color: '#B8325A'}}>Total {packageTotalLabel}</em> : null}
+        {travellerCount > 1 ? <em className="itn-price-tax" style={{color: themeDark}}>Group base {priceLabel}</em> : null}
+        {taxAmount > 0 ? <em className="itn-price-tax" style={{color: themeDark}}>+ {taxAmountLabel} {taxLabel}</em> : null}
+        {taxAmount > 0 ? <em className="itn-price-tax" style={{color: themeDark}}>Total {packageTotalLabel}</em> : null}
         <small style={{color: '#6B6670'}}>{getDurationLabel(pkg.duration_days)} · {destinationNames.join(' + ') || 'Custom route'}</small>
       </div>
       <div className="itn-price-travellers" aria-label="Travellers for this booking">
         <span style={{color: '#171717'}}>Travellers</span>
-        <div style={{borderColor: '#FCE7ED'}}>
-          <button type="button" onClick={() => updateTravellerCount(travellerCount - 1)} aria-label="Reduce travellers" style={{color: '#D9466F'}}>-</button>
+        <div style={{borderColor: themeSoft}}>
+          <button type="button" onClick={() => updateTravellerCount(travellerCount - 1)} aria-label="Reduce travellers" style={{color: themePrimary}}>-</button>
           <input
             type="number"
             min="1"
@@ -1802,13 +1807,13 @@ export default function TourItineraryView({ destination, packageSlug }) {
             aria-label="Traveller count"
             style={{color: '#171717'}}
           />
-          <button type="button" onClick={() => updateTravellerCount(travellerCount + 1)} aria-label="Add traveller" style={{color: '#D9466F'}}>+</button>
+          <button type="button" onClick={() => updateTravellerCount(travellerCount + 1)} aria-label="Add traveller" style={{color: themePrimary}}>+</button>
         </div>
         <small style={{color: '#6B6670'}}>{travellerLabel} selected</small>
       </div>
       {partialBookingEnabled ? (
         <div className="itn-payment-options" role="radiogroup" aria-label="Choose payment amount">
-          <label className={isPartialPayment ? 'is-selected' : ''} style={isPartialPayment ? {borderColor: '#D9466F', background: '#FCE7ED'} : {}}>
+          <label className={isPartialPayment ? 'is-selected' : ''} style={isPartialPayment ? {borderColor: themePrimary, background: themeSoft} : {}}>
             <input
               type="radio"
               name="sidebar-payment-mode"
@@ -1817,10 +1822,10 @@ export default function TourItineraryView({ destination, packageSlug }) {
               onChange={() => updatePaymentMode('partial')}
             />
             <span style={{color: '#171717'}}>Pay {partialBookingPercentage}% now</span>
-            <strong style={{color: '#D9466F'}}>{bookingAmountLabel}</strong>
+            <strong style={{color: themePrimary}}>{bookingAmountLabel}</strong>
             <small style={{color: '#6B6670'}}>Balance {partialRemainingAmountLabel}</small>
           </label>
-          <label className={!isPartialPayment ? 'is-selected' : ''} style={!isPartialPayment ? {borderColor: '#D9466F', background: '#FCE7ED'} : {}}>
+          <label className={!isPartialPayment ? 'is-selected' : ''} style={!isPartialPayment ? {borderColor: themePrimary, background: themeSoft} : {}}>
             <input
               type="radio"
               name="sidebar-payment-mode"
@@ -1829,7 +1834,7 @@ export default function TourItineraryView({ destination, packageSlug }) {
               onChange={() => updatePaymentMode('full')}
             />
             <span style={{color: '#171717'}}>Pay full amount</span>
-            <strong style={{color: '#D9466F'}}>{packageTotalLabel}</strong>
+            <strong style={{color: themePrimary}}>{packageTotalLabel}</strong>
             <small style={{color: '#6B6670'}}>No remaining balance</small>
           </label>
         </div>
@@ -1838,7 +1843,7 @@ export default function TourItineraryView({ destination, packageSlug }) {
         type="button" 
         onClick={openBookingModal}
         style={{
-          background: '#D9466F',
+          background: themePrimary,
           color: 'white',
           borderRadius: '100px',
           padding: '16px 24px',
@@ -1848,7 +1853,7 @@ export default function TourItineraryView({ destination, packageSlug }) {
           width: '100%',
           border: 'none',
           cursor: 'pointer',
-          boxShadow: '0 4px 14px rgba(217, 70, 111, 0.3)'
+          boxShadow: `0 4px 14px ${isPilgrim ? 'rgba(233, 130, 22, 0.3)' : 'rgba(217, 70, 111, 0.3)'}`
         }}
       >
         <span>{amountToPay > 0 ? `Book Now - Pay ${amountToPayLabel}` : 'Book Now'}</span>
@@ -1870,7 +1875,7 @@ export default function TourItineraryView({ destination, packageSlug }) {
     </div>
   );
 
-  if (isHoneymoon) {
+  if (isHoneymoon || isPilgrim) {
     return (
       <div className="itn-page">
         <PremiumDestinationLayout 
@@ -1881,6 +1886,7 @@ export default function TourItineraryView({ destination, packageSlug }) {
           destinationNames={destinationNames}
           includedItems={includedItems}
           excludedItems={excludedItems}
+          themeType={isPilgrim ? 'pilgrim' : 'honeymoon'}
         />
         
         {/* Modals from existing layout */}

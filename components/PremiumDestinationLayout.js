@@ -12,6 +12,7 @@ export default function PremiumDestinationLayout({
   includedItems,
   excludedItems,
   renderBottom,
+  themeType = 'honeymoon',
 }) {
   const [activeSection, setActiveSection] = useState('overview');
   const [isExpanded, setIsExpanded] = useState(false);
@@ -22,13 +23,55 @@ export default function PremiumDestinationLayout({
   const bottomContentRef = useRef(null);
 
   // --- Typing Text Effect State ---
-  const typingPhrases = useMemo(() => [
-    pkg?.name || 'Tour Package',
-    'Romantic Escapes',
-    'Unforgettable Getaways',
-    'Perfect Togetherness',
-    'Dream Honeymoons'
-  ], [pkg?.name]);
+  const typingPhrases = useMemo(() => {
+    if (themeType === 'nri') {
+      return [
+        pkg?.name || 'NRI Package',
+        'Bringing you closer to your roots',
+        'Your journey home, made seamless & special',
+        'Reconnect with your loved ones'
+      ];
+    }
+    if (themeType === 'group') {
+      return [
+        pkg?.name || 'Group Package',
+        'Great journeys are better together',
+        'Memories are meant to be shared',
+        'Unforgettable group experiences'
+      ];
+    }
+    if (themeType === 'family') {
+      return [
+        pkg?.name || 'Family Package',
+        'Family journeys, made unforgettable',
+        'Memorable Vacations',
+        'Quality Time Together'
+      ];
+    }
+    if (themeType === 'pilgrim') {
+      return [
+        pkg?.name || 'Pilgrim Package',
+        'Path of faith, journey of peace',
+        'Spiritual journeys, divine blessings',
+        'Seek blessings, find peace'
+      ];
+    }
+    if (themeType === 'budget') {
+      return [
+        pkg?.name || 'Budget Package',
+        'Amazing trips, smart budgets',
+        'Travel more, spend less!',
+        'Great experiences, great value'
+      ];
+    }
+    return [
+      pkg?.name || 'Tour Package',
+      'Romantic Escapes',
+      'Unforgettable Getaways',
+      'Perfect Togetherness',
+      'Dream Honeymoons'
+    ];
+  }, [pkg?.name, themeType]);
 
   const [typedText, setTypedText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
@@ -65,7 +108,15 @@ export default function PremiumDestinationLayout({
   // --- Carousel State ---
   const [carouselIndex, setCarouselIndex] = useState(0);
   const carouselImages = useMemo(() => {
-    const defaultImages = [
+    const defaultImages = themeType === 'pilgrim' ? [
+      'https://images.unsplash.com/photo-1582510003544-4d00b7f7415e?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1561359313-0639aad49ca6?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1600018596660-8438258e77c5?auto=format&fit=crop&w=800&q=80'
+    ] : themeType === 'budget' ? [
+      'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1522869635100-9f4c5e86aa37?auto=format&fit=crop&w=800&q=80'
+    ] : [
       'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&w=800&q=80',
       'https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?auto=format&fit=crop&w=800&q=80',
       'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=800&q=80'
@@ -75,7 +126,7 @@ export default function PremiumDestinationLayout({
       media?.images?.[3]?.url || defaultImages[1],
       media?.images?.[4]?.url || defaultImages[2]
     ];
-  }, [media]);
+  }, [media, themeType]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -168,27 +219,64 @@ export default function PremiumDestinationLayout({
     }
   };
 
-  const heroImage = media?.images?.[0]?.url || 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=2000&q=80';
-  const rating = pkg?.rating || 4.8;
-  const reviews = pkg?.review_count || 8250;
+  const heroImage = media?.images?.[0]?.url || (themeType === 'pilgrim' ? 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?auto=format&fit=crop&w=2000&q=80' : (themeType === 'budget' ? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=2000&q=80' : 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=2000&q=80'));
+  const rating = pkg?.rating || 4.9;
+  const reviews = pkg?.review_count || 3200;
 
   return (
-    <div className="premium-layout">
+    <div className="premium-layout" style={{
+      '--theme-bg': themeType === 'nri' ? '#FFFCF5' : (themeType === 'group' ? '#FAF5FA' : (themeType === 'family' ? '#FFFDF7' : (themeType === 'pilgrim' ? '#FFF9EF' : (themeType === 'budget' ? '#F8FFF6' : 'var(--pink-bg)')))),
+      '--theme-primary': themeType === 'nri' ? '#1759A6' : (themeType === 'group' ? '#9D4A93' : (themeType === 'family' ? '#2F7F7B' : (themeType === 'pilgrim' ? '#E98216' : (themeType === 'budget' ? '#2E7D32' : 'var(--pink-primary)')))),
+      '--theme-dark': themeType === 'nri' ? '#0B2342' : (themeType === 'group' ? '#7D3A75' : (themeType === 'family' ? '#245C59' : (themeType === 'pilgrim' ? '#C9650A' : (themeType === 'budget' ? '#1F3B28' : 'var(--pink-dark)')))),
+      '--theme-soft': themeType === 'nri' ? '#F4F7FA' : (themeType === 'group' ? '#F5E6F5' : (themeType === 'family' ? '#F2F7F4' : (themeType === 'pilgrim' ? '#F3D49A' : (themeType === 'budget' ? '#F1F8EF' : 'var(--pink-soft)')))),
+      '--theme-text-sec': themeType === 'nri' ? '#596575' : (themeType === 'group' ? '#6B5969' : (themeType === 'family' ? '#5E6870' : (themeType === 'pilgrim' ? '#64615D' : (themeType === 'budget' ? '#575F5A' : 'var(--text-sec)')))),
+      '--theme-text-main': themeType === 'nri' ? '#173A63' : (themeType === 'group' ? '#5A2A54' : (themeType === 'family' ? '#245C59' : (themeType === 'pilgrim' ? '#4A2A16' : (themeType === 'budget' ? '#1B5E20' : 'var(--text-main)')))),
+    }}>
+      {(themeType === 'pilgrim' || themeType === 'budget') && (
+        <style dangerouslySetInnerHTML={{ __html: `
+          .seo-category-title::before {
+            border-bottom-color: ${themeType === 'pilgrim' ? '#E98216' : '#2E7D32'} !important;
+          }
+          .seo-category-title::after {
+            background-color: ${themeType === 'pilgrim' ? '#E98216' : '#2E7D32'} !important;
+          }
+        `}} />
+      )}
       {/* Hero Section */}
       <section className="premium-hero">
-        <video
-          className="hero-img"
-          autoPlay
-          loop
-          muted
-          playsInline
-        >
-          <source src="/6401592-hd_1920_1080_24fps.mp4" type="video/mp4" />
-        </video>
+        {themeType === 'nri' || themeType === 'family' || themeType === 'group' || themeType === 'pilgrim' || themeType === 'budget' ? (
+          <img
+            className="hero-img"
+            src={heroImage}
+            alt={themeType === 'nri' ? "NRI Package" : (themeType === 'group' ? "Group Adventure" : (themeType === 'pilgrim' ? "Pilgrim Package" : "Family Getaway"))}
+          />
+        ) : (
+          <video
+            className="hero-img"
+            autoPlay
+            loop
+            muted
+            playsInline
+          >
+            <source src="/6401592-hd_1920_1080_24fps.mp4" type="video/mp4" />
+          </video>
+        )}
         <div className="hero-overlay" />
         <div className="hero-content">
           <h1 className="hero-title">
-            <span className="typed-text">{typedText}</span>
+            <span className="typed-text">
+              {themeType === 'pilgrim' && typedText === 'Path of faith, journey of peace' ? (
+                typedText.split(/(\bfaith\b|\bpeace\b)/gi).map((part, i) =>
+                  (part.toLowerCase() === 'faith' || part.toLowerCase() === 'peace') ?
+                    <span key={i} style={{ color: '#E98216' }}>{part}</span> : part
+                )
+              ) : themeType === 'budget' && typedText === 'Amazing trips, smart budgets' ? (
+                typedText.split(/(\bsmart budgets\b)/gi).map((part, i) =>
+                  (part.toLowerCase() === 'smart budgets') ?
+                    <span key={i} style={{ color: '#2E7D32' }}>{part}</span> : part
+                )
+              ) : typedText}
+            </span>
             <span className="typing-cursor">|</span>
           </h1>
           <div className="hero-stats">
@@ -198,33 +286,60 @@ export default function PremiumDestinationLayout({
           </div>
         </div>
 
-        {/* Decorative Multi-Layer Romantic Wave Separator */}
+        {/* Decorative Multi-Layer Separator */}
         <div className="hero-curved-edge">
           <svg viewBox="0 0 1440 120" preserveAspectRatio="none" className="edge-svg edge-layer edge-layer-1">
-            <path d="M0,120 L0,50 C120,70 240,85 360,80 C480,75 600,55 720,45 C840,35 960,40 1080,55 C1200,70 1320,75 1440,60 L1440,120 Z" fill="#C23B6B" />
+            <path d="M0,120 L0,50 C120,70 240,85 360,80 C480,75 600,55 720,45 C840,35 960,40 1080,55 C1200,70 1320,75 1440,60 L1440,120 Z" fill={themeType === 'nri' ? '#0B2342' : (themeType === 'group' ? '#84397B' : (themeType === 'family' ? '#245C59' : (themeType === 'pilgrim' ? '#E98216' : (themeType === 'budget' ? '#1B5E20' : '#C23B6B'))))} />
           </svg>
           <svg viewBox="0 0 1440 120" preserveAspectRatio="none" className="edge-svg edge-layer edge-layer-2">
-            <path d="M0,120 L0,62 C180,80 360,90 540,82 C720,74 840,55 960,52 C1080,49 1260,65 1440,70 L1440,120 Z" fill="#F2A5BC" />
+            <path d="M0,120 L0,62 C180,80 360,90 540,82 C720,74 840,55 960,52 C1080,49 1260,65 1440,70 L1440,120 Z" fill={themeType === 'nri' ? '#1759A6' : (themeType === 'group' ? '#C27CBB' : (themeType === 'family' ? '#75AAA3' : (themeType === 'pilgrim' ? '#F3D49A' : (themeType === 'budget' ? '#8BC34A' : '#F2A5BC'))))} />
           </svg>
           <svg viewBox="0 0 1440 120" preserveAspectRatio="none" className="edge-svg edge-layer edge-layer-3">
-            <path d="M0,120 L0,72 C160,92 320,100 480,94 C640,88 760,68 900,62 C1040,56 1200,70 1440,80 L1440,120 Z" fill="var(--pink-bg)" />
+            <path d="M0,120 L0,72 C160,92 320,100 480,94 C640,88 760,68 900,62 C1040,56 1200,70 1440,80 L1440,120 Z" fill={themeType === 'nri' ? '#FFFCF5' : (themeType === 'group' ? '#FAF5FA' : (themeType === 'family' ? '#FFFDF7' : (themeType === 'pilgrim' ? '#FFF9EF' : (themeType === 'budget' ? '#F8FFF6' : 'var(--pink-bg)'))))} />
           </svg>
           <svg viewBox="0 0 1440 120" preserveAspectRatio="none" className="edge-svg edge-layer edge-layer-accent">
-            <path d="M0,72 C160,92 320,100 480,94 C640,88 760,68 900,62 C1040,56 1200,70 1440,80" fill="none" stroke="#D9466F" strokeWidth="1.5" opacity="0.45" />
+            <path d="M0,72 C160,92 320,100 480,94 C640,88 760,68 900,62 C1040,56 1200,70 1440,80" fill="none" stroke={themeType === 'nri' ? '#1759A6' : (themeType === 'group' ? '#9D4A93' : (themeType === 'family' ? '#2F7F7B' : (themeType === 'pilgrim' ? '#E98216' : (themeType === 'budget' ? '#2E7D32' : '#D9466F'))))} strokeWidth="1.5" opacity="0.45" />
           </svg>
           <div className="edge-flourish">
             <div className="flourish-ornament-group">
-              <div className="flourish-dot-outer"></div>
-              <div className="flourish-line"></div>
-              <div className="flourish-dot-inner"></div>
+              <div className="flourish-dot-outer" style={themeType === 'nri' ? { background: '#1759A6', borderColor: '#1759A6' } : (themeType === 'group' ? { background: '#9D4A93', borderColor: '#9D4A93' } : (themeType === 'family' ? { background: '#2F7F7B', borderColor: '#2F7F7B' } : (themeType === 'pilgrim' ? { background: '#E98216', borderColor: '#E98216' } : (themeType === 'budget' ? { background: '#2E7D32', borderColor: '#2E7D32' } : {}))))}></div>
+              <div className="flourish-line" style={themeType === 'nri' ? { background: 'linear-gradient(90deg, transparent, #1759A6, transparent)' } : (themeType === 'group' ? { background: 'linear-gradient(90deg, transparent, #9D4A93, transparent)' } : (themeType === 'family' ? { background: 'linear-gradient(90deg, transparent, #2F7F7B, transparent)' } : (themeType === 'pilgrim' ? { background: 'linear-gradient(90deg, transparent, #E98216, transparent)' } : (themeType === 'budget' ? { background: 'linear-gradient(90deg, transparent, #2E7D32, transparent)' } : {}))))}></div>
+              <div className="flourish-dot-inner" style={themeType === 'nri' ? { background: '#1759A6' } : (themeType === 'group' ? { background: '#9D4A93' } : (themeType === 'family' ? { background: '#2F7F7B' } : (themeType === 'pilgrim' ? { background: '#E98216' } : (themeType === 'budget' ? { background: '#2E7D32' } : {}))))}></div>
             </div>
-            <svg className="flourish-heart" width="26" height="26" viewBox="0 0 24 24" fill="#D9466F" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-            </svg>
+            {themeType === 'nri' ? (
+              <svg className="flourish-heart" style={{ filter: 'drop-shadow(0 1px 3px rgba(23, 89, 166, 0.25))' }} width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#1759A6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="2" y1="12" x2="22" y2="12" />
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+              </svg>
+            ) : themeType === 'group' ? (
+              <svg className="flourish-heart" style={{ filter: 'drop-shadow(0 1px 3px rgba(157, 74, 147, 0.25))' }} width="30" height="30" viewBox="0 0 24 24" fill="#9D4A93" xmlns="http://www.w3.org/2000/svg">
+                <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
+              </svg>
+            ) : themeType === 'family' ? (
+              <svg className="flourish-heart" style={{ filter: 'drop-shadow(0 1px 3px rgba(47, 127, 123, 0.25))' }} width="30" height="30" viewBox="0 0 24 24" fill="#2F7F7B" xmlns="http://www.w3.org/2000/svg">
+                <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
+              </svg>
+            ) : themeType === 'pilgrim' ? (
+              <svg className="flourish-heart" style={{ filter: 'drop-shadow(0 1px 3px rgba(233, 130, 22, 0.25))' }} width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E98216" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 22c-4-4-4-10-4-10S8 5 12 2c4 3 4 10 4 10s0 6-4 10z"/>
+                <path d="M12 22c-6-4-8-10-8-10s-1-4 3-7"/>
+                <path d="M12 22c6-4 8-10 8-10s1-4-3-7"/>
+              </svg>
+            ) : themeType === 'budget' ? (
+              <svg className="flourish-heart" style={{ filter: 'drop-shadow(0 1px 3px rgba(46, 125, 50, 0.25))' }} width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+                <line x1="7" y1="7" x2="7.01" y2="7" />
+              </svg>
+            ) : (
+              <svg className="flourish-heart" style={{ filter: 'drop-shadow(0 1px 3px rgba(217, 70, 111, 0.25))' }} width="26" height="26" viewBox="0 0 24 24" fill="#D9466F" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+              </svg>
+            )}
             <div className="flourish-ornament-group">
-              <div className="flourish-dot-inner"></div>
-              <div className="flourish-line"></div>
-              <div className="flourish-dot-outer"></div>
+              <div className="flourish-dot-inner" style={themeType === 'nri' ? { background: '#1759A6' } : (themeType === 'group' ? { background: '#9D4A93' } : (themeType === 'family' ? { background: '#2F7F7B' } : (themeType === 'pilgrim' ? { background: '#E98216' } : (themeType === 'budget' ? { background: '#2E7D32' } : {}))))}></div>
+              <div className="flourish-line" style={themeType === 'nri' ? { background: 'linear-gradient(90deg, transparent, #1759A6, transparent)' } : (themeType === 'group' ? { background: 'linear-gradient(90deg, transparent, #9D4A93, transparent)' } : (themeType === 'family' ? { background: 'linear-gradient(90deg, transparent, #2F7F7B, transparent)' } : (themeType === 'pilgrim' ? { background: 'linear-gradient(90deg, transparent, #E98216, transparent)' } : (themeType === 'budget' ? { background: 'linear-gradient(90deg, transparent, #2E7D32, transparent)' } : {}))))}></div>
+              <div className="flourish-dot-outer" style={themeType === 'nri' ? { background: '#1759A6', borderColor: '#1759A6' } : (themeType === 'group' ? { background: '#9D4A93', borderColor: '#9D4A93' } : (themeType === 'family' ? { background: '#2F7F7B', borderColor: '#2F7F7B' } : (themeType === 'pilgrim' ? { background: '#E98216', borderColor: '#E98216' } : (themeType === 'budget' ? { background: '#2E7D32', borderColor: '#2E7D32' } : {}))))}></div>
             </div>
           </div>
         </div>
@@ -274,46 +389,138 @@ export default function PremiumDestinationLayout({
           {/* CENTER COLUMN TOP (Overview) */}
           <div className="premium-center-top" style={{ paddingRight: renderBookingCard ? 32 : 0 }}>
             <div id="section-overview" className={`content-section ${!isExpanded ? 'preview-mode' : ''}`}>
-              <h2 className="section-heading serif">Romance, culture &amp; unforgettable escapes</h2>
+              <h2 className="section-heading serif" style={themeType === 'nri' ? { color: '#173A63' } : (themeType === 'group' ? { color: '#9D4A93' } : (themeType === 'family' ? { color: '#245C59' } : (themeType === 'pilgrim' ? { color: '#C9650A' } : (themeType === 'budget' ? { color: '#2E7D32' } : {}))))}>
+                {themeType === 'nri' ? 'Your journey home, made seamless & special' : (themeType === 'group' ? 'Memories are meant to be shared' : (themeType === 'family' ? 'Together, every journey becomes a memory' : (themeType === 'pilgrim' ? 'Spiritual journeys, divine blessings' : (themeType === 'budget' ? 'Great experiences, great value' : 'Romance, culture & unforgettable escapes'))))}
+              </h2>
               <div className={`section-text ${!isExpanded ? 'section-text-preview' : ''}`}>
-                <p>
-                  {pkg?.description || 'Your honeymoon is more than just a holiday—it is the beginning of a beautiful new chapter together. From romantic sunsets and candlelit dinners to breathtaking landscapes and intimate experiences, every moment deserves to feel special. Our honeymoon escapes are thoughtfully designed for couples who want to celebrate their love, discover beautiful destinations, and create memories that will last a lifetime.'}
-                </p>
-                {!pkg?.description && (
-                  <p style={{ marginTop: '16px' }}>
-                    Imagine waking up together to panoramic mountain views, enjoying a peaceful breakfast surrounded by nature, taking a romantic walk along a golden beach, or watching the sunset hand in hand in a destination you have always dreamed of visiting. Whether you picture your honeymoon in the serene valleys of the Himalayas, beside the turquoise waters of a tropical island, amid the royal charm of Rajasthan, or in an enchanting international destination, we help turn those dreams into unforgettable experiences.
-                  </p>
-                )}
-                
-                {!pkg?.description && (
-                  <div className="extended-description">
-                    <h3 className="sub-heading serif" style={{ fontSize: '22px', marginTop: '32px', marginBottom: '16px' }}>Celebrate Your Love in Beautiful Destinations</h3>
+                {themeType === 'nri' ? (
+                  <>
                     <p>
-                      Every couple has their own idea of the perfect honeymoon. Some dream of peaceful beaches and luxurious resorts, while others want scenic mountains, charming cities, cultural discoveries, or exciting adventures. Our honeymoon experiences bring together romance, comfort, exploration, and relaxation so you can enjoy a journey that reflects your personality as a couple.
+                      {pkg?.description || 'Our NRI packages are thoughtfully designed to make your visit to India comfortable, stress-free, and truly memorable. Whether you\'re coming home to meet family, celebrate a special occasion, or simply reconnect with your roots, we take care of every detail so you can focus on what truly matters.'}
                     </p>
-                    <p style={{ marginTop: '16px' }}>
-                      Explore fascinating cultures together, discover historic landmarks, stroll through colourful local markets, taste authentic cuisine, and experience the traditions that make each destination unique. These shared experiences become more than photographs—they become stories you will continue telling each other for years to come.
+                    {!pkg?.description && (
+                      <div className="extended-description">
+                        <p style={{ marginTop: '16px' }}>From smooth travel arrangements and premium stays to local experiences and personalized services, we ensure a perfect blend of convenience, comfort, and authentic Indian hospitality.</p>
+                        <p style={{ marginTop: '16px' }}>Rediscover your roots. Reconnect with your loved ones.</p>
+                        <p style={{ marginTop: '16px' }}>Create memories that stay with you forever.</p>
+                      </div>
+                    )}
+                  </>
+                ) : themeType === 'group' ? (
+                  <>
+                    <p>
+                      {pkg?.description || 'Whether it\'s a getaway with friends, a corporate offsite, a college trip, or a reunion with loved ones, our group packages are designed to bring people together for unforgettable experiences.'}
                     </p>
+                    {!pkg?.description && (
+                      <div className="extended-description">
+                        <p style={{ marginTop: '16px' }}>From exciting adventures to relaxing escapes, we handle every detail—comfortable stays, seamless transport, fun activities, and delicious food—so your group can focus on making memories that last a lifetime.</p>
+                        <p style={{ marginTop: '16px' }}>Travel becomes more fun, more affordable, and more meaningful when shared. Because the best stories are written together.</p>
+                      </div>
+                    )}
+                  </>
+                ) : themeType === 'family' ? (
+                  <>
+                    <p>
+                      {pkg?.description || 'Family vacations are about so much more than visiting a new destination. They are about stepping away from everyday routines, spending uninterrupted time with the people who matter most, and creating moments that stay with you long after the journey ends. A family trip gives you the chance to laugh together, explore together, try something new together, and create stories that your family will remember for years to come.'}
+                    </p>
+                    {!pkg?.description && (
+                      <div className="extended-description">
+                        <p style={{ marginTop: '16px' }}>Whether it is watching the sunrise over the mountains, building sandcastles by the sea, enjoying a scenic road trip, exploring a historic city, or sharing a delicious local meal, the simplest moments often become the most treasured memories. That is what makes travelling with family so special. Every destination becomes more meaningful when experienced together.</p>
 
-                    <h3 className="sub-heading serif" style={{ fontSize: '22px', marginTop: '32px', marginBottom: '16px' }}>Moments Made Just for Two</h3>
-                    <p>
-                      A perfect honeymoon is about the little moments as much as the destination itself. Enjoy private dinners under the stars, beautiful sunset views, couple experiences, relaxing spa sessions, scenic excursions, romantic stays, and leisurely days where you can simply enjoy being together.
-                    </p>
-                    <p style={{ marginTop: '16px' }}>
-                      For adventure-loving couples, add excitement to your honeymoon with activities such as trekking, scenic road trips, water adventures, wildlife experiences, or exploring hidden corners of your destination. And when you simply want to slow down, unwind in a beautiful resort, enjoy uninterrupted time together, and let the world fade away.
-                    </p>
+                        <p style={{ marginTop: '16px' }}>Our thoughtfully designed family holiday packages are created to bring together fun, comfort, adventure, and relaxation, making every journey enjoyable for both children and adults. We understand that travelling with family comes with different needs and preferences. Parents look for comfort, convenience, safety, and well-planned experiences, while children want excitement, exploration, and plenty of opportunities to have fun. Our family packages are designed to bring these elements together so everyone can enjoy the holiday.</p>
 
-                    <h3 className="sub-heading serif" style={{ fontSize: '22px', marginTop: '32px', marginBottom: '16px' }}>Your First Journey Together</h3>
+                        <p style={{ marginTop: '16px' }}>From breathtaking mountain escapes to peaceful beach destinations, exciting wildlife experiences to fascinating cultural journeys, there is something for every kind of family. Discover beautiful hill stations where you can enjoy cool weather and stunning landscapes, or head towards sunny beaches where the entire family can relax, play, and enjoy quality time together. Explore destinations filled with history and culture, where children can discover new places and learn about different traditions while having an unforgettable experience.</p>
+
+                        <p style={{ marginTop: '16px' }}>For families who love adventure, our trips can bring exciting activities and outdoor experiences into the journey. From scenic nature walks and sightseeing tours to thrilling activities and family-friendly excursions, every experience can become another story to share when you return home. And for those who simply want to slow down and reconnect, relaxing stays, beautiful surroundings, and leisurely days provide the perfect opportunity to enjoy each other's company without the rush of everyday life.</p>
+
+                        <p style={{ marginTop: '16px' }}>We believe that a great family holiday should also be comfortable and stress-free. Planning a trip for the whole family can involve choosing destinations, accommodations, transportation, activities, and sightseeing options that work for everyone. Our family packages are thoughtfully planned to make the experience easier, giving you more time to focus on your family rather than worrying about every small travel detail.</p>
+
+                        <p style={{ marginTop: '16px' }}>Most importantly, family travel is about creating moments that cannot be recreated anywhere else. It is the excitement on a child's face when they see the mountains for the first time. It is the laughter shared during a long road trip. It is taking a family photograph at a beautiful viewpoint, enjoying an evening together by the beach, or simply sitting around a table and talking about the day's adventures.</p>
+
+                        <p style={{ marginTop: '16px' }}>These are the moments that become part of your family's story.</p>
+
+                        <p style={{ marginTop: '16px' }}>Every journey gives you an opportunity to discover something new—not just about the destination, but about each other. Travelling together brings families closer, creates shared experiences, and gives everyone memories they can look back on with a smile.</p>
+
+                        <p style={{ marginTop: '16px' }}>So, pack your bags, bring your loved ones, and get ready to discover places that inspire, excite, and bring you closer together. Whether you are planning a short weekend escape, a relaxing holiday, an adventurous getaway, or a long-awaited family vacation, let every destination become a new chapter in your family's travel story.</p>
+
+                        <p style={{ marginTop: '16px' }}>Because years from now, you may not remember every hotel, every route, or every sightseeing stop—but you will remember the laughter, the conversations, the adventures, the photographs, and the time you spent together.</p>
+
+                        <p style={{ marginTop: '16px', fontWeight: 600 }}>Travel together. Explore together. Laugh together. Create memories together.</p>
+
+                        <p style={{ marginTop: '16px', fontStyle: 'italic' }}>Because when you are with the people you love, every journey becomes a memory worth keeping.</p>
+                      </div>
+                    )}
+                  </>
+                ) : themeType === 'pilgrim' ? (
+                  <>
                     <p>
-                      We understand that your honeymoon should feel personal, effortless, and memorable. From selecting the right destination and accommodation to planning experiences that make your journey special, every detail can be tailored around your preferences, travel style, and budget.
+                      {pkg?.description || 'Our pilgrim packages are designed to help you seek blessings, find peace, and experience the divine in the most comfortable way possible.'}
                     </p>
-                    <p style={{ marginTop: '16px' }}>
-                      Whether you are looking for a luxurious romantic retreat, a dreamy beach escape, a peaceful mountain honeymoon, a cultural adventure, or a perfect blend of romance and exploration, your ideal getaway is waiting.
+                    {!pkg?.description && (
+                      <div className="extended-description">
+                        <p style={{ marginTop: '16px' }}>
+                          From sacred temples and holy shrines to serene ashrams and spiritual towns, we take care of every detail—sacred darshan, comfortable stays, hygienic food, and smooth transfers—so you can focus on your spiritual journey.
+                        </p>
+                        <p style={{ marginTop: '16px' }}>
+                          Walk the path of devotion. Feel the divine energy. Return with peace, positivity, and blessings.
+                        </p>
+                      </div>
+                    )}
+                  </>
+                ) : themeType === 'budget' ? (
+                  <>
+                    <p>
+                      {pkg?.description || 'Travel more, spend less! Our budget packages are perfect for travellers who want to explore amazing destinations without stretching their budget.'}
                     </p>
-                    <p style={{ marginTop: '16px' }}>
-                      Start your journey together with a honeymoon filled with love, beautiful places, unforgettable experiences, and moments that belong only to the two of you.
+                    {!pkg?.description && (
+                      <div className="extended-description">
+                        <p style={{ marginTop: '16px' }}>We take care of all the essentials—comfortable stays, reliable transport, sightseeing, and local experiences—so you get the best value for your money without compromising on quality.</p>
+                        <p style={{ marginTop: '16px' }}>Smart choices. Happy journeys. Memories that last a lifetime.</p>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <p>
+                      {pkg?.description || 'Your honeymoon is more than just a holiday—it is the beginning of a beautiful new chapter together. From romantic sunsets and candlelit dinners to breathtaking landscapes and intimate experiences, every moment deserves to feel special. Our honeymoon escapes are thoughtfully designed for couples who want to celebrate their love, discover beautiful destinations, and create memories that will last a lifetime.'}
                     </p>
-                  </div>
+                    {!pkg?.description && (
+                      <p style={{ marginTop: '16px' }}>
+                        Imagine waking up together to panoramic mountain views, enjoying a peaceful breakfast surrounded by nature, taking a romantic walk along a golden beach, or watching the sunset hand in hand in a destination you have always dreamed of visiting. Whether you picture your honeymoon in the serene valleys of the Himalayas, beside the turquoise waters of a tropical island, amid the royal charm of Rajasthan, or in an enchanting international destination, we help turn those dreams into unforgettable experiences.
+                      </p>
+                    )}
+
+                    {!pkg?.description && (
+                      <div className="extended-description">
+                        <h3 className="sub-heading serif" style={{ fontSize: '22px', marginTop: '32px', marginBottom: '16px' }}>Celebrate Your Love in Beautiful Destinations</h3>
+                        <p>
+                          Every couple has their own idea of the perfect honeymoon. Some dream of peaceful beaches and luxurious resorts, while others want scenic mountains, charming cities, cultural discoveries, or exciting adventures. Our honeymoon experiences bring together romance, comfort, exploration, and relaxation so you can enjoy a journey that reflects your personality as a couple.
+                        </p>
+                        <p style={{ marginTop: '16px' }}>
+                          Explore fascinating cultures together, discover historic landmarks, stroll through colourful local markets, taste authentic cuisine, and experience the traditions that make each destination unique. These shared experiences become more than photographs—they become stories you will continue telling each other for years to come.
+                        </p>
+
+                        <h3 className="sub-heading serif" style={{ fontSize: '22px', marginTop: '32px', marginBottom: '16px' }}>Moments Made Just for Two</h3>
+                        <p>
+                          A perfect honeymoon is about the little moments as much as the destination itself. Enjoy private dinners under the stars, beautiful sunset views, couple experiences, relaxing spa sessions, scenic excursions, romantic stays, and leisurely days where you can simply enjoy being together.
+                        </p>
+                        <p style={{ marginTop: '16px' }}>
+                          For adventure-loving couples, add excitement to your honeymoon with activities such as trekking, scenic road trips, water adventures, wildlife experiences, or exploring hidden corners of your destination. And when you simply want to slow down, unwind in a beautiful resort, enjoy uninterrupted time together, and let the world fade away.
+                        </p>
+
+                        <h3 className="sub-heading serif" style={{ fontSize: '22px', marginTop: '32px', marginBottom: '16px' }}>Your First Journey Together</h3>
+                        <p>
+                          We understand that your honeymoon should feel personal, effortless, and memorable. From selecting the right destination and accommodation to planning experiences that make your journey special, every detail can be tailored around your preferences, travel style, and budget.
+                        </p>
+                        <p style={{ marginTop: '16px' }}>
+                          Whether you are looking for a luxurious romantic retreat, a dreamy beach escape, a peaceful mountain honeymoon, a cultural adventure, or a perfect blend of romance and exploration, your ideal getaway is waiting.
+                        </p>
+                        <p style={{ marginTop: '16px' }}>
+                          Start your journey together with a honeymoon filled with love, beautiful places, unforgettable experiences, and moments that belong only to the two of you.
+                        </p>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
 
@@ -334,26 +541,38 @@ export default function PremiumDestinationLayout({
                 <div id="section-highlights" className="content-section">
                   <h3 className="sub-heading serif">Highlights</h3>
                   <div className="highlights-grid">
-                    <div className="highlight-card">
-                      <span className="icon">🚢</span>
-                      <h4>Scenic Cruises</h4>
-                      <p>Breathtaking bay cruises</p>
-                    </div>
-                    <div className="highlight-card">
-                      <span className="icon">🏮</span>
-                      <h4>Cultural Charm</h4>
-                      <p>Ancient towns &amp; local markets</p>
-                    </div>
-                    <div className="highlight-card">
-                      <span className="icon">🍽️</span>
-                      <h4>Culinary Delights</h4>
-                      <p>Street food &amp; fine dining</p>
-                    </div>
-                    <div className="highlight-card">
-                      <span className="icon">📸</span>
-                      <h4>Picture Perfect</h4>
-                      <p>Iconic landscapes &amp; experiences</p>
-                    </div>
+                    {themeType === 'budget' ? (
+                      <>
+                        <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#2E7D32' }}>🏷️</span><h4 style={{ fontSize: '15px' }}>Best Value for Money</h4></div>
+                        <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#2E7D32' }}>🛏️</span><h4 style={{ fontSize: '15px' }}>Comfortable Budget Stays</h4></div>
+                        <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#2E7D32' }}>🚌</span><h4 style={{ fontSize: '15px' }}>Economical Transport Options</h4></div>
+                        <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#2E7D32' }}>📸</span><h4 style={{ fontSize: '15px' }}>Exciting Sightseeing Included</h4></div>
+                        <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#2E7D32' }}>🎧</span><h4 style={{ fontSize: '15px' }}>24/7 Assistance During Your Trip</h4></div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="highlight-card">
+                          <span className="icon">🚢</span>
+                          <h4>Scenic Cruises</h4>
+                          <p>Breathtaking bay cruises</p>
+                        </div>
+                        <div className="highlight-card">
+                          <span className="icon">🏮</span>
+                          <h4>Cultural Charm</h4>
+                          <p>Ancient towns &amp; local markets</p>
+                        </div>
+                        <div className="highlight-card">
+                          <span className="icon">🍽️</span>
+                          <h4>Culinary Delights</h4>
+                          <p>Street food &amp; fine dining</p>
+                        </div>
+                        <div className="highlight-card">
+                          <span className="icon">📸</span>
+                          <h4>Picture Perfect</h4>
+                          <p>Iconic landscapes &amp; experiences</p>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
 
@@ -447,6 +666,87 @@ export default function PremiumDestinationLayout({
 
       </div>{/* end content wrapper */}
 
+      {themeType === 'nri' && (
+        <div className="nri-benefits-strip-container">
+          <div className="nri-benefits-strip">
+            <div className="nri-benefit">
+              <span className="nri-benefit-icon">👨‍👩‍👧</span>
+              <span className="nri-benefit-text">Specially Curated<br/>for NRIs</span>
+            </div>
+            <div className="nri-benefit">
+              <span className="nri-benefit-icon">🏷️</span>
+              <span className="nri-benefit-text">Best Deals on Flights,<br/>Hotels & Transfers</span>
+            </div>
+            <div className="nri-benefit">
+              <span className="nri-benefit-icon">🎧</span>
+              <span className="nri-benefit-text">24/7 Assistance<br/>During Your Stay</span>
+            </div>
+            <div className="nri-benefit">
+              <span className="nri-benefit-icon">🛂</span>
+              <span className="nri-benefit-text">Hassle-free Travel<br/>& Visa Guidance</span>
+            </div>
+            <div className="nri-benefit">
+              <span className="nri-benefit-icon">🎁</span>
+              <span className="nri-benefit-text">Warm Welcome,<br/>Every Time</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {themeType === 'pilgrim' && (
+        <div className="pilgrim-benefits-strip-container">
+          <div className="pilgrim-benefits-strip">
+            <div className="pilgrim-benefit">
+              <span className="pilgrim-benefit-icon">🪷</span>
+              <span className="pilgrim-benefit-text">Handpicked Sacred<br/>Destinations</span>
+            </div>
+            <div className="pilgrim-benefit">
+              <span className="pilgrim-benefit-icon">🛕</span>
+              <span className="pilgrim-benefit-text">Comfortable Stays<br/>Near Temples</span>
+            </div>
+            <div className="pilgrim-benefit">
+              <span className="pilgrim-benefit-icon">🥗</span>
+              <span className="pilgrim-benefit-text">Pure Veg Meals<br/>& Satvik Food</span>
+            </div>
+            <div className="pilgrim-benefit">
+              <span className="pilgrim-benefit-icon">🚌</span>
+              <span className="pilgrim-benefit-text">Hassle-free Travel<br/>& Darshan Arrangements</span>
+            </div>
+            <div className="pilgrim-benefit">
+              <span className="pilgrim-benefit-icon">🛡️</span>
+              <span className="pilgrim-benefit-text">24/7 Support<br/>Throughout Your Journey</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {themeType === 'budget' && (
+        <div className="budget-benefits-strip-container">
+          <div className="budget-benefits-strip">
+            <div className="budget-benefit">
+              <span className="budget-benefit-icon" style={{ filter: 'grayscale(1)', color: '#2E7D32' }}>🏷️</span>
+              <span className="budget-benefit-text">Best Value<br/>for Money</span>
+            </div>
+            <div className="budget-benefit">
+              <span className="budget-benefit-icon" style={{ filter: 'grayscale(1)', color: '#2E7D32' }}>🛏️</span>
+              <span className="budget-benefit-text">Comfortable<br/>Budget Stays</span>
+            </div>
+            <div className="budget-benefit">
+              <span className="budget-benefit-icon" style={{ filter: 'grayscale(1)', color: '#2E7D32' }}>🚌</span>
+              <span className="budget-benefit-text">Economical Transport<br/>Options</span>
+            </div>
+            <div className="budget-benefit">
+              <span className="budget-benefit-icon" style={{ filter: 'grayscale(1)', color: '#2E7D32' }}>📸</span>
+              <span className="budget-benefit-text">Exciting Sightseeing<br/>Included</span>
+            </div>
+            <div className="budget-benefit">
+              <span className="budget-benefit-icon" style={{ filter: 'grayscale(1)', color: '#2E7D32' }}>🎧</span>
+              <span className="budget-benefit-text">24/7 Assistance<br/>During Your Trip</span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Bottom Content / Destination Picker */}
       <div ref={bottomContentRef}>
         {renderBottom ? renderBottom() : null}
@@ -462,10 +762,164 @@ export default function PremiumDestinationLayout({
           --text-main: #171717;
           --text-sec: #6B6670;
           
-          background: var(--pink-bg);
-          color: var(--text-main);
+          background: var(--theme-bg);
+          color: var(--theme-text-main);
           font-family: var(--font-sans, system-ui, sans-serif);
           min-height: 100vh;
+        }
+
+        .nri-benefits-strip-container {
+          background-color: #F4F7FA;
+          padding: 30px 20px;
+          margin-top: 40px;
+          border-radius: 16px;
+          max-width: 1300px;
+          margin-left: auto;
+          margin-right: auto;
+        }
+        
+        .nri-benefits-strip {
+          display: flex;
+          justify-content: space-around;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 20px;
+        }
+
+        .nri-benefit {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .nri-benefit-icon {
+          font-size: 24px;
+          background: #E8EEF4;
+          padding: 12px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 50px;
+          height: 50px;
+        }
+
+        .nri-benefit-text {
+          font-size: 14px;
+          font-weight: 500;
+          color: #596575;
+          line-height: 1.4;
+        }
+
+        @media (max-width: 768px) {
+          .nri-benefits-strip {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+        }
+
+        /* PILGRIM BENEFITS STRIP */
+        .pilgrim-benefits-strip-container {
+          background-color: #FFF5E5;
+          padding: 30px 20px;
+          margin-top: 40px;
+          border-radius: 16px;
+          max-width: 1300px;
+          margin-left: auto;
+          margin-right: auto;
+        }
+        
+        .pilgrim-benefits-strip {
+          display: flex;
+          justify-content: space-around;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 20px;
+        }
+
+        .pilgrim-benefit {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .pilgrim-benefit-icon {
+          font-size: 24px;
+          background: #F3D49A;
+          color: #C9650A;
+          padding: 12px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 50px;
+          height: 50px;
+        }
+
+        .pilgrim-benefit-text {
+          font-size: 14px;
+          font-weight: 500;
+          color: #4A2A16;
+          line-height: 1.4;
+        }
+
+        @media (max-width: 768px) {
+          .pilgrim-benefits-strip {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+        }
+
+        /* BUDGET BENEFITS STRIP */
+        .budget-benefits-strip-container {
+          background-color: #F1F8EF;
+          padding: 30px 20px;
+          margin-top: 40px;
+          border-radius: 16px;
+          max-width: 1300px;
+          margin-left: auto;
+          margin-right: auto;
+        }
+        
+        .budget-benefits-strip {
+          display: flex;
+          justify-content: space-around;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 20px;
+        }
+
+        .budget-benefit {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .budget-benefit-icon {
+          font-size: 24px;
+          background: #C8E6C9;
+          color: #2E7D32;
+          padding: 12px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 50px;
+          height: 50px;
+        }
+
+        .budget-benefit-text {
+          font-size: 14px;
+          font-weight: 500;
+          color: #1F3B28;
+          line-height: 1.4;
+        }
+
+        @media (max-width: 768px) {
+          .budget-benefits-strip {
+            flex-direction: column;
+            align-items: flex-start;
+          }
         }
 
         .serif {
@@ -525,7 +979,7 @@ export default function PremiumDestinationLayout({
           min-height: 65px;
         }
         .typed-text {
-          color: black;
+          color: var(--theme-primary);
         }
         .typing-cursor {
           display: inline-block;
@@ -625,7 +1079,6 @@ export default function PremiumDestinationLayout({
         }
         .flourish-heart {
           display: block;
-          filter: drop-shadow(0 1px 3px rgba(217, 70, 111, 0.25));
           flex-shrink: 0;
         }
         .flourish-ornament-group {
@@ -636,14 +1089,14 @@ export default function PremiumDestinationLayout({
         .flourish-line {
           width: 28px;
           height: 1.5px;
-          background: linear-gradient(90deg, transparent, #D9466F, transparent);
+          background: linear-gradient(90deg, transparent, var(--theme-primary), transparent);
           opacity: 0.6;
         }
         .flourish-dot-outer {
           width: 6px;
           height: 6px;
           border-radius: 50%;
-          border: 1.5px solid #D9466F;
+          border: 1.5px solid var(--theme-primary);
           opacity: 0.55;
           flex-shrink: 0;
         }
@@ -651,7 +1104,7 @@ export default function PremiumDestinationLayout({
           width: 4px;
           height: 4px;
           border-radius: 50%;
-          background: #D9466F;
+          background: var(--theme-primary);
           opacity: 0.5;
           flex-shrink: 0;
         }
@@ -742,17 +1195,17 @@ export default function PremiumDestinationLayout({
           line-height: 1;
         }
         .nav-link:hover {
-          background: rgba(217, 70, 111, 0.08);
-          color: var(--pink-primary);
+          background: var(--theme-light);
+          color: var(--theme-primary);
         }
         /* Active tab: solid filled pill */
         .nav-link.active {
-          background: var(--pink-primary);
+          background: var(--theme-primary);
           color: #ffffff;
           font-weight: 600;
         }
         .nav-link.active:hover {
-          background: var(--pink-dark);
+          background: var(--theme-dark);
           color: #ffffff;
         }
 
@@ -796,7 +1249,7 @@ export default function PremiumDestinationLayout({
           left: 0;
           right: 0;
           height: 60px;
-          background: linear-gradient(to bottom, transparent, var(--pink-bg));
+          background: linear-gradient(to bottom, transparent, var(--theme-bg));
           pointer-events: none;
         }
         .premium-center-bottom {
@@ -811,18 +1264,18 @@ export default function PremiumDestinationLayout({
         }
         .section-heading {
           font-size: 36px;
-          color: var(--pink-dark);
+          color: var(--theme-dark);
           margin-bottom: 16px;
           line-height: 1.2;
         }
         .sub-heading {
           font-size: 28px;
-          color: var(--text-main);
+          color: var(--theme-text-main);
           margin-bottom: 24px;
         }
         .section-text {
           font-size: 16px;
-          color: var(--text-sec);
+          color: var(--theme-text-sec);
           line-height: 1.7;
         }
 
@@ -834,7 +1287,7 @@ export default function PremiumDestinationLayout({
         }
         .highlight-card {
           background: #fff;
-          border: 1px solid var(--pink-soft);
+          border: 1px solid var(--theme-soft);
           border-radius: 16px;
           padding: 20px;
           text-align: center;
@@ -852,11 +1305,11 @@ export default function PremiumDestinationLayout({
         .highlight-card h4 {
           font-size: 15px;
           margin-bottom: 8px;
-          color: var(--text-main);
+          color: var(--theme-text-main);
         }
         .highlight-card p {
           font-size: 13px;
-          color: var(--text-sec);
+          color: var(--theme-text-sec);
           line-height: 1.4;
         }
 
@@ -866,7 +1319,7 @@ export default function PremiumDestinationLayout({
           flex-direction: column;
           gap: 32px;
           padding-left: 12px;
-          border-left: 2px dashed var(--pink-soft);
+          border-left: 2px dashed var(--theme-soft);
         }
         .timeline-item {
           position: relative;
@@ -878,8 +1331,8 @@ export default function PremiumDestinationLayout({
           top: 4px;
           width: 32px;
           height: 32px;
-          background: var(--pink-bg);
-          border: 2px solid var(--pink-primary);
+          background: var(--theme-bg);
+          border: 2px solid var(--theme-primary);
           border-radius: 50%;
           display: flex;
           align-items: center;
@@ -889,17 +1342,17 @@ export default function PremiumDestinationLayout({
           content: "";
           width: 10px;
           height: 10px;
-          background: var(--pink-primary);
+          background: var(--theme-primary);
           border-radius: 50%;
         }
         .timeline-content h4 {
           font-size: 18px;
-          color: var(--text-main);
+          color: var(--theme-text-main);
           margin-bottom: 8px;
         }
         .timeline-content p {
           font-size: 15px;
-          color: var(--text-sec);
+          color: var(--theme-text-sec);
           line-height: 1.6;
         }
 
@@ -917,7 +1370,7 @@ export default function PremiumDestinationLayout({
         }
         .inclusions-section li {
           font-size: 15px;
-          color: var(--text-sec);
+          color: var(--theme-text-sec);
           display: flex;
           gap: 8px;
         }
@@ -927,8 +1380,8 @@ export default function PremiumDestinationLayout({
           display: inline-flex;
           align-items: center;
           background: transparent;
-          border: 1px solid var(--pink-primary);
-          color: var(--pink-primary);
+          border: 1px solid var(--theme-primary);
+          color: var(--theme-primary);
           padding: 10px 24px;
           border-radius: 30px;
           font-weight: 700;
@@ -939,7 +1392,7 @@ export default function PremiumDestinationLayout({
           font-family: inherit;
         }
         .read-more-btn:hover {
-          background: var(--pink-primary);
+          background: var(--theme-primary);
           color: white;
         }
         .read-less {
@@ -1009,7 +1462,7 @@ export default function PremiumDestinationLayout({
 
         .premium-picker-wrapper {
           background: #fff;
-          border-top: 1px solid var(--pink-soft);
+          border-top: 1px solid var(--theme-soft);
         }
 
         @media (max-width: 1100px) {

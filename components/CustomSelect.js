@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
 
-export default function CustomSelect({ value, onChange, options, placeholder, className }) {
+export default function CustomSelect({ value, onChange, options, placeholder, className, themeColor = '#D9466F', themeBg = '#FFF9FA' }) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef(null);
 
@@ -50,8 +50,8 @@ export default function CustomSelect({ value, onChange, options, placeholder, cl
               onClick={() => { onChange(opt.value); setIsOpen(false); }}
               onMouseEnter={(e) => {
                 if (String(opt.value) !== String(value)) {
-                  e.currentTarget.style.background = '#FFF9FA';
-                  e.currentTarget.style.color = '#D9466F';
+                  e.currentTarget.style.background = themeBg;
+                  e.currentTarget.style.color = themeColor;
                 }
               }}
               onMouseLeave={(e) => {
@@ -66,7 +66,7 @@ export default function CustomSelect({ value, onChange, options, placeholder, cl
                 cursor: 'pointer',
                 transition: 'all 0.2s',
                 color: String(opt.value) === String(value) ? '#fff' : '#444',
-                background: String(opt.value) === String(value) ? '#D9466F' : 'transparent',
+                background: String(opt.value) === String(value) ? themeColor : 'transparent',
                 fontWeight: String(opt.value) === String(value) ? '600' : '400',
                 whiteSpace: 'nowrap'
               }}

@@ -387,7 +387,10 @@ export default function RecommendedPackages() {
              padding-bottom: 8px;
            }
            .recent-scroll-actions { display: none; }
-           .recent-booking-card { width: calc(100vw - 40px); }
+           .recent-booking-card { 
+             width: calc((100vw - 40px) / 0.85); 
+             zoom: 0.85; 
+           }
            .responsive-header-row {
              flex-direction: column;
              align-items: flex-start !important;
@@ -409,7 +412,7 @@ export default function RecommendedPackages() {
              flex: 0 0 auto;
            }
            .recent-booking-card {
-             width: calc(100vw - 32px);
+             width: calc((100vw - 32px) / 0.85);
            }
         }
         @media (max-width: 991px) {

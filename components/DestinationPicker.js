@@ -214,7 +214,7 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
       <TrendingToursSection themeClass={themeClass} />
       <section className={themeClass} style={{
         padding: 'var(--space-8) 0 var(--space-10)',
-        background: themeClass.includes('blush') ? 'transparent' : 'var(--color-card)',
+        background: (themeClass.includes('blush') || themeClass.includes('teal') || themeClass.includes('nri') || themeClass.includes('purple') || themeClass.includes('pilgrim') || themeClass.includes('budget')) ? 'transparent' : 'var(--color-card)',
         position: 'relative',
         overflow: 'hidden',
         width: '100%',
@@ -240,12 +240,12 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
           {/* Heading & Search - Inside Container */}
           <div className="container" style={{ maxWidth: '1400px', marginBottom: '40px' }}>
             <div className="text-center">
-              <h2 style={{ fontSize: '32px', fontWeight: 800, color: 'var(--color-text-primary)', fontFamily: '"Italiana", sans-serif' }}>
-                What&apos;s <span style={{ color: themeClass.includes('blush') ? '#D9466F' : 'var(--color-primary)', fontStyle: 'italic', fontWeight: 500 }}> your pick </span> for your next vacation
+              <h2 className="theme-underline-heading" style={{ fontSize: '32px', fontWeight: 800, color: 'var(--color-text-primary)', fontFamily: '"Italiana", sans-serif' }}>
+                What&apos;s <span style={{ color: themeClass.includes('nri') ? '#1759A6' : (themeClass.includes('purple') ? '#9D4A93' : (themeClass.includes('teal') ? '#2F7F7B' : (themeClass.includes('pilgrim') ? '#E98216' : (themeClass.includes('budget') ? '#2E7D32' : (themeClass.includes('blush') ? '#D9466F' : 'var(--color-primary)'))))), fontStyle: 'italic', fontWeight: 500 }}> your pick </span> for your next vacation
               </h2>
 
               <div className="mx-auto mt-4" style={{ maxWidth: '620px', position: 'relative' }}>
-                <div style={{ position: 'absolute', left: '24px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-secondary)' }}>
+                <div style={{ position: 'absolute', left: '24px', top: '50%', transform: 'translateY(-50%)', color: themeClass.includes('budget') ? '#2E7D32' : 'var(--color-secondary)' }}>
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                   </svg>
@@ -259,7 +259,7 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
                     width: '100%',
                     padding: 'var(--space-4) var(--space-6) var(--space-4) 60px',
                     borderRadius: 'var(--radius-full)',
-                    border: '1.5px solid var(--color-secondary)',
+                    border: `1.5px solid ${themeClass.includes('budget') ? '#2E7D32' : 'var(--color-secondary)'}`,
                     fontSize: '16px',
                     outline: 'none',
                     background: 'var(--color-card)',
@@ -337,7 +337,6 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
               ref={scrollRef}
               style={{
                 display: 'flex',
-                gap: '24px',
                 overflowX: 'auto',
                 overflowY: 'visible',
                 width: '100%',
@@ -350,7 +349,7 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
                 WebkitOverflowScrolling: 'touch',
                 scrollBehavior: 'smooth',
               }}
-              className="hide-scrollbar"
+              className="hide-scrollbar destination-scroll-container"
               onWheel={(event) => {
                 if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
                 event.preventDefault();
@@ -359,13 +358,15 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
               }}
             >
               {/* Spacer to align first item with the 1400px container */}
-              <div style={{ flex: '0 0 max(calc((100vw - 1400px) / 2), 20px)' }} />
+              <div className="dp-spacer" />
 
               {loading ? skeletonCards.map((item) => (
-                <div key={`destination-skeleton-${item}`} className="destination-scroll-card destination-skeleton-card" style={{ scrollSnapAlign: 'start' }}>
-                  <span className="destination-skeleton-arch" />
-                  <span className="destination-skeleton-line is-short" />
-                  <span className="destination-skeleton-line" />
+                <div key={`destination-skeleton-${item}`} className="destination-scroll-card destination-skeleton-card">
+                  <div style={{ width: '240px', margin: '0 auto' }}>
+                    <span className="destination-skeleton-arch" />
+                    <span className="destination-skeleton-line is-short" />
+                    <span className="destination-skeleton-line" />
+                  </div>
                 </div>
               )) : error ? (
                 <div style={{ padding: 'var(--space-8) var(--space-6)', color: 'var(--color-secondary)', fontWeight: 800 }}>
@@ -374,8 +375,7 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
               ) : visibleDestinations.length ? visibleDestinations.map((dest, i) => (
                 <div key={dest.id || dest.slug || dest.name || i} className="destination-scroll-card" style={{
                   flex: '0 0 auto',
-                  width: '240px',
-                  scrollSnapAlign: 'start'
+                  width: '240px'
                 }}>
                   {onPick ? (
                     <button
@@ -386,7 +386,7 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
                       {renderCardContent(dest, i)}
                     </button>
                   ) : (
-                    <Link href={`/tour?search=${dest.name}`} style={{ textDecoration: 'none' }}>
+                    <Link href={`/tour?search=${dest.name}`} style={{ textDecoration: 'none', display: 'block', width: '100%' }}>
                       {renderCardContent(dest, i)}
                     </Link>
                   )}
@@ -397,7 +397,7 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
                 </div>
               )}
 
-              <div style={{ flex: '0 0 max(calc((100vw - 1400px) / 2), 20px)' }} />
+              <div className="dp-spacer" />
             </div>
           </div>
 
@@ -410,6 +410,33 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
         .hide-scrollbar {
           -ms-overflow-style: none;
           scrollbar-width: none;
+        }
+        .dp-spacer {
+          flex: 0 0 max(calc((100vw - 1400px) / 2), 20px);
+        }
+        .destination-scroll-container {
+          gap: 24px;
+        }
+        .destination-scroll-card {
+          scroll-snap-align: start;
+        }
+        @media (max-width: 768px) {
+          .destination-scroll-container {
+            gap: 0 !important;
+          }
+          .dp-spacer {
+            display: none !important;
+          }
+          .destination-scroll-card {
+            width: 100vw !important;
+            scroll-snap-align: center !important;
+            display: flex;
+            justify-content: center;
+          }
+          .destination-scroll-card > button,
+          .destination-scroll-card > a {
+            width: 240px !important;
+          }
         }
         .destination-image-missing {
           width: 100%;
@@ -463,10 +490,10 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
         }
       `}</style>
       </section>
-      <LoveStoryDestinations />
-      <GramSection />
-      <CustomerReviewsSection />
-      <FAQSection />
+      <LoveStoryDestinations themeClass={themeClass} destinationsData={apiDestinations} onPick={onPick} />
+      <GramSection themeClass={themeClass} />
+      <CustomerReviewsSection themeClass={themeClass} />
+      <FAQSection themeClass={themeClass} />
     </>
   );
 }

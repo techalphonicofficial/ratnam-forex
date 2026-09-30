@@ -30,7 +30,7 @@ const fallbackFaqs = [
   },
 ];
 
-export default function FAQSection() {
+export default function FAQSection({ themeClass = '' }) {
   const [faqs, setFaqs] = useState(fallbackFaqs);
   const [openIndex, setOpenIndex] = useState(null);
 
@@ -64,19 +64,20 @@ export default function FAQSection() {
   };
 
   return (
-    <section className="faq-section">
+    <section className={`faq-section ${themeClass}`}>
       <div className="container" style={{ maxWidth: '1200px' }}>
         <div className="faq-flex-container">
 
           {/* Left Side - Heading */}
           <div className="faq-heading-col">
-            <h2 style={{
+            <h2 className="theme-underline-heading" style={{
               fontSize: '28px',
               fontWeight: 800,
               color: 'var(--color-text-primary)',
               marginBottom: '16px',
               fontFamily: '"Italiana", sans-serif',
               lineHeight: 1.3,
+              whiteSpace: 'nowrap'
             }}>
               Frequently Asked Questions
             </h2>
@@ -185,7 +186,7 @@ export default function FAQSection() {
           align-items: flex-start;
         }
         .faq-heading-col {
-          flex: 0 0 300px;
+          flex: 0 0 420px;
           min-width: 250px;
           position: sticky;
           top: 100px;
