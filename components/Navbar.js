@@ -45,22 +45,19 @@ const indiaDropdownCols = [
 
 const packageCols = [
   [
-    { name: 'Honeymoon Packages', href: '/packages?type=COUPLE' },
-    { name: 'Family Packages', href: '/packages?type=FAMILY' },
-    { name: 'Group Packages', href: '/packages?type=GROUP' },
-    { name: 'Solo Packages', href: '/packages?type=SOLO' },
+    { name: 'Honeymoon Packages', href: '/customize?step=0&subStep=room-config&traveller=Honeymoon' },
+    { name: 'Family Packages', href: '/customize?step=0&subStep=room-config&traveller=Family' },
+    { name: 'Group Packages', href: '/customize?step=0&subStep=room-config&traveller=Group' },
   ],
   [
-    { name: 'Adventure Tours', href: '/packages?type=ADVENTURE' },
-    { name: 'Luxury Tours', href: '/packages?type=LUXURY' },
-    { name: 'Budget Tours', href: '/packages?dest=All&price=under50' },
-    { name: 'Weekend Getaways', href: '/packages' },
+    { name: 'Corporate Tours', href: '/customize?step=0&subStep=room-config&traveller=Corporate' },
+    { name: 'NRI Tours', href: '/customize?step=0&subStep=room-config&traveller=NRI' },
+    { name: 'Pilgrim Packages', href: '/customize?step=0&subStep=room-config&traveller=Pilgrim' },
   ],
   [
-    { name: 'Char Dham Yatra', href: '/tours/deluxe-chardham-yatra' },
-    { name: 'Beach Holidays', href: '/packages?type=BEACH' },
-    { name: 'Wildlife Safaris', href: '/packages?dest=Safari' },
-    { name: 'View All Packages →', href: '/packages', isExplore: true },
+    { name: 'Budget Packages', href: '/customize?step=0&subStep=room-config&traveller=Budget' },
+    { name: 'Trending Packages', href: '/customize?step=0&subStep=room-config&traveller=Trending' },
+    { name: 'View All Packages →', href: '/categories', isExplore: true },
   ],
 ];
 
@@ -88,7 +85,7 @@ const buildPackageCategoryCols = (rows = []) => {
 
   const menuItems = [
     ...items,
-    { name: 'View All Packages →', href: '/packages', isExplore: true },
+    { name: 'View All Packages →', href: '/categories', isExplore: true },
   ];
   const columnCount = 3;
   const itemsPerCol = Math.ceil(menuItems.length / columnCount) || 1;
@@ -922,10 +919,16 @@ export default function Navbar({ brand, companyInfo }) {
   const pathname = usePathname();
 
   const isHeroPage = pathname === '/' || pathname === '/packages' || pathname.startsWith('/package') || pathname.startsWith('/tours') || pathname.startsWith('/hotels') || pathname.startsWith('/about') || pathname.startsWith('/blog') || pathname.startsWith('/contact');
-  const navbarPackageCols = useMemo(() => {
-    const liveCols = buildPackageCategoryCols(packageCategories);
-    return liveCols.length ? liveCols : packageCols;
-  }, [packageCategories]);
+  
+  useEffect(() => {
+    if (pathname === '/') {
+      document.body.classList.add('is-homepage');
+    } else {
+      document.body.classList.remove('is-homepage');
+    }
+  }, [pathname]);
+
+  const navbarPackageCols = useMemo(() => packageCols, []);
 
   useEffect(() => {
     const fetchNavbarCategoriesAndDests = async () => {

@@ -2463,3 +2463,7 @@ body {
 .corporate-theme .theme-underline-heading::before, .corporate-theme.theme-underline-heading::before { border-bottom-color: #1E5AA8; }
 .corporate-theme .seo-category-title { color: #1E5AA8 !important; }
 .corporate-theme .seo-link:hover { color: #1E5AA8 !important; }
+
+/* HOMEPAGE THEME OVERRIDE */
+body.is-homepage .theme-underline-heading::after { background-color: #FF6000; }
+body.is-homepage .theme-underline-heading::before { border-bottom-color: #FF6000; }
