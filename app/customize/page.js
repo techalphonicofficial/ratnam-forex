@@ -372,6 +372,7 @@ export default function CustomizeFlow() {
   const isPilgrimGlobal = data?.travelWith === 'Pilgrim' || data?.travelWith === 'Pilgrim Package';
   const isBudgetGlobal = data?.travelWith === 'Budget' || data?.travelWith === 'Budget Package';
   const isTrendingGlobal = data?.travelWith === 'Trending' || data?.travelWith === 'Trending Package';
+  const isCorporateGlobal = data?.travelWith === 'Corporate' || data?.travelWith === 'Corprate' || data?.travelWith === 'Corporate Package ( 2+ People )';
 
   useEffect(() => {
     if (typeof document !== 'undefined') {
@@ -392,18 +393,21 @@ export default function CustomizeFlow() {
         document.body.classList.remove('blush-theme', 'teal-theme', 'purple-theme', 'nri-theme', 'saffron-theme', 'trending-theme');
       } else if (isTrendingGlobal) {
         document.body.classList.add('trending-theme');
-        document.body.classList.remove('blush-theme', 'teal-theme', 'purple-theme', 'nri-theme', 'saffron-theme', 'budget-theme');
+        document.body.classList.remove('blush-theme', 'teal-theme', 'purple-theme', 'nri-theme', 'saffron-theme', 'budget-theme', 'corporate-theme');
+      } else if (isCorporateGlobal) {
+        document.body.classList.add('corporate-theme');
+        document.body.classList.remove('blush-theme', 'teal-theme', 'purple-theme', 'nri-theme', 'saffron-theme', 'budget-theme', 'trending-theme');
       } else {
         document.body.classList.add('blush-theme');
-        document.body.classList.remove('teal-theme', 'purple-theme', 'nri-theme', 'saffron-theme', 'budget-theme', 'trending-theme');
+        document.body.classList.remove('teal-theme', 'purple-theme', 'nri-theme', 'saffron-theme', 'budget-theme', 'trending-theme', 'corporate-theme');
       }
     }
     return () => {
       if (typeof document !== 'undefined') {
-        document.body.classList.remove('teal-theme', 'blush-theme', 'purple-theme', 'nri-theme', 'saffron-theme', 'budget-theme', 'trending-theme');
+        document.body.classList.remove('teal-theme', 'blush-theme', 'purple-theme', 'nri-theme', 'saffron-theme', 'budget-theme', 'trending-theme', 'corporate-theme');
       }
     };
-  }, [isFamilyGlobal, isGroupGlobal, isNriGlobal, isPilgrimGlobal, isBudgetGlobal, isTrendingGlobal]);
+  }, [isFamilyGlobal, isGroupGlobal, isNriGlobal, isPilgrimGlobal, isBudgetGlobal, isTrendingGlobal, isCorporateGlobal]);
 
   // Load the draft from URL params so the flow can be shared or restored without localStorage.
   useEffect(() => {
@@ -836,35 +840,36 @@ export default function CustomizeFlow() {
      Step 1: Destination
   ───────────────────────────────────────────────────────────────── */
   const renderDestination = () => {
-    if (data.travelWith === 'Honeymoon' || data.travelWith === 'Family' || data.travelWith === 'Group' || data.travelWith === 'NRI Package' || data.travelWith === 'Nri' || data.travelWith === 'Pilgrim' || data.travelWith === 'Budget' || data.travelWith === 'Budget Package' || data.travelWith === 'Trending') {
+    if (data.travelWith === 'Honeymoon' || data.travelWith === 'Family' || data.travelWith === 'Group' || data.travelWith === 'NRI Package' || data.travelWith === 'Nri' || data.travelWith === 'Pilgrim' || data.travelWith === 'Budget' || data.travelWith === 'Budget Package' || data.travelWith === 'Trending' || data.travelWith === 'Corporate' || data.travelWith === 'Corprate' || data.travelWith === 'Corporate Package ( 2+ People )') {
       const isFamily = data.travelWith === 'Family';
       const isGroup = data.travelWith === 'Group';
       const isNri = data.travelWith === 'NRI Package' || data.travelWith === 'Nri';
       const isPilgrim = data.travelWith === 'Pilgrim';
       const isBudget = data.travelWith === 'Budget' || data.travelWith === 'Budget Package';
       const isTrending = data.travelWith === 'Trending';
+      const isCorporate = data.travelWith === 'Corporate' || data.travelWith === 'Corprate' || data.travelWith === 'Corporate Package ( 2+ People )';
       const pkg = {
-        name: isNri ? 'Bringing you closer to your roots' : (isGroup ? 'Group Packages ( 6+ People )' : (isFamily ? 'Family Packages' : (isPilgrim ? 'Pilgrim Packages' : (isBudget ? 'Budget Packages' : (isTrending ? 'Trending Destinations, Unforgettable Journeys' : 'Honeymoon Packages'))))),
+        name: isCorporate ? 'Corporate Package' : (isNri ? 'Bringing you closer to your roots' : (isGroup ? 'Group Packages ( 6+ People )' : (isFamily ? 'Family Packages' : (isPilgrim ? 'Pilgrim Packages' : (isBudget ? 'Budget Packages' : (isTrending ? 'Trending Destinations, Unforgettable Journeys' : 'Honeymoon Packages')))))),
         rating: 4.9,
         review_count: 3200,
       };
 
       const media = {
         images: [
-          { url: isNri ? 'https://images.unsplash.com/photo-1570168007204-dfb528c6958f?auto=format&fit=crop&w=2000&q=80' : (isGroup ? 'https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=2000&q=80' : (isFamily ? 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=2000&q=80' : (isPilgrim ? 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?auto=format&fit=crop&w=2000&q=80' : (isBudget ? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=2000&q=80' : (isTrending ? 'https://images.unsplash.com/photo-1539635278303-d4002c07eae3?auto=format&fit=crop&w=2000&q=80' : '/images/honeymoon_hero_bg.jpg'))))), alt: isNri ? 'NRI Package' : (isGroup ? 'Group Hero' : (isFamily ? 'Family Hero' : (isPilgrim ? 'Pilgrim Hero' : (isBudget ? 'Budget Hero' : (isTrending ? 'Trending Destinations' : 'Honeymoon Hero'))))) },
+          { url: isCorporate ? 'https://images.unsplash.com/photo-1556761175-5973dc0f32d7?auto=format&fit=crop&w=2000&q=80' : (isNri ? 'https://images.unsplash.com/photo-1570168007204-dfb528c6958f?auto=format&fit=crop&w=2000&q=80' : (isGroup ? 'https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=2000&q=80' : (isFamily ? 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=2000&q=80' : (isPilgrim ? 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?auto=format&fit=crop&w=2000&q=80' : (isBudget ? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=2000&q=80' : (isTrending ? 'https://images.unsplash.com/photo-1539635278303-d4002c07eae3?auto=format&fit=crop&w=2000&q=80' : '/images/honeymoon_hero_bg.jpg')))))), alt: isCorporate ? 'Corporate Package' : (isNri ? 'NRI Package' : (isGroup ? 'Group Hero' : (isFamily ? 'Family Hero' : (isPilgrim ? 'Pilgrim Hero' : (isBudget ? 'Budget Hero' : (isTrending ? 'Trending Destinations' : 'Honeymoon Hero')))))) },
           { url: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=800&q=80', alt: 'Nav' }
         ]
       };
 
       const renderBottom = () => (
-        <section className="premium-picker-wrapper" style={{ background: isNri ? '#FFFCF5' : (isGroup ? '#FAF5FA' : (isFamily ? '#FFFDF7' : (isPilgrim ? '#FFF9EF' : (isBudget ? '#F8FFF6' : (isTrending ? '#FFF9F7' : '#FFF9FA'))))), borderTop: `1px solid ${isNri ? '#F2D99B' : (isGroup ? '#F5E6F5' : (isFamily ? '#F2F7F4' : (isPilgrim ? '#F3D49A' : (isBudget ? '#E4EDE4' : (isTrending ? '#FFCEC0' : '#FCE7ED')))))}` }}>
+        <section className="premium-picker-wrapper" style={{ background: isCorporate ? '#F7FAFF' : (isNri ? '#FFFCF5' : (isGroup ? '#FAF5FA' : (isFamily ? '#FFFDF7' : (isPilgrim ? '#FFF9EF' : (isBudget ? '#F8FFF6' : (isTrending ? '#FFF9F7' : '#FFF9FA')))))), borderTop: `1px solid ${isCorporate ? '#E2E8F0' : (isNri ? '#F2D99B' : (isGroup ? '#F5E6F5' : (isFamily ? '#F2F7F4' : (isPilgrim ? '#F3D49A' : (isBudget ? '#E4EDE4' : (isTrending ? '#FFCEC0' : '#FCE7ED'))))))}` }}>
           <div style={{ maxWidth: 1400, margin: '0 auto', paddingTop: 60, paddingBottom: 60 }}>
             <DestinationPicker
               destinations={destinationOptions}
               error={destinationsError}
               loading={destinationsLoading}
               onPick={handleDestination}
-              themeClass={isNri ? "nri-theme" : (isGroup ? "purple-theme" : (isFamily ? "teal-theme" : (isPilgrim ? "saffron-theme pilgrim" : (isBudget ? "budget-theme budget" : (isTrending ? "trending-theme trending" : "blush-theme")))))}
+              themeClass={isCorporate ? "corporate-theme corporate" : (isNri ? "nri-theme" : (isGroup ? "purple-theme" : (isFamily ? "teal-theme" : (isPilgrim ? "saffron-theme pilgrim" : (isBudget ? "budget-theme budget" : (isTrending ? "trending-theme trending" : "blush-theme"))))))}
             />
           </div>
         </section>
@@ -879,7 +884,7 @@ export default function CustomizeFlow() {
             includedItems={[]}
             excludedItems={[]}
             renderBottom={renderBottom}
-            themeType={isNri ? 'nri' : (isGroup ? 'group' : (isFamily ? 'family' : (isPilgrim ? 'pilgrim' : (isBudget ? 'budget' : (isTrending ? 'trending' : 'honeymoon')))))}
+            themeType={isCorporate ? 'corporate' : (isNri ? 'nri' : (isGroup ? 'group' : (isFamily ? 'family' : (isPilgrim ? 'pilgrim' : (isBudget ? 'budget' : (isTrending ? 'trending' : 'honeymoon'))))))}
           />
         </div>
       );
@@ -2078,7 +2083,7 @@ export default function CustomizeFlow() {
       </div>
 
       {/* Main Content Area */}
-      {(data.travelWith === 'Honeymoon' || data.travelWith === 'Family' || data.travelWith === 'Group' || data.travelWith === 'NRI Package' || data.travelWith === 'Nri' || data.travelWith === 'Pilgrim' || data.travelWith === 'Budget' || data.travelWith === 'Budget Package' || data.travelWith === 'Trending') && step === 0 ? (
+      {(data.travelWith === 'Honeymoon' || data.travelWith === 'Family' || data.travelWith === 'Group' || data.travelWith === 'NRI Package' || data.travelWith === 'Nri' || data.travelWith === 'Pilgrim' || data.travelWith === 'Budget' || data.travelWith === 'Budget Package' || data.travelWith === 'Trending' || data.travelWith === 'Corporate' || data.travelWith === 'Corprate' || data.travelWith === 'Corporate Package ( 2+ People )') && step === 0 ? (
         <main style={{ padding: 0, width: '100vw', maxWidth: '100%' }}>
           {renderDestination()}
         </main>

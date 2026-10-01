@@ -12,9 +12,10 @@ export default function LoveStoryDestinations({ themeClass = '', destinationsDat
   const isPilgrim = themeClass.includes('pilgrim') || themeClass.includes('saffron');
   const isBudget = themeClass.includes('budget');
   const isTrending = themeClass.includes('trending');
+  const isCorporate = themeClass.includes('corporate');
   const displayDestinations = destinationsData || [];
-  const themeColor = isNri ? '#1759A6' : (isGroup ? '#9D4A93' : (isFamily ? '#2F7F7B' : (isPilgrim ? '#E98216' : (isBudget ? '#2E7D32' : (isTrending ? '#D32F2F' : '#D9466F')))));
-  const shadowColor = isNri ? 'rgba(23, 89, 166, 0.15)' : (isGroup ? 'rgba(157, 74, 147, 0.15)' : (isFamily ? 'rgba(47, 127, 123, 0.15)' : (isPilgrim ? 'rgba(233, 130, 22, 0.15)' : (isBudget ? 'rgba(46, 125, 50, 0.15)' : (isTrending ? 'rgba(211, 47, 47, 0.15)' : 'rgba(217, 70, 111, 0.15)')))));
+  const themeColor = isCorporate ? '#1E5AA8' : (isNri ? '#1759A6' : (isGroup ? '#9D4A93' : (isFamily ? '#2F7F7B' : (isPilgrim ? '#E98216' : (isBudget ? '#2E7D32' : (isTrending ? '#D32F2F' : '#D9466F'))))));
+  const shadowColor = isCorporate ? 'rgba(30, 90, 168, 0.15)' : (isNri ? 'rgba(23, 89, 166, 0.15)' : (isGroup ? 'rgba(157, 74, 147, 0.15)' : (isFamily ? 'rgba(47, 127, 123, 0.15)' : (isPilgrim ? 'rgba(233, 130, 22, 0.15)' : (isBudget ? 'rgba(46, 125, 50, 0.15)' : (isTrending ? 'rgba(211, 47, 47, 0.15)' : 'rgba(217, 70, 111, 0.15)'))))));
 
   if (!displayDestinations || displayDestinations.length === 0) return null;
 

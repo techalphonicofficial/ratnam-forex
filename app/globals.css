@@ -2443,3 +2443,23 @@ body {
 .trending-theme .theme-underline-heading::before, .trending-theme.theme-underline-heading::before { border-bottom-color: #D32F2F; }
 .trending-theme .seo-category-title { color: #D32F2F !important; }
 .trending-theme .seo-link:hover { color: #D32F2F !important; }
+
+
+/* CORPORATE THEME */
+.corporate-theme {
+  --color-primary: #1E5AA8;
+  --color-primary-hover: #164A8A;
+  --color-primary-light: #E6F2FD;
+  --color-secondary: #00A8E8;
+  --color-secondary-hover: #0090C8;
+  --color-text-primary: #0D1B2A;
+  --color-bg: #F7FAFF;
+  --pink-primary: #1E5AA8;
+  --pink-dark: #0D2C54;
+  --pink-bg: #F7FAFF;
+  --pink-soft: #E6F2FD;
+}
+.corporate-theme .theme-underline-heading::after, .corporate-theme.theme-underline-heading::after { background-color: #1E5AA8; }
+.corporate-theme .theme-underline-heading::before, .corporate-theme.theme-underline-heading::before { border-bottom-color: #1E5AA8; }
+.corporate-theme .seo-category-title { color: #1E5AA8 !important; }
+.corporate-theme .seo-link:hover { color: #1E5AA8 !important; }

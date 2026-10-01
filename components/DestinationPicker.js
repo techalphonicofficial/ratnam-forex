@@ -214,7 +214,7 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
       <TrendingToursSection themeClass={themeClass} />
       <section className={themeClass} style={{
         padding: 'var(--space-8) 0 var(--space-10)',
-        background: (themeClass.includes('blush') || themeClass.includes('teal') || themeClass.includes('nri') || themeClass.includes('purple') || themeClass.includes('pilgrim') || themeClass.includes('budget') || themeClass.includes('trending')) ? 'transparent' : 'var(--color-card)',
+        background: (themeClass.includes('blush') || themeClass.includes('teal') || themeClass.includes('nri') || themeClass.includes('purple') || themeClass.includes('pilgrim') || themeClass.includes('budget') || themeClass.includes('trending') || themeClass.includes('corporate')) ? 'transparent' : 'var(--color-card)',
         position: 'relative',
         overflow: 'hidden',
         width: '100%',
@@ -241,11 +241,11 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
           <div className="container" style={{ maxWidth: '1400px', marginBottom: '40px' }}>
             <div className="text-center">
               <h2 className="theme-underline-heading" style={{ fontSize: '32px', fontWeight: 800, color: 'var(--color-text-primary)', fontFamily: '"Italiana", sans-serif' }}>
-                What&apos;s <span style={{ color: themeClass.includes('nri') ? '#1759A6' : (themeClass.includes('purple') ? '#9D4A93' : (themeClass.includes('teal') ? '#2F7F7B' : (themeClass.includes('pilgrim') ? '#E98216' : (themeClass.includes('budget') ? '#2E7D32' : (themeClass.includes('trending') ? '#D32F2F' : (themeClass.includes('blush') ? '#D9466F' : 'var(--color-primary)')))))), fontStyle: 'italic', fontWeight: 500 }}> your pick </span> for your next vacation
+                What&apos;s <span style={{ color: themeClass.includes('corporate') ? '#1E5AA8' : (themeClass.includes('nri') ? '#1759A6' : (themeClass.includes('purple') ? '#9D4A93' : (themeClass.includes('teal') ? '#2F7F7B' : (themeClass.includes('pilgrim') ? '#E98216' : (themeClass.includes('budget') ? '#2E7D32' : (themeClass.includes('trending') ? '#D32F2F' : (themeClass.includes('blush') ? '#D9466F' : 'var(--color-primary)'))))))), fontStyle: 'italic', fontWeight: 500 }}> your pick </span> for your next vacation
               </h2>
 
               <div className="mx-auto mt-4" style={{ maxWidth: '620px', position: 'relative' }}>
-                <div style={{ position: 'absolute', left: '24px', top: '50%', transform: 'translateY(-50%)', color: themeClass.includes('budget') ? '#2E7D32' : (themeClass.includes('trending') ? '#D32F2F' : 'var(--color-secondary)') }}>
+                <div style={{ position: 'absolute', left: '24px', top: '50%', transform: 'translateY(-50%)', color: themeClass.includes('corporate') ? '#1E5AA8' : (themeClass.includes('budget') ? '#2E7D32' : (themeClass.includes('trending') ? '#D32F2F' : 'var(--color-secondary)')) }}>
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                   </svg>
@@ -259,7 +259,7 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
                     width: '100%',
                     padding: 'var(--space-4) var(--space-6) var(--space-4) 60px',
                     borderRadius: 'var(--radius-full)',
-                    border: `1.5px solid ${themeClass.includes('budget') ? '#2E7D32' : 'var(--color-secondary)'}`,
+                    border: `1.5px solid ${themeClass.includes('corporate') ? '#1E5AA8' : (themeClass.includes('budget') ? '#2E7D32' : 'var(--color-secondary)')}`,
                     fontSize: '16px',
                     outline: 'none',
                     background: 'var(--color-card)',

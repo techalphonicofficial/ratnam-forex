@@ -24,6 +24,13 @@ export default function PremiumDestinationLayout({
 
   // --- Typing Text Effect State ---
   const typingPhrases = useMemo(() => {
+    if (themeType === 'corporate') {
+      return [
+        pkg?.name || 'Corporate Package',
+        'Seamless business travel, greater success',
+        'Professional trips, perfectly planned'
+      ];
+    }
     if (themeType === 'nri') {
       return [
         pkg?.name || 'NRI Package',
@@ -115,7 +122,11 @@ export default function PremiumDestinationLayout({
   // --- Carousel State ---
   const [carouselIndex, setCarouselIndex] = useState(0);
   const carouselImages = useMemo(() => {
-    const defaultImages = themeType === 'pilgrim' ? [
+    const defaultImages = themeType === 'corporate' ? [
+      'https://images.unsplash.com/photo-1556761175-5973dc0f32d7?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80'
+    ] : themeType === 'pilgrim' ? [
       'https://images.unsplash.com/photo-1582510003544-4d00b7f7415e?auto=format&fit=crop&w=800&q=80',
       'https://images.unsplash.com/photo-1561359313-0639aad49ca6?auto=format&fit=crop&w=800&q=80',
       'https://images.unsplash.com/photo-1600018596660-8438258e77c5?auto=format&fit=crop&w=800&q=80'
@@ -226,18 +237,18 @@ export default function PremiumDestinationLayout({
     }
   };
 
-  const heroImage = media?.images?.[0]?.url || (themeType === 'pilgrim' ? 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?auto=format&fit=crop&w=2000&q=80' : (themeType === 'budget' ? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=2000&q=80' : 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=2000&q=80'));
+  const heroImage = media?.images?.[0]?.url || (themeType === 'corporate' ? 'https://images.unsplash.com/photo-1556761175-5973dc0f32d7?auto=format&fit=crop&w=2000&q=80' : (themeType === 'pilgrim' ? 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?auto=format&fit=crop&w=2000&q=80' : (themeType === 'budget' ? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=2000&q=80' : 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=2000&q=80')));
   const rating = pkg?.rating || 4.9;
   const reviews = pkg?.review_count || 3200;
 
   return (
     <div className="premium-layout" style={{
-      '--theme-bg': themeType === 'nri' ? '#FFFCF5' : (themeType === 'group' ? '#FAF5FA' : (themeType === 'family' ? '#FFFDF7' : (themeType === 'pilgrim' ? '#FFF9EF' : (themeType === 'budget' ? '#F8FFF6' : (themeType === 'trending' ? '#FFF9F7' : 'var(--pink-bg)'))))),
-      '--theme-primary': themeType === 'nri' ? '#1759A6' : (themeType === 'group' ? '#9D4A93' : (themeType === 'family' ? '#2F7F7B' : (themeType === 'pilgrim' ? '#E98216' : (themeType === 'budget' ? '#2E7D32' : (themeType === 'trending' ? '#D32F2F' : 'var(--pink-primary)'))))),
-      '--theme-dark': themeType === 'nri' ? '#0B2342' : (themeType === 'group' ? '#7D3A75' : (themeType === 'family' ? '#245C59' : (themeType === 'pilgrim' ? '#C9650A' : (themeType === 'budget' ? '#1F3B28' : (themeType === 'trending' ? '#B71C1C' : 'var(--pink-dark)'))))),
-      '--theme-soft': themeType === 'nri' ? '#F4F7FA' : (themeType === 'group' ? '#F5E6F5' : (themeType === 'family' ? '#F2F7F4' : (themeType === 'pilgrim' ? '#F3D49A' : (themeType === 'budget' ? '#F1F8EF' : (themeType === 'trending' ? '#FFCEC0' : 'var(--pink-soft)'))))),
-      '--theme-text-sec': themeType === 'nri' ? '#596575' : (themeType === 'group' ? '#6B5969' : (themeType === 'family' ? '#5E6870' : (themeType === 'pilgrim' ? '#64615D' : (themeType === 'budget' ? '#575F5A' : (themeType === 'trending' ? '#555555' : 'var(--text-sec)'))))),
-      '--theme-text-main': themeType === 'nri' ? '#173A63' : (themeType === 'group' ? '#5A2A54' : (themeType === 'family' ? '#245C59' : (themeType === 'pilgrim' ? '#4A2A16' : (themeType === 'budget' ? '#1B5E20' : (themeType === 'trending' ? '#8B1E1E' : 'var(--text-main)'))))),
+      '--theme-bg': themeType === 'corporate' ? '#F7FAFF' : (themeType === 'nri' ? '#FFFCF5' : (themeType === 'group' ? '#FAF5FA' : (themeType === 'family' ? '#FFFDF7' : (themeType === 'pilgrim' ? '#FFF9EF' : (themeType === 'budget' ? '#F8FFF6' : (themeType === 'trending' ? '#FFF9F7' : 'var(--pink-bg)')))))),
+      '--theme-primary': themeType === 'corporate' ? '#1E5AA8' : (themeType === 'nri' ? '#1759A6' : (themeType === 'group' ? '#9D4A93' : (themeType === 'family' ? '#2F7F7B' : (themeType === 'pilgrim' ? '#E98216' : (themeType === 'budget' ? '#2E7D32' : (themeType === 'trending' ? '#D32F2F' : 'var(--pink-primary)')))))),
+      '--theme-dark': themeType === 'corporate' ? '#0D1B2A' : (themeType === 'nri' ? '#0B2342' : (themeType === 'group' ? '#7D3A75' : (themeType === 'family' ? '#245C59' : (themeType === 'pilgrim' ? '#C9650A' : (themeType === 'budget' ? '#1F3B28' : (themeType === 'trending' ? '#B71C1C' : 'var(--pink-dark)')))))),
+      '--theme-soft': themeType === 'corporate' ? '#E6F2FD' : (themeType === 'nri' ? '#F4F7FA' : (themeType === 'group' ? '#F5E6F5' : (themeType === 'family' ? '#F2F7F4' : (themeType === 'pilgrim' ? '#F3D49A' : (themeType === 'budget' ? '#F1F8EF' : (themeType === 'trending' ? '#FFCEC0' : 'var(--pink-soft)')))))),
+      '--theme-text-sec': themeType === 'corporate' ? '#4B5563' : (themeType === 'nri' ? '#596575' : (themeType === 'group' ? '#6B5969' : (themeType === 'family' ? '#5E6870' : (themeType === 'pilgrim' ? '#64615D' : (themeType === 'budget' ? '#575F5A' : (themeType === 'trending' ? '#555555' : 'var(--text-sec)')))))),
+      '--theme-text-main': themeType === 'corporate' ? '#0D1B2A' : (themeType === 'nri' ? '#173A63' : (themeType === 'group' ? '#5A2A54' : (themeType === 'family' ? '#245C59' : (themeType === 'pilgrim' ? '#4A2A16' : (themeType === 'budget' ? '#1B5E20' : (themeType === 'trending' ? '#8B1E1E' : 'var(--text-main)')))))),
     }}>
       {(themeType === 'pilgrim' || themeType === 'budget' || themeType === 'trending') && (
         <style dangerouslySetInnerHTML={{ __html: `
@@ -251,11 +262,11 @@ export default function PremiumDestinationLayout({
       )}
       {/* Hero Section */}
       <section className="premium-hero">
-        {themeType === 'nri' || themeType === 'family' || themeType === 'group' || themeType === 'pilgrim' || themeType === 'budget' || themeType === 'trending' ? (
+        {themeType === 'corporate' || themeType === 'nri' || themeType === 'family' || themeType === 'group' || themeType === 'pilgrim' || themeType === 'budget' || themeType === 'trending' ? (
           <img
             className="hero-img"
             src={heroImage}
-            alt={themeType === 'nri' ? "NRI Package" : (themeType === 'group' ? "Group Adventure" : (themeType === 'pilgrim' ? "Pilgrim Package" : (themeType === 'trending' ? "Trending Destinations" : "Family Getaway")))}
+            alt={themeType === 'corporate' ? "Corporate Package" : (themeType === 'nri' ? "NRI Package" : (themeType === 'group' ? "Group Adventure" : (themeType === 'pilgrim' ? "Pilgrim Package" : (themeType === 'trending' ? "Trending Destinations" : "Family Getaway"))))}
           />
         ) : (
           <video
@@ -269,10 +280,15 @@ export default function PremiumDestinationLayout({
           </video>
         )}
         <div className="hero-overlay" />
-        <div className="hero-content">
+        <div className={`hero-content`}>
           <h1 className="hero-title">
             <span className="typed-text">
-              {themeType === 'pilgrim' && typedText === 'Path of faith, journey of peace' ? (
+              {themeType === 'corporate' && typedText === 'Seamless business travel, greater success' ? (
+                typedText.split(/(greater success)/gi).map((part, i) =>
+                  (part.toLowerCase() === 'greater success') ?
+                    <span key={i} style={{ color: '#1E5AA8' }}><br className="corporate-br" />{part}</span> : part
+                )
+              ) : themeType === 'pilgrim' && typedText === 'Path of faith, journey of peace' ? (
                 typedText.split(/(\bfaith\b|\bpeace\b)/gi).map((part, i) =>
                   (part.toLowerCase() === 'faith' || part.toLowerCase() === 'peace') ?
                     <span key={i} style={{ color: '#E98216' }}>{part}</span> : part
@@ -293,32 +309,37 @@ export default function PremiumDestinationLayout({
           </h1>
           <div className="hero-stats">
             <div className="stat-badge"><span>⭐</span> <span className="stat-text">{rating}/5 Based on {reviews} reviews</span></div>
-            <div className="stat-badge"><span>❤️</span> <span className="stat-text">98% Travellers Recommend</span></div>
-            <div className="stat-badge"><span>🎁</span> <span className="stat-text">Best Price Guarantee</span></div>
+            <div className="stat-badge"><span>{themeType === 'corporate' ? '👍' : '❤️'}</span> <span className="stat-text">98% Travellers Recommend</span></div>
+            <div className="stat-badge"><span>{themeType === 'corporate' ? '🛡️' : '🎁'}</span> <span className="stat-text">Best Price Guarantee</span></div>
           </div>
         </div>
 
         {/* Decorative Multi-Layer Separator */}
         <div className="hero-curved-edge">
           <svg viewBox="0 0 1440 120" preserveAspectRatio="none" className="edge-svg edge-layer edge-layer-1">
-            <path d="M0,120 L0,50 C120,70 240,85 360,80 C480,75 600,55 720,45 C840,35 960,40 1080,55 C1200,70 1320,75 1440,60 L1440,120 Z" fill={themeType === 'nri' ? '#0B2342' : (themeType === 'group' ? '#84397B' : (themeType === 'family' ? '#245C59' : (themeType === 'pilgrim' ? '#E98216' : (themeType === 'budget' ? '#1B5E20' : (themeType === 'trending' ? '#B71C1C' : '#C23B6B')))))} />
+            <path d="M0,120 L0,50 C120,70 240,85 360,80 C480,75 600,55 720,45 C840,35 960,40 1080,55 C1200,70 1320,75 1440,60 L1440,120 Z" fill={themeType === 'corporate' ? '#0D2C54' : (themeType === 'nri' ? '#0B2342' : (themeType === 'group' ? '#84397B' : (themeType === 'family' ? '#245C59' : (themeType === 'pilgrim' ? '#E98216' : (themeType === 'budget' ? '#1B5E20' : (themeType === 'trending' ? '#B71C1C' : '#C23B6B'))))))} />
           </svg>
           <svg viewBox="0 0 1440 120" preserveAspectRatio="none" className="edge-svg edge-layer edge-layer-2">
-            <path d="M0,120 L0,62 C180,80 360,90 540,82 C720,74 840,55 960,52 C1080,49 1260,65 1440,70 L1440,120 Z" fill={themeType === 'nri' ? '#1759A6' : (themeType === 'group' ? '#C27CBB' : (themeType === 'family' ? '#75AAA3' : (themeType === 'pilgrim' ? '#F3D49A' : (themeType === 'budget' ? '#8BC34A' : (themeType === 'trending' ? '#FFCEC0' : '#F2A5BC')))))} />
+            <path d="M0,120 L0,62 C180,80 360,90 540,82 C720,74 840,55 960,52 C1080,49 1260,65 1440,70 L1440,120 Z" fill={themeType === 'corporate' ? '#00A8E8' : (themeType === 'nri' ? '#1759A6' : (themeType === 'group' ? '#C27CBB' : (themeType === 'family' ? '#75AAA3' : (themeType === 'pilgrim' ? '#F3D49A' : (themeType === 'budget' ? '#8BC34A' : (themeType === 'trending' ? '#FFCEC0' : '#F2A5BC'))))))} />
           </svg>
           <svg viewBox="0 0 1440 120" preserveAspectRatio="none" className="edge-svg edge-layer edge-layer-3">
-            <path d="M0,120 L0,72 C160,92 320,100 480,94 C640,88 760,68 900,62 C1040,56 1200,70 1440,80 L1440,120 Z" fill={themeType === 'nri' ? '#FFFCF5' : (themeType === 'group' ? '#FAF5FA' : (themeType === 'family' ? '#FFFDF7' : (themeType === 'pilgrim' ? '#FFF9EF' : (themeType === 'budget' ? '#F8FFF6' : (themeType === 'trending' ? '#FFF9F7' : 'var(--pink-bg)')))))} />
+            <path d="M0,120 L0,72 C160,92 320,100 480,94 C640,88 760,68 900,62 C1040,56 1200,70 1440,80 L1440,120 Z" fill={themeType === 'corporate' ? '#F7FAFF' : (themeType === 'nri' ? '#FFFCF5' : (themeType === 'group' ? '#FAF5FA' : (themeType === 'family' ? '#FFFDF7' : (themeType === 'pilgrim' ? '#FFF9EF' : (themeType === 'budget' ? '#F8FFF6' : (themeType === 'trending' ? '#FFF9F7' : 'var(--pink-bg)'))))))} />
           </svg>
           <svg viewBox="0 0 1440 120" preserveAspectRatio="none" className="edge-svg edge-layer edge-layer-accent">
-            <path d="M0,72 C160,92 320,100 480,94 C640,88 760,68 900,62 C1040,56 1200,70 1440,80" fill="none" stroke={themeType === 'nri' ? '#1759A6' : (themeType === 'group' ? '#9D4A93' : (themeType === 'family' ? '#2F7F7B' : (themeType === 'pilgrim' ? '#E98216' : (themeType === 'budget' ? '#2E7D32' : (themeType === 'trending' ? '#D32F2F' : '#D9466F')))))} strokeWidth="1.5" opacity="0.45" />
+            <path d="M0,72 C160,92 320,100 480,94 C640,88 760,68 900,62 C1040,56 1200,70 1440,80" fill="none" stroke={themeType === 'corporate' ? '#1E5AA8' : (themeType === 'nri' ? '#1759A6' : (themeType === 'group' ? '#9D4A93' : (themeType === 'family' ? '#2F7F7B' : (themeType === 'pilgrim' ? '#E98216' : (themeType === 'budget' ? '#2E7D32' : (themeType === 'trending' ? '#D32F2F' : '#D9466F'))))))} strokeWidth="1.5" opacity="0.45" />
           </svg>
           <div className="edge-flourish">
             <div className="flourish-ornament-group">
-              <div className="flourish-dot-outer" style={themeType === 'nri' ? { background: '#1759A6', borderColor: '#1759A6' } : (themeType === 'group' ? { background: '#9D4A93', borderColor: '#9D4A93' } : (themeType === 'family' ? { background: '#2F7F7B', borderColor: '#2F7F7B' } : (themeType === 'pilgrim' ? { background: '#E98216', borderColor: '#E98216' } : (themeType === 'budget' ? { background: '#2E7D32', borderColor: '#2E7D32' } : (themeType === 'trending' ? { background: '#D32F2F', borderColor: '#D32F2F' } : {})))))}></div>
-              <div className="flourish-line" style={themeType === 'nri' ? { background: 'linear-gradient(90deg, transparent, #1759A6, transparent)' } : (themeType === 'group' ? { background: 'linear-gradient(90deg, transparent, #9D4A93, transparent)' } : (themeType === 'family' ? { background: 'linear-gradient(90deg, transparent, #2F7F7B, transparent)' } : (themeType === 'pilgrim' ? { background: 'linear-gradient(90deg, transparent, #E98216, transparent)' } : (themeType === 'budget' ? { background: 'linear-gradient(90deg, transparent, #2E7D32, transparent)' } : (themeType === 'trending' ? { background: 'linear-gradient(90deg, transparent, #D32F2F, transparent)' } : {})))))}></div>
-              <div className="flourish-dot-inner" style={themeType === 'nri' ? { background: '#1759A6' } : (themeType === 'group' ? { background: '#9D4A93' } : (themeType === 'family' ? { background: '#2F7F7B' } : (themeType === 'pilgrim' ? { background: '#E98216' } : (themeType === 'budget' ? { background: '#2E7D32' } : (themeType === 'trending' ? { background: '#D32F2F' } : {})))))}></div>
+              <div className="flourish-dot-outer" style={themeType === 'corporate' ? { background: '#1E5AA8', borderColor: '#1E5AA8' } : (themeType === 'nri' ? { background: '#1759A6', borderColor: '#1759A6' } : (themeType === 'group' ? { background: '#9D4A93', borderColor: '#9D4A93' } : (themeType === 'family' ? { background: '#2F7F7B', borderColor: '#2F7F7B' } : (themeType === 'pilgrim' ? { background: '#E98216', borderColor: '#E98216' } : (themeType === 'budget' ? { background: '#2E7D32', borderColor: '#2E7D32' } : (themeType === 'trending' ? { background: '#D32F2F', borderColor: '#D32F2F' } : {}))))))}></div>
+              <div className="flourish-line" style={themeType === 'corporate' ? { background: 'linear-gradient(90deg, transparent, #1E5AA8, transparent)' } : (themeType === 'nri' ? { background: 'linear-gradient(90deg, transparent, #1759A6, transparent)' } : (themeType === 'group' ? { background: 'linear-gradient(90deg, transparent, #9D4A93, transparent)' } : (themeType === 'family' ? { background: 'linear-gradient(90deg, transparent, #2F7F7B, transparent)' } : (themeType === 'pilgrim' ? { background: 'linear-gradient(90deg, transparent, #E98216, transparent)' } : (themeType === 'budget' ? { background: 'linear-gradient(90deg, transparent, #2E7D32, transparent)' } : (themeType === 'trending' ? { background: 'linear-gradient(90deg, transparent, #D32F2F, transparent)' } : {}))))))}></div>
+              <div className="flourish-dot-inner" style={themeType === 'corporate' ? { background: '#1E5AA8' } : (themeType === 'nri' ? { background: '#1759A6' } : (themeType === 'group' ? { background: '#9D4A93' } : (themeType === 'family' ? { background: '#2F7F7B' } : (themeType === 'pilgrim' ? { background: '#E98216' } : (themeType === 'budget' ? { background: '#2E7D32' } : (themeType === 'trending' ? { background: '#D32F2F' } : {}))))))}></div>
             </div>
-            {themeType === 'nri' ? (
+            {themeType === 'corporate' ? (
+              <svg className="flourish-heart" style={{ filter: 'drop-shadow(0 1px 3px rgba(30, 90, 168, 0.25))' }} width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1E5AA8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+              </svg>
+            ) : themeType === 'nri' ? (
               <svg className="flourish-heart" style={{ filter: 'drop-shadow(0 1px 3px rgba(23, 89, 166, 0.25))' }} width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#1759A6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="12" cy="12" r="10" />
                 <line x1="2" y1="12" x2="22" y2="12" />
@@ -354,9 +375,9 @@ export default function PremiumDestinationLayout({
               </svg>
             )}
             <div className="flourish-ornament-group">
-              <div className="flourish-dot-inner" style={themeType === 'nri' ? { background: '#1759A6' } : (themeType === 'group' ? { background: '#9D4A93' } : (themeType === 'family' ? { background: '#2F7F7B' } : (themeType === 'pilgrim' ? { background: '#E98216' } : (themeType === 'budget' ? { background: '#2E7D32' } : (themeType === 'trending' ? { background: '#D32F2F' } : {})))))}></div>
-              <div className="flourish-line" style={themeType === 'nri' ? { background: 'linear-gradient(90deg, transparent, #1759A6, transparent)' } : (themeType === 'group' ? { background: 'linear-gradient(90deg, transparent, #9D4A93, transparent)' } : (themeType === 'family' ? { background: 'linear-gradient(90deg, transparent, #2F7F7B, transparent)' } : (themeType === 'pilgrim' ? { background: 'linear-gradient(90deg, transparent, #E98216, transparent)' } : (themeType === 'budget' ? { background: 'linear-gradient(90deg, transparent, #2E7D32, transparent)' } : (themeType === 'trending' ? { background: 'linear-gradient(90deg, transparent, #D32F2F, transparent)' } : {})))))}></div>
-              <div className="flourish-dot-outer" style={themeType === 'nri' ? { background: '#1759A6', borderColor: '#1759A6' } : (themeType === 'group' ? { background: '#9D4A93', borderColor: '#9D4A93' } : (themeType === 'family' ? { background: '#2F7F7B', borderColor: '#2F7F7B' } : (themeType === 'pilgrim' ? { background: '#E98216', borderColor: '#E98216' } : (themeType === 'budget' ? { background: '#2E7D32', borderColor: '#2E7D32' } : (themeType === 'trending' ? { background: '#D32F2F', borderColor: '#D32F2F' } : {})))))}></div>
+              <div className="flourish-dot-inner" style={themeType === 'corporate' ? { background: '#1E5AA8' } : (themeType === 'nri' ? { background: '#1759A6' } : (themeType === 'group' ? { background: '#9D4A93' } : (themeType === 'family' ? { background: '#2F7F7B' } : (themeType === 'pilgrim' ? { background: '#E98216' } : (themeType === 'budget' ? { background: '#2E7D32' } : (themeType === 'trending' ? { background: '#D32F2F' } : {}))))))}></div>
+              <div className="flourish-line" style={themeType === 'corporate' ? { background: 'linear-gradient(90deg, transparent, #1E5AA8, transparent)' } : (themeType === 'nri' ? { background: 'linear-gradient(90deg, transparent, #1759A6, transparent)' } : (themeType === 'group' ? { background: 'linear-gradient(90deg, transparent, #9D4A93, transparent)' } : (themeType === 'family' ? { background: 'linear-gradient(90deg, transparent, #2F7F7B, transparent)' } : (themeType === 'pilgrim' ? { background: 'linear-gradient(90deg, transparent, #E98216, transparent)' } : (themeType === 'budget' ? { background: 'linear-gradient(90deg, transparent, #2E7D32, transparent)' } : (themeType === 'trending' ? { background: 'linear-gradient(90deg, transparent, #D32F2F, transparent)' } : {}))))))}></div>
+              <div className="flourish-dot-outer" style={themeType === 'corporate' ? { background: '#1E5AA8', borderColor: '#1E5AA8' } : (themeType === 'nri' ? { background: '#1759A6', borderColor: '#1759A6' } : (themeType === 'group' ? { background: '#9D4A93', borderColor: '#9D4A93' } : (themeType === 'family' ? { background: '#2F7F7B', borderColor: '#2F7F7B' } : (themeType === 'pilgrim' ? { background: '#E98216', borderColor: '#E98216' } : (themeType === 'budget' ? { background: '#2E7D32', borderColor: '#2E7D32' } : (themeType === 'trending' ? { background: '#D32F2F', borderColor: '#D32F2F' } : {}))))))}></div>
             </div>
           </div>
         </div>
@@ -406,11 +427,23 @@ export default function PremiumDestinationLayout({
           {/* CENTER COLUMN TOP (Overview) */}
           <div className="premium-center-top" style={{ paddingRight: renderBookingCard ? 32 : 0 }}>
             <div id="section-overview" className={`content-section ${!isExpanded ? 'preview-mode' : ''}`}>
-              <h2 className="section-heading serif" style={themeType === 'nri' ? { color: '#173A63' } : (themeType === 'group' ? { color: '#9D4A93' } : (themeType === 'family' ? { color: '#245C59' } : (themeType === 'pilgrim' ? { color: '#C9650A' } : (themeType === 'budget' ? { color: '#2E7D32' } : (themeType === 'trending' ? { color: '#8B1E1E' } : {})))))}>
-                {themeType === 'nri' ? 'Your journey home, made seamless & special' : (themeType === 'group' ? 'Memories are meant to be shared' : (themeType === 'family' ? 'Together, every journey becomes a memory' : (themeType === 'pilgrim' ? 'Spiritual journeys, divine blessings' : (themeType === 'budget' ? 'Great experiences, great value' : (themeType === 'trending' ? 'Explore the Most Popular Trending Packages' : 'Romance, culture & unforgettable escapes')))))}
+              <h2 className="section-heading serif" style={themeType === 'corporate' ? { color: '#0D1B2A' } : (themeType === 'nri' ? { color: '#173A63' } : (themeType === 'group' ? { color: '#9D4A93' } : (themeType === 'family' ? { color: '#245C59' } : (themeType === 'pilgrim' ? { color: '#C9650A' } : (themeType === 'budget' ? { color: '#2E7D32' } : (themeType === 'trending' ? { color: '#8B1E1E' } : {}))))))}>
+                {themeType === 'corporate' ? 'Professional trips, perfectly planned' : (themeType === 'nri' ? 'Your journey home, made seamless & special' : (themeType === 'group' ? 'Memories are meant to be shared' : (themeType === 'family' ? 'Together, every journey becomes a memory' : (themeType === 'pilgrim' ? 'Spiritual journeys, divine blessings' : (themeType === 'budget' ? 'Great experiences, great value' : (themeType === 'trending' ? 'Explore the Most Popular Trending Packages' : 'Romance, culture & unforgettable escapes'))))))}
               </h2>
               <div className={`section-text ${!isExpanded ? 'section-text-preview' : ''}`}>
-                {themeType === 'nri' ? (
+                {themeType === 'corporate' ? (
+                  <>
+                    <p>
+                      {pkg?.description || 'Your business travel should be smooth, productive, and completely hassle-free. Our corporate travel solutions are designed to take care of every detail while you focus on what matters most—your business.'}
+                    </p>
+                    {!pkg?.description && (
+                      <div className="extended-description">
+                        <p style={{ marginTop: '16px' }}>From flight bookings and comfortable business stays to airport transfers, meeting arrangements, and local transportation, we create seamless travel experiences for professionals and corporate teams.</p>
+                        <p style={{ marginTop: '16px' }}>Whether you\'re travelling for a business meeting, conference, team offsite, client visit, or corporate event, our dedicated support helps make every journey comfortable, efficient, and reliable.</p>
+                      </div>
+                    )}
+                  </>
+                ) : themeType === 'nri' ? (
                   <>
                     <p>
                       {pkg?.description || 'Our NRI packages are thoughtfully designed to make your visit to India comfortable, stress-free, and truly memorable. Whether you\'re coming home to meet family, celebrate a special occasion, or simply reconnect with your roots, we take care of every detail so you can focus on what truly matters.'}
@@ -579,6 +612,14 @@ export default function PremiumDestinationLayout({
                         <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#2E7D32' }}>📸</span><h4 style={{ fontSize: '15px' }}>Exciting Sightseeing Included</h4></div>
                         <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#2E7D32' }}>🎧</span><h4 style={{ fontSize: '15px' }}>24/7 Assistance During Your Trip</h4></div>
                       </>
+
+                    ) : themeType === 'corporate' ? (
+                      <>
+                        <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#1E5AA8' }}>💼</span><h4 style={{ fontSize: '15px' }}>Corporate Stays</h4></div>
+                        <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#1E5AA8' }}>🤝</span><h4 style={{ fontSize: '15px' }}>Meeting Venues</h4></div>
+                        <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#1E5AA8' }}>✈️</span><h4 style={{ fontSize: '15px' }}>Priority Boarding</h4></div>
+                        <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#1E5AA8' }}>🚗</span><h4 style={{ fontSize: '15px' }}>Chauffeur Service</h4></div>
+                      </>
                     ) : themeType === 'trending' ? (
                       <>
                         <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#D32F2F' }}>📍</span><h4 style={{ fontSize: '15px' }}>Popular Trending Destinations</h4></div>
@@ -703,6 +744,34 @@ export default function PremiumDestinationLayout({
         </section>
 
       </div>{/* end content wrapper */}
+
+
+      {themeType === 'corporate' && (
+        <div className="corporate-benefits-strip-container" style={{ background: '#F7FAFF', borderTop: '1px solid #E2E8F0', padding: '24px 0', marginTop: '40px' }}>
+          <div className="nri-benefits-strip" style={{ display: 'flex', justifyContent: 'space-around', maxWidth: '1200px', margin: '0 auto', flexWrap: 'wrap', gap: '20px' }}>
+            <div className="nri-benefit" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <span className="nri-benefit-icon" style={{ background: '#E6F2FD', color: '#1E5AA8', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', fontSize: '24px' }}>💼</span>
+              <span className="nri-benefit-text" style={{ fontSize: '14px', color: '#4B5563', fontWeight: 600 }}>Tailored Corporate<br/>Travel Solutions</span>
+            </div>
+            <div className="nri-benefit" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <span className="nri-benefit-icon" style={{ background: '#E6F2FD', color: '#1E5AA8', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', fontSize: '24px' }}>✈️</span>
+              <span className="nri-benefit-text" style={{ fontSize: '14px', color: '#4B5563', fontWeight: 600 }}>Best Deals on Flights<br/>& Business Stays</span>
+            </div>
+            <div className="nri-benefit" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <span className="nri-benefit-icon" style={{ background: '#E6F2FD', color: '#1E5AA8', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', fontSize: '24px' }}>🚕</span>
+              <span className="nri-benefit-text" style={{ fontSize: '14px', color: '#4B5563', fontWeight: 600 }}>Reliable Airport Transfers<br/>& Local Transport</span>
+            </div>
+            <div className="nri-benefit" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <span className="nri-benefit-icon" style={{ background: '#E6F2FD', color: '#1E5AA8', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', fontSize: '24px' }}>🎧</span>
+              <span className="nri-benefit-text" style={{ fontSize: '14px', color: '#4B5563', fontWeight: 600 }}>24/7 Dedicated Support<br/>for Business Travelers</span>
+            </div>
+            <div className="nri-benefit" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <span className="nri-benefit-icon" style={{ background: '#E6F2FD', color: '#1E5AA8', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', fontSize: '24px' }}>📄</span>
+              <span className="nri-benefit-text" style={{ fontSize: '14px', color: '#4B5563', fontWeight: 600 }}>Easy Billing &<br/>GST Invoicing</span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {themeType === 'nri' && (
         <div className="nri-benefits-strip-container">
@@ -1080,6 +1149,7 @@ export default function PremiumDestinationLayout({
           justify-content: space-between;
           height: 100%;
         }
+
         .breadcrumb {
           font-size: 13px;
           opacity: 0.8;

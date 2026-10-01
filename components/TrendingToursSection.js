@@ -16,7 +16,8 @@ export default function TrendingToursSection({ themeClass = '' }) {
   const isPilgrim = themeClass.includes('pilgrim') || themeClass.includes('saffron');
   const isBudget = themeClass.includes('budget');
   const isTrending = themeClass.includes('trending');
-  const primaryColor = isNri ? '#1759A6' : (isGroup ? '#9D4A93' : (isFamily ? '#2F7F7B' : (isPilgrim ? '#E98216' : (isBudget ? '#2E7D32' : (isTrending ? '#D32F2F' : '#D9466F')))));
+  const isCorporate = themeClass.includes('corporate');
+  const primaryColor = isCorporate ? '#1E5AA8' : (isNri ? '#1759A6' : (isGroup ? '#9D4A93' : (isFamily ? '#2F7F7B' : (isPilgrim ? '#E98216' : (isBudget ? '#2E7D32' : (isTrending ? '#D32F2F' : '#D9466F'))))));
   const bgColor = isNri ? '#FFFCF5' : (isGroup ? '#FAF5FA' : (isFamily ? '#FFFDF7' : (isPilgrim ? '#FFF9EF' : (isBudget ? 'transparent' : (isTrending ? 'transparent' : (isBlush ? 'transparent' : 'var(--color-bg)'))))));
   const softColor = isNri ? '#E8F1FA' : (isGroup ? '#F5E6F5' : (isFamily ? '#F2F7F4' : (isPilgrim ? '#FFF5E5' : (isBudget ? '#F1F8EF' : (isTrending ? '#FFECEC' : '#FFF9FA')))));
   const [loading, setLoading] = useState(true);
@@ -295,7 +296,7 @@ export default function TrendingToursSection({ themeClass = '' }) {
                 <div className="trending-grid" ref={scrollRef}>
                   {displayedTours.map((tour) => (
                     <div key={tour.id || tour.slug} className="trending-card-wrapper">
-                      <TrendingTourCard tour={tour} isFamily={isFamily} isGroup={isGroup} isNri={isNri} isPilgrim={isPilgrim} isBudget={isBudget} isTrending={isTrending} />
+                      <TrendingTourCard tour={tour} isCorporate={isCorporate} isFamily={isFamily} isGroup={isGroup} isNri={isNri} isPilgrim={isPilgrim} isBudget={isBudget} isTrending={isTrending} />
                     </div>
                   ))}
                 </div>
