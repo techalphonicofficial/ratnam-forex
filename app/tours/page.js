@@ -280,7 +280,9 @@ function ToursContent() {
   const isItineraryView = searchParams.get('view') === 'itinerary';
   const packageSlug = searchParams.get('package') || searchParams.get('slug');
   const initialSearch = getUrlSearchValue(searchParams);
-  const destinationHeading = searchParams.get('destination') ? `${formatHeadingValue(searchParams.get('destination'))} Tour Packages` : 'All Tours & Packages';
+  const overviewTitleRaw = searchParams.get('destination') || searchParams.get('search');
+  const destinationHeading = overviewTitleRaw ? `${formatHeadingValue(overviewTitleRaw)} Tour Packages` : 'All Tours & Packages';
+  const [isOverviewExpanded, setIsOverviewExpanded] = useState(false);
   const [loading, setLoading] = useState(true);
   const [apiTours, setApiTours] = useState([]);
   const [filterOptions, setFilterOptions] = useState(() => normalizeFilterOptions(null));
@@ -408,27 +410,153 @@ function ToursContent() {
     return <TourItineraryView destination={itineraryDestination} packageSlug={packageSlug} />;
   }
 
+  const overviewTitle = overviewTitleRaw && overviewTitleRaw.toLowerCase() !== 'all' ? overviewTitleRaw : 'Amazing Destinations';
+  const themeClass =
+    overviewTitle.toLowerCase() === 'group' ? 'group-theme' :
+    overviewTitle.toLowerCase() === 'family' ? 'family-theme' :
+    overviewTitle.toLowerCase() === 'budget' ? 'budget-theme' :
+    overviewTitle.toLowerCase() === 'trending' ? 'trending-theme' :
+    'saffron-theme';
+
   return (
-    <>
-      <div className="page-header">
-        <div className="container">
-          <span className="section-label" style={{ color: 'rgba(255,255,255,0.6)' }}>Handcrafted Experiences</span>
-          <h1 className="section-title" style={{ color: 'white', fontSize: 'clamp(32px, 5vw, 52px)' }}>
-            {destinationHeading}
+    <div className={themeClass} style={{ background: '#f8fafc', minHeight: '100vh' }}>
+      
+      {/* ── Video Hero Banner ── */}
+      <div style={{
+        position: 'relative', width: '100%',
+        height: '100vh', minHeight: 560,
+        overflow: 'hidden', background: '#041a0c',
+        marginTop: 0, paddingTop: 64,
+      }}>
+        <video
+          autoPlay muted loop playsInline
+          style={{
+            position: 'absolute', inset: 0,
+            width: '100%', height: '100%',
+            objectFit: 'cover', zIndex: 0,
+          }}
+        >
+          <source src="https://res.cloudinary.com/demo/video/upload/q_auto,f_auto/elephants.mp4" type="video/mp4" />
+        </video>
+        {/* Dark vignette overlay */}
+        <div style={{
+          position: 'absolute', inset: 0, zIndex: 1,
+          background: 'linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.7) 85%, rgba(0,0,0,0.92) 100%)',
+        }} />
+        
+        <div style={{
+          position: 'absolute', inset: 0, zIndex: 2,
+          display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center',
+          textAlign: 'center', padding: '0 20px',
+          paddingBottom: 160,
+        }}>
+          {/* Breadcrumb */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 8,
+            marginBottom: 20,
+            background: 'rgba(0,0,0,0.35)', backdropFilter: 'blur(8px)',
+            borderRadius: 999, padding: '6px 18px',
+            border: '1px solid rgba(255,255,255,0.2)',
+          }}>
+            <Link href="/" style={{ color: 'rgba(255,255,255,0.7)', fontSize: 12, textDecoration: 'none', fontWeight: 500 }}>Home</Link>
+            <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12 }}>›</span>
+            <span style={{ color: 'white', fontSize: 12, fontWeight: 700 }}>Tours</span>
+          </div>
+
+          <h1 style={{
+            fontFamily: '"Italiana", sans-serif',
+            fontWeight: 900, fontSize: 'clamp(32px, 5vw, 64px)',
+            color: 'white', margin: 0, lineHeight: 1.05,
+            textTransform: 'capitalize', letterSpacing: 2,
+            textShadow: '0 4px 30px rgba(0,0,0,0.6)',
+          }}>
+            {formatHeadingValue(overviewTitle)}
           </h1>
-          <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 16, maxWidth: 500 }}>
-            Explore our curated collection of premium travel packages across 120+ destinations worldwide.
-          </p>
-          <nav aria-label="breadcrumb" style={{ marginTop: 16 }}>
-            <ol className="breadcrumb mb-0" style={{ background: 'none', padding: 0 }}>
-              <li className="breadcrumb-item"><Link href="/" style={{ color: 'rgba(255,255,255,0.6)' }}>Home</Link></li>
-              <li className="breadcrumb-item active" style={{ color: 'white' }}>Tours</li>
-            </ol>
-          </nav>
         </div>
       </div>
 
-      <div className="container" style={{ paddingTop: 32, paddingBottom: 80 }}>
+      <div className="container" style={{ position: 'relative', zIndex: 10, marginTop: '-120px', paddingBottom: 80 }}>
+        
+        {/* ── Overview Card ── */}
+        <div style={{
+          background: 'white',
+          borderRadius: 24,
+          padding: '40px',
+          boxShadow: '0 10px 40px rgba(0,0,0,0.06)',
+          marginBottom: 48,
+        }}>
+          <h2 className="theme-underline-heading" style={{ color: 'var(--color-text-primary, #111827)', fontSize: 28, fontWeight: 800, marginBottom: 24 }}>
+            Overview
+          </h2>
+          <h3 style={{ fontSize: 18, color: 'var(--color-primary, #E98216)', fontWeight: 700, marginBottom: 12 }}>
+            {destinationHeading} by Tour Pickkars
+          </h3>
+          <p style={{ fontSize: 15, color: '#4B5563', lineHeight: 1.8, marginBottom: 24 }}>
+            Discover the magic of {formatHeadingValue(overviewTitle)} with Tour Pickkars, your trusted travel partner for unforgettable holidays. From vibrant cities and stunning landscapes to thrilling adventures and relaxing stays, {formatHeadingValue(overviewTitle)} offers a perfect mix of culture, adventure, and relaxation.
+          </p>
+
+          {isOverviewExpanded && (
+            <>
+              <h3 style={{ fontSize: 18, color: 'var(--color-primary, #E98216)', fontWeight: 700, marginBottom: 12 }}>
+                ✈️ Why Visit {formatHeadingValue(overviewTitle)}?
+              </h3>
+              <p style={{ fontSize: 15, color: '#4B5563', lineHeight: 1.8, marginBottom: 24 }}>
+                {formatHeadingValue(overviewTitle)} is a mesmerizing destination that seamlessly blends rich history, vibrant culture, and breathtaking natural beauty into an unforgettable travel experience. Whether you are seeking a peaceful retreat away from the hustle and bustle of daily life or an action-packed adventure that gets your adrenaline pumping, this incredible location has something truly special to offer every type of traveler. Known for its warm hospitality and awe-inspiring sights, {formatHeadingValue(overviewTitle)} continues to capture the hearts of millions of visitors from all over the globe year after year. 
+              </p>
+
+              <h4 style={{ fontSize: 16, color: 'var(--color-primary, #E98216)', fontWeight: 700, marginBottom: 12 }}>🌟 Top Attractions in {formatHeadingValue(overviewTitle)}</h4>
+              <ul style={{ fontSize: 15, color: '#4B5563', lineHeight: 1.8, marginBottom: 24, paddingLeft: 20 }}>
+                <li style={{ marginBottom: 8 }}><strong>Iconic Landmarks:</strong> Explore world-famous monuments, historical ruins, and architectural marvels that define the skyline.</li>
+                <li style={{ marginBottom: 8 }}><strong>Natural Wonders:</strong> Discover pristine beaches, lush national parks, serene lakes, and majestic mountain peaks.</li>
+                <li style={{ marginBottom: 8 }}><strong>Cultural Hubs:</strong> Visit bustling local markets, ancient temples, and museums showcasing the region's rich heritage.</li>
+                <li style={{ marginBottom: 8 }}><strong>Hidden Gems:</strong> Step off the beaten path to find quaint villages and untouched landscapes known only to the locals.</li>
+              </ul>
+
+              <h4 style={{ fontSize: 16, color: 'var(--color-primary, #E98216)', fontWeight: 700, marginBottom: 12 }}>🎯 Best Things to Do</h4>
+              <ul style={{ fontSize: 15, color: '#4B5563', lineHeight: 1.8, marginBottom: 24, paddingLeft: 20 }}>
+                <li style={{ marginBottom: 8 }}><strong>Adventure Sports:</strong> Get your adrenaline pumping with activities like scuba diving, paragliding, trekking, and river rafting.</li>
+                <li style={{ marginBottom: 8 }}><strong>Culinary Tours:</strong> Taste authentic local street food and dine at world-class restaurants to experience the unique regional flavors.</li>
+                <li style={{ marginBottom: 8 }}><strong>Wellness & Relaxation:</strong> Unwind at luxury spa resorts, natural hot springs, and peaceful yoga retreats.</li>
+                <li style={{ marginBottom: 8 }}><strong>Nightlife & Entertainment:</strong> Enjoy vibrant evening markets, live music venues, and rooftop bars as the city comes alive after dark.</li>
+              </ul>
+
+              <h4 style={{ fontSize: 16, color: 'var(--color-primary, #E98216)', fontWeight: 700, marginBottom: 12 }}>🗓️ Best Time to Visit</h4>
+              <ul style={{ fontSize: 15, color: '#4B5563', lineHeight: 1.8, marginBottom: 24, paddingLeft: 20 }}>
+                <li style={{ marginBottom: 8 }}><strong>Peak Season:</strong> The most popular time to visit offers perfect weather for sightseeing and outdoor activities, with bustling tourist spots.</li>
+                <li style={{ marginBottom: 8 }}><strong>Shoulder Season:</strong> A great time for budget travelers seeking fewer crowds while still enjoying pleasant weather.</li>
+                <li style={{ marginBottom: 8 }}><strong>Off-Season:</strong> Ideal for nature lovers who want to experience lush green landscapes or snowy winters at discounted rates.</li>
+              </ul>
+
+              <h4 style={{ fontSize: 16, color: 'var(--color-primary, #E98216)', fontWeight: 700, marginBottom: 12 }}>🚆 How to Reach</h4>
+              <ul style={{ fontSize: 15, color: '#4B5563', lineHeight: 1.8, marginBottom: 24, paddingLeft: 20 }}>
+                <li style={{ marginBottom: 8 }}><strong>By Air:</strong> Well-connected by major domestic and international airports with frequent flights from all major cities.</li>
+                <li style={{ marginBottom: 8 }}><strong>By Train:</strong> The region boasts a comprehensive railway network offering scenic and comfortable journeys.</li>
+                <li style={{ marginBottom: 8 }}><strong>By Road:</strong> Excellent highway connectivity makes it a popular choice for road trips and luxury bus travel.</li>
+              </ul>
+
+              <p style={{ fontSize: 15, color: '#4B5563', lineHeight: 1.8, marginBottom: 24 }}>
+                In addition to its daytime attractions, {formatHeadingValue(overviewTitle)} is truly the ultimate holiday destination that promises an extraordinary and unforgettable experience for all. Let Tour Pickkars handle all the details so you can focus on creating memories that will last a lifetime!
+              </p>
+            </>
+          )}
+
+          <button 
+            onClick={() => setIsOverviewExpanded(!isOverviewExpanded)}
+            style={{
+            background: 'var(--color-primary, #E98216)',
+            color: 'white',
+            border: 'none',
+            padding: '12px 28px',
+            borderRadius: 999,
+            fontSize: 14,
+            fontWeight: 700,
+            cursor: 'pointer',
+            transition: 'all 0.3s ease'
+          }}>
+            {isOverviewExpanded ? 'Read Less' : 'Read More'}
+          </button>
+        </div>
       <div className="d-lg-none mb-4">
         <button
           className="btn-secondary w-100 d-flex align-items-center justify-content-center gap-2"
@@ -544,7 +672,7 @@ function ToursContent() {
         </div>
       </div>
       </div>
-    </>
+    </div>
   );
 }
 

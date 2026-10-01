@@ -107,14 +107,14 @@ const buildDestinationCols = (destinations = [], exploreHref, exploreLabel) => {
     tagBg: 'var(--color-secondary)',
     href: `/tour?search=${encodeURIComponent(d.name)}`
   }));
-  
+
   if (!items.length) return [];
-  
+
   const menuItems = [
     ...items,
     { name: exploreLabel, href: exploreHref, isExplore: true }
   ];
-  
+
   const columnCount = 3;
   const itemsPerCol = Math.ceil(menuItems.length / columnCount) || 1;
   const cols = [];
@@ -919,7 +919,7 @@ export default function Navbar({ brand, companyInfo }) {
   const pathname = usePathname();
 
   const isHeroPage = pathname === '/' || pathname === '/packages' || pathname.startsWith('/package') || pathname.startsWith('/tours') || pathname.startsWith('/hotels') || pathname.startsWith('/about') || pathname.startsWith('/blog') || pathname.startsWith('/contact');
-  
+
   useEffect(() => {
     if (pathname === '/') {
       document.body.classList.add('is-homepage');
@@ -929,6 +929,13 @@ export default function Navbar({ brand, companyInfo }) {
   }, [pathname]);
 
   const navbarPackageCols = useMemo(() => packageCols, []);
+
+  const navbarDestinationsCols = useMemo(() => [
+    [
+      { name: 'Indian Destination', href: '/packages?destination=India' },
+      { name: 'International Destination', href: '/tours?destination' }
+    ]
+  ], []);
 
   useEffect(() => {
     const fetchNavbarCategoriesAndDests = async () => {
@@ -1777,15 +1784,7 @@ export default function Navbar({ brand, companyInfo }) {
                     Corporate Tours
                   </Link>
                 </li>
-                <li>
-                  <Link
-                    href="/tours"
-                    className={`nav-plain-link ${pathname === '/tours' ? 'active' : ''}`}
-                    style={{ color: pathname === '/tours' ? 'var(--color-primary)' : 'var(--color-text-secondary)' }}
-                  >
-                    Destinations
-                  </Link>
-                </li>
+                <MegaDropdown label="Destinations" cols={navbarDestinationsCols} isTransparent={false} />
               </ul>
 
               {/* Right Side Call Section & Mobile Trigger Controls */}
