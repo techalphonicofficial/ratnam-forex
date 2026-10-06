@@ -17,7 +17,7 @@ export default function LoveStoryDestinations({ themeClass = '', destinationsDat
   const isCorporate = themeClass.includes('corporate');
   const themeColor = isCorporate ? '#1E5AA8' : (isNri ? '#1759A6' : (isGroup ? '#9D4A93' : (isFamily ? '#2F7F7B' : (isPilgrim ? '#E98216' : (isBudget ? '#2E7D32' : (isTrending ? '#D32F2F' : '#D9466F'))))));
   const shadowColor = isCorporate ? 'rgba(30, 90, 168, 0.15)' : (isNri ? 'rgba(23, 89, 166, 0.15)' : (isGroup ? 'rgba(157, 74, 147, 0.15)' : (isFamily ? 'rgba(47, 127, 123, 0.15)' : (isPilgrim ? 'rgba(233, 130, 22, 0.15)' : (isBudget ? 'rgba(46, 125, 50, 0.15)' : (isTrending ? 'rgba(211, 47, 47, 0.15)' : 'rgba(217, 70, 111, 0.15)'))))));
-  
+
   const displayDestinations = React.useMemo(() => {
     if (cmsPage?.details) {
       const vacationPick = cmsPage.details.find(d => d.key === 'vacation_pick');
@@ -36,10 +36,12 @@ export default function LoveStoryDestinations({ themeClass = '', destinationsDat
   return (
     <section className={`love-story-section ${isFamily ? 'is-family' : ''} ${themeClass}`}>
       <div className="container" style={{ maxWidth: '1200px', position: 'relative' }}>
-        
+
         {/* Header */}
         <div className="love-story-header">
-          <h2 className="love-story-title theme-underline-heading">{isNri ? 'Heritage & Roots' : (isGroup ? 'Group Dreams' : (isFamily ? 'Family Dreams' : (isPilgrim ? 'Spiritual Journeys' : (isBudget ? 'Budget Destinations' : (isTrending ? 'Trending Destinations' : 'Honeymoon Dreams')))))}</h2>
+          <h2 className="love-story-title theme-underline-heading">
+            {cmsPage?.details?.find(d => d.key === 'vacation_pick')?.description || (isNri ? 'Heritage & Roots' : (isGroup ? 'Group Dreams' : (isFamily ? 'Family Dreams' : (isPilgrim ? 'Spiritual Journeys' : (isBudget ? 'Budget Destinations' : (isTrending ? 'Trending Destinations' : 'Honeymoon Dreams'))))))}
+          </h2>
         </div>
 
         {/* Grid */}
@@ -47,7 +49,7 @@ export default function LoveStoryDestinations({ themeClass = '', destinationsDat
           {displayDestinations.map((dest, i) => {
             const destName = dest.name || dest.slug || '';
             const destImg = dest.image || dest.img || 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=400&q=80';
-            
+
             const cardContent = (
               <div className="love-story-item">
                 <div className="love-story-img-wrap">
@@ -78,7 +80,7 @@ export default function LoveStoryDestinations({ themeClass = '', destinationsDat
 
         {/* Mobile View All Button */}
         <div className="love-story-btn-wrapper">
-          <button 
+          <button
             className="love-story-view-btn"
             onClick={() => setShowAll(!showAll)}
           >

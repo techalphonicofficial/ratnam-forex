@@ -8,12 +8,12 @@ import CustomSelect from './CustomSelect';
 const MAX_PRICE = 1000000;
 const formatPriceNumber = (value) => Number(value || 0).toLocaleString('en-IN');
 
-// True when the package belongs to the "Honeymoon Packages" category
-const hasHoneymoonCategory = (pkg) => {
+const hasCategory = (pkg, categoryMatch) => {
   const categories = pkg?.package_categories || pkg?.categories || [];
+  if (!categoryMatch) return true;
   return Array.isArray(categories) && categories.some((cat) =>
-    String(cat?.slug || '').toLowerCase() === 'honeymoon-packages' ||
-    String(cat?.title || cat?.name || '').trim().toLowerCase() === 'honeymoon packages'
+    String(cat?.slug || '').toLowerCase().includes(categoryMatch) ||
+    String(cat?.title || cat?.name || '').trim().toLowerCase().includes(categoryMatch)
   );
 };
 
@@ -92,37 +92,47 @@ export default function TrendingToursSection({ themeClass = '', cmsPage = null }
       try {
         const isHoneymoonTheme = !isFamily && !isGroup && !isNri && !isPilgrim && !isBudget && !isTrending && !isCorporate;
 
-        // Fetch featured/trending packages without strict limit to get accurate counts
-        const packages = isHoneymoonTheme
-          ? await getPackages({ limit: 200 })
-          : await getPackages({ featured: true, limit: 100 });
+        // Fetch packages without strict limit to get accurate counts
+        const packages = await getPackages({ limit: 200 });
         const filterData = await getPackageFilters({ featured: true });
 
         let formattedTours = packages.map(normalizePackageToTour).filter(Boolean);
 
-        // Honeymoon: only Honeymoon-category packages with an approved review average of 4-5
-        if (isHoneymoonTheme) {
-          const seenIds = new Set();
-          const honeymoonTours = formattedTours.filter((t) => {
-            if (!hasHoneymoonCategory(t) || seenIds.has(t.id)) return false;
-            seenIds.add(t.id);
-            return true;
-          });
+        const currentCategory = isCorporate ? 'corporate' 
+          : isFamily ? 'family'
+          : isGroup ? 'group'
+          : isNri ? 'nri'
+          : isPilgrim ? 'pilgrim'
+          : isBudget ? 'budget'
+          : isTrending ? 'trending'
+          : 'honeymoon';
 
-          const ratedTours = await Promise.all(
-            honeymoonTours.map(async (t) => {
-              const { summary, total } = await getPackageReviews({
-                packageId: t.id,
-                packageSlug: t.slug,
-                status: 'approved',
-              });
-              const averageRating = Number(summary?.average_rating) || 0;
-              const reviewCount = Number(summary?.count) || Number(total) || 0;
-              return { ...t, rating: averageRating, reviews: reviewCount };
-            })
-          );
+        const seenIds = new Set();
+        const themeTours = formattedTours.filter((t) => {
+          if (!hasCategory(t, currentCategory) || seenIds.has(t.id)) return false;
+          seenIds.add(t.id);
+          return true;
+        });
 
-          formattedTours = ratedTours.filter(
+        // Even for family/group/etc., fetch reviews if it exists to keep UI identical
+        const ratedTours = await Promise.all(
+          themeTours.map(async (t) => {
+            const { summary, total } = await getPackageReviews({
+              packageId: t.id,
+              packageSlug: t.slug,
+              status: 'approved',
+            });
+            const averageRating = Number(summary?.average_rating) || 0;
+            const reviewCount = Number(summary?.count) || Number(total) || 0;
+            return { ...t, rating: averageRating, reviews: reviewCount };
+          })
+        );
+
+        formattedTours = ratedTours;
+        
+        // Ensure ratings exist if it's Honeymoon or Family, to match old logic
+        if (isHoneymoonTheme || isFamily) {
+          formattedTours = formattedTours.filter(
             (t) => t.reviews > 0 && t.rating >= MIN_TRENDING_RATING && t.rating <= MAX_TRENDING_RATING
           );
         }
@@ -130,28 +140,49 @@ export default function TrendingToursSection({ themeClass = '', cmsPage = null }
         if (isMounted) {
           setApiTours(formattedTours);
 
-          const staticTourTypes = [
-            { key: 'all', label: 'All', count: 31 },
-            { key: 'beach', label: 'Beach', count: 2 },
-            { key: 'honeymoon', label: 'Honeymoon', count: 9 },
-            { key: 'group', label: 'Group', count: 1 },
-            { key: 'nri', label: 'Nri', count: 4 },
-            { key: 'pilgrim', label: 'Pilgrim', count: 1 },
-            { key: 'budget', label: 'Budget', count: 2 },
-            { key: 'holiday-tour-packages', label: 'Holiday Tour Packages', count: 3 },
-            { key: 'in-season', label: 'In Season', count: 2 },
-            { key: 'trending', label: 'Trending', count: 2 }
-          ];
+          const categoryCounts = { all: formattedTours.length };
+          formattedTours.forEach(t => {
+            if (Array.isArray(t.package_categories)) {
+              t.package_categories.forEach(cat => {
+                if (cat.slug) {
+                  categoryCounts[cat.slug] = (categoryCounts[cat.slug] || 0) + 1;
+                }
+              });
+            }
+          });
+          
+          const dynamicTourTypes = [{ key: 'all', label: 'All', count: categoryCounts.all }];
+          formattedTours.forEach(t => {
+             if (Array.isArray(t.package_categories)) {
+               t.package_categories.forEach(cat => {
+                 if (cat.slug && !dynamicTourTypes.find(d => d.key === cat.slug)) {
+                   dynamicTourTypes.push({ key: cat.slug, label: cat.title || cat.name || cat.slug, count: categoryCounts[cat.slug] });
+                 }
+               });
+             }
+          });
+          dynamicTourTypes.sort((a, b) => {
+            if (a.key === 'all') return -1;
+            if (b.key === 'all') return 1;
+            return b.count - a.count;
+          });
+
+          let c1_3 = 0, c4_7 = 0, c8_14 = 0;
+          formattedTours.forEach(t => {
+            if (t.duration >= 1 && t.duration <= 3) c1_3++;
+            else if (t.duration >= 4 && t.duration <= 7) c4_7++;
+            else if (t.duration >= 8 && t.duration <= 14) c8_14++;
+          });
 
           if (filterData) {
             setFilterOptions(prev => ({
               ...prev,
-              tourTypes: staticTourTypes,
+              tourTypes: dynamicTourTypes,
               durations: filterData.durations?.length ? filterData.durations : [
-                { key: 'any', label: 'Any', count: packages.length },
-                { key: '1-3', label: '1-3 days', min: 1, max: 3, count: 0 },
-                { key: '4-7', label: '4-7 days', min: 4, max: 7, count: 0 },
-                { key: '8-14', label: '8-14 days', min: 8, max: 14, count: 0 },
+                { key: 'any', label: 'Any', count: formattedTours.length },
+                { key: '1-3', label: '1-3 days', min: 1, max: 3, count: c1_3 },
+                { key: '4-7', label: '4-7 days', min: 4, max: 7, count: c4_7 },
+                { key: '8-14', label: '8-14 days', min: 8, max: 14, count: c8_14 },
               ],
               priceRange: {
                 min: Number(filterData.price_range?.min) || 0,
@@ -197,7 +228,7 @@ export default function TrendingToursSection({ themeClass = '', cmsPage = null }
 
     if (filters.type && filters.type !== 'all') {
       const q = filters.type.toLowerCase();
-      result = result.filter(t => (t.type || t.category || '').toLowerCase().includes(q));
+      result = result.filter(t => hasCategory(t, q));
     }
 
     result = result.filter(
@@ -247,10 +278,10 @@ export default function TrendingToursSection({ themeClass = '', cmsPage = null }
 
 
             <div className="mobile-filters-row">
-              <CustomSelect 
+              <CustomSelect
                 className="trending-mobile-select"
                 value="all"
-                onChange={() => {}}
+                onChange={() => { }}
                 placeholder="Duration"
                 themeColor={primaryColor}
                 themeBg={softColor}
@@ -260,7 +291,7 @@ export default function TrendingToursSection({ themeClass = '', cmsPage = null }
                 ]}
               />
 
-              <CustomSelect 
+              <CustomSelect
                 className="trending-mobile-select"
                 value={filters.maxPrice === (filterOptions.priceRange.max || 500000) ? 'Any' : filters.maxPrice}
                 onChange={(val) => {
@@ -375,7 +406,7 @@ export default function TrendingToursSection({ themeClass = '', cmsPage = null }
 
                 {filteredTours.length > 6 && (
                   <div style={{ textAlign: 'center', marginTop: '30px' }}>
-                    <button 
+                    <button
                       onClick={() => setShowAllTours(!showAllTours)}
                       style={{
                         background: 'transparent',

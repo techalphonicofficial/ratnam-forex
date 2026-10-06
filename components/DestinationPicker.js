@@ -11,7 +11,7 @@ import FAQSection from './FAQSection';
 
 const skeletonCards = Array.from({ length: 6 }, (_, index) => index);
 
-export default function DestinationPicker({ onPick, destinations: apiDestinations = [], loading = false, error = '', themeClass = '', cmsPage = null }) {
+export default function DestinationPicker({ onPick, destinations: apiDestinations = [], loading = false, error = '', themeClass = '', cmsPage = null, showMarketingSections = false }) {
   const scrollRef = useRef(null);
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [search, setSearch] = useState('');
@@ -238,8 +238,12 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
 
   return (
     <>
-      <HoneymoonToursSection themeClass={themeClass} cmsPage={cmsPage} />
-      <TrendingToursSection themeClass={themeClass} cmsPage={cmsPage} />
+      {showMarketingSections && (
+        <>
+          <HoneymoonToursSection themeClass={themeClass} cmsPage={cmsPage} />
+          <TrendingToursSection themeClass={themeClass} cmsPage={cmsPage} />
+        </>
+      )}
       <section className={themeClass} style={{
         padding: 'var(--space-8) 0 var(--space-10)',
         background: (themeClass.includes('blush') || themeClass.includes('teal') || themeClass.includes('nri') || themeClass.includes('purple') || themeClass.includes('pilgrim') || themeClass.includes('budget') || themeClass.includes('trending') || themeClass.includes('corporate')) ? 'transparent' : 'var(--color-card)',
@@ -524,10 +528,14 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
         }
       `}</style>
       </section>
-      <LoveStoryDestinations themeClass={themeClass} destinationsData={apiDestinations} onPick={onPick} cmsPage={cmsPage} />
-      <GramSection themeClass={themeClass} cmsPage={cmsPage} />
-      <CustomerReviewsSection themeClass={themeClass} cmsPage={cmsPage} />
-      <FAQSection themeClass={themeClass} cmsPage={cmsPage} />
+      {showMarketingSections && (
+        <>
+          <LoveStoryDestinations themeClass={themeClass} destinationsData={apiDestinations} onPick={onPick} cmsPage={cmsPage} />
+          <GramSection themeClass={themeClass} cmsPage={cmsPage} />
+          <CustomerReviewsSection themeClass={themeClass} cmsPage={cmsPage} />
+          <FAQSection themeClass={themeClass} cmsPage={cmsPage} />
+        </>
+      )}
     </>
   );
 }

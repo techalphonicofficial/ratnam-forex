@@ -510,10 +510,17 @@ export const getHomePage = async () => {
 
 export const getPageBySlug = async (slug) => {
   try {
-    const response = await apiClient.get(`/pages/slug/${slug}`, {
+    let response = await apiClient.get(`/pages/slug/${slug}`, {
       params: { _t: Date.now() },
       validateStatus: () => true,
     });
+    if (!response.data?.success) {
+      // Fallback for CMS typo (e.g. "Family-Package ")
+      response = await apiClient.get(`/pages/slug/${slug} `, {
+        params: { _t: Date.now() },
+        validateStatus: () => true,
+      });
+    }
     return normalizeApiData(response);
   } catch (error) {
     console.error(`Error fetching page "${slug}":`, error);

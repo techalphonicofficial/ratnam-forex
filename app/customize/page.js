@@ -892,6 +892,7 @@ export default function CustomizeFlow() {
               onPick={handleDestination}
               themeClass={isCorporate ? "corporate-theme corporate" : (isNri ? "nri-theme" : (isGroup ? "purple-theme" : (isFamily ? "teal-theme" : (isPilgrim ? "saffron-theme pilgrim" : (isBudget ? "budget-theme budget" : (isTrending ? "trending-theme trending" : "blush-theme"))))))}
               cmsPage={cmsPageData}
+              showMarketingSections={true}
             />
           </div>
         </section>

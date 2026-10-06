@@ -23,10 +23,11 @@ export default function CustomerReviewsSection({ themeClass = '' }) {
           if (packagesData && packagesData.length) {
             const categoryMatch = themeClass.includes('corporate') ? 'corporate' 
               : themeClass.includes('nri') ? 'nri'
-              : themeClass.includes('group') ? 'group'
-              : themeClass.includes('family') ? 'family'
-              : themeClass.includes('pilgrim') ? 'pilgrim'
+              : (themeClass.includes('group') || themeClass.includes('purple')) ? 'group'
+              : (themeClass.includes('family') || themeClass.includes('teal')) ? 'family'
+              : (themeClass.includes('pilgrim') || themeClass.includes('saffron')) ? 'pilgrim'
               : themeClass.includes('budget') ? 'budget'
+              : themeClass.includes('trending') ? 'trending'
               : (themeClass.includes('honeymoon') || themeClass.includes('blush')) ? 'honeymoon'
               : null;
 

@@ -7,19 +7,7 @@ import { getPackages, normalizePackageToTour } from '@/utils/api';
 const MAX_PRICE = 1000000;
 const formatPriceNumber = (value) => Number(value || 0).toLocaleString('en-IN');
 
-// Simple heuristic to detect if a location is in India
-const INDIAN_LOCATIONS = ['india', 'kashmir', 'kerala', 'goa', 'andaman', 'himachal', 'sikkim', 'rajasthan', 'ladakh', 'manali', 'shimla', 'mumbai', 'delhi', 'bangalore', 'chennai', 'uttarakhand', 'darjeeling', 'meghalaya', 'assam'];
 
-const isIndianDestination = (tour) => {
-  const loc = (tour.location || tour.country || '').toLowerCase();
-  const title = (tour.title || '').toLowerCase();
-
-  if (loc.includes('india')) return true;
-  for (const city of INDIAN_LOCATIONS) {
-    if (loc.includes(city) || title.includes(city)) return true;
-  }
-  return false;
-};
 
 const hasCategory = (pkg, categoryMatch) =>
   Array.isArray(pkg?.package_categories) &&
@@ -28,7 +16,7 @@ const hasCategory = (pkg, categoryMatch) =>
     String(cat?.title || '').toLowerCase().includes(categoryMatch)
   );
 
-export default function HoneymoonToursSection({ themeClass = '' }) {
+export default function HoneymoonToursSection({ themeClass = '', cmsPage = null }) {
   const isFamily = themeClass.includes('teal');
   const isGroup = themeClass.includes('purple');
   const isNri = themeClass.includes('nri');
@@ -43,6 +31,30 @@ export default function HoneymoonToursSection({ themeClass = '' }) {
   const [regionFilter, setRegionFilter] = useState('International'); // 'Indian', 'International'
 
   const [activeTourIndex, setActiveTourIndex] = useState(0);
+
+  const headingContent = React.useMemo(() => {
+    let text = '';
+    if (cmsPage?.details) {
+      const banner = cmsPage.details.find(d => d.key === 'mid_banner');
+      if (banner?.json_data?.heading_content) {
+        text = banner.json_data.heading_content;
+      }
+    }
+    const defaultText = isCorporate ? 'Corporate' : (isNri ? 'NRI' : (isGroup ? 'Group' : (isFamily ? 'Family' : (isPilgrim ? 'Pilgrim' : (isBudget ? 'Budget' : (isTrending ? 'Trending' : 'Honeymoon'))))));
+    if (!text) {
+      text = `${defaultText} Tour Destinations`;
+    } else if (text.includes('Honeymoon') && defaultText !== 'Honeymoon') {
+      text = text.replace('Honeymoon', defaultText);
+    }
+    return text;
+  }, [cmsPage, isCorporate, isNri, isGroup, isFamily, isPilgrim, isBudget, isTrending]);
+
+  const [headingStart, headingEnd] = React.useMemo(() => {
+    const words = headingContent.split(' ');
+    if (words.length <= 1) return [headingContent, ''];
+    const lastWord = words.pop();
+    return [words.join(' '), lastWord];
+  }, [headingContent]);
 
   const scrollRefDesktop = useRef(null);
   const scrollRefMobile = useRef(null);
@@ -64,7 +76,7 @@ export default function HoneymoonToursSection({ themeClass = '' }) {
           const formattedTours = packages.map(normalizePackageToTour);
           const themeTours = formattedTours.filter(t => {
             const rawPkg = packages.find(p => p.id === t.id) || t;
-            
+
             if (isCorporate) return hasCategory(rawPkg, 'corporate');
             if (isFamily) return hasCategory(rawPkg, 'family');
             if (isGroup) return hasCategory(rawPkg, 'group');
@@ -72,7 +84,7 @@ export default function HoneymoonToursSection({ themeClass = '' }) {
             if (isPilgrim) return hasCategory(rawPkg, 'pilgrim');
             if (isBudget) return hasCategory(rawPkg, 'budget');
             if (isTrending) return hasCategory(rawPkg, 'trending');
-            
+
             // Default Honeymoon
             return hasCategory(rawPkg, 'honeymoon');
           });
@@ -91,9 +103,9 @@ export default function HoneymoonToursSection({ themeClass = '' }) {
   const filteredTours = useMemo(() => {
     let result = [...apiTours];
     if (regionFilter === 'Indian') {
-      result = result.filter(t => isIndianDestination(t));
+      result = result.filter(t => t.package_type === 'domestic');
     } else if (regionFilter === 'International') {
-      result = result.filter(t => !isIndianDestination(t));
+      result = result.filter(t => t.package_type === 'international');
     }
     return result;
   }, [apiTours, regionFilter]);
@@ -107,7 +119,7 @@ export default function HoneymoonToursSection({ themeClass = '' }) {
   const activeTour = filteredTours[activeTourIndex] || filteredTours[0];
   const primaryColor = isCorporate ? '#1E5AA8' : (isNri ? '#1759A6' : (isGroup ? '#9D4A93' : (isFamily ? '#2F7F7B' : (isPilgrim ? '#E98216' : (isBudget ? '#2E7D32' : (isTrending ? '#D32F2F' : '#D9466F'))))));
 
-  const getThemeIcon = (color, size=24) => {
+  const getThemeIcon = (color, size = 24) => {
     if (!themeClass.includes('honeymoon') && !themeClass.includes('blush') && themeClass !== '') {
       return <svg width={size} height={size} viewBox="0 0 24 24" fill={color} stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>;
     }
@@ -181,13 +193,13 @@ export default function HoneymoonToursSection({ themeClass = '' }) {
         {/* --- DESKTOP HEADER --- */}
         <div className="hm-header hm-desktop-only" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px' }}>
           <h2 className="section-title theme-underline-heading" style={{ margin: 0 }}>
-            {isCorporate ? 'Corporate' : (isNri ? 'NRI' : (isGroup ? 'Group' : (isFamily ? 'Family' : (isPilgrim ? 'Pilgrim' : (isBudget ? 'Budget' : (isTrending ? 'Trending' : 'Honeymoon'))))))} <span style={{ color: primaryColor }}>Tour Destinations</span>
+            {headingStart} <span style={{ color: primaryColor }}>{headingEnd}</span>
           </h2>
           <div className="hm-tabs" style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
             {['Domestic', 'International'].map((tab) => {
               const filterValue = tab === 'Domestic' ? 'Indian' : 'International';
               const isActive = regionFilter === filterValue;
-              const count = apiTours.filter(t => filterValue === 'Indian' ? isIndianDestination(t) : !isIndianDestination(t)).length;
+              const count = apiTours.filter(t => filterValue === 'Indian' ? t.package_type === 'domestic' : t.package_type === 'international').length;
               return (
                 <button
                   key={tab}
@@ -214,8 +226,8 @@ export default function HoneymoonToursSection({ themeClass = '' }) {
         {/* --- MOBILE HEADER --- */}
         <div className="hm-header-mobile hm-mobile-only">
           <h2 className="hm-mobile-main-title">
-            <div style={{ color: '#333' }}>{isCorporate ? 'Corporate' : (isNri ? 'NRI' : (isGroup ? 'Group' : (isFamily ? 'Family' : (isPilgrim ? 'Pilgrim' : (isBudget ? 'Budget' : (isTrending ? 'Trending' : 'Honeymoon'))))))} Tour</div>
-            <div style={{ color: primaryColor }}>Destinations</div>
+            <div style={{ color: '#333' }}>{headingStart}</div>
+            <div style={{ color: primaryColor }}>{headingEnd}</div>
           </h2>
           <div className="hm-mobile-divider">
             <div className="hm-line"></div>

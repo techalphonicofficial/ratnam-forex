@@ -27,24 +27,24 @@ export default function PremiumDestinationLayout({
   const heroData = useMemo(() => {
     let videoUrl = null;
     let stats = [];
-    
+
     if (cmsPage?.details) {
       const heroSection = cmsPage.details.find(d => d.key === 'hero_key');
       if (heroSection?.json_data) {
         if (heroSection.json_data.media_url) {
           videoUrl = getMediaUrl(heroSection.json_data.media_url);
         }
-        
+
         if (heroSection.json_data.body) {
           const lines = heroSection.json_data.body.split('\n');
           stats = lines.map(line => {
-             const trimmed = line.trim();
-             if (!trimmed) return null;
-             const match = trimmed.match(/^([^\w\s]+)?\s*(.*)/);
-             if (match && match[1]) {
-                return { icon: match[1].trim(), text: match[2].trim() };
-             }
-             return { icon: '✨', text: trimmed };
+            const trimmed = line.trim();
+            if (!trimmed) return null;
+            const match = trimmed.match(/^([^\w\s]+)?\s*(.*)/);
+            if (match && match[1]) {
+              return { icon: match[1].trim(), text: match[2].trim() };
+            }
+            return { icon: '✨', text: trimmed };
           }).filter(Boolean);
         }
       }
@@ -58,10 +58,10 @@ export default function PremiumDestinationLayout({
         }
       }
     }
-    
-    return { 
+
+    return {
       videoUrl: videoUrl || "/6401592-hd_1920_1080_24fps.mp4",
-      stats: stats 
+      stats: stats
     };
   }, [cmsPage]);
 
@@ -87,18 +87,18 @@ export default function PremiumDestinationLayout({
       }
       if (hlSection?.json_data?.story_desc) {
         const raw = hlSection.json_data.story_desc;
-        
+
         // 1. Overview
         // Split at the exact Highlights tag to prevent lazy matching from deleting intermediate content
         const overviewParts = raw.split(/<h3>\s*Highlights\s*<\/h3>/i);
         overviewHtml = overviewParts[0] || '';
-        
+
         if (overviewParts.length > 1) {
           let rest = overviewParts[1];
           // 2. Highlights List
           const highlightsParts = rest.split(/<h4>\s*Must Do Activities\s*<\/h4>/i);
           const hlRaw = highlightsParts[0] || '';
-          
+
           const hlRegex = /<p>(.*?)<\/p>\s*<h4>(.*?)<\/h4>\s*<p>(.*?)<\/p>/gi;
           let match;
           while ((match = hlRegex.exec(hlRaw)) !== null) {
@@ -112,7 +112,7 @@ export default function PremiumDestinationLayout({
           // 3. Timeline
           if (highlightsParts.length > 1) {
             const tlRaw = '<h4>Must Do Activities</h4>' + highlightsParts[1];
-            
+
             const extractSection = (titleRegex) => {
               const regex = new RegExp(`<h4>\\s*${titleRegex}\\s*<\\/h4>\\s*<p>(.*?)<\\/p>`, 'i');
               const m = tlRaw.match(regex);
@@ -129,7 +129,7 @@ export default function PremiumDestinationLayout({
         }
       }
     }
-    
+
     return { title, overviewHtml, highlightsList, navTabs, timelineData };
   }, [cmsPage]);
 
@@ -141,7 +141,7 @@ export default function PremiumDestinationLayout({
         return heroSection.json_data.points.map(p => p.title);
       }
     }
-    
+
     if (themeType === 'corporate') {
       return [
         pkg?.name || 'Corporate Package',
@@ -422,7 +422,8 @@ export default function PremiumDestinationLayout({
       '--theme-text-main': themeType === 'corporate' ? '#0D1B2A' : (themeType === 'nri' ? '#173A63' : (themeType === 'group' ? '#5A2A54' : (themeType === 'family' ? '#245C59' : (themeType === 'pilgrim' ? '#4A2A16' : (themeType === 'budget' ? '#1B5E20' : (themeType === 'trending' ? '#8B1E1E' : 'var(--text-main)')))))),
     }}>
       {(themeType === 'pilgrim' || themeType === 'budget' || themeType === 'trending') && (
-        <style dangerouslySetInnerHTML={{ __html: `
+        <style dangerouslySetInnerHTML={{
+          __html: `
           .seo-category-title::before {
             border-bottom-color: ${themeType === 'pilgrim' ? '#E98216' : (themeType === 'trending' ? '#D32F2F' : '#2E7D32')} !important;
           }
@@ -433,13 +434,7 @@ export default function PremiumDestinationLayout({
       )}
       {/* Hero Section */}
       <section className="premium-hero">
-        {themeType === 'corporate' || themeType === 'nri' || themeType === 'family' || themeType === 'group' || themeType === 'pilgrim' || themeType === 'budget' || themeType === 'trending' ? (
-          <img
-            className="hero-img"
-            src={heroImage}
-            alt={themeType === 'corporate' ? "Corporate Package" : (themeType === 'nri' ? "NRI Package" : (themeType === 'group' ? "Group Adventure" : (themeType === 'pilgrim' ? "Pilgrim Package" : (themeType === 'trending' ? "Trending Destinations" : "Family Getaway"))))}
-          />
-        ) : (
+        {heroData.videoUrl?.endsWith('.webm') || heroData.videoUrl?.endsWith('.mp4') || heroData.videoUrl?.endsWith('.mov') ? (
           <video
             key={heroData.videoUrl}
             className="hero-img"
@@ -448,8 +443,14 @@ export default function PremiumDestinationLayout({
             muted
             playsInline
           >
-            <source src={heroData.videoUrl} type="video/mp4" />
+            <source src={heroData.videoUrl} type={`video/${heroData.videoUrl.split('.').pop()}`} />
           </video>
+        ) : (
+          <img
+            className="hero-img"
+            src={heroData.videoUrl || heroImage}
+            alt="Hero Background"
+          />
         )}
         <div className="hero-overlay" />
         <div className={`hero-content`}>
@@ -535,9 +536,9 @@ export default function PremiumDestinationLayout({
               </svg>
             ) : themeType === 'pilgrim' ? (
               <svg className="flourish-heart" style={{ filter: 'drop-shadow(0 1px 3px rgba(233, 130, 22, 0.25))' }} width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E98216" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 22c-4-4-4-10-4-10S8 5 12 2c4 3 4 10 4 10s0 6-4 10z"/>
-                <path d="M12 22c-6-4-8-10-8-10s-1-4 3-7"/>
-                <path d="M12 22c6-4 8-10 8-10s1-4-3-7"/>
+                <path d="M12 22c-4-4-4-10-4-10S8 5 12 2c4 3 4 10 4 10s0 6-4 10z" />
+                <path d="M12 22c-6-4-8-10-8-10s-1-4 3-7" />
+                <path d="M12 22c6-4 8-10 8-10s1-4-3-7" />
               </svg>
             ) : themeType === 'budget' ? (
               <svg className="flourish-heart" style={{ filter: 'drop-shadow(0 1px 3px rgba(46, 125, 50, 0.25))' }} width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
@@ -615,161 +616,161 @@ export default function PremiumDestinationLayout({
                   if (cmsParsed.overviewHtml) {
                     return <div className="overview-html-content" dangerouslySetInnerHTML={{ __html: cmsParsed.overviewHtml }} />;
                   }
-                  
+
                   return themeType === 'corporate' ? (
-                  <>
-                    <p>
-                      {pkg?.description || 'Your business travel should be smooth, productive, and completely hassle-free. Our corporate travel solutions are designed to take care of every detail while you focus on what matters most—your business.'}
-                    </p>
-                    {!pkg?.description && (
-                      <div className="extended-description">
-                        <p style={{ marginTop: '16px' }}>From flight bookings and comfortable business stays to airport transfers, meeting arrangements, and local transportation, we create seamless travel experiences for professionals and corporate teams.</p>
-                        <p style={{ marginTop: '16px' }}>Whether you\'re travelling for a business meeting, conference, team offsite, client visit, or corporate event, our dedicated support helps make every journey comfortable, efficient, and reliable.</p>
-                      </div>
-                    )}
-                  </>
-                ) : themeType === 'nri' ? (
-                  <>
-                    <p>
-                      {pkg?.description || 'Our NRI packages are thoughtfully designed to make your visit to India comfortable, stress-free, and truly memorable. Whether you\'re coming home to meet family, celebrate a special occasion, or simply reconnect with your roots, we take care of every detail so you can focus on what truly matters.'}
-                    </p>
-                    {!pkg?.description && (
-                      <div className="extended-description">
-                        <p style={{ marginTop: '16px' }}>From smooth travel arrangements and premium stays to local experiences and personalized services, we ensure a perfect blend of convenience, comfort, and authentic Indian hospitality.</p>
-                        <p style={{ marginTop: '16px' }}>Rediscover your roots. Reconnect with your loved ones.</p>
-                        <p style={{ marginTop: '16px' }}>Create memories that stay with you forever.</p>
-                      </div>
-                    )}
-                  </>
-                ) : themeType === 'group' ? (
-                  <>
-                    <p>
-                      {pkg?.description || 'Whether it\'s a getaway with friends, a corporate offsite, a college trip, or a reunion with loved ones, our group packages are designed to bring people together for unforgettable experiences.'}
-                    </p>
-                    {!pkg?.description && (
-                      <div className="extended-description">
-                        <p style={{ marginTop: '16px' }}>From exciting adventures to relaxing escapes, we handle every detail—comfortable stays, seamless transport, fun activities, and delicious food—so your group can focus on making memories that last a lifetime.</p>
-                        <p style={{ marginTop: '16px' }}>Travel becomes more fun, more affordable, and more meaningful when shared. Because the best stories are written together.</p>
-                      </div>
-                    )}
-                  </>
-                ) : themeType === 'family' ? (
-                  <>
-                    <p>
-                      {pkg?.description || 'Family vacations are about so much more than visiting a new destination. They are about stepping away from everyday routines, spending uninterrupted time with the people who matter most, and creating moments that stay with you long after the journey ends. A family trip gives you the chance to laugh together, explore together, try something new together, and create stories that your family will remember for years to come.'}
-                    </p>
-                    {!pkg?.description && (
-                      <div className="extended-description">
-                        <p style={{ marginTop: '16px' }}>Whether it is watching the sunrise over the mountains, building sandcastles by the sea, enjoying a scenic road trip, exploring a historic city, or sharing a delicious local meal, the simplest moments often become the most treasured memories. That is what makes travelling with family so special. Every destination becomes more meaningful when experienced together.</p>
-
-                        <p style={{ marginTop: '16px' }}>Our thoughtfully designed family holiday packages are created to bring together fun, comfort, adventure, and relaxation, making every journey enjoyable for both children and adults. We understand that travelling with family comes with different needs and preferences. Parents look for comfort, convenience, safety, and well-planned experiences, while children want excitement, exploration, and plenty of opportunities to have fun. Our family packages are designed to bring these elements together so everyone can enjoy the holiday.</p>
-
-                        <p style={{ marginTop: '16px' }}>From breathtaking mountain escapes to peaceful beach destinations, exciting wildlife experiences to fascinating cultural journeys, there is something for every kind of family. Discover beautiful hill stations where you can enjoy cool weather and stunning landscapes, or head towards sunny beaches where the entire family can relax, play, and enjoy quality time together. Explore destinations filled with history and culture, where children can discover new places and learn about different traditions while having an unforgettable experience.</p>
-
-                        <p style={{ marginTop: '16px' }}>For families who love adventure, our trips can bring exciting activities and outdoor experiences into the journey. From scenic nature walks and sightseeing tours to thrilling activities and family-friendly excursions, every experience can become another story to share when you return home. And for those who simply want to slow down and reconnect, relaxing stays, beautiful surroundings, and leisurely days provide the perfect opportunity to enjoy each other's company without the rush of everyday life.</p>
-
-                        <p style={{ marginTop: '16px' }}>We believe that a great family holiday should also be comfortable and stress-free. Planning a trip for the whole family can involve choosing destinations, accommodations, transportation, activities, and sightseeing options that work for everyone. Our family packages are thoughtfully planned to make the experience easier, giving you more time to focus on your family rather than worrying about every small travel detail.</p>
-
-                        <p style={{ marginTop: '16px' }}>Most importantly, family travel is about creating moments that cannot be recreated anywhere else. It is the excitement on a child's face when they see the mountains for the first time. It is the laughter shared during a long road trip. It is taking a family photograph at a beautiful viewpoint, enjoying an evening together by the beach, or simply sitting around a table and talking about the day's adventures.</p>
-
-                        <p style={{ marginTop: '16px' }}>These are the moments that become part of your family's story.</p>
-
-                        <p style={{ marginTop: '16px' }}>Every journey gives you an opportunity to discover something new—not just about the destination, but about each other. Travelling together brings families closer, creates shared experiences, and gives everyone memories they can look back on with a smile.</p>
-
-                        <p style={{ marginTop: '16px' }}>So, pack your bags, bring your loved ones, and get ready to discover places that inspire, excite, and bring you closer together. Whether you are planning a short weekend escape, a relaxing holiday, an adventurous getaway, or a long-awaited family vacation, let every destination become a new chapter in your family's travel story.</p>
-
-                        <p style={{ marginTop: '16px' }}>Because years from now, you may not remember every hotel, every route, or every sightseeing stop—but you will remember the laughter, the conversations, the adventures, the photographs, and the time you spent together.</p>
-
-                        <p style={{ marginTop: '16px', fontWeight: 600 }}>Travel together. Explore together. Laugh together. Create memories together.</p>
-
-                        <p style={{ marginTop: '16px', fontStyle: 'italic' }}>Because when you are with the people you love, every journey becomes a memory worth keeping.</p>
-                      </div>
-                    )}
-                  </>
-                ) : themeType === 'pilgrim' ? (
-                  <>
-                    <p>
-                      {pkg?.description || 'Our pilgrim packages are designed to help you seek blessings, find peace, and experience the divine in the most comfortable way possible.'}
-                    </p>
-                    {!pkg?.description && (
-                      <div className="extended-description">
-                        <p style={{ marginTop: '16px' }}>
-                          From sacred temples and holy shrines to serene ashrams and spiritual towns, we take care of every detail—sacred darshan, comfortable stays, hygienic food, and smooth transfers—so you can focus on your spiritual journey.
-                        </p>
-                        <p style={{ marginTop: '16px' }}>
-                          Walk the path of devotion. Feel the divine energy. Return with peace, positivity, and blessings.
-                        </p>
-                      </div>
-                    )}
-                  </>
-                ) : themeType === 'budget' ? (
-                  <>
-                    <p>
-                      {pkg?.description || 'Travel more, spend less! Our budget packages are perfect for travellers who want to explore amazing destinations without stretching their budget.'}
-                    </p>
-                    {!pkg?.description && (
-                      <div className="extended-description">
-                        <p style={{ marginTop: '16px' }}>We take care of all the essentials—comfortable stays, reliable transport, sightseeing, and local experiences—so you get the best value for your money without compromising on quality.</p>
-                        <p style={{ marginTop: '16px' }}>Smart choices. Happy journeys. Memories that last a lifetime.</p>
-                      </div>
-                    )}
-                  </>
-                ) : themeType === 'trending' ? (
-                  <>
-                    <p>
-                      {pkg?.description || 'Discover handpicked trending travel packages designed for unforgettable journeys. From scenic getaways and beautiful beaches to vibrant cities and cultural experiences, explore destinations that travelers love.'}
-                    </p>
-                    {!pkg?.description && (
-                      <div className="extended-description">
-                        <p style={{ marginTop: '16px' }}>Whether you are planning a relaxing escape, an adventurous holiday, or a memorable trip with friends and family, our trending packages bring together exciting destinations, comfortable stays, convenient transportation, and memorable sightseeing experiences.</p>
-                        <p style={{ marginTop: '16px' }}>Explore new places, experience different cultures, and create memories that last a lifetime.</p>
-                        <p style={{ marginTop: '16px', fontWeight: 600 }}>Explore more. Experience more. Travel the trend.</p>
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    <p>
-                      {pkg?.description || 'Your honeymoon is more than just a holiday—it is the beginning of a beautiful new chapter together. From romantic sunsets and candlelit dinners to breathtaking landscapes and intimate experiences, every moment deserves to feel special. Our honeymoon escapes are thoughtfully designed for couples who want to celebrate their love, discover beautiful destinations, and create memories that will last a lifetime.'}
-                    </p>
-                    {!pkg?.description && (
-                      <p style={{ marginTop: '16px' }}>
-                        Imagine waking up together to panoramic mountain views, enjoying a peaceful breakfast surrounded by nature, taking a romantic walk along a golden beach, or watching the sunset hand in hand in a destination you have always dreamed of visiting. Whether you picture your honeymoon in the serene valleys of the Himalayas, beside the turquoise waters of a tropical island, amid the royal charm of Rajasthan, or in an enchanting international destination, we help turn those dreams into unforgettable experiences.
+                    <>
+                      <p>
+                        {pkg?.description || 'Your business travel should be smooth, productive, and completely hassle-free. Our corporate travel solutions are designed to take care of every detail while you focus on what matters most—your business.'}
                       </p>
-                    )}
+                      {!pkg?.description && (
+                        <div className="extended-description">
+                          <p style={{ marginTop: '16px' }}>From flight bookings and comfortable business stays to airport transfers, meeting arrangements, and local transportation, we create seamless travel experiences for professionals and corporate teams.</p>
+                          <p style={{ marginTop: '16px' }}>Whether you\'re travelling for a business meeting, conference, team offsite, client visit, or corporate event, our dedicated support helps make every journey comfortable, efficient, and reliable.</p>
+                        </div>
+                      )}
+                    </>
+                  ) : themeType === 'nri' ? (
+                    <>
+                      <p>
+                        {pkg?.description || 'Our NRI packages are thoughtfully designed to make your visit to India comfortable, stress-free, and truly memorable. Whether you\'re coming home to meet family, celebrate a special occasion, or simply reconnect with your roots, we take care of every detail so you can focus on what truly matters.'}
+                      </p>
+                      {!pkg?.description && (
+                        <div className="extended-description">
+                          <p style={{ marginTop: '16px' }}>From smooth travel arrangements and premium stays to local experiences and personalized services, we ensure a perfect blend of convenience, comfort, and authentic Indian hospitality.</p>
+                          <p style={{ marginTop: '16px' }}>Rediscover your roots. Reconnect with your loved ones.</p>
+                          <p style={{ marginTop: '16px' }}>Create memories that stay with you forever.</p>
+                        </div>
+                      )}
+                    </>
+                  ) : themeType === 'group' ? (
+                    <>
+                      <p>
+                        {pkg?.description || 'Whether it\'s a getaway with friends, a corporate offsite, a college trip, or a reunion with loved ones, our group packages are designed to bring people together for unforgettable experiences.'}
+                      </p>
+                      {!pkg?.description && (
+                        <div className="extended-description">
+                          <p style={{ marginTop: '16px' }}>From exciting adventures to relaxing escapes, we handle every detail—comfortable stays, seamless transport, fun activities, and delicious food—so your group can focus on making memories that last a lifetime.</p>
+                          <p style={{ marginTop: '16px' }}>Travel becomes more fun, more affordable, and more meaningful when shared. Because the best stories are written together.</p>
+                        </div>
+                      )}
+                    </>
+                  ) : themeType === 'family' ? (
+                    <>
+                      <p>
+                        {pkg?.description || 'Family vacations are about so much more than visiting a new destination. They are about stepping away from everyday routines, spending uninterrupted time with the people who matter most, and creating moments that stay with you long after the journey ends. A family trip gives you the chance to laugh together, explore together, try something new together, and create stories that your family will remember for years to come.'}
+                      </p>
+                      {!pkg?.description && (
+                        <div className="extended-description">
+                          <p style={{ marginTop: '16px' }}>Whether it is watching the sunrise over the mountains, building sandcastles by the sea, enjoying a scenic road trip, exploring a historic city, or sharing a delicious local meal, the simplest moments often become the most treasured memories. That is what makes travelling with family so special. Every destination becomes more meaningful when experienced together.</p>
 
-                    {!pkg?.description && (
-                      <div className="extended-description">
-                        <h3 className="sub-heading serif" style={{ fontSize: '22px', marginTop: '32px', marginBottom: '16px' }}>Celebrate Your Love in Beautiful Destinations</h3>
-                        <p>
-                          Every couple has their own idea of the perfect honeymoon. Some dream of peaceful beaches and luxurious resorts, while others want scenic mountains, charming cities, cultural discoveries, or exciting adventures. Our honeymoon experiences bring together romance, comfort, exploration, and relaxation so you can enjoy a journey that reflects your personality as a couple.
-                        </p>
-                        <p style={{ marginTop: '16px' }}>
-                          Explore fascinating cultures together, discover historic landmarks, stroll through colourful local markets, taste authentic cuisine, and experience the traditions that make each destination unique. These shared experiences become more than photographs—they become stories you will continue telling each other for years to come.
-                        </p>
+                          <p style={{ marginTop: '16px' }}>Our thoughtfully designed family holiday packages are created to bring together fun, comfort, adventure, and relaxation, making every journey enjoyable for both children and adults. We understand that travelling with family comes with different needs and preferences. Parents look for comfort, convenience, safety, and well-planned experiences, while children want excitement, exploration, and plenty of opportunities to have fun. Our family packages are designed to bring these elements together so everyone can enjoy the holiday.</p>
 
-                        <h3 className="sub-heading serif" style={{ fontSize: '22px', marginTop: '32px', marginBottom: '16px' }}>Moments Made Just for Two</h3>
-                        <p>
-                          A perfect honeymoon is about the little moments as much as the destination itself. Enjoy private dinners under the stars, beautiful sunset views, couple experiences, relaxing spa sessions, scenic excursions, romantic stays, and leisurely days where you can simply enjoy being together.
-                        </p>
-                        <p style={{ marginTop: '16px' }}>
-                          For adventure-loving couples, add excitement to your honeymoon with activities such as trekking, scenic road trips, water adventures, wildlife experiences, or exploring hidden corners of your destination. And when you simply want to slow down, unwind in a beautiful resort, enjoy uninterrupted time together, and let the world fade away.
-                        </p>
+                          <p style={{ marginTop: '16px' }}>From breathtaking mountain escapes to peaceful beach destinations, exciting wildlife experiences to fascinating cultural journeys, there is something for every kind of family. Discover beautiful hill stations where you can enjoy cool weather and stunning landscapes, or head towards sunny beaches where the entire family can relax, play, and enjoy quality time together. Explore destinations filled with history and culture, where children can discover new places and learn about different traditions while having an unforgettable experience.</p>
 
-                        <h3 className="sub-heading serif" style={{ fontSize: '22px', marginTop: '32px', marginBottom: '16px' }}>Your First Journey Together</h3>
-                        <p>
-                          We understand that your honeymoon should feel personal, effortless, and memorable. From selecting the right destination and accommodation to planning experiences that make your journey special, every detail can be tailored around your preferences, travel style, and budget.
-                        </p>
+                          <p style={{ marginTop: '16px' }}>For families who love adventure, our trips can bring exciting activities and outdoor experiences into the journey. From scenic nature walks and sightseeing tours to thrilling activities and family-friendly excursions, every experience can become another story to share when you return home. And for those who simply want to slow down and reconnect, relaxing stays, beautiful surroundings, and leisurely days provide the perfect opportunity to enjoy each other's company without the rush of everyday life.</p>
+
+                          <p style={{ marginTop: '16px' }}>We believe that a great family holiday should also be comfortable and stress-free. Planning a trip for the whole family can involve choosing destinations, accommodations, transportation, activities, and sightseeing options that work for everyone. Our family packages are thoughtfully planned to make the experience easier, giving you more time to focus on your family rather than worrying about every small travel detail.</p>
+
+                          <p style={{ marginTop: '16px' }}>Most importantly, family travel is about creating moments that cannot be recreated anywhere else. It is the excitement on a child's face when they see the mountains for the first time. It is the laughter shared during a long road trip. It is taking a family photograph at a beautiful viewpoint, enjoying an evening together by the beach, or simply sitting around a table and talking about the day's adventures.</p>
+
+                          <p style={{ marginTop: '16px' }}>These are the moments that become part of your family's story.</p>
+
+                          <p style={{ marginTop: '16px' }}>Every journey gives you an opportunity to discover something new—not just about the destination, but about each other. Travelling together brings families closer, creates shared experiences, and gives everyone memories they can look back on with a smile.</p>
+
+                          <p style={{ marginTop: '16px' }}>So, pack your bags, bring your loved ones, and get ready to discover places that inspire, excite, and bring you closer together. Whether you are planning a short weekend escape, a relaxing holiday, an adventurous getaway, or a long-awaited family vacation, let every destination become a new chapter in your family's travel story.</p>
+
+                          <p style={{ marginTop: '16px' }}>Because years from now, you may not remember every hotel, every route, or every sightseeing stop—but you will remember the laughter, the conversations, the adventures, the photographs, and the time you spent together.</p>
+
+                          <p style={{ marginTop: '16px', fontWeight: 600 }}>Travel together. Explore together. Laugh together. Create memories together.</p>
+
+                          <p style={{ marginTop: '16px', fontStyle: 'italic' }}>Because when you are with the people you love, every journey becomes a memory worth keeping.</p>
+                        </div>
+                      )}
+                    </>
+                  ) : themeType === 'pilgrim' ? (
+                    <>
+                      <p>
+                        {pkg?.description || 'Our pilgrim packages are designed to help you seek blessings, find peace, and experience the divine in the most comfortable way possible.'}
+                      </p>
+                      {!pkg?.description && (
+                        <div className="extended-description">
+                          <p style={{ marginTop: '16px' }}>
+                            From sacred temples and holy shrines to serene ashrams and spiritual towns, we take care of every detail—sacred darshan, comfortable stays, hygienic food, and smooth transfers—so you can focus on your spiritual journey.
+                          </p>
+                          <p style={{ marginTop: '16px' }}>
+                            Walk the path of devotion. Feel the divine energy. Return with peace, positivity, and blessings.
+                          </p>
+                        </div>
+                      )}
+                    </>
+                  ) : themeType === 'budget' ? (
+                    <>
+                      <p>
+                        {pkg?.description || 'Travel more, spend less! Our budget packages are perfect for travellers who want to explore amazing destinations without stretching their budget.'}
+                      </p>
+                      {!pkg?.description && (
+                        <div className="extended-description">
+                          <p style={{ marginTop: '16px' }}>We take care of all the essentials—comfortable stays, reliable transport, sightseeing, and local experiences—so you get the best value for your money without compromising on quality.</p>
+                          <p style={{ marginTop: '16px' }}>Smart choices. Happy journeys. Memories that last a lifetime.</p>
+                        </div>
+                      )}
+                    </>
+                  ) : themeType === 'trending' ? (
+                    <>
+                      <p>
+                        {pkg?.description || 'Discover handpicked trending travel packages designed for unforgettable journeys. From scenic getaways and beautiful beaches to vibrant cities and cultural experiences, explore destinations that travelers love.'}
+                      </p>
+                      {!pkg?.description && (
+                        <div className="extended-description">
+                          <p style={{ marginTop: '16px' }}>Whether you are planning a relaxing escape, an adventurous holiday, or a memorable trip with friends and family, our trending packages bring together exciting destinations, comfortable stays, convenient transportation, and memorable sightseeing experiences.</p>
+                          <p style={{ marginTop: '16px' }}>Explore new places, experience different cultures, and create memories that last a lifetime.</p>
+                          <p style={{ marginTop: '16px', fontWeight: 600 }}>Explore more. Experience more. Travel the trend.</p>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <p>
+                        {pkg?.description || 'Your honeymoon is more than just a holiday—it is the beginning of a beautiful new chapter together. From romantic sunsets and candlelit dinners to breathtaking landscapes and intimate experiences, every moment deserves to feel special. Our honeymoon escapes are thoughtfully designed for couples who want to celebrate their love, discover beautiful destinations, and create memories that will last a lifetime.'}
+                      </p>
+                      {!pkg?.description && (
                         <p style={{ marginTop: '16px' }}>
-                          Whether you are looking for a luxurious romantic retreat, a dreamy beach escape, a peaceful mountain honeymoon, a cultural adventure, or a perfect blend of romance and exploration, your ideal getaway is waiting.
+                          Imagine waking up together to panoramic mountain views, enjoying a peaceful breakfast surrounded by nature, taking a romantic walk along a golden beach, or watching the sunset hand in hand in a destination you have always dreamed of visiting. Whether you picture your honeymoon in the serene valleys of the Himalayas, beside the turquoise waters of a tropical island, amid the royal charm of Rajasthan, or in an enchanting international destination, we help turn those dreams into unforgettable experiences.
                         </p>
-                        <p style={{ marginTop: '16px' }}>
-                          Start your journey together with a honeymoon filled with love, beautiful places, unforgettable experiences, and moments that belong only to the two of you.
-                        </p>
-                      </div>
-                    )}
-                  </>
-                );
+                      )}
+
+                      {!pkg?.description && (
+                        <div className="extended-description">
+                          <h3 className="sub-heading serif" style={{ fontSize: '22px', marginTop: '32px', marginBottom: '16px' }}>Celebrate Your Love in Beautiful Destinations</h3>
+                          <p>
+                            Every couple has their own idea of the perfect honeymoon. Some dream of peaceful beaches and luxurious resorts, while others want scenic mountains, charming cities, cultural discoveries, or exciting adventures. Our honeymoon experiences bring together romance, comfort, exploration, and relaxation so you can enjoy a journey that reflects your personality as a couple.
+                          </p>
+                          <p style={{ marginTop: '16px' }}>
+                            Explore fascinating cultures together, discover historic landmarks, stroll through colourful local markets, taste authentic cuisine, and experience the traditions that make each destination unique. These shared experiences become more than photographs—they become stories you will continue telling each other for years to come.
+                          </p>
+
+                          <h3 className="sub-heading serif" style={{ fontSize: '22px', marginTop: '32px', marginBottom: '16px' }}>Moments Made Just for Two</h3>
+                          <p>
+                            A perfect honeymoon is about the little moments as much as the destination itself. Enjoy private dinners under the stars, beautiful sunset views, couple experiences, relaxing spa sessions, scenic excursions, romantic stays, and leisurely days where you can simply enjoy being together.
+                          </p>
+                          <p style={{ marginTop: '16px' }}>
+                            For adventure-loving couples, add excitement to your honeymoon with activities such as trekking, scenic road trips, water adventures, wildlife experiences, or exploring hidden corners of your destination. And when you simply want to slow down, unwind in a beautiful resort, enjoy uninterrupted time together, and let the world fade away.
+                          </p>
+
+                          <h3 className="sub-heading serif" style={{ fontSize: '22px', marginTop: '32px', marginBottom: '16px' }}>Your First Journey Together</h3>
+                          <p>
+                            We understand that your honeymoon should feel personal, effortless, and memorable. From selecting the right destination and accommodation to planning experiences that make your journey special, every detail can be tailored around your preferences, travel style, and budget.
+                          </p>
+                          <p style={{ marginTop: '16px' }}>
+                            Whether you are looking for a luxurious romantic retreat, a dreamy beach escape, a peaceful mountain honeymoon, a cultural adventure, or a perfect blend of romance and exploration, your ideal getaway is waiting.
+                          </p>
+                          <p style={{ marginTop: '16px' }}>
+                            Start your journey together with a honeymoon filled with love, beautiful places, unforgettable experiences, and moments that belong only to the two of you.
+                          </p>
+                        </div>
+                      )}
+                    </>
+                  );
                 })()}
               </div>
 
@@ -800,55 +801,55 @@ export default function PremiumDestinationLayout({
                           </div>
                         ));
                       }
-                      
-                      return themeType === 'budget' ? (
-                      <>
-                        <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#2E7D32' }}>🏷️</span><h4 style={{ fontSize: '15px' }}>Best Value for Money</h4></div>
-                        <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#2E7D32' }}>🛏️</span><h4 style={{ fontSize: '15px' }}>Comfortable Budget Stays</h4></div>
-                        <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#2E7D32' }}>🚌</span><h4 style={{ fontSize: '15px' }}>Economical Transport Options</h4></div>
-                        <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#2E7D32' }}>📸</span><h4 style={{ fontSize: '15px' }}>Exciting Sightseeing Included</h4></div>
-                        <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#2E7D32' }}>🎧</span><h4 style={{ fontSize: '15px' }}>24/7 Assistance During Your Trip</h4></div>
-                      </>
 
-                    ) : themeType === 'corporate' ? (
-                      <>
-                        <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#1E5AA8' }}>💼</span><h4 style={{ fontSize: '15px' }}>Corporate Stays</h4></div>
-                        <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#1E5AA8' }}>🤝</span><h4 style={{ fontSize: '15px' }}>Meeting Venues</h4></div>
-                        <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#1E5AA8' }}>✈️</span><h4 style={{ fontSize: '15px' }}>Priority Boarding</h4></div>
-                        <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#1E5AA8' }}>🚗</span><h4 style={{ fontSize: '15px' }}>Chauffeur Service</h4></div>
-                      </>
-                    ) : themeType === 'trending' ? (
-                      <>
-                        <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#D32F2F' }}>📍</span><h4 style={{ fontSize: '15px' }}>Popular Trending Destinations</h4></div>
-                        <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#D32F2F' }}>🏨</span><h4 style={{ fontSize: '15px' }}>Handpicked Comfortable Stays</h4></div>
-                        <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#D32F2F' }}>🚌</span><h4 style={{ fontSize: '15px' }}>Convenient Transport Options</h4></div>
-                        <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#D32F2F' }}>📸</span><h4 style={{ fontSize: '15px' }}>Must-See Sightseeing Experiences</h4></div>
-                        <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#D32F2F' }}>🎧</span><h4 style={{ fontSize: '15px' }}>24/7 Assistance During Your Trip</h4></div>
-                      </>
-                    ) : (
-                      <>
-                        <div className="highlight-card">
-                          <span className="icon">🚢</span>
-                          <h4>Scenic Cruises</h4>
-                          <p>Breathtaking bay cruises</p>
-                        </div>
-                        <div className="highlight-card">
-                          <span className="icon">🏮</span>
-                          <h4>Cultural Charm</h4>
-                          <p>Ancient towns &amp; local markets</p>
-                        </div>
-                        <div className="highlight-card">
-                          <span className="icon">🍽️</span>
-                          <h4>Culinary Delights</h4>
-                          <p>Street food &amp; fine dining</p>
-                        </div>
-                        <div className="highlight-card">
-                          <span className="icon">📸</span>
-                          <h4>Picture Perfect</h4>
-                          <p>Iconic landscapes &amp; experiences</p>
-                        </div>
-                      </>
-                    );
+                      return themeType === 'budget' ? (
+                        <>
+                          <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#2E7D32' }}>🏷️</span><h4 style={{ fontSize: '15px' }}>Best Value for Money</h4></div>
+                          <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#2E7D32' }}>🛏️</span><h4 style={{ fontSize: '15px' }}>Comfortable Budget Stays</h4></div>
+                          <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#2E7D32' }}>🚌</span><h4 style={{ fontSize: '15px' }}>Economical Transport Options</h4></div>
+                          <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#2E7D32' }}>📸</span><h4 style={{ fontSize: '15px' }}>Exciting Sightseeing Included</h4></div>
+                          <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#2E7D32' }}>🎧</span><h4 style={{ fontSize: '15px' }}>24/7 Assistance During Your Trip</h4></div>
+                        </>
+
+                      ) : themeType === 'corporate' ? (
+                        <>
+                          <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#1E5AA8' }}>💼</span><h4 style={{ fontSize: '15px' }}>Corporate Stays</h4></div>
+                          <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#1E5AA8' }}>🤝</span><h4 style={{ fontSize: '15px' }}>Meeting Venues</h4></div>
+                          <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#1E5AA8' }}>✈️</span><h4 style={{ fontSize: '15px' }}>Priority Boarding</h4></div>
+                          <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#1E5AA8' }}>🚗</span><h4 style={{ fontSize: '15px' }}>Chauffeur Service</h4></div>
+                        </>
+                      ) : themeType === 'trending' ? (
+                        <>
+                          <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#D32F2F' }}>📍</span><h4 style={{ fontSize: '15px' }}>Popular Trending Destinations</h4></div>
+                          <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#D32F2F' }}>🏨</span><h4 style={{ fontSize: '15px' }}>Handpicked Comfortable Stays</h4></div>
+                          <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#D32F2F' }}>🚌</span><h4 style={{ fontSize: '15px' }}>Convenient Transport Options</h4></div>
+                          <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#D32F2F' }}>📸</span><h4 style={{ fontSize: '15px' }}>Must-See Sightseeing Experiences</h4></div>
+                          <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#D32F2F' }}>🎧</span><h4 style={{ fontSize: '15px' }}>24/7 Assistance During Your Trip</h4></div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="highlight-card">
+                            <span className="icon">🚢</span>
+                            <h4>Scenic Cruises</h4>
+                            <p>Breathtaking bay cruises</p>
+                          </div>
+                          <div className="highlight-card">
+                            <span className="icon">🏮</span>
+                            <h4>Cultural Charm</h4>
+                            <p>Ancient towns &amp; local markets</p>
+                          </div>
+                          <div className="highlight-card">
+                            <span className="icon">🍽️</span>
+                            <h4>Culinary Delights</h4>
+                            <p>Street food &amp; fine dining</p>
+                          </div>
+                          <div className="highlight-card">
+                            <span className="icon">📸</span>
+                            <h4>Picture Perfect</h4>
+                            <p>Iconic landscapes &amp; experiences</p>
+                          </div>
+                        </>
+                      );
                     })()}
                   </div>
                 </div>
@@ -966,23 +967,23 @@ export default function PremiumDestinationLayout({
           <div className="nri-benefits-strip" style={{ display: 'flex', justifyContent: 'space-around', maxWidth: '1200px', margin: '0 auto', flexWrap: 'wrap', gap: '20px' }}>
             <div className="nri-benefit" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <span className="nri-benefit-icon" style={{ background: '#E6F2FD', color: '#1E5AA8', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', fontSize: '24px' }}>💼</span>
-              <span className="nri-benefit-text" style={{ fontSize: '14px', color: '#4B5563', fontWeight: 600 }}>Tailored Corporate<br/>Travel Solutions</span>
+              <span className="nri-benefit-text" style={{ fontSize: '14px', color: '#4B5563', fontWeight: 600 }}>Tailored Corporate<br />Travel Solutions</span>
             </div>
             <div className="nri-benefit" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <span className="nri-benefit-icon" style={{ background: '#E6F2FD', color: '#1E5AA8', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', fontSize: '24px' }}>✈️</span>
-              <span className="nri-benefit-text" style={{ fontSize: '14px', color: '#4B5563', fontWeight: 600 }}>Best Deals on Flights<br/>& Business Stays</span>
+              <span className="nri-benefit-text" style={{ fontSize: '14px', color: '#4B5563', fontWeight: 600 }}>Best Deals on Flights<br />& Business Stays</span>
             </div>
             <div className="nri-benefit" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <span className="nri-benefit-icon" style={{ background: '#E6F2FD', color: '#1E5AA8', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', fontSize: '24px' }}>🚕</span>
-              <span className="nri-benefit-text" style={{ fontSize: '14px', color: '#4B5563', fontWeight: 600 }}>Reliable Airport Transfers<br/>& Local Transport</span>
+              <span className="nri-benefit-text" style={{ fontSize: '14px', color: '#4B5563', fontWeight: 600 }}>Reliable Airport Transfers<br />& Local Transport</span>
             </div>
             <div className="nri-benefit" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <span className="nri-benefit-icon" style={{ background: '#E6F2FD', color: '#1E5AA8', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', fontSize: '24px' }}>🎧</span>
-              <span className="nri-benefit-text" style={{ fontSize: '14px', color: '#4B5563', fontWeight: 600 }}>24/7 Dedicated Support<br/>for Business Travelers</span>
+              <span className="nri-benefit-text" style={{ fontSize: '14px', color: '#4B5563', fontWeight: 600 }}>24/7 Dedicated Support<br />for Business Travelers</span>
             </div>
             <div className="nri-benefit" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <span className="nri-benefit-icon" style={{ background: '#E6F2FD', color: '#1E5AA8', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', fontSize: '24px' }}>📄</span>
-              <span className="nri-benefit-text" style={{ fontSize: '14px', color: '#4B5563', fontWeight: 600 }}>Easy Billing &<br/>GST Invoicing</span>
+              <span className="nri-benefit-text" style={{ fontSize: '14px', color: '#4B5563', fontWeight: 600 }}>Easy Billing &<br />GST Invoicing</span>
             </div>
           </div>
         </div>
@@ -993,23 +994,23 @@ export default function PremiumDestinationLayout({
           <div className="nri-benefits-strip">
             <div className="nri-benefit">
               <span className="nri-benefit-icon">👨‍👩‍👧</span>
-              <span className="nri-benefit-text">Specially Curated<br/>for NRIs</span>
+              <span className="nri-benefit-text">Specially Curated<br />for NRIs</span>
             </div>
             <div className="nri-benefit">
               <span className="nri-benefit-icon">🏷️</span>
-              <span className="nri-benefit-text">Best Deals on Flights,<br/>Hotels & Transfers</span>
+              <span className="nri-benefit-text">Best Deals on Flights,<br />Hotels & Transfers</span>
             </div>
             <div className="nri-benefit">
               <span className="nri-benefit-icon">🎧</span>
-              <span className="nri-benefit-text">24/7 Assistance<br/>During Your Stay</span>
+              <span className="nri-benefit-text">24/7 Assistance<br />During Your Stay</span>
             </div>
             <div className="nri-benefit">
               <span className="nri-benefit-icon">🛂</span>
-              <span className="nri-benefit-text">Hassle-free Travel<br/>& Visa Guidance</span>
+              <span className="nri-benefit-text">Hassle-free Travel<br />& Visa Guidance</span>
             </div>
             <div className="nri-benefit">
               <span className="nri-benefit-icon">🎁</span>
-              <span className="nri-benefit-text">Warm Welcome,<br/>Every Time</span>
+              <span className="nri-benefit-text">Warm Welcome,<br />Every Time</span>
             </div>
           </div>
         </div>
@@ -1020,23 +1021,23 @@ export default function PremiumDestinationLayout({
           <div className="pilgrim-benefits-strip">
             <div className="pilgrim-benefit">
               <span className="pilgrim-benefit-icon">🪷</span>
-              <span className="pilgrim-benefit-text">Handpicked Sacred<br/>Destinations</span>
+              <span className="pilgrim-benefit-text">Handpicked Sacred<br />Destinations</span>
             </div>
             <div className="pilgrim-benefit">
               <span className="pilgrim-benefit-icon">🛕</span>
-              <span className="pilgrim-benefit-text">Comfortable Stays<br/>Near Temples</span>
+              <span className="pilgrim-benefit-text">Comfortable Stays<br />Near Temples</span>
             </div>
             <div className="pilgrim-benefit">
               <span className="pilgrim-benefit-icon">🥗</span>
-              <span className="pilgrim-benefit-text">Pure Veg Meals<br/>& Satvik Food</span>
+              <span className="pilgrim-benefit-text">Pure Veg Meals<br />& Satvik Food</span>
             </div>
             <div className="pilgrim-benefit">
               <span className="pilgrim-benefit-icon">🚌</span>
-              <span className="pilgrim-benefit-text">Hassle-free Travel<br/>& Darshan Arrangements</span>
+              <span className="pilgrim-benefit-text">Hassle-free Travel<br />& Darshan Arrangements</span>
             </div>
             <div className="pilgrim-benefit">
               <span className="pilgrim-benefit-icon">🛡️</span>
-              <span className="pilgrim-benefit-text">24/7 Support<br/>Throughout Your Journey</span>
+              <span className="pilgrim-benefit-text">24/7 Support<br />Throughout Your Journey</span>
             </div>
           </div>
         </div>
@@ -1047,23 +1048,23 @@ export default function PremiumDestinationLayout({
           <div className="budget-benefits-strip">
             <div className="budget-benefit">
               <span className="budget-benefit-icon" style={{ filter: 'grayscale(1)', color: '#2E7D32' }}>🏷️</span>
-              <span className="budget-benefit-text">Best Value<br/>for Money</span>
+              <span className="budget-benefit-text">Best Value<br />for Money</span>
             </div>
             <div className="budget-benefit">
               <span className="budget-benefit-icon" style={{ filter: 'grayscale(1)', color: '#2E7D32' }}>🛏️</span>
-              <span className="budget-benefit-text">Comfortable<br/>Budget Stays</span>
+              <span className="budget-benefit-text">Comfortable<br />Budget Stays</span>
             </div>
             <div className="budget-benefit">
               <span className="budget-benefit-icon" style={{ filter: 'grayscale(1)', color: '#2E7D32' }}>🚌</span>
-              <span className="budget-benefit-text">Economical Transport<br/>Options</span>
+              <span className="budget-benefit-text">Economical Transport<br />Options</span>
             </div>
             <div className="budget-benefit">
               <span className="budget-benefit-icon" style={{ filter: 'grayscale(1)', color: '#2E7D32' }}>📸</span>
-              <span className="budget-benefit-text">Exciting Sightseeing<br/>Included</span>
+              <span className="budget-benefit-text">Exciting Sightseeing<br />Included</span>
             </div>
             <div className="budget-benefit">
               <span className="budget-benefit-icon" style={{ filter: 'grayscale(1)', color: '#2E7D32' }}>🎧</span>
-              <span className="budget-benefit-text">24/7 Assistance<br/>During Your Trip</span>
+              <span className="budget-benefit-text">24/7 Assistance<br />During Your Trip</span>
             </div>
           </div>
         </div>
@@ -1074,23 +1075,23 @@ export default function PremiumDestinationLayout({
           <div className="trending-benefits-strip">
             <div className="trending-benefit">
               <span className="trending-benefit-icon" style={{ filter: 'grayscale(1)', color: '#D32F2F' }}>📍</span>
-              <span className="trending-benefit-text">Popular Trending<br/>Destinations</span>
+              <span className="trending-benefit-text">Popular Trending<br />Destinations</span>
             </div>
             <div className="trending-benefit">
               <span className="trending-benefit-icon" style={{ filter: 'grayscale(1)', color: '#D32F2F' }}>🏨</span>
-              <span className="trending-benefit-text">Handpicked<br/>Comfortable Stays</span>
+              <span className="trending-benefit-text">Handpicked<br />Comfortable Stays</span>
             </div>
             <div className="trending-benefit">
               <span className="trending-benefit-icon" style={{ filter: 'grayscale(1)', color: '#D32F2F' }}>🚌</span>
-              <span className="trending-benefit-text">Convenient Transport<br/>Options</span>
+              <span className="trending-benefit-text">Convenient Transport<br />Options</span>
             </div>
             <div className="trending-benefit">
               <span className="trending-benefit-icon" style={{ filter: 'grayscale(1)', color: '#D32F2F' }}>📸</span>
-              <span className="trending-benefit-text">Must-See Sightseeing<br/>Experiences</span>
+              <span className="trending-benefit-text">Must-See Sightseeing<br />Experiences</span>
             </div>
             <div className="trending-benefit">
               <span className="trending-benefit-icon" style={{ filter: 'grayscale(1)', color: '#D32F2F' }}>🎧</span>
-              <span className="trending-benefit-text">24/7 Assistance<br/>During Your Trip</span>
+              <span className="trending-benefit-text">24/7 Assistance<br />During Your Trip</span>
             </div>
           </div>
         </div>
