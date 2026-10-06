@@ -1,6 +1,6 @@
 /* GramSection Redesign */
 'use client';
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import { gramReels } from '@/data/gramReels';
 import { getReviews, getMediaUrl } from '@/utils/api';
@@ -35,8 +35,9 @@ const getReviewVideoUrl = (review) => {
 
 function GramCard({ photo, index }) {
   const [hovered, setHovered] = useState(false);
-  const videoSrc = photo.videoSrc || FALLBACK_VIDEO_SOURCES[index % FALLBACK_VIDEO_SOURCES.length];
-  const posterSrc = photo.posterSrc || photo.src;
+  const isVideo = photo.videoSrc ? /\.(mp4|webm|mov|m4v)(\?|#|$)/i.test(photo.videoSrc) : false;
+  const videoSrc = isVideo ? photo.videoSrc : null;
+  const posterSrc = photo.posterSrc || photo.src || (videoSrc ? null : FALLBACK_VIDEO_SOURCES[index % FALLBACK_VIDEO_SOURCES.length]);
 
   return (
     <Link
@@ -125,51 +126,69 @@ function GramCard({ photo, index }) {
       {/* Description */}
       <div style={{ textAlign: 'center', marginTop: 16 }}>
         <h4 style={{ color: 'var(--color-text-primary)', fontSize: 13, fontWeight: 700, margin: '0 0 8px', fontFamily: '"Italiana", sans-serif' }}>
-          {photo.user} {photo.location} Holiday
+          {photo.cardTitle || (photo.location ? `${photo.user} ${photo.location} Holiday` : (photo.title || photo.user))}
         </h4>
-        <div style={{
-          background: 'var(--color-bg-overlay)', color: 'white', fontSize: 10, fontWeight: 600,
-          padding: '4px 12px', borderRadius: 12, display: 'inline-block'
-        }}>
-          {photo.location}
-        </div>
+        {photo.location && (
+          <div style={{
+            background: 'var(--color-bg-overlay)', color: 'white', fontSize: 10, fontWeight: 600,
+            padding: '4px 12px', borderRadius: 12, display: 'inline-block'
+          }}>
+            {photo.location}
+          </div>
+        )}
       </div>
     </Link>
   );
 }
 
-export default function GramSection({ videoReviewsData, themeClass = '' }) {
+export default function GramSection({ videoReviewsData, themeClass = '', cmsPage = null }) {
   const scrollRef = useRef(null);
   const [reels, setReels] = useState(gramReels);
+
+  const activeData = useMemo(() => {
+    return (cmsPage?.details?.find(d => d.key === 'social_media')) || videoReviewsData;
+  }, [cmsPage, videoReviewsData]);
 
   useEffect(() => {
     let mounted = true;
 
-    // Use CMS data if available
-    if (videoReviewsData?.json_data?.images?.length) {
-      const mappedReels = videoReviewsData.json_data.images.map((item, index) => {
+    if (activeData?.json_data?.images?.length) {
+      const mappedReels = activeData.json_data.images.map((item, index) => {
         const fallback = gramReels[index % gramReels.length];
         let user = fallback.user;
         let location = fallback.location;
+        let cardTitle = '';
 
         if (item.lbl) {
-          const parts = item.lbl.split(',');
-          user = parts[0].trim();
-          if (parts.length > 1) {
+          const lblMatch = item.lbl.match(/^(@\w+)\s+(.*?)(?:\s+Holiday\s+(.*))?$/i);
+          if (lblMatch) {
+            user = lblMatch[1];
+            location = (lblMatch[3] || lblMatch[2]).trim();
+            cardTitle = `${user} ${location} Holiday`;
+          } else if (item.lbl.includes(',')) {
+            const parts = item.lbl.split(',');
+            user = parts[0].trim();
             location = parts.slice(1).join(', ').trim();
+            cardTitle = `${user} ${location} Holiday`;
           } else {
-            location = '';
+            cardTitle = item.lbl.trim();
           }
         }
+
+        const rawMedia = item.img || item.image || item.video || item.src;
+        const fullMedia = rawMedia ? getMediaUrl(rawMedia) : '';
+        const isVideo = /\.(mp4|webm|mov|m4v)(\?|#|$)/i.test(fullMedia);
 
         return {
           ...fallback,
           id: `cms-${index}`,
-          posterSrc: fallback.posterSrc || fallback.src,
+          posterSrc: isVideo ? (fallback.posterSrc || fallback.src) : fullMedia,
+          src: isVideo ? fallback.src : fullMedia,
+          videoSrc: isVideo ? fullMedia : '',
           user: user,
           location: location,
-          videoSrc: getMediaUrl(item.img),
           title: item.lbl,
+          cardTitle: cardTitle,
         };
       });
       setReels(mappedReels);
@@ -209,7 +228,7 @@ export default function GramSection({ videoReviewsData, themeClass = '' }) {
     return () => {
       mounted = false;
     };
-  }, [videoReviewsData]);
+  }, [activeData]);
 
   const scroll = useCallback((dir) => {
     if (!scrollRef.current) return;
@@ -217,21 +236,31 @@ export default function GramSection({ videoReviewsData, themeClass = '' }) {
     scrollRef.current.scrollBy({ left: dir * scrollAmount, behavior: 'smooth' });
   }, []);
 
-  const headingText = 'From Social Media';
+  const headingText = activeData?.json_data?.heading_content || activeData?.title || 'From Social Media';
 
-  const description = videoReviewsData?.description || '';
+  const descSource = activeData?.json_data?.block_desc || activeData?.description || videoReviewsData?.description || '';
   let googleRating = '4.6';
   let googleReviews = '8250';
   let fbRating = '4.8';
   let fbReviews = '1440';
 
-  if (description) {
-    const googleMatch = description.match(/Google:\s*([\d.]+)[^\d]*(\d+)/i);
+  if (descSource) {
+    const starMatches = [...descSource.matchAll(/([0-9.]+)\s*\/\s*5\s*★?\s*([0-9,]+)\s*reviews/gi)];
+    if (starMatches.length >= 1) {
+      googleRating = starMatches[0][1];
+      googleReviews = starMatches[0][2];
+    }
+    if (starMatches.length >= 2) {
+      fbRating = starMatches[1][1];
+      fbReviews = starMatches[1][2];
+    }
+
+    const googleMatch = descSource.match(/Google:\s*([\d.]+)[^\d]*(\d+)/i);
     if (googleMatch) {
       googleRating = googleMatch[1];
       googleReviews = googleMatch[2];
     }
-    const fbMatch = description.match(/Facebook:\s*([\d.]+)[^\d]*(\d+)/i);
+    const fbMatch = descSource.match(/Facebook:\s*([\d.]+)[^\d]*(\d+)/i);
     if (fbMatch) {
       fbRating = fbMatch[1];
       fbReviews = fbMatch[2];
@@ -299,6 +328,17 @@ export default function GramSection({ videoReviewsData, themeClass = '' }) {
           <h2 className="theme-underline-heading gram-heading">
             {headingText}
           </h2>
+          {activeData?.description && (
+            <p style={{
+              fontSize: '16px',
+              color: 'var(--color-text-muted)',
+              margin: '-8px 0 20px',
+              fontFamily: '"Italiana", sans-serif',
+              letterSpacing: '0.5px'
+            }}>
+              {activeData.description}
+            </p>
+          )}
 
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 32 }}>
             {/* Google Rating */}

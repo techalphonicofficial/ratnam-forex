@@ -11,12 +11,40 @@ import FAQSection from './FAQSection';
 
 const skeletonCards = Array.from({ length: 6 }, (_, index) => index);
 
-export default function DestinationPicker({ onPick, destinations: apiDestinations = [], loading = false, error = '', themeClass = '' }) {
+export default function DestinationPicker({ onPick, destinations: apiDestinations = [], loading = false, error = '', themeClass = '', cmsPage = null }) {
   const scrollRef = useRef(null);
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [search, setSearch] = useState('');
   const [filterType, setFilterType] = useState('All');
   const [canScroll, setCanScroll] = useState({ prev: false, next: false });
+  const vacationPickHeading = useMemo(() => {
+    let fullText = '';
+    if (cmsPage?.details) {
+      const section = cmsPage.details.find(d => d.key === 'vacation_pick');
+      if (section) {
+        fullText = section.description?.trim() || section.title?.trim() || section.json_data?.heading_content?.trim() || '';
+      }
+    }
+    if (!fullText) {
+      fullText = "What's your pick for your next vacation";
+    }
+
+    const match = fullText.match(/(.*?)(your\s+pick)(.*)/i);
+    if (match) {
+      return {
+        prefix: match[1],
+        highlight: match[2],
+        suffix: match[3],
+      };
+    }
+
+    return {
+      prefix: fullText,
+      highlight: '',
+      suffix: '',
+    };
+  }, [cmsPage]);
+
   const dynamicTabs = useMemo(() => {
     const tabs = new Set();
     if (Array.isArray(apiDestinations)) {
@@ -210,8 +238,8 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
 
   return (
     <>
-      <HoneymoonToursSection themeClass={themeClass} />
-      <TrendingToursSection themeClass={themeClass} />
+      <HoneymoonToursSection themeClass={themeClass} cmsPage={cmsPage} />
+      <TrendingToursSection themeClass={themeClass} cmsPage={cmsPage} />
       <section className={themeClass} style={{
         padding: 'var(--space-8) 0 var(--space-10)',
         background: (themeClass.includes('blush') || themeClass.includes('teal') || themeClass.includes('nri') || themeClass.includes('purple') || themeClass.includes('pilgrim') || themeClass.includes('budget') || themeClass.includes('trending') || themeClass.includes('corporate')) ? 'transparent' : 'var(--color-card)',
@@ -241,7 +269,13 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
           <div className="container" style={{ maxWidth: '1400px', marginBottom: '40px' }}>
             <div className="text-center">
               <h2 className="theme-underline-heading" style={{ fontSize: '32px', fontWeight: 800, color: 'var(--color-text-primary)', fontFamily: '"Italiana", sans-serif' }}>
-                What&apos;s <span style={{ color: themeClass.includes('corporate') ? '#1E5AA8' : (themeClass.includes('nri') ? '#1759A6' : (themeClass.includes('purple') ? '#9D4A93' : (themeClass.includes('teal') ? '#2F7F7B' : (themeClass.includes('pilgrim') ? '#E98216' : (themeClass.includes('budget') ? '#2E7D32' : (themeClass.includes('trending') ? '#D32F2F' : (themeClass.includes('blush') ? '#D9466F' : 'var(--color-primary)'))))))), fontStyle: 'italic', fontWeight: 500 }}> your pick </span> for your next vacation
+                {vacationPickHeading.prefix}
+                {vacationPickHeading.highlight ? (
+                  <span style={{ color: themeClass.includes('corporate') ? '#1E5AA8' : (themeClass.includes('nri') ? '#1759A6' : (themeClass.includes('purple') ? '#9D4A93' : (themeClass.includes('teal') ? '#2F7F7B' : (themeClass.includes('pilgrim') ? '#E98216' : (themeClass.includes('budget') ? '#2E7D32' : (themeClass.includes('trending') ? '#D32F2F' : (themeClass.includes('blush') ? '#D9466F' : 'var(--color-primary)'))))))), fontStyle: 'italic', fontWeight: 500 }}>
+                    {vacationPickHeading.highlight}
+                  </span>
+                ) : null}
+                {vacationPickHeading.suffix}
               </h2>
 
               <div className="mx-auto mt-4" style={{ maxWidth: '620px', position: 'relative' }}>
@@ -490,10 +524,10 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
         }
       `}</style>
       </section>
-      <LoveStoryDestinations themeClass={themeClass} destinationsData={apiDestinations} onPick={onPick} />
-      <GramSection themeClass={themeClass} />
-      <CustomerReviewsSection themeClass={themeClass} />
-      <FAQSection themeClass={themeClass} />
+      <LoveStoryDestinations themeClass={themeClass} destinationsData={apiDestinations} onPick={onPick} cmsPage={cmsPage} />
+      <GramSection themeClass={themeClass} cmsPage={cmsPage} />
+      <CustomerReviewsSection themeClass={themeClass} cmsPage={cmsPage} />
+      <FAQSection themeClass={themeClass} cmsPage={cmsPage} />
     </>
   );
 }

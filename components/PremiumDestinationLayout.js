@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import Image from 'next/image';
+import { getMediaUrl } from '@/utils/api';
 
 export default function PremiumDestinationLayout({
   pkg,
@@ -13,6 +14,7 @@ export default function PremiumDestinationLayout({
   excludedItems,
   renderBottom,
   themeType = 'honeymoon',
+  cmsPage,
 }) {
   const [activeSection, setActiveSection] = useState('overview');
   const [isExpanded, setIsExpanded] = useState(false);
@@ -22,8 +24,124 @@ export default function PremiumDestinationLayout({
   const readLessRef = useRef(null);
   const bottomContentRef = useRef(null);
 
+  const heroData = useMemo(() => {
+    let videoUrl = null;
+    let stats = [];
+    
+    if (cmsPage?.details) {
+      const heroSection = cmsPage.details.find(d => d.key === 'hero_key');
+      if (heroSection?.json_data) {
+        if (heroSection.json_data.media_url) {
+          videoUrl = getMediaUrl(heroSection.json_data.media_url);
+        }
+        
+        if (heroSection.json_data.body) {
+          const lines = heroSection.json_data.body.split('\n');
+          stats = lines.map(line => {
+             const trimmed = line.trim();
+             if (!trimmed) return null;
+             const match = trimmed.match(/^([^\w\s]+)?\s*(.*)/);
+             if (match && match[1]) {
+                return { icon: match[1].trim(), text: match[2].trim() };
+             }
+             return { icon: '✨', text: trimmed };
+          }).filter(Boolean);
+        }
+      }
+
+      // Fallback for videoUrl from highlights_section gallery
+      if (!videoUrl) {
+        const hlSection = cmsPage.details.find(d => d.key === 'highlights_section');
+        if (hlSection?.json_data?.gallery?.length > 0) {
+          const firstVideo = hlSection.json_data.gallery.find(g => g.img && g.img.endsWith('.mp4'));
+          if (firstVideo) videoUrl = getMediaUrl(firstVideo.img);
+        }
+      }
+    }
+    
+    return { 
+      videoUrl: videoUrl || "/6401592-hd_1920_1080_24fps.mp4",
+      stats: stats 
+    };
+  }, [cmsPage]);
+
+  const cmsParsed = useMemo(() => {
+    let title = '';
+    let overviewHtml = '';
+    let highlightsList = [];
+    let navTabs = [];
+    let timelineData = {
+      activities: '',
+      tips: '',
+      info: '',
+      time: ''
+    };
+
+    if (cmsPage?.details) {
+      const hlSection = cmsPage.details.find(d => d.key === 'highlights_section');
+      if (hlSection) {
+        title = hlSection.title || '';
+        if (Array.isArray(hlSection.json_data?.stats)) {
+          navTabs = hlSection.json_data.stats;
+        }
+      }
+      if (hlSection?.json_data?.story_desc) {
+        const raw = hlSection.json_data.story_desc;
+        
+        // 1. Overview
+        // Split at the exact Highlights tag to prevent lazy matching from deleting intermediate content
+        const overviewParts = raw.split(/<h3>\s*Highlights\s*<\/h3>/i);
+        overviewHtml = overviewParts[0] || '';
+        
+        if (overviewParts.length > 1) {
+          let rest = overviewParts[1];
+          // 2. Highlights List
+          const highlightsParts = rest.split(/<h4>\s*Must Do Activities\s*<\/h4>/i);
+          const hlRaw = highlightsParts[0] || '';
+          
+          const hlRegex = /<p>(.*?)<\/p>\s*<h4>(.*?)<\/h4>\s*<p>(.*?)<\/p>/gi;
+          let match;
+          while ((match = hlRegex.exec(hlRaw)) !== null) {
+            highlightsList.push({
+              icon: match[1].replace(/<[^>]+>/g, '').trim(),
+              title: match[2].replace(/<[^>]+>/g, '').trim(),
+              subtitle: match[3].replace(/<[^>]+>/g, '').trim()
+            });
+          }
+
+          // 3. Timeline
+          if (highlightsParts.length > 1) {
+            const tlRaw = '<h4>Must Do Activities</h4>' + highlightsParts[1];
+            
+            const extractSection = (titleRegex) => {
+              const regex = new RegExp(`<h4>\\s*${titleRegex}\\s*<\\/h4>\\s*<p>(.*?)<\\/p>`, 'i');
+              const m = tlRaw.match(regex);
+              return m ? m[1].replace(/<[^>]+>/g, '').trim() : '';
+            };
+
+            timelineData.activities = extractSection('Must Do Activities');
+            timelineData.tips = extractSection('Travel Tips');
+            timelineData.info = extractSection('Know Before You Go');
+            timelineData.time = extractSection('Best Time to Visit');
+          }
+        } else {
+          overviewHtml = raw;
+        }
+      }
+    }
+    
+    return { title, overviewHtml, highlightsList, navTabs, timelineData };
+  }, [cmsPage]);
+
   // --- Typing Text Effect State ---
   const typingPhrases = useMemo(() => {
+    if (cmsPage?.details) {
+      const heroSection = cmsPage.details.find(d => d.key === 'hero_key');
+      if (heroSection?.json_data?.points?.length > 0) {
+        return heroSection.json_data.points.map(p => p.title);
+      }
+    }
+    
     if (themeType === 'corporate') {
       return [
         pkg?.name || 'Corporate Package',
@@ -85,7 +203,7 @@ export default function PremiumDestinationLayout({
       'Perfect Togetherness',
       'Dream Honeymoons'
     ];
-  }, [pkg?.name, themeType]);
+  }, [pkg?.name, themeType, cmsPage]);
 
   const [typedText, setTypedText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
@@ -121,7 +239,56 @@ export default function PremiumDestinationLayout({
 
   // --- Carousel State ---
   const [carouselIndex, setCarouselIndex] = useState(0);
-  const carouselImages = useMemo(() => {
+  const carouselMedia = useMemo(() => {
+    // 1. Check highlights_section from cmsPage
+    if (cmsPage?.details) {
+      const hlSection = cmsPage.details.find(d => d.key === 'highlights_section');
+      if (hlSection?.json_data?.gallery && Array.isArray(hlSection.json_data.gallery) && hlSection.json_data.gallery.length > 0) {
+        const items = hlSection.json_data.gallery
+          .map((item, idx) => {
+            const rawUrl = item?.img || item?.image || item?.url || (typeof item === 'string' ? item : null);
+            if (!rawUrl) return null;
+            const fullUrl = getMediaUrl(rawUrl);
+            const isVideo = /\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(fullUrl);
+            return {
+              url: fullUrl,
+              alt: item?.alt?.trim() || `Destination highlight ${idx + 1}`,
+              isVideo,
+            };
+          })
+          .filter(Boolean);
+
+        if (items.length > 0) {
+          return items;
+        }
+      }
+
+      if (hlSection?.image) {
+        const fullUrl = getMediaUrl(hlSection.image);
+        return [{
+          url: fullUrl,
+          alt: hlSection.title || 'Highlight Image',
+          isVideo: /\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(fullUrl),
+        }];
+      }
+    }
+
+    // 2. Extra images from media prop
+    if (media?.images && media.images.length > 2) {
+      const extraImages = media.images.slice(2).map((img, idx) => {
+        const u = img?.url || img;
+        const fullUrl = typeof u === 'string' ? getMediaUrl(u) : '';
+        return {
+          url: fullUrl,
+          alt: img?.alt || `Slide ${idx + 1}`,
+          isVideo: /\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(fullUrl),
+        };
+      }).filter(item => item.url);
+
+      if (extraImages.length > 0) return extraImages;
+    }
+
+    // 3. Fallback defaults
     const defaultImages = themeType === 'corporate' ? [
       'https://images.unsplash.com/photo-1556761175-5973dc0f32d7?auto=format&fit=crop&w=800&q=80',
       'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=800&q=80',
@@ -139,19 +306,23 @@ export default function PremiumDestinationLayout({
       'https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?auto=format&fit=crop&w=800&q=80',
       'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=800&q=80'
     ];
-    return [
-      media?.images?.[2]?.url || defaultImages[0],
-      media?.images?.[3]?.url || defaultImages[1],
-      media?.images?.[4]?.url || defaultImages[2]
-    ];
-  }, [media, themeType]);
+
+    return defaultImages.map((url, idx) => ({
+      url,
+      alt: `Default slide ${idx + 1}`,
+      isVideo: false,
+    }));
+  }, [cmsPage, media, themeType]);
+
+  const activeCarouselIdx = carouselMedia.length > 0 ? (carouselIndex % carouselMedia.length) : 0;
 
   useEffect(() => {
+    if (!carouselMedia || carouselMedia.length <= 1) return;
     const timer = setInterval(() => {
-      setCarouselIndex((prev) => (prev + 1) % carouselImages.length);
-    }, 4000);
+      setCarouselIndex((prev) => (prev + 1) % carouselMedia.length);
+    }, 4500);
     return () => clearInterval(timer);
-  }, [carouselImages.length]);
+  }, [carouselMedia.length]);
 
   // (Observers removed; merged into handleScroll below for maximum reliability)
 
@@ -270,13 +441,14 @@ export default function PremiumDestinationLayout({
           />
         ) : (
           <video
+            key={heroData.videoUrl}
             className="hero-img"
             autoPlay
             loop
             muted
             playsInline
           >
-            <source src="/6401592-hd_1920_1080_24fps.mp4" type="video/mp4" />
+            <source src={heroData.videoUrl} type="video/mp4" />
           </video>
         )}
         <div className="hero-overlay" />
@@ -308,9 +480,17 @@ export default function PremiumDestinationLayout({
             <span className="typing-cursor">|</span>
           </h1>
           <div className="hero-stats">
-            <div className="stat-badge"><span>⭐</span> <span className="stat-text">{rating}/5 Based on {reviews} reviews</span></div>
-            <div className="stat-badge"><span>{themeType === 'corporate' ? '👍' : '❤️'}</span> <span className="stat-text">98% Travellers Recommend</span></div>
-            <div className="stat-badge"><span>{themeType === 'corporate' ? '🛡️' : '🎁'}</span> <span className="stat-text">Best Price Guarantee</span></div>
+            {heroData.stats.length > 0 ? (
+              heroData.stats.map((stat, i) => (
+                <div key={i} className="stat-badge"><span>{stat.icon}</span> <span className="stat-text">{stat.text}</span></div>
+              ))
+            ) : (
+              <>
+                <div className="stat-badge"><span>⭐</span> <span className="stat-text">{rating}/5 Based on {reviews} reviews</span></div>
+                <div className="stat-badge"><span>{themeType === 'corporate' ? '👍' : '❤️'}</span> <span className="stat-text">98% Travellers Recommend</span></div>
+                <div className="stat-badge"><span>{themeType === 'corporate' ? '🛡️' : '🎁'}</span> <span className="stat-text">Best Price Guarantee</span></div>
+              </>
+            )}
           </div>
         </div>
 
@@ -396,12 +576,12 @@ export default function PremiumDestinationLayout({
         <div className="nav-pill-wrapper">
           <nav className="nav-links">
             {[
-              { id: 'overview', label: themeType === 'trending' ? 'Trending Package' : 'Overview' },
-              { id: 'highlights', label: 'Highlights' },
-              { id: 'activities', label: 'Must Do Activities' },
-              { id: 'tips', label: 'Travel Tips & Tricks' },
-              { id: 'info', label: 'Know Before You Go' },
-              { id: 'time', label: 'Best Time to Visit' },
+              { id: 'overview', label: (cmsParsed.navTabs?.[0]?.value) || (themeType === 'trending' ? 'Trending Package' : 'Overview') },
+              { id: 'highlights', label: (cmsParsed.navTabs?.[1]?.value) || 'Highlights' },
+              { id: 'activities', label: (cmsParsed.navTabs?.[2]?.value) || 'Must Do Activities' },
+              { id: 'tips', label: (cmsParsed.navTabs?.[3]?.value) || 'Travel Tips & Tricks' },
+              { id: 'info', label: (cmsParsed.navTabs?.[4]?.value) || 'Know Before You Go' },
+              { id: 'time', label: (cmsParsed.navTabs?.[5]?.value) || 'Best Time to Visit' },
             ].map((link) => (
               <button
                 key={link.id}
@@ -428,10 +608,15 @@ export default function PremiumDestinationLayout({
           <div className="premium-center-top" style={{ paddingRight: renderBookingCard ? 32 : 0 }}>
             <div id="section-overview" className={`content-section ${!isExpanded ? 'preview-mode' : ''}`}>
               <h2 className="section-heading serif" style={themeType === 'corporate' ? { color: '#0D1B2A' } : (themeType === 'nri' ? { color: '#173A63' } : (themeType === 'group' ? { color: '#9D4A93' } : (themeType === 'family' ? { color: '#245C59' } : (themeType === 'pilgrim' ? { color: '#C9650A' } : (themeType === 'budget' ? { color: '#2E7D32' } : (themeType === 'trending' ? { color: '#8B1E1E' } : {}))))))}>
-                {themeType === 'corporate' ? 'Professional trips, perfectly planned' : (themeType === 'nri' ? 'Your journey home, made seamless & special' : (themeType === 'group' ? 'Memories are meant to be shared' : (themeType === 'family' ? 'Together, every journey becomes a memory' : (themeType === 'pilgrim' ? 'Spiritual journeys, divine blessings' : (themeType === 'budget' ? 'Great experiences, great value' : (themeType === 'trending' ? 'Explore the Most Popular Trending Packages' : 'Romance, culture & unforgettable escapes'))))))}
+                {cmsParsed.title || (themeType === 'corporate' ? 'Professional trips, perfectly planned' : (themeType === 'nri' ? 'Your journey home, made seamless & special' : (themeType === 'group' ? 'Memories are meant to be shared' : (themeType === 'family' ? 'Together, every journey becomes a memory' : (themeType === 'pilgrim' ? 'Spiritual journeys, divine blessings' : (themeType === 'budget' ? 'Great experiences, great value' : (themeType === 'trending' ? 'Explore the Most Popular Trending Packages' : 'Romance, culture & unforgettable escapes')))))))}
               </h2>
               <div className={`section-text ${!isExpanded ? 'section-text-preview' : ''}`}>
-                {themeType === 'corporate' ? (
+                {(() => {
+                  if (cmsParsed.overviewHtml) {
+                    return <div className="overview-html-content" dangerouslySetInnerHTML={{ __html: cmsParsed.overviewHtml }} />;
+                  }
+                  
+                  return themeType === 'corporate' ? (
                   <>
                     <p>
                       {pkg?.description || 'Your business travel should be smooth, productive, and completely hassle-free. Our corporate travel solutions are designed to take care of every detail while you focus on what matters most—your business.'}
@@ -584,7 +769,8 @@ export default function PremiumDestinationLayout({
                       </div>
                     )}
                   </>
-                )}
+                );
+                })()}
               </div>
 
               {!isExpanded && (
@@ -604,7 +790,18 @@ export default function PremiumDestinationLayout({
                 <div id="section-highlights" className="content-section">
                   <h3 className="sub-heading serif">Highlights</h3>
                   <div className="highlights-grid">
-                    {themeType === 'budget' ? (
+                    {(() => {
+                      if (cmsParsed.highlightsList.length > 0) {
+                        return cmsParsed.highlightsList.map((stat, i) => (
+                          <div key={i} className="highlight-card">
+                            <span className="icon">{stat.icon || '✨'}</span>
+                            <h4 style={{ fontSize: '15px' }}>{stat.title}</h4>
+                            {stat.subtitle && <p style={{ fontSize: '13px', color: 'var(--theme-text-sec)' }}>{stat.subtitle}</p>}
+                          </div>
+                        ));
+                      }
+                      
+                      return themeType === 'budget' ? (
                       <>
                         <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#2E7D32' }}>🏷️</span><h4 style={{ fontSize: '15px' }}>Best Value for Money</h4></div>
                         <div className="highlight-card"><span className="icon" style={{ filter: 'grayscale(1)', color: '#2E7D32' }}>🛏️</span><h4 style={{ fontSize: '15px' }}>Comfortable Budget Stays</h4></div>
@@ -651,7 +848,8 @@ export default function PremiumDestinationLayout({
                           <p>Iconic landscapes &amp; experiences</p>
                         </div>
                       </>
-                    )}
+                    );
+                    })()}
                   </div>
                 </div>
 
@@ -660,7 +858,7 @@ export default function PremiumDestinationLayout({
                     <div className="timeline-dot" />
                     <div className="timeline-content">
                       <h4>Must Do Activities</h4>
-                      <p>Enjoy lantern releases, explore ancient tunnels, take a cyclo ride, and relax on pristine beaches.</p>
+                      <p>{cmsParsed.timelineData.activities || 'Enjoy lantern releases, explore ancient tunnels, take a cyclo ride, and relax on pristine beaches.'}</p>
                     </div>
                   </div>
 
@@ -668,7 +866,7 @@ export default function PremiumDestinationLayout({
                     <div className="timeline-dot" />
                     <div className="timeline-content">
                       <h4>Travel Tips &amp; Tricks</h4>
-                      <p>Carry light cottons, comfortable footwear, and sunscreen. Bargain politely in markets and try a local SIM for better connectivity.</p>
+                      <p>{cmsParsed.timelineData.tips || 'Carry light cottons, comfortable footwear, and sunscreen. Bargain politely in markets and try a local SIM for better connectivity.'}</p>
                     </div>
                   </div>
 
@@ -676,7 +874,7 @@ export default function PremiumDestinationLayout({
                     <div className="timeline-dot" />
                     <div className="timeline-content">
                       <h4>Know Before You Go</h4>
-                      <p>Check visa requirements for your passport. Keep passport valid for 6 months. Respect local customs and dress modestly at temples.</p>
+                      <p>{cmsParsed.timelineData.info || 'Check visa requirements for your passport. Keep passport valid for 6 months. Respect local customs and dress modestly at temples.'}</p>
                     </div>
                   </div>
 
@@ -684,7 +882,7 @@ export default function PremiumDestinationLayout({
                     <div className="timeline-dot" />
                     <div className="timeline-content">
                       <h4>Best Time to Visit</h4>
-                      <p>The best time to visit is from February to April when the weather is pleasant and ideal for sightseeing and beach holidays.</p>
+                      <p>{cmsParsed.timelineData.time || 'The best time to visit is from February to April when the weather is pleasant and ideal for sightseeing and beach holidays.'}</p>
                     </div>
                   </div>
                 </div>
@@ -715,29 +913,46 @@ export default function PremiumDestinationLayout({
               </div>
             ) : (
               <div className="right-image-carousel">
-                {carouselImages.map((src, idx) => (
+                {carouselMedia.map((item, idx) => (
                   <div
                     key={idx}
-                    className={`carousel-slide ${idx === carouselIndex ? 'active' : ''}`}
+                    className={`carousel-slide ${idx === activeCarouselIdx ? 'active' : ''}`}
                   >
-                    <Image
-                      src={src}
-                      alt={`destination slide ${idx}`}
-                      fill
-                      className="carousel-img"
-                    />
+                    {item.isVideo ? (
+                      <video
+                        src={item.url}
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        className="carousel-img"
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      />
+                    ) : (
+                      <Image
+                        src={item.url}
+                        alt={item.alt || `destination slide ${idx + 1}`}
+                        fill
+                        className="carousel-img"
+                        unoptimized
+                        sizes="(max-width: 1100px) 100vw, 500px"
+                        priority={idx === 0}
+                      />
+                    )}
                   </div>
                 ))}
-                <div className="carousel-indicators">
-                  {carouselImages.map((_, idx) => (
-                    <button
-                      key={idx}
-                      className={`carousel-dot ${idx === carouselIndex ? 'active' : ''}`}
-                      onClick={() => setCarouselIndex(idx)}
-                      aria-label={`Go to slide ${idx + 1}`}
-                    />
-                  ))}
-                </div>
+                {carouselMedia.length > 1 && (
+                  <div className="carousel-indicators">
+                    {carouselMedia.map((_, idx) => (
+                      <button
+                        key={idx}
+                        className={`carousel-dot ${idx === activeCarouselIdx ? 'active' : ''}`}
+                        onClick={() => setCarouselIndex(idx)}
+                        aria-label={`Go to slide ${idx + 1}`}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </aside>
@@ -1659,6 +1874,10 @@ export default function PremiumDestinationLayout({
             padding: 24px 5% 64px;
             gap: 32px;
           }
+          #section-overview.preview-mode {
+            height: auto;
+            min-height: auto;
+          }
           .premium-center-top, .premium-center-bottom, .premium-right {
             grid-column: 1;
             grid-row: auto;
@@ -1794,22 +2013,55 @@ export default function PremiumDestinationLayout({
           .right-image-carousel {
             height: 320px;
           }
-          #section-overview {
-            min-height: auto;
-          }
           #section-overview.preview-mode {
-            height: auto;
+            height: auto !important;
+            min-height: auto !important;
+          }
+          #section-overview {
+            min-height: auto !important;
           }
 
-          /* Show exactly 3 lines of the first paragraph on mobile before clicking Read More */
-          .section-text-preview > p:first-of-type {
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+          /* Show only three lines of text on mobile view before clicking Read More */
+          .section-text-preview,
+          :global(.section-text-preview) {
+            max-height: calc(1.7em * 3) !important;
+            height: auto !important;
+            overflow: hidden !important;
+            position: relative !important;
+            line-height: 1.7 !important;
           }
-          .section-text-preview > *:not(:first-child) {
+          .section-text-preview::after,
+          :global(.section-text-preview::after) {
             display: none !important;
+          }
+          .section-text-preview :global(p:first-of-type),
+          .section-text-preview :global(div > p:first-of-type),
+          .section-text-preview :global(.overview-html-content > p:first-of-type),
+          :global(.section-text-preview p:first-of-type),
+          :global(.section-text-preview div > p:first-of-type) {
+            display: -webkit-box !important;
+            -webkit-line-clamp: 3 !important;
+            line-clamp: 3 !important;
+            -webkit-box-orient: vertical !important;
+            overflow: hidden !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            line-height: 1.7 !important;
+          }
+          .section-text-preview :global(p:not(:first-of-type)),
+          .section-text-preview :global(div > p:not(:first-of-type)),
+          .section-text-preview :global(div > *:not(p:first-of-type)),
+          .section-text-preview :global(h3),
+          .section-text-preview :global(h4),
+          .section-text-preview :global(.extended-description),
+          .section-text-preview :global(ul),
+          .section-text-preview :global(ol),
+          :global(.section-text-preview p:not(:first-of-type)),
+          :global(.section-text-preview div > *:not(p:first-of-type)) {
+            display: none !important;
+          }
+          .read-more-btn {
+            margin-top: 12px;
           }
         }
       `}</style>

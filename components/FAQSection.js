@@ -30,25 +30,58 @@ const fallbackFaqs = [
   },
 ];
 
-export default function FAQSection({ themeClass = '' }) {
+export default function FAQSection({ themeClass = '', cmsPage = null }) {
   const [faqs, setFaqs] = useState(fallbackFaqs);
+  const [heading, setHeading] = useState('Frequently Asked Questions');
+  const [description, setDescription] = useState("Got questions? We've got answers! Find helpful info about bookings, packages, payments, and more—all in one place.");
   const [openIndex, setOpenIndex] = useState(null);
 
   useEffect(() => {
     let mounted = true;
 
+    // Use cmsPage data if available
+    if (cmsPage?.details) {
+      const faqSection = cmsPage.details.find(
+        d => d.key === 'faq_key' || d.key === 'faq_accordion' || d.section === 'faq_accordion' || d.key === 'faq'
+      );
+      if (faqSection) {
+        if (faqSection.title?.trim() || faqSection.json_data?.heading_content?.trim()) {
+          setHeading(faqSection.title?.trim() || faqSection.json_data?.heading_content?.trim());
+        }
+        if (faqSection.description?.trim() || faqSection.json_data?.block_desc?.trim()) {
+          setDescription(faqSection.description?.trim() || faqSection.json_data?.block_desc?.trim());
+        }
+        const items = faqSection.json_data?.faqs || faqSection.json_data?.items || [];
+        if (items.length > 0) {
+          setFaqs(items.map(item => ({
+            question: (item.q || item.question || item.title || '').replace(/^\s*\d+[\.\)]\s*/, '').trim(),
+            answer: (item.a || item.answer || item.description || item.content || '').trim()
+          })));
+          return;
+        }
+      }
+    }
+
     const fetchFaqs = async () => {
       try {
         const page = await getHomePage();
         const faqSection = page?.details?.find(
-          (d) => d.key === 'faq' || d.section === 'faq' || (d.title || '').toLowerCase().includes('faq')
+          (d) => d.key === 'faq_key' || d.key === 'faq' || d.section === 'faq' || (d.title || '').toLowerCase().includes('faq')
         );
-        const items = faqSection?.json_data?.faqs || faqSection?.json_data?.items || [];
-        if (mounted && items.length > 0) {
-          setFaqs(items.map(item => ({
-            question: item.question || item.title || item.q || '',
-            answer: item.answer || item.description || item.content || item.a || '',
-          })));
+        if (mounted && faqSection) {
+          if (faqSection.title?.trim() || faqSection.json_data?.heading_content?.trim()) {
+            setHeading(faqSection.title?.trim() || faqSection.json_data?.heading_content?.trim());
+          }
+          if (faqSection.description?.trim() || faqSection.json_data?.block_desc?.trim()) {
+            setDescription(faqSection.description?.trim() || faqSection.json_data?.block_desc?.trim());
+          }
+          const items = faqSection.json_data?.faqs || faqSection.json_data?.items || [];
+          if (items.length > 0) {
+            setFaqs(items.map(item => ({
+              question: (item.q || item.question || item.title || '').replace(/^\s*\d+[\.\)]\s*/, '').trim(),
+              answer: (item.a || item.answer || item.description || item.content || '').trim(),
+            })));
+          }
         }
       } catch (err) {
         // Keep fallback
@@ -57,7 +90,7 @@ export default function FAQSection({ themeClass = '' }) {
 
     fetchFaqs();
     return () => { mounted = false; };
-  }, []);
+  }, [cmsPage]);
 
   const toggle = (idx) => {
     setOpenIndex(prev => prev === idx ? null : idx);
@@ -76,10 +109,9 @@ export default function FAQSection({ themeClass = '' }) {
               color: 'var(--color-text-primary)',
               marginBottom: '16px',
               fontFamily: '"Italiana", sans-serif',
-              lineHeight: 1.3,
-              whiteSpace: 'nowrap'
+              lineHeight: 1.3
             }}>
-              Frequently Asked Questions
+              {heading}
             </h2>
             <p style={{
               fontSize: '14px',
@@ -87,7 +119,7 @@ export default function FAQSection({ themeClass = '' }) {
               color: '#777',
               margin: 0,
             }}>
-              Got questions? We&apos;ve got answers! Find helpful info about bookings, packages, payments, and more—all in one place.
+              {description}
             </p>
           </div>
 

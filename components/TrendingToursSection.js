@@ -2,13 +2,25 @@
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import TrendingTourCard from './TrendingTourCard';
-import { getPackages, getPackageFilters, normalizePackageToTour } from '@/utils/api';
+import { getPackages, getPackageFilters, getPackageReviews, normalizePackageToTour } from '@/utils/api';
 import CustomSelect from './CustomSelect';
 
 const MAX_PRICE = 1000000;
 const formatPriceNumber = (value) => Number(value || 0).toLocaleString('en-IN');
 
-export default function TrendingToursSection({ themeClass = '' }) {
+// True when the package belongs to the "Honeymoon Packages" category
+const hasHoneymoonCategory = (pkg) => {
+  const categories = pkg?.package_categories || pkg?.categories || [];
+  return Array.isArray(categories) && categories.some((cat) =>
+    String(cat?.slug || '').toLowerCase() === 'honeymoon-packages' ||
+    String(cat?.title || cat?.name || '').trim().toLowerCase() === 'honeymoon packages'
+  );
+};
+
+const MIN_TRENDING_RATING = 4;
+const MAX_TRENDING_RATING = 5;
+
+export default function TrendingToursSection({ themeClass = '', cmsPage = null }) {
   const isFamily = themeClass.includes('teal');
   const isGroup = themeClass.includes('purple');
   const isNri = themeClass.includes('nri');
@@ -20,6 +32,17 @@ export default function TrendingToursSection({ themeClass = '' }) {
   const primaryColor = isCorporate ? '#1E5AA8' : (isNri ? '#1759A6' : (isGroup ? '#9D4A93' : (isFamily ? '#2F7F7B' : (isPilgrim ? '#E98216' : (isBudget ? '#2E7D32' : (isTrending ? '#D32F2F' : '#D9466F'))))));
   const bgColor = isNri ? '#FFFCF5' : (isGroup ? '#FAF5FA' : (isFamily ? '#FFFDF7' : (isPilgrim ? '#FFF9EF' : (isBudget ? 'transparent' : (isTrending ? 'transparent' : (isBlush ? 'transparent' : 'var(--color-bg)'))))));
   const softColor = isNri ? '#E8F1FA' : (isGroup ? '#F5E6F5' : (isFamily ? '#F2F7F4' : (isPilgrim ? '#FFF5E5' : (isBudget ? '#F1F8EF' : (isTrending ? '#FFECEC' : '#FFF9FA')))));
+
+  const headingText = useMemo(() => {
+    if (cmsPage?.details) {
+      const section = cmsPage.details.find(d => d.key === 'trending_tour');
+      if (section) {
+        const text = section.description?.trim() || section.title?.trim() || section.json_data?.heading_content?.trim();
+        if (text) return text;
+      }
+    }
+    return 'Trending Tours';
+  }, [cmsPage]);
   const [loading, setLoading] = useState(true);
   const [apiTours, setApiTours] = useState([]);
   const [filterOptions, setFilterOptions] = useState({
@@ -67,12 +90,44 @@ export default function TrendingToursSection({ themeClass = '' }) {
     const fetchData = async () => {
       setLoading(true);
       try {
+        const isHoneymoonTheme = !isFamily && !isGroup && !isNri && !isPilgrim && !isBudget && !isTrending && !isCorporate;
+
         // Fetch featured/trending packages without strict limit to get accurate counts
-        const packages = await getPackages({ featured: true, limit: 100 });
+        const packages = isHoneymoonTheme
+          ? await getPackages({ limit: 200 })
+          : await getPackages({ featured: true, limit: 100 });
         const filterData = await getPackageFilters({ featured: true });
 
+        let formattedTours = packages.map(normalizePackageToTour).filter(Boolean);
+
+        // Honeymoon: only Honeymoon-category packages with an approved review average of 4-5
+        if (isHoneymoonTheme) {
+          const seenIds = new Set();
+          const honeymoonTours = formattedTours.filter((t) => {
+            if (!hasHoneymoonCategory(t) || seenIds.has(t.id)) return false;
+            seenIds.add(t.id);
+            return true;
+          });
+
+          const ratedTours = await Promise.all(
+            honeymoonTours.map(async (t) => {
+              const { summary, total } = await getPackageReviews({
+                packageId: t.id,
+                packageSlug: t.slug,
+                status: 'approved',
+              });
+              const averageRating = Number(summary?.average_rating) || 0;
+              const reviewCount = Number(summary?.count) || Number(total) || 0;
+              return { ...t, rating: averageRating, reviews: reviewCount };
+            })
+          );
+
+          formattedTours = ratedTours.filter(
+            (t) => t.reviews > 0 && t.rating >= MIN_TRENDING_RATING && t.rating <= MAX_TRENDING_RATING
+          );
+        }
+
         if (isMounted) {
-          const formattedTours = packages.map(normalizePackageToTour);
           setApiTours(formattedTours);
 
           const staticTourTypes = [
@@ -171,7 +226,7 @@ export default function TrendingToursSection({ themeClass = '' }) {
             textTransform: 'uppercase',
             margin: 0
           }}>
-            Trending Tours
+            {headingText}
           </h2>
         </div>
 

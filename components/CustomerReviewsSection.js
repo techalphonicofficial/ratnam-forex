@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getReviews, getMediaUrl } from '@/utils/api';
+import { getReviews, getPackages, getMediaUrl } from '@/utils/api';
 
 export default function CustomerReviewsSection({ themeClass = '' }) {
   const [reviews, setReviews] = useState([]);
@@ -10,11 +10,42 @@ export default function CustomerReviewsSection({ themeClass = '' }) {
   useEffect(() => {
     let mounted = true;
 
-    const fetchReviews = async () => {
+    const fetchReviewsAndPackages = async () => {
       try {
-        const data = await getReviews({ status: 'approved', limit: 10 });
-        if (mounted && data?.length) {
-          setReviews(data);
+        const [reviewsData, packagesData] = await Promise.all([
+          getReviews({ status: 'approved', limit: 100 }),
+          getPackages({ limit: 200 })
+        ]);
+
+        if (mounted) {
+          let filteredReviews = reviewsData || [];
+
+          if (packagesData && packagesData.length) {
+            const categoryMatch = themeClass.includes('corporate') ? 'corporate' 
+              : themeClass.includes('nri') ? 'nri'
+              : themeClass.includes('group') ? 'group'
+              : themeClass.includes('family') ? 'family'
+              : themeClass.includes('pilgrim') ? 'pilgrim'
+              : themeClass.includes('budget') ? 'budget'
+              : (themeClass.includes('honeymoon') || themeClass.includes('blush')) ? 'honeymoon'
+              : null;
+
+            if (categoryMatch) {
+               const validPkgIds = new Set();
+               packagesData.forEach(pkg => {
+                  const cats = Array.isArray(pkg.package_categories) ? pkg.package_categories : [];
+                  if (cats.some(c => String(c?.slug || '').toLowerCase().includes(categoryMatch) || String(c?.title || '').toLowerCase().includes(categoryMatch))) {
+                     validPkgIds.add(pkg.id);
+                  }
+               });
+
+               if (validPkgIds.size > 0) {
+                  // Only show reviews for packages in this category
+                  filteredReviews = filteredReviews.filter(r => validPkgIds.has(Number(r.package_id)));
+               }
+            }
+          }
+          setReviews(filteredReviews);
         }
       } catch (err) {
         console.error('Failed to fetch reviews:', err);
@@ -23,9 +54,9 @@ export default function CustomerReviewsSection({ themeClass = '' }) {
       }
     };
 
-    fetchReviews();
+    fetchReviewsAndPackages();
     return () => { mounted = false; };
-  }, []);
+  }, [themeClass]);
 
   const formatDate = (dateStr) => {
     if (!dateStr) return '';

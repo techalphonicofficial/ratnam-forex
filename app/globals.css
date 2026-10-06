@@ -2467,3 +2467,48 @@ body {
 /* HOMEPAGE THEME OVERRIDE */
 body.is-homepage .theme-underline-heading::after { background-color: #FF6000; }
 body.is-homepage .theme-underline-heading::before { border-bottom-color: #FF6000; }
+
+/* Mobile Overview 3-Line Clamp in Premium Destination Layout */
+@media (max-width: 768px) {
+  #section-overview.preview-mode {
+    height: auto !important;
+    min-height: auto !important;
+  }
+  #section-overview.preview-mode .section-text-preview {
+    max-height: calc(1.7em * 3) !important;
+    height: auto !important;
+    overflow: hidden !important;
+    position: relative !important;
+    line-height: 1.7 !important;
+  }
+  #section-overview.preview-mode .section-text-preview::after {
+    display: none !important;
+  }
+  #section-overview.preview-mode .section-text-preview p:first-of-type,
+  #section-overview.preview-mode .section-text-preview div > p:first-of-type,
+  #section-overview.preview-mode .section-text-preview .overview-html-content > p:first-of-type {
+    display: -webkit-box !important;
+    -webkit-line-clamp: 3 !important;
+    line-clamp: 3 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1.7 !important;
+  }
+  #section-overview.preview-mode .section-text-preview p:not(:first-of-type),
+  #section-overview.preview-mode .section-text-preview div > p:not(:first-of-type),
+  #section-overview.preview-mode .section-text-preview div > *:not(p:first-of-type),
+  #section-overview.preview-mode .section-text-preview .overview-html-content > *:not(p:first-of-type),
+  #section-overview.preview-mode .section-text-preview h3,
+  #section-overview.preview-mode .section-text-preview h4,
+  #section-overview.preview-mode .section-text-preview .extended-description,
+  #section-overview.preview-mode .section-text-preview ul,
+  #section-overview.preview-mode .section-text-preview ol {
+    display: none !important;
+  }
+  #section-overview.preview-mode .read-more-btn {
+    margin-top: 12px !important;
+  }
+}
+

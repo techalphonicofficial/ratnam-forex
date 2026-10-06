@@ -21,6 +21,13 @@ const isIndianDestination = (tour) => {
   return false;
 };
 
+const hasCategory = (pkg, categoryMatch) =>
+  Array.isArray(pkg?.package_categories) &&
+  pkg.package_categories.some((cat) =>
+    String(cat?.slug || '').toLowerCase().includes(categoryMatch) ||
+    String(cat?.title || '').toLowerCase().includes(categoryMatch)
+  );
+
 export default function HoneymoonToursSection({ themeClass = '' }) {
   const isFamily = themeClass.includes('teal');
   const isGroup = themeClass.includes('purple');
@@ -56,23 +63,18 @@ export default function HoneymoonToursSection({ themeClass = '' }) {
         if (isMounted) {
           const formattedTours = packages.map(normalizePackageToTour);
           const themeTours = formattedTours.filter(t => {
-            const str = `${t.title} ${t.category} ${t.type} ${t.description}`.toLowerCase();
-            if (isFamily || isGroup) {
-              return str.includes('family') || str.includes('group') || str.includes('kids') || str.includes('summer');
-            }
-            if (isNri) {
-              return str.includes('india') || str.includes('heritage') || str.includes('roots') || str.includes('culture') || str.includes('kerala') || str.includes('rajasthan') || t.country?.toLowerCase() === 'india' || str.includes('dubai') || str.includes('bali');
-            }
-            if (isPilgrim) {
-              return str.includes('pilgrim') || str.includes('temple') || str.includes('spiritual') || str.includes('darshan') || str.includes('varanasi') || str.includes('kashi') || str.includes('chardham') || str.includes('kedarnath') || str.includes('badrinath') || str.includes('india') || str.includes('bali');
-            }
-            if (isBudget) {
-              return str.includes('budget') || str.includes('value') || str.includes('economy') || str.includes('affordable') || str.includes('backpack') || str.includes('india') || str.includes('thailand') || str.includes('vietnam');
-            }
-            if (isTrending) {
-              return str.includes('trending') || str.includes('popular') || str.includes('hot') || str.includes('dubai') || str.includes('europe') || str.includes('thailand') || str.includes('bali');
-            }
-            return str.includes('honeymoon') || str.includes('romantic') || str.includes('maldives') || str.includes('bali');
+            const rawPkg = packages.find(p => p.id === t.id) || t;
+            
+            if (isCorporate) return hasCategory(rawPkg, 'corporate');
+            if (isFamily) return hasCategory(rawPkg, 'family');
+            if (isGroup) return hasCategory(rawPkg, 'group');
+            if (isNri) return hasCategory(rawPkg, 'nri');
+            if (isPilgrim) return hasCategory(rawPkg, 'pilgrim');
+            if (isBudget) return hasCategory(rawPkg, 'budget');
+            if (isTrending) return hasCategory(rawPkg, 'trending');
+            
+            // Default Honeymoon
+            return hasCategory(rawPkg, 'honeymoon');
           });
           setApiTours(themeTours);
         }

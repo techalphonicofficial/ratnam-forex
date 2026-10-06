@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import DestinationPicker from '@/components/DestinationPicker';
 import PremiumDestinationLayout from '@/components/PremiumDestinationLayout';
-import { customizeBooking, getCrowdLevelsBySlug, getDestinations, getHomeDestinations, getHomeCategories, getMediaUrl, getRelatedDestinationsByCountry, getStoredAuth, searchAirports } from '@/utils/api';
+import { customizeBooking, getCrowdLevelsBySlug, getDestinations, getHomeDestinations, getHomeCategories, getMediaUrl, getRelatedDestinationsByCountry, getStoredAuth, searchAirports, getPageBySlug, getPackages, normalizePackageToTour } from '@/utils/api';
 import { getProjectConfig } from '@/utils/projectConfig';
 
 const TRAVELLERS = [
@@ -269,6 +269,23 @@ export default function CustomizeFlow() {
   const [itinerarySubmitState, setItinerarySubmitState] = useState('idle');
   const [itinerarySubmitResponse, setItinerarySubmitResponse] = useState(null);
   const [itinerarySubmitError, setItinerarySubmitError] = useState('');
+  const [cmsPageData, setCmsPageData] = useState(null);
+
+  useEffect(() => {
+    if (step === 0 && data?.travelWith) {
+      let slugBase = data.travelWith.trim().split(' ')[0];
+      if (data.travelWith === 'NRI Package' || data.travelWith === 'Nri') slugBase = 'NRI';
+      if (data.travelWith === 'Corporate Package ( 2+ People )') slugBase = 'Corporate';
+      
+      getPageBySlug(`${slugBase}-Package`).then(res => {
+        if (res?.data) {
+          setCmsPageData(res.data);
+        } else if (res) {
+          setCmsPageData(res);
+        }
+      });
+    }
+  }, [step, data?.travelWith]);
 
   useEffect(() => {
     let mounted = true;
@@ -278,13 +295,16 @@ export default function CustomizeFlow() {
       setDestinationsError('');
 
       try {
-        const [destinations, trending, visaFree] = await Promise.all([
+        const [destinations, trending, visaFree, packages] = await Promise.all([
           getDestinations(),
           getHomeDestinations('trending'),
-          getHomeDestinations('visa-free')
+          getHomeDestinations('visa-free'),
+          getPackages({ limit: 200 })
         ]);
 
         if (!mounted) return;
+
+        const formattedTours = packages.map(normalizePackageToTour).filter(Boolean);
 
         if (destinations && destinations.length) {
           const imageMap = new Map();
@@ -301,12 +321,26 @@ export default function CustomizeFlow() {
             'https://images.unsplash.com/photo-1488085061387-422e29b40080?auto=format&fit=crop&w=800&q=80'
           ];
 
-          const merged = destinations.map((dest, i) => ({
-            ...dest,
-            feature_image: imageMap.get(dest.id) || dest.feature_image || defaultFallbacks[i % defaultFallbacks.length]
-          }));
+          const merged = destinations.map((dest, i) => {
+            const destPackages = formattedTours.filter(pkg => {
+              const pkgLoc = String(pkg.location || '').toLowerCase();
+              const pkgCountry = String(pkg.country || '').toLowerCase();
+              const destName = String(dest.name || '').toLowerCase();
+              return pkgLoc === destName || pkgCountry === destName || String(pkg.title || '').toLowerCase().includes(destName);
+            });
+            return {
+              ...dest,
+              feature_image: imageMap.get(dest.id) || dest.feature_image || defaultFallbacks[i % defaultFallbacks.length],
+              hasPackage: destPackages.length > 0,
+              packageSlug: destPackages[0]?.slug || ''
+            };
+          });
 
-          setDestinationOptions(merged.map(normalizePickerDestination));
+          setDestinationOptions(merged.map(normalizePickerDestination).map((d, i) => ({
+            ...d,
+            hasPackage: merged[i].hasPackage,
+            packageSlug: merged[i].packageSlug
+          })));
         } else {
           setDestinationOptions([]);
           setDestinationsError('No destinations are available right now.');
@@ -587,27 +621,14 @@ export default function CustomizeFlow() {
   const goNext = (overrideStep = null) => setStep(prev => overrideStep !== null ? overrideStep : prev + 1);
 
   const handleDestination = (dest) => {
-    setData(d => {
-      const updated = { ...d, destination: dest, cities: [] };
-      if (updated.travelWith) {
-        if (subStep === 'room-config') {
-          setStep(1);
-          setSubStep('room-config');
-        } else if (updated.travelWith === 'Couple') {
-          updated.rooms = [{ id: 1, adults: 2, children: 0, childAges: [] }];
-          setStep(2);
-        } else if (updated.travelWith === 'Solo') {
-          updated.rooms = [{ id: 1, adults: 1, children: 0, childAges: [] }];
-          setStep(2);
-        } else {
-          setStep(1);
-          setSubStep('room-config');
-        }
-      } else {
-        setStep(1);
-      }
-      return updated;
-    });
+    const matchedDest = destinationOptions.find(d => d.name === dest);
+    if (matchedDest?.hasPackage) {
+      router.push(`/package/${matchedDest.packageSlug}`);
+      return;
+    }
+    
+    alert('Packages are coming soon for this destination!');
+    return;
   };
 
   const handleTravellerType = (type) => {
@@ -870,6 +891,7 @@ export default function CustomizeFlow() {
               loading={destinationsLoading}
               onPick={handleDestination}
               themeClass={isCorporate ? "corporate-theme corporate" : (isNri ? "nri-theme" : (isGroup ? "purple-theme" : (isFamily ? "teal-theme" : (isPilgrim ? "saffron-theme pilgrim" : (isBudget ? "budget-theme budget" : (isTrending ? "trending-theme trending" : "blush-theme"))))))}
+              cmsPage={cmsPageData}
             />
           </div>
         </section>
@@ -885,6 +907,7 @@ export default function CustomizeFlow() {
             excludedItems={[]}
             renderBottom={renderBottom}
             themeType={isCorporate ? 'corporate' : (isNri ? 'nri' : (isGroup ? 'group' : (isFamily ? 'family' : (isPilgrim ? 'pilgrim' : (isBudget ? 'budget' : (isTrending ? 'trending' : 'honeymoon'))))))}
+            cmsPage={cmsPageData}
           />
         </div>
       );
