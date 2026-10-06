@@ -114,9 +114,17 @@ export default function HoneymoonToursSection({ themeClass = '', cmsPage = null 
     setActiveTourIndex(0); // Reset when filter changes
   }, [regionFilter]);
 
-  if (!loading && apiTours.length === 0) return null;
-
-  const activeTour = filteredTours[activeTourIndex] || filteredTours[0];
+  const activeTour = filteredTours.length > 0 ? (filteredTours[activeTourIndex] || filteredTours[0]) : {
+    id: 'mock-1',
+    title: 'Explore Amazing Destinations',
+    location: 'Global',
+    image: 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=800&q=80',
+    price: 50000,
+    duration: '5 Days / 4 Nights',
+    slug: ''
+  };
+  
+  const displayTours = filteredTours.length > 0 ? filteredTours : [activeTour];
   const primaryColor = isCorporate ? '#1E5AA8' : (isNri ? '#1759A6' : (isGroup ? '#9D4A93' : (isFamily ? '#2F7F7B' : (isPilgrim ? '#E98216' : (isBudget ? '#2E7D32' : (isTrending ? '#D32F2F' : '#D9466F'))))));
 
   const getThemeIcon = (color, size = 24) => {
@@ -147,7 +155,7 @@ export default function HoneymoonToursSection({ themeClass = '', cmsPage = null 
         className={isMobile ? "hm-thumbnails-mobile" : "hm-thumbnails"}
         style={{ display: 'flex', gap: '12px', overflowX: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
-        {filteredTours.map((t, idx) => {
+        {displayTours.map((t, idx) => {
           const isActive = idx === activeTourIndex;
           return (
             <button

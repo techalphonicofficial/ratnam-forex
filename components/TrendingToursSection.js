@@ -130,8 +130,8 @@ export default function TrendingToursSection({ themeClass = '', cmsPage = null }
 
         formattedTours = ratedTours;
         
-        // Ensure ratings exist if it's Honeymoon, Family, or Group to match old logic
-        if (isHoneymoonTheme || isFamily || isGroup) {
+        // Ensure ratings exist if it's Honeymoon, Family, Group, or NRI to match old logic
+        if (isHoneymoonTheme || isFamily || isGroup || isNri) {
           formattedTours = formattedTours.filter(
             (t) => t.reviews > 0 && t.rating >= MIN_TRENDING_RATING && t.rating <= MAX_TRENDING_RATING
           );
