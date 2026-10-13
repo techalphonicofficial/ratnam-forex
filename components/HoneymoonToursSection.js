@@ -123,7 +123,7 @@ export default function HoneymoonToursSection({ themeClass = '', cmsPage = null 
     duration: '5 Days / 4 Nights',
     slug: ''
   };
-  
+
   const displayTours = filteredTours.length > 0 ? filteredTours : [activeTour];
   const primaryColor = isCorporate ? '#1E5AA8' : (isNri ? '#1759A6' : (isGroup ? '#9D4A93' : (isFamily ? '#2F7F7B' : (isPilgrim ? '#E98216' : (isBudget ? '#2E7D32' : (isTrending ? '#D32F2F' : '#D9466F'))))));
 

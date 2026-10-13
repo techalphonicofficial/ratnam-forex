@@ -561,7 +561,19 @@ function MegaDropdown({ label, cols, isTransparent }) {
 }
 
 /* ── Side Drawer ───────────────────────────────────────── */
-function SideDrawer({ isOpen, onClose, allCategories, isLoggedIn, currentUser, onLogout, onForexOpen, companyInfo }) {
+function SideDrawer({
+  isOpen,
+  onClose,
+  allCategories,
+  isLoggedIn,
+  currentUser,
+  onLogout,
+  onForexOpen,
+  companyInfo,
+  navDomesticCols = indiaDropdownCols,
+  navInternationalCols = destinationCols,
+  navbarDestinationsCols,
+}) {
   const [expanded, setExpanded] = useState(null);
   const displayPhone = companyInfo?.contact?.phone || '+91 8031274154';
   const firstName = isLoggedIn ? currentUser?.name?.split(' ')[0] || 'Traveler' : 'Guest';
@@ -598,11 +610,14 @@ function SideDrawer({ isOpen, onClose, allCategories, isLoggedIn, currentUser, o
 
   const getNavIcon = (label = '') => {
     const key = label.toLowerCase();
+    if (key.includes('destination')) return 'DS';
+    if (key.includes('india tours') || key === 'india tours') return 'IN';
+    if (key.includes('international tours') || key === 'international tours') return 'IT';
     if (key.includes('holiday') || key.includes('package')) return 'HP';
     if (key.includes('hotel')) return 'HT';
     if (key.includes('forex')) return 'FX';
     if (key.includes('profile')) return 'MP';
-    if (key.includes('login')) return 'IN';
+    if (key.includes('login')) return 'LG';
     if (key.includes('faq')) return 'QA';
     if (key.includes('contact')) return 'CT';
     if (key.includes('blog')) return 'BL';
@@ -614,6 +629,33 @@ function SideDrawer({ isOpen, onClose, allCategories, isLoggedIn, currentUser, o
   const toggleExpand = (label) => {
     setExpanded(expanded === label ? null : label);
   };
+
+  const destinationNavGroups = [
+    {
+      label: 'Destinations',
+      hasSub: true,
+      subItems: [
+        { label: 'Indian Destinations', href: '/packages?destination=India' },
+        { label: 'International Destinations', href: '/packages?destination=International' },
+      ],
+    },
+    {
+      label: 'India Tours',
+      hasSub: true,
+      subItems: (navDomesticCols || indiaDropdownCols).flat().map((item) => ({
+        label: item.name,
+        href: item.href,
+      })),
+    },
+    {
+      label: 'International Tours',
+      hasSub: true,
+      subItems: (navInternationalCols || destinationCols).flat().map((item) => ({
+        label: item.name,
+        href: item.href,
+      })),
+    },
+  ];
 
   const navGroup = [
     {
@@ -633,10 +675,6 @@ function SideDrawer({ isOpen, onClose, allCategories, isLoggedIn, currentUser, o
     ...(isLoggedIn
       ? [{ label: 'My Profile', href: '/profile' }]
       : [{ label: 'Login', href: '/auth/login' }]),
-    // Previous static login link kept for reference:
-    // { label: 'Login', href: '/auth/login' },
-    // { label: 'Careers', href: '/careers' },
-    // { label: 'Choose Country', hasSub: true, subItems: ['USA', 'UK', 'Australia', 'UAE'] },
   ];
 
   const dynamicGroups = (allCategories || []).map(cat => ({
@@ -648,7 +686,7 @@ function SideDrawer({ isOpen, onClose, allCategories, isLoggedIn, currentUser, o
     }))
   }));
 
-  const navGroups = [...dynamicGroups, ...navGroup];
+  const navGroups = [...destinationNavGroups, ...dynamicGroups, ...navGroup];
 
   return (
     <>
@@ -892,7 +930,7 @@ export default function Navbar({ brand, companyInfo }) {
       });
       getDestinations({ type: 'international' }).then(res => {
         if (res && res.length) {
-          setNavInternationalCols(buildDestinationCols(res, '/tours?destination', 'Explore 40+ Destinations →'));
+          setNavInternationalCols(buildDestinationCols(res, '/packages?destination=International', 'Explore 40+ Destinations →'));
         }
       });
     }).catch(console.error);
@@ -932,8 +970,8 @@ export default function Navbar({ brand, companyInfo }) {
 
   const navbarDestinationsCols = useMemo(() => [
     [
-      { name: 'Indian Destination', href: '/packages?destination=India' },
-      { name: 'International Destination', href: '/tours?destination' }
+      { name: 'Indian Destinations', href: '/packages?destination=India' },
+      { name: 'International Destinations', href: '/packages?destination=International' }
     ]
   ], []);
 
@@ -2017,6 +2055,9 @@ export default function Navbar({ brand, companyInfo }) {
         onForexOpen={() => setForexOpen(true)}
         onLogout={clearAuthSession}
         companyInfo={companyInfo}
+        navDomesticCols={navDomesticCols}
+        navInternationalCols={navInternationalCols}
+        navbarDestinationsCols={navbarDestinationsCols}
       />
     </>
   );

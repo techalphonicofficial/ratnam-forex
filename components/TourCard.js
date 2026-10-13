@@ -144,39 +144,49 @@ export default function TourCard({ tour, className = '' }) {
         <h3 className="tour-card-title line-clamp-2 anonymous-pro-bold" style={{ fontSize: '14px', marginBottom: '4px' }}>{tour.title}</h3>
 
         {/* Meta */}
-        <div className="tour-card-meta" style={{ gap: '6px', marginBottom: '6px' }}>
-          <div className="tour-card-meta-item" style={{ fontSize: '11px' }}>
-            <svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12" style={{ color: 'var(--color-text-muted)' }}>
+        <div className="tour-card-meta" style={{ gap: '8px', marginBottom: '8px', flexWrap: 'wrap' }}>
+          <div className="tour-card-meta-item" style={{ fontSize: '11px', color: '#4B5563', fontWeight: 600 }}>
+            <svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12" style={{ color: 'var(--color-primary, #E98216)' }}>
               <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z" />
             </svg>
-            {tour.duration}D
+            {tour.duration} D / {tour.nights || (tour.duration > 1 ? tour.duration - 1 : 1)} N
           </div>
-          <div className="tour-card-meta-item" style={{ fontSize: '11px' }}>
-            <svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12" style={{ color: 'var(--color-text-muted)' }}>
-              <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
-            </svg>
-            {tour.groupSize} max
-          </div>
-          <div className="tour-card-meta-item" style={{ fontSize: '11px' }}>
-            <StarRating rating={tour.rating} size={11} />
-            <span style={{ fontWeight: 600, fontSize: 11, color: 'var(--color-text-primary)' }}>{tour.rating}</span>
-            <span style={{ color: 'var(--color-text-muted)', fontSize: 10 }}>({tour.reviews})</span>
+          <div className="tour-card-meta-item" style={{ fontSize: '11px', marginLeft: 'auto' }}>
+            <StarRating rating={tour.rating || 4.8} size={11} />
+            <span style={{ fontWeight: 700, fontSize: 11, color: 'var(--color-text-primary)' }}>{tour.rating || 4.8}</span>
+            <span style={{ color: 'var(--color-text-muted)', fontSize: 10 }}>({tour.reviews || 60})</span>
           </div>
         </div>
 
         <div className="tour-card-footer" style={{ padding: '10px 12px', flexDirection: 'column', gap: 10, alignItems: 'stretch' }}>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '18px', paddingBottom: '6px', marginBottom: '-4px', width: '100%', color: 'var(--color-secondary, #FF6000)', minHeight: '24px' }}>
-            {tourIcons.length > 0 && (
+          {/* Amenities row */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '6px', marginBottom: '-4px', width: '100%', color: 'var(--color-primary, #E98216)', minHeight: '22px' }}>
+            {tourIcons.length > 0 ? (
               tourIcons.slice(0, 5).map((iconObj, i) => (
                 <i key={i} className={`bi ${iconObj.icon}`} title={iconObj.title || iconObj.description}></i>
               ))
+            ) : (
+              <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', padding: '0 4px', color: '#d97706' }}>
+                <span title="Flights Included" style={{ display: 'flex', alignItems: 'center', gap: 2, fontSize: 12 }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+                </span>
+                <span title="Hotel / Resort" style={{ display: 'flex', alignItems: 'center', gap: 2, fontSize: 12 }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M7 13c1.66 0 3-1.34 3-3S8.66 7 7 7s-3 1.34-3 3 1.34 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.21-1.79-4-4-4z"/></svg>
+                </span>
+                <span title="Meals Included" style={{ display: 'flex', alignItems: 'center', gap: 2, fontSize: 12 }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/></svg>
+                </span>
+                <span title="Transfers / Sightseeing" style={{ display: 'flex', alignItems: 'center', gap: 2, fontSize: 12 }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/></svg>
+                </span>
+              </div>
             )}
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', width: '100%', paddingBottom: 4 }}>
             <div>
-              <div style={{ fontSize: 9, color: 'var(--color-text-muted)', marginBottom: 2, textTransform: 'uppercase', letterSpacing: 0.5 }}>All inclusive price</div>
+              <div style={{ fontSize: 9, color: 'var(--color-text-muted)', marginBottom: 2, textTransform: 'uppercase', letterSpacing: 0.5, fontWeight: 600 }}>ALL INCLUSIVE PRICE</div>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
                 <span style={{ fontSize: 18, fontWeight: 700, color: '#b98c56' }}>₹{formatPriceNumber(tour.price)}</span>
                 <span style={{ fontSize: 12, color: '#b98c56', fontWeight: 600 }}>*</span>
@@ -192,14 +202,14 @@ export default function TourCard({ tour, className = '' }) {
                 setIsPopoverOpen(!isPopoverOpen);
               }}
             >
-              <span className="popover-trigger">Trip Highlights</span>
+              <span className="popover-trigger" style={{ borderRadius: 999, padding: '3px 10px', fontSize: 10, textTransform: 'capitalize' }}>Price Highlights</span>
               <div className="popover-box align-right">
-                <div style={{ fontWeight: 700, marginBottom: 8, color: '#333', fontSize: 12 }}>Trip Highlights</div>
+                <div style={{ fontWeight: 700, marginBottom: 8, color: '#333', fontSize: 12 }}>Package Highlights</div>
                 <ul style={{ margin: 0, paddingLeft: 16, color: 'var(--color-text-muted)', fontSize: 12, lineHeight: 1.5, whiteSpace: 'normal', textAlign: 'left', fontWeight: 500 }}>
                   {tripHighlights.length > 0 ? (
                     tripHighlights.slice(0, 5).map((hl, i) => <li key={i} style={{ marginBottom: 4 }}>{hl}</li>)
                   ) : (
-                    <li style={{ listStyle: 'none', marginLeft: -16 }}>No highlights specified yet.</li>
+                    <li style={{ listStyle: 'none', marginLeft: -16 }}>All flights, hotels, transfers & sightseeing included.</li>
                   )}
                 </ul>
               </div>
@@ -209,7 +219,7 @@ export default function TourCard({ tour, className = '' }) {
           <div style={{ display: 'flex', gap: 8, width: '100%' }}>
             <Link href={getTourViewHref(tour, 'itinerary')} onClick={(e) => e.stopPropagation()} className="tc-btn-view">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
-              View Tour
+              View Details
             </Link>
             <Link href={getTourViewHref(tour, 'itinerary') + '#booking-sidebar'} onClick={(e) => e.stopPropagation()} className="tc-btn-book">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>

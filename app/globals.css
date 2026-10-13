@@ -261,7 +261,7 @@ body {
   color: var(--color-text-primary);
   background: var(--color-bg);
   transition: background var(--transition-base), color var(--transition-base);
-  overflow-x: hidden;
+  overflow-x: clip;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -2396,7 +2396,7 @@ nav,
 
 html,
 body {
-  overflow-x: hidden;
+  overflow-x: clip;
   width: 100%;
   position: relative;
 }

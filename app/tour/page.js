@@ -1,5 +1,6 @@
-import PackagesClient from '../packages/PackagesClient';
+import ToursPage from '../tours/page';
 
 export default function TourPage() {
-  return <PackagesClient basePath="/tours" />;
+  return <ToursPage />;
 }
+
