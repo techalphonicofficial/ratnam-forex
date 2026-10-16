@@ -263,6 +263,12 @@ export default function CustomerReviewsSection({ themeClass = '' }) {
         )}
       </div>
       <style>{`
+        .theme-underline-heading::after {
+          background-color: var(--color-primary, #AA8453) !important;
+        }
+        .theme-underline-heading::before {
+          border-bottom-color: var(--color-primary, #AA8453) !important;
+        }
         @media (max-width: 768px) {
           .cr-left-col {
             text-align: center;

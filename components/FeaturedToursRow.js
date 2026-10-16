@@ -153,6 +153,7 @@ export default function RecommendedPackages() {
           -ms-overflow-style: none;
           transition: opacity 0.18s ease;
           scroll-snap-type: x proximity;
+          align-items: stretch;
         }
         .booking-cards-wrap::-webkit-scrollbar { display: none; }
         .booking-cards-wrap.hidden { opacity: 0; }
@@ -244,6 +245,10 @@ export default function RecommendedPackages() {
           box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
           transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
           scroll-snap-align: start;
+          display: flex;
+          flex-direction: column;
+          align-self: stretch;
+          height: auto;
         }
         
         .recent-booking-card:hover {

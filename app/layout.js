@@ -16,6 +16,12 @@ const projectConfig = getProjectConfig();
 
 export const dynamic = 'force-dynamic';
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+};
+
 export const metadata = {
   metadataBase: new URL('https://wanderlust-tours.com'),
   title: {

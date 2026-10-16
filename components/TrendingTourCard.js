@@ -29,7 +29,12 @@ export default function TrendingTourCard({ tour, className = '', isCorporate = f
   const reviewsCount = tour.reviews || 0;
   
   const tripHighlights = Array.isArray(tour?.highlights) ? tour.highlights : [];
-  const tourIcons = Array.isArray(tour?.icons) ? tour.icons : [];
+  const tourIcons = Array.isArray(tour?.icons)
+    ? tour.icons.filter((item) => {
+        if (typeof item === 'string') return item.trim().length > 0;
+        return item && typeof item.icon === 'string' && item.icon.trim().length > 0;
+      })
+    : [];
 
   return (
     <div 
@@ -246,11 +251,26 @@ export default function TrendingTourCard({ tour, className = '', isCorporate = f
           </div>
         </div>
 
-        <div className="ttc-icons" style={{ minHeight: '20px' }}>
-          {tourIcons.length > 0 && (
-            tourIcons.slice(0, 5).map((iconObj, i) => (
-              <i key={i} className={`bi ${iconObj.icon}`} title={iconObj.title || iconObj.description} style={{ fontSize: '16px' }}></i>
-            ))
+        <div className="ttc-icons" style={{ minHeight: '20px', visibility: tourIcons.length > 0 ? 'visible' : 'hidden' }} aria-hidden={tourIcons.length === 0}>
+          {tourIcons.length > 0 ? (
+            tourIcons.slice(0, 5).map((iconObj, i) => {
+              const rawIcon = typeof iconObj === 'string' ? iconObj.trim() : (iconObj?.icon?.trim() || '');
+              const formattedClass = rawIcon.startsWith('bi ')
+                ? rawIcon
+                : rawIcon.startsWith('bi-')
+                ? `bi ${rawIcon}`
+                : `bi bi-${rawIcon}`;
+              return (
+                <i
+                  key={i}
+                  className={formattedClass}
+                  title={typeof iconObj === 'object' ? (iconObj?.title || iconObj?.description) : ''}
+                  style={{ fontSize: '16px' }}
+                />
+              );
+            })
+          ) : (
+            <span style={{ fontSize: '16px', lineHeight: 1, userSelect: 'none' }}>&nbsp;</span>
           )}
         </div>
 
@@ -265,9 +285,9 @@ export default function TrendingTourCard({ tour, className = '', isCorporate = f
               setIsPopoverOpen(!isPopoverOpen);
             }}
           >
-            <button className="ttc-price-btn">Trip Highlights</button>
+            <button className="ttc-price-btn">Tour Highlights</button>
             <div className="popover-box">
-              <div style={{ fontWeight: 700, marginBottom: 8, color: '#333', fontSize: 12 }}>Trip Highlights</div>
+              <div style={{ fontWeight: 700, marginBottom: 8, color: '#333', fontSize: 12 }}>Tour Highlights</div>
               <ul style={{ margin: 0, paddingLeft: 16, color: '#666', fontSize: 12, lineHeight: 1.5, whiteSpace: 'normal', textAlign: 'left', fontWeight: 500 }}>
                 {tripHighlights.length > 0 ? (
                   tripHighlights.slice(0, 5).map((hl, i) => <li key={i} style={{ marginBottom: 4 }}>{hl}</li>)

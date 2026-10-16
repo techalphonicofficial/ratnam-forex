@@ -50,6 +50,15 @@ export default async function SeoLinksSection() {
           position: relative;
         }
 
+        .seo-category-title.theme-underline-heading::after,
+        .theme-underline-heading::after {
+          background-color: var(--color-primary, #AA8453) !important;
+        }
+        .seo-category-title.theme-underline-heading::before,
+        .theme-underline-heading::before {
+          border-bottom-color: var(--color-primary, #AA8453) !important;
+        }
+
         .seo-links-grid {
           display: grid;
           grid-template-columns: repeat(4, 1fr);

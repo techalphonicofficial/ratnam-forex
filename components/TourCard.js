@@ -39,7 +39,12 @@ export default function TourCard({ tour, className = '' }) {
     : 0;
 
   const tripHighlights = Array.isArray(tour?.highlights) ? tour.highlights : [];
-  const tourIcons = Array.isArray(tour?.icons) ? tour.icons : [];
+  const tourIcons = Array.isArray(tour?.icons)
+    ? tour.icons.filter((item) => {
+        if (typeof item === 'string') return item.trim().length > 0;
+        return item && typeof item.icon === 'string' && item.icon.trim().length > 0;
+      })
+    : [];
   const router = useRouter();
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
@@ -141,7 +146,7 @@ export default function TourCard({ tour, className = '' }) {
           {tour.location}
         </div>
 
-        <h3 className="tour-card-title line-clamp-2 anonymous-pro-bold" style={{ fontSize: '14px', marginBottom: '4px' }}>{tour.title}</h3>
+        <h3 className="tour-card-title line-clamp-2 anonymous-pro-bold" style={{ fontSize: '14px', marginBottom: '4px', minHeight: '38px', display: 'flex', alignItems: 'center' }}>{tour.title}</h3>
 
         {/* Meta */}
         <div className="tour-card-meta" style={{ gap: '8px', marginBottom: '8px', flexWrap: 'wrap' }}>
@@ -160,27 +165,42 @@ export default function TourCard({ tour, className = '' }) {
 
         <div className="tour-card-footer" style={{ padding: '10px 12px', flexDirection: 'column', gap: 10, alignItems: 'stretch' }}>
 
-          {/* Amenities row */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '6px', marginBottom: '-4px', width: '100%', color: 'var(--color-primary, #E98216)', minHeight: '22px' }}>
+          {/* Amenities row - dynamic icons from backend (preserves exact height if card has no icons) */}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: tourIcons.length >= 4 ? 'space-between' : 'flex-start',
+              gap: tourIcons.length < 4 ? '14px' : undefined,
+              alignItems: 'center',
+              paddingBottom: '6px',
+              marginBottom: '-4px',
+              width: '100%',
+              color: 'var(--color-primary, #E98216)',
+              minHeight: '24px',
+              visibility: tourIcons.length > 0 ? 'visible' : 'hidden',
+            }}
+            aria-hidden={tourIcons.length === 0}
+          >
             {tourIcons.length > 0 ? (
-              tourIcons.slice(0, 5).map((iconObj, i) => (
-                <i key={i} className={`bi ${iconObj.icon}`} title={iconObj.title || iconObj.description}></i>
-              ))
+              tourIcons.slice(0, 5).map((iconObj, i) => {
+                const rawIcon = typeof iconObj === 'string' ? iconObj.trim() : (iconObj?.icon?.trim() || '');
+                const formattedClass = rawIcon.startsWith('bi ')
+                  ? rawIcon
+                  : rawIcon.startsWith('bi-')
+                  ? `bi ${rawIcon}`
+                  : `bi bi-${rawIcon}`;
+                const title = typeof iconObj === 'string' ? '' : (iconObj?.title || iconObj?.description || '');
+                return (
+                  <i
+                    key={i}
+                    className={formattedClass}
+                    title={title}
+                    style={{ fontSize: '15px' }}
+                  />
+                );
+              })
             ) : (
-              <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', padding: '0 4px', color: '#d97706' }}>
-                <span title="Flights Included" style={{ display: 'flex', alignItems: 'center', gap: 2, fontSize: 12 }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
-                </span>
-                <span title="Hotel / Resort" style={{ display: 'flex', alignItems: 'center', gap: 2, fontSize: 12 }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M7 13c1.66 0 3-1.34 3-3S8.66 7 7 7s-3 1.34-3 3 1.34 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.21-1.79-4-4-4z"/></svg>
-                </span>
-                <span title="Meals Included" style={{ display: 'flex', alignItems: 'center', gap: 2, fontSize: 12 }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/></svg>
-                </span>
-                <span title="Transfers / Sightseeing" style={{ display: 'flex', alignItems: 'center', gap: 2, fontSize: 12 }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/></svg>
-                </span>
-              </div>
+              <span style={{ fontSize: '15px', lineHeight: 1, userSelect: 'none' }}>&nbsp;</span>
             )}
           </div>
 
@@ -202,9 +222,9 @@ export default function TourCard({ tour, className = '' }) {
                 setIsPopoverOpen(!isPopoverOpen);
               }}
             >
-              <span className="popover-trigger" style={{ borderRadius: 999, padding: '3px 10px', fontSize: 10, textTransform: 'capitalize' }}>Price Highlights</span>
+              <span className="popover-trigger" style={{ borderRadius: 999, padding: '3px 10px', fontSize: 10, textTransform: 'capitalize' }}>Tour Highlights</span>
               <div className="popover-box align-right">
-                <div style={{ fontWeight: 700, marginBottom: 8, color: '#333', fontSize: 12 }}>Package Highlights</div>
+                <div style={{ fontWeight: 700, marginBottom: 8, color: '#333', fontSize: 12 }}>Tour Highlights</div>
                 <ul style={{ margin: 0, paddingLeft: 16, color: 'var(--color-text-muted)', fontSize: 12, lineHeight: 1.5, whiteSpace: 'normal', textAlign: 'left', fontWeight: 500 }}>
                   {tripHighlights.length > 0 ? (
                     tripHighlights.slice(0, 5).map((hl, i) => <li key={i} style={{ marginBottom: 4 }}>{hl}</li>)

@@ -141,9 +141,25 @@ function GramCard({ photo, index }) {
   );
 }
 
-export default function GramSection({ videoReviewsData, themeClass = '', cmsPage = null }) {
+export default function GramSection({ videoReviewsData, themeClass = '', cmsPage = null, inContainer = false, heading = null }) {
   const scrollRef = useRef(null);
   const [reels, setReels] = useState(gramReels);
+  const [canScroll, setCanScroll] = useState(false);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const checkScrollable = () => {
+      setCanScroll(el.scrollWidth > el.clientWidth + 10);
+    };
+    checkScrollable();
+    const timer = setTimeout(checkScrollable, 300);
+    window.addEventListener('resize', checkScrollable);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', checkScrollable);
+    };
+  }, [reels, inContainer]);
 
   const activeData = useMemo(() => {
     return (cmsPage?.details?.find(d => d.key === 'social_media')) || videoReviewsData;
@@ -236,7 +252,7 @@ export default function GramSection({ videoReviewsData, themeClass = '', cmsPage
     scrollRef.current.scrollBy({ left: dir * scrollAmount, behavior: 'smooth' });
   }, []);
 
-  const headingText = activeData?.json_data?.heading_content || activeData?.title || 'From Social Media';
+  const headingText = heading || activeData?.json_data?.heading_content || activeData?.title || 'Love From The Gram';
 
   const descSource = activeData?.json_data?.block_desc || activeData?.description || videoReviewsData?.description || '';
   let googleRating = '4.6';
@@ -268,11 +284,11 @@ export default function GramSection({ videoReviewsData, themeClass = '', cmsPage
   }
 
   return (
-    <section className={themeClass} style={{
+    <section className={`${themeClass} ${inContainer ? 'gram-in-container' : 'gram-section-not-in-container'}`} style={{
       background: 'transparent',
-      padding: '80px 0 100px',
+      padding: inContainer ? '10px 0 20px' : '80px 0 100px',
       position: 'relative',
-      overflow: 'hidden',
+      overflow: 'visible',
     }}>
       <style>{`
         .gram-heading {
@@ -282,6 +298,12 @@ export default function GramSection({ videoReviewsData, themeClass = '', cmsPage
           margin: 0 0 16px;
           text-transform: uppercase;
           letter-spacing: 1px;
+        }
+        .theme-underline-heading::after {
+          background-color: var(--color-primary, #AA8453) !important;
+        }
+        .theme-underline-heading::before {
+          border-bottom-color: var(--color-primary, #AA8453) !important;
         }
         .gram-card {
           width: 220px;
@@ -302,16 +324,89 @@ export default function GramSection({ videoReviewsData, themeClass = '', cmsPage
           scroll-snap-align: start;
           flex: 0 0 auto;
         }
+        .gram-in-container .gram-heading {
+          font-size: 34px !important;
+          margin: 0 0 14px !important;
+        }
+        .gram-in-container .gram-card {
+          width: 220px !important;
+        }
+        .gram-in-container .gram-card-img {
+          height: 380px !important;
+        }
+        .gram-in-container .gram-scroll-area {
+          gap: 20px !important;
+          padding: 20px 4px 28px !important;
+          display: flex !important;
+          justify-content: center !important;
+        }
+        .gram-arrow-btn {
+          position: absolute;
+          top: 45%;
+          transform: translateY(-50%);
+          z-index: 10;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.96);
+          border: 1.5px solid #e2e8f0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+          color: var(--color-text-primary, #0f172a);
+          transition: all 0.2s ease;
+          padding: 0;
+        }
+        .gram-arrow-btn:hover {
+          background: var(--brand-primary, #0f766e);
+          color: white;
+          border-color: var(--brand-primary, #0f766e);
+          transform: translateY(-50%) scale(1.08);
+          box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+        }
+        .gram-arrow-prev {
+          left: -18px;
+        }
+        .gram-arrow-next {
+          right: -18px;
+        }
+        .gram-section-not-in-container .gram-arrow-prev {
+          left: 20px;
+        }
+        .gram-section-not-in-container .gram-arrow-next {
+          right: 20px;
+        }
+        @media (max-width: 1220px) {
+          .gram-in-container .gram-scroll-area {
+            justify-content: flex-start !important;
+            padding-left: 20px !important;
+            padding-right: 20px !important;
+          }
+        }
+        @media (max-width: 991px) {
+          .gram-arrow-prev {
+            left: 8px !important;
+          }
+          .gram-arrow-next {
+            right: 8px !important;
+          }
+        }
         @media (max-width: 768px) {
           .gram-heading {
             font-size: 26px;
             padding: 0 16px;
           }
+          .gram-in-container .gram-card {
+            width: 200px !important;
+          }
+          .gram-in-container .gram-card-img {
+            height: 340px !important;
+          }
           .gram-scroll-area {
             gap: 0 !important;
-          }
-          .gram-spacer {
-            display: none !important;
+            justify-content: flex-start !important;
           }
           .gram-card-wrapper {
             width: 100vw !important;
@@ -319,12 +414,32 @@ export default function GramSection({ videoReviewsData, themeClass = '', cmsPage
             display: flex;
             justify-content: center;
           }
+          .gram-arrow-btn {
+            width: 36px;
+            height: 36px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.16);
+            background: rgba(255, 255, 255, 0.98);
+          }
+          .gram-arrow-prev {
+            left: 10px !important;
+          }
+          .gram-arrow-next {
+            right: 10px !important;
+          }
+        }
+        @media (max-width: 480px) {
+          .gram-arrow-prev {
+            left: 8px !important;
+          }
+          .gram-arrow-next {
+            right: 8px !important;
+          }
         }
       `}</style>
-      <div style={{ maxWidth: 1200, margin: '0 auto', position: 'relative' }}>
+      <div style={{ maxWidth: inContainer ? '100%' : 1200, margin: '0 auto', position: 'relative' }}>
 
         {/* Header Section */}
-        <div style={{ textAlign: 'center', marginBottom: 48 }}>
+        <div style={{ textAlign: 'center', marginBottom: inContainer ? 28 : 48 }}>
           <h2 className="theme-underline-heading gram-heading">
             {headingText}
           </h2>
@@ -377,29 +492,31 @@ export default function GramSection({ videoReviewsData, themeClass = '', cmsPage
         {/* Carousel Section */}
         <div style={{ position: 'relative' }}>
           {/* Navigation Arrows */}
-          <button
-            onClick={() => scroll(-1)}
-            style={{
-              position: 'absolute', left: 40, top: '45%', transform: 'translateY(-50%)', zIndex: 10,
-              width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,0.8)', border: 'none',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
-              color: 'var(--color-text-primary)', fontSize: 18, paddingBottom: 2, transition: 'all 0.2s ease'
-            }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'var(--brand-primary)'; e.currentTarget.style.color = 'white'; e.currentTarget.style.transform = 'translateY(-50%) scale(1.1)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(46,74,59,0.4)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.8)'; e.currentTarget.style.color = 'var(--color-text-primary)'; e.currentTarget.style.transform = 'translateY(-50%)'; e.currentTarget.style.boxShadow = '0 4px 10px rgba(0,0,0,0.3)'; }}
-          >❮</button>
+          {(!inContainer || canScroll) ? (
+            <>
+              <button
+                type="button"
+                onClick={() => scroll(-1)}
+                className="gram-arrow-btn gram-arrow-prev"
+                aria-label="Scroll left"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="15 18 9 12 15 6" />
+                </svg>
+              </button>
 
-          <button
-            onClick={() => scroll(1)}
-            style={{
-              position: 'absolute', right: 40, top: '45%', transform: 'translateY(-50%)', zIndex: 10,
-              width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,0.8)', border: 'none',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
-              color: 'var(--color-text-primary)', fontSize: 18, paddingBottom: 2, transition: 'all 0.2s ease'
-            }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'var(--brand-primary)'; e.currentTarget.style.color = 'white'; e.currentTarget.style.transform = 'translateY(-50%) scale(1.1)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(46,74,59,0.4)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.8)'; e.currentTarget.style.color = 'var(--color-text-primary)'; e.currentTarget.style.transform = 'translateY(-50%)'; e.currentTarget.style.boxShadow = '0 4px 10px rgba(0,0,0,0.3)'; }}
-          >❯</button>
+              <button
+                type="button"
+                onClick={() => scroll(1)}
+                className="gram-arrow-btn gram-arrow-next"
+                aria-label="Scroll right"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+              </button>
+            </>
+          ) : null}
 
           {/* Cards Wrapper */}
           <div
@@ -420,13 +537,13 @@ export default function GramSection({ videoReviewsData, themeClass = '', cmsPage
               scrollBehavior: 'smooth',
             }}
           >
-            <div className="gram-spacer" />
+            {!inContainer && <div className="gram-spacer" />}
             {reels.map((photo, i) => (
-              <div key={i} className="gram-card-wrapper">
+              <div key={photo.id ?? i} className="gram-card-wrapper">
                 <GramCard photo={photo} index={i} />
               </div>
             ))}
-            <div className="gram-spacer" />
+            {!inContainer && <div className="gram-spacer" />}
           </div>
         </div>
 

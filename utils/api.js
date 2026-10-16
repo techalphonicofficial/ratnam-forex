@@ -15,13 +15,64 @@ const apiClient = axios.create({
   },
 });
 
+export const decodeJwtPayload = (token) => {
+  if (!token || typeof token !== 'string') return null;
+  try {
+    const parts = token.trim().split('.');
+    if (parts.length < 2) return null;
+    const base64Url = parts[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const padded = base64.padEnd(base64.length + (4 - (base64.length % 4)) % 4, '=');
+    let jsonStr;
+    if (typeof atob === 'function') {
+      jsonStr = decodeURIComponent(
+        atob(padded)
+          .split('')
+          .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
+    } else if (typeof Buffer !== 'undefined') {
+      jsonStr = Buffer.from(padded, 'base64').toString('utf8');
+    } else {
+      return null;
+    }
+    return JSON.parse(jsonStr);
+  } catch {
+    return null;
+  }
+};
+
+export const isJwtExpired = (token, bufferSeconds = 30) => {
+  if (!token || typeof token !== 'string') return true;
+  const payload = decodeJwtPayload(token);
+  if (!payload || typeof payload !== 'object') return true;
+  if (!payload.exp) return false;
+  const nowInSeconds = Math.floor(Date.now() / 1000);
+  return payload.exp <= nowInSeconds + bufferSeconds;
+};
+
 export const getStoredToken = () => {
   if (typeof window === 'undefined') return null;
-  return localStorage.getItem(TOKEN_STORAGE_KEY);
+  const token = localStorage.getItem(TOKEN_STORAGE_KEY);
+  if (!token) return null;
+
+  if (isJwtExpired(token)) {
+    clearAuthSession();
+    return null;
+  }
+
+  return token;
 };
 
 export const getStoredAuth = () => {
   if (typeof window === 'undefined') return null;
+  const token = localStorage.getItem(TOKEN_STORAGE_KEY);
+  if (!token || isJwtExpired(token)) {
+    if (token) {
+      clearAuthSession();
+    }
+    return null;
+  }
 
   try {
     const auth = localStorage.getItem(AUTH_STORAGE_KEY);
@@ -48,6 +99,18 @@ export const clearAuthSession = () => {
   delete apiClient.defaults.headers.common.Authorization;
   window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));
 };
+
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const status = error.response?.status;
+    const msg = String(error.response?.data?.message || '').toLowerCase();
+    if (status === 401 || status === 403 || msg.includes('token') || msg.includes('expired')) {
+      clearAuthSession();
+    }
+    return Promise.reject(error);
+  }
+);
 
 apiClient.interceptors.request.use((config) => {
   const token = getStoredToken();
@@ -800,7 +863,11 @@ export const createPackageBooking = async (payload) => {
   const token = getStoredToken();
 
   if (!token) {
-    return { success: false, message: 'Please login before booking this package.' };
+    return {
+      success: false,
+      isAuthError: true,
+      message: 'Please login before booking this package.',
+    };
   }
 
   try {
@@ -808,12 +875,33 @@ export const createPackageBooking = async (payload) => {
       headers: {
         accept: '*/*',
         'Content-Type': 'application/json',
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        Authorization: `Bearer ${token}`,
       },
       validateStatus: () => true,
     });
 
-    return response.data || { success: false, message: 'Unable to create package booking' };
+    const data = response.data || {};
+    const status = response.status;
+    const msg = String(data.message || '').toLowerCase();
+    const isAuthError =
+      status === 401 ||
+      status === 403 ||
+      msg.includes('token') ||
+      msg.includes('unauthorized') ||
+      msg.includes('access token');
+
+    if (isAuthError) {
+      clearAuthSession();
+      return {
+        success: false,
+        isAuthError: true,
+        status,
+        message: data.message || 'Your session has expired. Please log in again to complete your booking.',
+        data: data.data,
+      };
+    }
+
+    return data || { success: false, message: 'Unable to create package booking' };
   } catch (error) {
     console.warn('Package booking unavailable:', error?.message || error);
     return { success: false, message: 'Unable to create package booking' };
@@ -1135,13 +1223,75 @@ export const normalizePackageToTour = (pkg) => {
 
   let packageIcons = [];
   let packageTripHighlights = [];
-  if (pkg.highlights) {
-    if (Array.isArray(pkg.highlights.content)) {
-      packageIcons = pkg.highlights.content;
+
+  let highlightsObj = pkg.highlights;
+  if (typeof highlightsObj === 'string') {
+    try {
+      highlightsObj = JSON.parse(highlightsObj);
+    } catch {
+      highlightsObj = null;
     }
-    if (Array.isArray(pkg.highlights.trip_highlights)) {
-      packageTripHighlights = pkg.highlights.trip_highlights.map(h => h.title);
+  }
+
+  if (highlightsObj) {
+    let contentList = highlightsObj.content;
+    if (typeof contentList === 'string') {
+      try {
+        contentList = JSON.parse(contentList);
+      } catch {
+        contentList = [];
+      }
     }
+    if (Array.isArray(contentList)) {
+      packageIcons = contentList
+        .filter((c) => {
+          if (!c) return false;
+          if (typeof c === 'string') return c.trim().length > 0;
+          return typeof c.icon === 'string' && c.icon.trim().length > 0;
+        })
+        .map((c) => {
+          if (typeof c === 'string') {
+            return { icon: c.trim(), title: '', description: '' };
+          }
+          return {
+            ...c,
+            icon: c.icon.trim(),
+          };
+        });
+    }
+
+    let tripHlList = highlightsObj.trip_highlights;
+    if (typeof tripHlList === 'string') {
+      try {
+        tripHlList = JSON.parse(tripHlList);
+      } catch {
+        tripHlList = [];
+      }
+    }
+    if (Array.isArray(tripHlList)) {
+      packageTripHighlights = tripHlList
+        .map((h) => (typeof h === 'string' ? h : h.title || h.description))
+        .filter(Boolean);
+
+      if (packageIcons.length === 0) {
+        packageIcons = tripHlList
+          .filter((h) => h && typeof h.icon === 'string' && h.icon.trim().length > 0)
+          .map((h) => ({
+            ...h,
+            icon: h.icon.trim(),
+          }));
+      }
+    }
+  }
+
+  if (packageIcons.length === 0 && Array.isArray(pkg.icons)) {
+    packageIcons = pkg.icons
+      .filter((c) => {
+        if (!c) return false;
+        if (typeof c === 'string') return c.trim().length > 0;
+        return typeof c.icon === 'string' && c.icon.trim().length > 0;
+      })
+      .map((c) => (typeof c === 'string' ? { icon: c.trim() } : { ...c, icon: c.icon.trim() }));
   }
 
   return {

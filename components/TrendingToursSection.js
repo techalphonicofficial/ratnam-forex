@@ -597,8 +597,8 @@ export default function TrendingToursSection({ themeClass = '', cmsPage = null }
             z-index: 10;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
           }
-          .hm-scroll-left { left: -10px; }
-          .hm-scroll-right { right: -10px; }
+          .hm-scroll-left { left: 4px; }
+          .hm-scroll-right { right: 4px; }
         }
       `}</style>
     </section>
