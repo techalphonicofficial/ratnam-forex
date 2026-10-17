@@ -7,9 +7,11 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import GramSection from '@/components/GramSection';
 import RouteMapModal from '@/components/RouteMapModal';
 import TourCard from '@/components/TourCard';
+import { blogsData } from '@/data/blogs';
 import {
   createPackageBooking,
   createRazorpayOrder,
+  getBlogs,
   getHomePage,
   getMediaUrl,
   getPackageBySlug,
@@ -24,6 +26,28 @@ import {
   validateBookingCoupon,
   verifyRazorpayPayment,
 } from '@/utils/api';
+
+const FALLBACK_BLOG_IMAGE = 'https://images.unsplash.com/photo-1500835556837-99ac94a94552?auto=format&fit=crop&q=80&w=1200';
+
+const stripBlogHtml = (val = '') => String(val).replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+
+const formatBlogDate = (val) => {
+  if (!val) return 'Travel Guide';
+  const date = new Date(val);
+  if (Number.isNaN(date.getTime())) return String(val);
+  return new Intl.DateTimeFormat('en-IN', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  }).format(date);
+};
+
+const resolveBlogImage = (b) => (
+  getMediaUrl(b?.featured_image) ||
+  getMediaUrl(b?.details?.find?.((d) => d?.image)?.image) ||
+  b?.image ||
+  FALLBACK_BLOG_IMAGE
+);
 
 const DEFAULT_PACKAGE_SLUGS = {
   paris: 'paris-honeymoon-special-6n7d',
@@ -421,14 +445,58 @@ const getDestinationFallbackMedia = (pkg) => {
   return DESTINATION_GALLERY_FALLBACKS.default;
 };
 
+const isVideoUrl = (url) => /\.(mp4|webm|ogg|mov|m4v)(\?.*)?$/i.test(String(url || ''));
+
+const isVideoMediaItem = (item) => {
+  if (!item) return false;
+  if (typeof item === 'string') return isVideoUrl(item);
+  const mediaType = String(item.media_type || item.type || '').toLowerCase();
+  if (mediaType === 'video') return true;
+  return isVideoUrl(item.url || item.image || item.path || item.video);
+};
+
 const getPackageMedia = (pkg) => {
-  const galleryItems = (pkg?.gallery || []).map((item) => ({
-    id: item.id || item.url,
-    type: item.media_type === 'video' || /\.(mp4|webm|ogg)$/i.test(item.url || '') ? 'video' : 'image',
-    url: getMediaUrl(item.url || item.image || item.path),
-    poster: getMediaUrl(item.poster_url),
-    alt: item.alt_text || item.label || pkg?.name || 'Package media',
-  })).filter((item) => item.url);
+  let rawGallery = pkg?.gallery;
+  if (typeof rawGallery === 'string') {
+    try {
+      rawGallery = JSON.parse(rawGallery);
+    } catch {
+      rawGallery = [];
+    }
+  }
+  if (!Array.isArray(rawGallery)) {
+    rawGallery = [];
+  }
+
+  const galleryItems = rawGallery.map((item) => {
+    const rawUrl = typeof item === 'string' ? item : (item.url || item.image || item.path || item.video);
+    const isVideo = isVideoMediaItem(item);
+    return {
+      id: (typeof item === 'object' && item?.id) ? item.id : rawUrl,
+      type: isVideo ? 'video' : 'image',
+      url: getMediaUrl(rawUrl),
+      poster: (typeof item === 'object' && item?.poster_url) ? getMediaUrl(item.poster_url) : '',
+      alt: (typeof item === 'object' && (item.alt_text || item.label)) || pkg?.name || 'Package media',
+      is_primary: typeof item === 'object' ? Boolean(item.is_primary) : false,
+    };
+  }).filter((item) => item.url);
+
+  const galleryVideos = galleryItems.filter((item) => item.type === 'video');
+
+  // Also check if pkg itself has a direct video field like pkg.video or pkg.video_url
+  if (galleryVideos.length === 0 && (pkg?.video || pkg?.video_url || pkg?.main_video)) {
+    const vUrl = getMediaUrl(pkg.video || pkg.video_url || pkg.main_video);
+    if (vUrl) {
+      galleryVideos.push({
+        id: 'pkg-main-video',
+        type: 'video',
+        url: vUrl,
+        poster: getMediaUrl(pkg?.main_image),
+        alt: pkg?.name || 'Package video',
+        is_primary: true,
+      });
+    }
+  }
 
   const imageItems = [
     {
@@ -469,7 +537,7 @@ const getPackageMedia = (pkg) => {
 
   return {
     images: uniqueImages.length ? uniqueImages : [{ id: 'fallback', type: 'image', url: fallbackImage, alt: 'Travel package' }],
-    videos: galleryItems.filter((item) => item.type === 'video'),
+    videos: galleryVideos,
   };
 };
 
@@ -696,12 +764,73 @@ function TransferConnector({ destinationName }) {
   );
 }
 
+const NAV_HEADINGS = [
+  { id: 'itinerary-overview', label: 'Overview', icon: 'overview' },
+  { id: 'itinerary-tour-highlights', label: 'Tour highlights', icon: 'highlights' },
+  { id: 'itinerary-day-wise', label: 'Itinerary', icon: 'itinerary' },
+  { id: 'itinerary-addons', label: "Add On's", icon: 'addons' },
+  { id: 'itinerary-inclusions-exclusions', label: 'Inclusions & Exclusions', icon: 'inclusions' },
+  { id: 'itinerary-blogs-articles', label: 'Blogs & Articles', icon: 'blogs' },
+];
+
+function renderNavIcon(icon) {
+  switch (icon) {
+    case 'overview':
+      return (
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="16" x2="12" y2="12" />
+          <line x1="12" y1="8" x2="12.01" y2="8" />
+        </svg>
+      );
+    case 'highlights':
+      return (
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+        </svg>
+      );
+    case 'itinerary':
+      return (
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+          <line x1="16" y1="2" x2="16" y2="6" />
+          <line x1="8" y1="2" x2="8" y2="6" />
+          <line x1="3" y1="10" x2="21" y2="10" />
+        </svg>
+      );
+    case 'addons':
+      return (
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="16" />
+          <line x1="8" y1="12" x2="16" y2="12" />
+        </svg>
+      );
+    case 'inclusions':
+      return (
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M9 11l3 3L22 4" />
+          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+        </svg>
+      );
+    case 'blogs':
+      return (
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+        </svg>
+      );
+    default:
+      return null;
+  }
+}
+
 function ItineraryStyles() {
   return (
     <style jsx global>{`
       .itn-page {
         background: #ffffff;
-        padding: 104px 0 80px;
+        padding: 144px 0 130px;
         color: var(--color-text-primary, #0f172a);
         font-family: inherit, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         font-size: 14px;
@@ -717,15 +846,111 @@ function ItineraryStyles() {
       .itn-hero-banner {
         position: relative;
         width: 100%;
-        height: clamp(240px, 32vw, 420px);
+        height: clamp(340px, 42vw, 560px);
         border-radius: 14px;
         overflow: hidden;
         margin-bottom: 24px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-        background: #f1f5f9;
+        background: #0f172a;
+      }
+      @media (max-width: 991px) {
+        .itn-page {
+          padding-top: 100px;
+        }
+        .itn-hero-banner {
+          height: clamp(280px, 38vw, 420px);
+        }
+      }
+      .itn-hero-video-wrapper {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #0f172a;
+      }
+      .itn-hero-video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        cursor: pointer;
+      }
+      .itn-hero-video-overlay {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: linear-gradient(180deg, rgba(15, 23, 42, 0.15) 0%, rgba(15, 23, 42, 0) 45%, rgba(15, 23, 42, 0.45) 100%);
+      }
+      .itn-hero-video-controls {
+        position: absolute;
+        bottom: 16px;
+        right: 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        z-index: 5;
+      }
+      .itn-hero-ctrl-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: rgba(15, 23, 42, 0.75);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        color: #ffffff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        padding: 0;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+      }
+      .itn-hero-ctrl-btn:hover {
+        background: rgba(15, 23, 42, 0.95);
+        transform: scale(1.08);
+        border-color: rgba(255, 255, 255, 0.5);
+      }
+      .itn-hero-video-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border-radius: 9999px;
+        background: rgba(15, 23, 42, 0.75);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #ffffff;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        user-select: none;
+      }
+      .itn-hero-live-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #ef4444;
+        box-shadow: 0 0 8px #ef4444;
+        animation: itnPulse 2s infinite ease-in-out;
+      }
+      @keyframes itnPulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.4; transform: scale(0.85); }
       }
 
-      /* Breadcrumbs */
+      /* Tour Map Top Bar & Breadcrumbs */
+      .itn-tour-map-top-bar {
+        display: flex;
+        align-items: center;
+        margin-bottom: 14px;
+      }
+      .itn-tour-map-top-btn {
+        margin: 0;
+      }
       .itn-breadcrumbs {
         display: flex;
         align-items: center;
@@ -1101,6 +1326,33 @@ function ItineraryStyles() {
         justify-content: space-between;
         gap: 12px;
       }
+      .itn-addons-arrow-controls {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .itn-addons-arrow-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 1.5px solid #cbd5e1;
+        background: #ffffff;
+        color: #0f172a;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+        padding: 0;
+      }
+      .itn-addons-arrow-btn:hover {
+        border-color: var(--color-primary, #0f766e);
+        color: var(--color-primary, #0f766e);
+        background: color-mix(in srgb, var(--color-primary, #0f766e) 8%, #ffffff);
+        transform: scale(1.08);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
       .itn-addons-title {
         display: inline-flex;
         align-items: center;
@@ -1135,13 +1387,82 @@ function ItineraryStyles() {
         background: var(--color-primary, #0f766e);
         border-radius: 3px;
       }
-      .itn-addons-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 340px));
-        gap: 20px;
+      .itn-addons-slider-wrapper {
+        position: relative;
+        width: 100%;
         margin-top: 14px;
       }
+      .itn-addons-grid {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        -webkit-overflow-scrolling: touch !important;
+        scroll-snap-type: x mandatory !important;
+        scroll-behavior: smooth !important;
+        gap: 18px !important;
+        padding: 4px 4px 16px !important;
+        margin: 0 !important;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(15, 118, 110, 0.25) transparent;
+        outline: none;
+      }
+      .itn-addons-grid::-webkit-scrollbar {
+        height: 6px;
+      }
+      .itn-addons-grid::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .itn-addons-grid::-webkit-scrollbar-thumb {
+        background: rgba(15, 118, 110, 0.25);
+        border-radius: 999px;
+      }
+      .itn-addons-grid::-webkit-scrollbar-thumb:hover {
+        background: rgba(15, 118, 110, 0.5);
+      }
+      .itn-addons-side-btn {
+        position: absolute;
+        top: 48%;
+        transform: translateY(-50%);
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        border: 1.5px solid #e2e8f0;
+        background: #ffffff;
+        color: #0f172a;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 10;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        padding: 0;
+      }
+      .itn-addons-side-btn:hover {
+        border-color: var(--color-primary, #0f766e);
+        color: var(--color-primary, #0f766e);
+        background: #ffffff;
+        transform: translateY(-50%) scale(1.08);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.16);
+      }
+      .itn-addons-side-btn--left {
+        left: -16px;
+      }
+      .itn-addons-side-btn--right {
+        right: -16px;
+      }
+      @media (max-width: 991px) {
+        .itn-addons-side-btn {
+          display: none !important;
+        }
+      }
       .itn-addon-card {
+        flex: 0 0 310px !important;
+        width: 310px !important;
+        min-width: 310px !important;
+        scroll-snap-align: start !important;
         background: #ffffff;
         border: 1px solid #e2e8f0;
         border-radius: 12px;
@@ -1560,6 +1881,536 @@ function ItineraryStyles() {
         color: #94a3b8;
         font-style: italic;
         padding: 12px 0;
+      }
+
+      /* Blogs & Articles Section (Dynamic Itinerary Content Block) */
+      #itinerary-blogs-articles {
+        margin-top: 10px;
+        margin-bottom: 48px;
+      }
+      .itn-blogs-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 22px;
+        flex-wrap: wrap;
+      }
+      .itn-blogs-subtitle {
+        margin: 0;
+        font-size: 14px;
+        color: #64748b;
+        line-height: 1.5;
+      }
+      .itn-blogs-view-all-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13.5px;
+        font-weight: 700;
+        color: var(--color-primary, #0f766e);
+        text-decoration: none;
+        transition: all 0.2s ease;
+        padding: 6px 14px;
+        border-radius: 8px;
+        background: color-mix(in srgb, var(--color-primary, #0f766e) 8%, transparent);
+      }
+      .itn-blogs-view-all-link:hover {
+        background: color-mix(in srgb, var(--color-primary, #0f766e) 15%, transparent);
+        transform: translateX(2px);
+      }
+      .itn-blogs-header-actions {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .itn-blogs-header-arrows {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .itn-blogs-arrow-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 1.5px solid #e2e8f0;
+        background: #ffffff;
+        color: #0f172a;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        padding: 0;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
+      }
+      .itn-blogs-arrow-btn:hover {
+        border-color: var(--color-primary, #0f766e);
+        color: var(--color-primary, #0f766e);
+        background: color-mix(in srgb, var(--color-primary, #0f766e) 8%, #ffffff);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
+      }
+      .itn-blogs-arrow-btn:active {
+        transform: translateY(0);
+      }
+      .itn-blogs-carousel-wrapper {
+        position: relative;
+        width: 100%;
+      }
+      .itn-blogs-row,
+      .itn-blogs-grid {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        gap: 20px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-snap-type: x proximity;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        padding: 6px 4px 18px;
+        align-items: stretch;
+        outline: none;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      .itn-blogs-row::-webkit-scrollbar,
+      .itn-blogs-grid::-webkit-scrollbar {
+        display: none;
+      }
+      .itn-blog-card {
+        flex: 0 0 310px;
+        width: 310px;
+        min-width: 310px;
+        max-width: 340px;
+        scroll-snap-align: start;
+        display: flex;
+        flex-direction: column;
+        background: #ffffff;
+        border-radius: 14px;
+        border: 1px solid #e2e8f0;
+        overflow: hidden;
+        text-decoration: none;
+        color: inherit;
+        transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+        box-shadow: 0 4px 18px rgba(15, 23, 42, 0.04);
+      }
+      .itn-blog-card:hover {
+        transform: translateY(-4px);
+        border-color: #cbd5e1;
+        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.09);
+      }
+      .itn-blog-img-wrap {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 16 / 10;
+        overflow: hidden;
+        background: #f1f5f9;
+      }
+      .itn-blog-img {
+        object-fit: cover;
+        transition: transform 0.4s ease;
+      }
+      .itn-blog-card:hover .itn-blog-img {
+        transform: scale(1.05);
+      }
+      .itn-blog-category-badge {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        padding: 4px 10px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+        color: #ffffff;
+        background: rgba(15, 23, 42, 0.78);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        border-radius: 999px;
+        z-index: 2;
+      }
+      .itn-blog-card-body {
+        padding: 16px 18px 18px;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+      }
+      .itn-blog-meta-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        color: #94a3b8;
+        margin-bottom: 8px;
+      }
+      .itn-blog-dot {
+        opacity: 0.5;
+      }
+      .itn-blog-card-title {
+        margin: 0 0 8px;
+        font-size: 16px;
+        font-weight: 700;
+        color: #0f172a;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        transition: color 0.2s ease;
+      }
+      .itn-blog-card:hover .itn-blog-card-title {
+        color: var(--color-primary, #0f766e);
+      }
+      .itn-blog-card-excerpt {
+        margin: 0 0 14px;
+        font-size: 13px;
+        color: #64748b;
+        line-height: 1.55;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .itn-blog-card-footer {
+        margin-top: auto;
+        padding-top: 12px;
+        border-top: 1px solid #f1f5f9;
+      }
+      .itn-blog-read-more {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--color-primary, #0f766e);
+        transition: gap 0.2s ease;
+      }
+      .itn-blog-card:hover .itn-blog-read-more {
+        gap: 8px;
+      }
+      .itn-blogs-side-btn {
+        position: absolute;
+        top: 48%;
+        transform: translateY(-50%);
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        border: 1.5px solid #e2e8f0;
+        background: #ffffff;
+        color: #0f172a;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 10;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        padding: 0;
+      }
+      .itn-blogs-side-btn:hover {
+        border-color: var(--color-primary, #0f766e);
+        color: var(--color-primary, #0f766e);
+        background: #ffffff;
+        transform: translateY(-50%) scale(1.08);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.16);
+      }
+      .itn-blogs-side-btn--left {
+        left: -16px;
+      }
+      .itn-blogs-side-btn--right {
+        right: -16px;
+      }
+      @media (max-width: 991px) {
+        .itn-blogs-side-btn {
+          display: none !important;
+        }
+      }
+      @media (max-width: 640px) {
+        .itn-blogs-row .itn-blog-card,
+        .itn-blogs-grid .itn-blog-card {
+          flex: 0 0 280px;
+          width: 280px;
+          min-width: 280px;
+          max-width: 85vw;
+        }
+        .itn-blogs-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 12px;
+        }
+        .itn-blogs-header-actions {
+          width: 100%;
+          justify-content: space-between;
+        }
+      }
+
+      /* Floating Pill Sticky Navigation Bar (PickYourTrail Style with Dynamic Color) */
+      .itn-floating-pill-nav {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%) translateY(45px);
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        z-index: 999;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 7px 10px 7px 18px;
+        background: rgba(26, 32, 44, 0.95);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 9999px;
+        box-shadow: 0 20px 48px rgba(0, 0, 0, 0.38), 0 4px 14px rgba(0, 0, 0, 0.2);
+        max-width: min(96vw, 1220px);
+        transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, visibility 0.3s ease;
+      }
+      .itn-floating-pill-nav.is-visible {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+      }
+      .itn-floating-nav-items {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        padding: 2px 0;
+        flex: 1 1 auto;
+        min-width: 0;
+        touch-action: pan-x;
+        cursor: grab;
+      }
+      .itn-floating-nav-items:active {
+        cursor: grabbing;
+      }
+      .itn-floating-nav-items::-webkit-scrollbar {
+        display: none;
+      }
+      .itn-floating-nav-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: transparent;
+        border: none;
+        color: rgba(255, 255, 255, 0.68);
+        font-size: 13.5px;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+        flex-shrink: 0;
+        user-select: none;
+        -webkit-user-select: none;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        text-decoration: none;
+        position: relative;
+      }
+      .itn-floating-nav-btn:hover {
+        color: #ffffff;
+        background: rgba(255, 255, 255, 0.09);
+      }
+      .itn-floating-nav-btn.is-active {
+        color: #ffffff;
+        font-weight: 700;
+        background: color-mix(in srgb, var(--color-primary, #0f766e) 24%, rgba(255, 255, 255, 0.08));
+        box-shadow: inset 0 -2.5px 0 var(--color-primary, #0f766e);
+      }
+      .itn-floating-nav-btn.is-active .itn-floating-nav-icon {
+        color: var(--color-primary, #0f766e);
+      }
+      .itn-floating-nav-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(255, 255, 255, 0.55);
+        transition: color 0.2s ease;
+      }
+      .itn-floating-divider {
+        width: 1px;
+        height: 32px;
+        background: rgba(255, 255, 255, 0.16);
+        flex-shrink: 0;
+      }
+      .itn-floating-right {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-shrink: 0;
+      }
+      .itn-floating-price-box {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        line-height: 1.2;
+      }
+      .itn-floating-price-row {
+        color: #ffffff;
+        font-size: 15.5px;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        white-space: nowrap;
+      }
+      .itn-floating-price-row span {
+        font-size: 12px;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.7);
+      }
+      .itn-floating-price-sub {
+        font-size: 10.5px;
+        color: rgba(255, 255, 255, 0.55);
+        white-space: nowrap;
+        margin-top: 1px;
+      }
+      .itn-floating-cta-btn {
+        background: var(--color-primary, #0f766e);
+        color: #ffffff;
+        font-size: 13.5px;
+        font-weight: 800;
+        padding: 10px 22px;
+        border-radius: 9999px;
+        border: none;
+        cursor: pointer;
+        white-space: nowrap;
+        box-shadow: 0 4px 18px color-mix(in srgb, var(--color-primary, #0f766e) 45%, transparent);
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        letter-spacing: 0.01em;
+      }
+      .itn-floating-cta-btn:hover {
+        filter: brightness(1.1);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 22px color-mix(in srgb, var(--color-primary, #0f766e) 55%, transparent);
+      }
+      .itn-floating-cta-btn:active {
+        transform: translateY(0);
+      }
+
+      @media (max-width: 1024px) {
+        .itn-floating-pill-nav {
+          bottom: 16px;
+          padding: 6px 8px 6px 12px;
+          gap: 10px;
+        }
+        .itn-floating-nav-btn {
+          padding: 7px 11px;
+          font-size: 12.5px;
+          gap: 5px;
+        }
+        .itn-floating-cta-btn {
+          padding: 9px 18px;
+          font-size: 12.5px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .itn-mobile-sticky-bar {
+          display: none !important;
+        }
+        .itn-floating-pill-nav {
+          bottom: 12px;
+          left: 8px;
+          right: 8px;
+          transform: translateY(70px);
+          max-width: none;
+          width: calc(100% - 16px);
+          border-radius: 9999px;
+          padding: 6px 8px 6px 12px;
+          gap: 8px;
+          justify-content: space-between;
+          box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45), 0 2px 10px rgba(0, 0, 0, 0.25);
+        }
+        .itn-floating-pill-nav.is-visible {
+          transform: translateY(0);
+        }
+        .itn-floating-nav-items {
+          flex: 1 1 auto;
+          min-width: 0;
+          gap: 4px;
+          padding: 2px 2px;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+          scroll-behavior: smooth;
+          touch-action: pan-x;
+        }
+        .itn-floating-nav-btn {
+          padding: 7px 11px;
+          font-size: 12px;
+          gap: 5px;
+          flex-shrink: 0;
+          white-space: nowrap;
+        }
+        .itn-floating-nav-icon svg {
+          width: 14px;
+          height: 14px;
+        }
+        .itn-floating-divider {
+          height: 22px;
+          margin: 0 1px;
+          flex-shrink: 0;
+          opacity: 0.45;
+        }
+        .itn-floating-right {
+          flex-shrink: 0;
+          gap: 8px;
+        }
+        .itn-floating-price-sub {
+          display: none;
+        }
+        .itn-floating-price-row {
+          font-size: 13px;
+        }
+        .itn-floating-cta-btn {
+          padding: 8px 14px;
+          font-size: 12px;
+          font-weight: 700;
+          white-space: nowrap;
+          flex-shrink: 0;
+          border-radius: 9999px;
+        }
+      }
+      @media (max-width: 480px) {
+        .itn-floating-pill-nav {
+          bottom: 10px;
+          left: 6px;
+          right: 6px;
+          width: calc(100% - 12px);
+          padding: 5px 6px 5px 10px;
+          gap: 6px;
+        }
+        .itn-floating-price-box {
+          display: none;
+        }
+        .itn-floating-divider {
+          display: none;
+        }
+        .itn-floating-nav-items {
+          gap: 3px;
+        }
+        .itn-floating-nav-btn {
+          padding: 6px 10px;
+          font-size: 11.5px;
+          gap: 4px;
+        }
+        .itn-floating-cta-btn {
+          padding: 7px 12px;
+          font-size: 11.5px;
+        }
       }
 
       /* Similar Packages: Matches Hot Deals Section Card Style Exactly */
@@ -2347,9 +3198,22 @@ function ItineraryStyles() {
 
         /* Hero Banner */
         .itn-hero-banner {
-          height: 210px !important;
+          height: 220px !important;
           border-radius: 10px !important;
           margin-bottom: 14px !important;
+        }
+        .itn-hero-video-controls {
+          bottom: 10px !important;
+          right: 10px !important;
+          gap: 6px !important;
+        }
+        .itn-hero-ctrl-btn {
+          width: 32px !important;
+          height: 32px !important;
+        }
+        .itn-hero-video-badge {
+          font-size: 11px !important;
+          padding: 4px 9px !important;
         }
 
         /* Breadcrumbs: clean single scrollable row */
@@ -2781,10 +3645,15 @@ export default function TourItineraryView({ destination, packageSlug }) {
   const [reviewSummary, setReviewSummary] = useState({ count: 0, average_rating: 0 });
   const [reviewsLoading, setReviewsLoading] = useState(false);
   const [similarPackages, setSimilarPackages] = useState([]);
+  const [allBlogs, setAllBlogs] = useState([]);
+  const [blogsLoading, setBlogsLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [mediaOpen, setMediaOpen] = useState(false);
   const [routeModalOpen, setRouteModalOpen] = useState(false);
+  const videoRef = useRef(null);
+  const [isVideoMuted, setIsVideoMuted] = useState(true);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(true);
   const [cmsMapData, setCmsMapData] = useState(null);
   const [allReviewsModalOpen, setAllReviewsModalOpen] = useState(false);
   const [partialBooking, setPartialBooking] = useState(null);
@@ -2809,6 +3678,41 @@ export default function TourItineraryView({ destination, packageSlug }) {
   const [couponError, setCouponError] = useState('');
   const [similarActiveIndex, setSimilarActiveIndex] = useState(0);
   const similarScrollRef = useRef(null);
+  const addonsScrollRef = useRef(null);
+  const blogsScrollRef = useRef(null);
+
+  const scrollBlogs = (dir) => {
+    if (!blogsScrollRef.current) return;
+    const el = blogsScrollRef.current;
+    const card = el.querySelector('.itn-blog-card');
+    const isMobileView = typeof window !== 'undefined' && window.innerWidth < 768;
+    const scrollAmount = card ? (card.offsetWidth + (isMobileView ? 14 : 20)) : (isMobileView ? 290 : 330);
+    const maxScroll = el.scrollWidth - el.clientWidth;
+    if (dir > 0 && el.scrollLeft >= maxScroll - 10) {
+      el.scrollTo({ left: 0, behavior: 'smooth' });
+    } else if (dir < 0 && el.scrollLeft <= 10) {
+      el.scrollTo({ left: maxScroll, behavior: 'smooth' });
+    } else {
+      el.scrollBy({ left: dir * scrollAmount, behavior: 'smooth' });
+    }
+  };
+
+  const scrollAddons = (dir) => {
+    if (!addonsScrollRef.current) return;
+    const el = addonsScrollRef.current;
+    const card = el.querySelector('.itn-addon-card');
+    const isMobileView = typeof window !== 'undefined' && window.innerWidth < 768;
+    const scrollAmount = card ? (card.offsetWidth + (isMobileView ? 14 : 18)) : (isMobileView ? 284 : 328);
+    const maxScroll = el.scrollWidth - el.clientWidth;
+    if (dir > 0 && el.scrollLeft >= maxScroll - 10) {
+      el.scrollTo({ left: 0, behavior: 'smooth' });
+    } else if (dir < 0 && el.scrollLeft <= 10) {
+      el.scrollTo({ left: maxScroll, behavior: 'smooth' });
+    } else {
+      el.scrollBy({ left: dir * scrollAmount, behavior: 'smooth' });
+    }
+  };
+
   const scrollSimilar = (dir) => {
     if (!similarScrollRef.current) return;
     const el = similarScrollRef.current;
@@ -2850,6 +3754,181 @@ export default function TourItineraryView({ destination, packageSlug }) {
       .catch(() => { });
     return () => {
       mounted = false;
+    };
+  }, []);
+
+  const [activeNavSection, setActiveNavSection] = useState('itinerary-overview');
+  const [isNavVisible, setIsNavVisible] = useState(false);
+  const floatingNavItemsRef = useRef(null);
+  const isNavUserInteractingRef = useRef(false);
+  const navInteractionTimeoutRef = useRef(null);
+
+  // Auto-scroll the navbar horizontally to center/bring into view the active section button
+  useEffect(() => {
+    if (!floatingNavItemsRef.current) return;
+    if (isNavUserInteractingRef.current) return;
+    const container = floatingNavItemsRef.current;
+    const activeBtn = container.querySelector(`[data-nav-id="${activeNavSection}"]`)
+      || document.getElementById(`itn-pill-${activeNavSection}`);
+    if (activeBtn) {
+      const containerRect = container.getBoundingClientRect();
+      const btnRect = activeBtn.getBoundingClientRect();
+      const relativeLeft = btnRect.left - containerRect.left + container.scrollLeft;
+      const targetScrollLeft = relativeLeft - (container.clientWidth / 2) + (activeBtn.offsetWidth / 2);
+      container.scrollTo({
+        left: Math.max(0, targetScrollLeft),
+        behavior: 'smooth',
+      });
+    }
+  }, [activeNavSection]);
+
+  // Mouse drag-to-scroll on desktop & touch emulation for floating nav items
+  useEffect(() => {
+    const el = floatingNavItemsRef.current;
+    if (!el) return;
+    let isDown = false;
+    let startX = 0;
+    let scrollStart = 0;
+
+    const onMouseDown = (e) => {
+      isDown = true;
+      startX = e.pageX - el.offsetLeft;
+      scrollStart = el.scrollLeft;
+      isNavUserInteractingRef.current = true;
+      if (navInteractionTimeoutRef.current) clearTimeout(navInteractionTimeoutRef.current);
+    };
+    const onMouseLeave = () => {
+      if (isDown) {
+        isDown = false;
+        navInteractionTimeoutRef.current = setTimeout(() => {
+          isNavUserInteractingRef.current = false;
+        }, 800);
+      }
+    };
+    const onMouseUp = () => {
+      if (isDown) {
+        isDown = false;
+        navInteractionTimeoutRef.current = setTimeout(() => {
+          isNavUserInteractingRef.current = false;
+        }, 800);
+      }
+    };
+    const onMouseMove = (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - el.offsetLeft;
+      const walk = (x - startX) * 1.5;
+      el.scrollLeft = scrollStart - walk;
+    };
+
+    el.addEventListener('mousedown', onMouseDown);
+    window.addEventListener('mouseleave', onMouseLeave);
+    window.addEventListener('mouseup', onMouseUp);
+    el.addEventListener('mousemove', onMouseMove);
+
+    return () => {
+      el.removeEventListener('mousedown', onMouseDown);
+      window.removeEventListener('mouseleave', onMouseLeave);
+      window.removeEventListener('mouseup', onMouseUp);
+      el.removeEventListener('mousemove', onMouseMove);
+    };
+  }, []);
+
+  const scrollToNavSection = (sectionId) => {
+    setActiveNavSection(sectionId);
+    let target = document.getElementById(sectionId);
+    if (!target) {
+      if (sectionId === 'itinerary-tour-highlights') target = document.getElementById('itinerary-day-wise');
+      else if (sectionId === 'itinerary-addons') target = document.getElementById('itinerary-inclusions-exclusions') || document.getElementById('itinerary-day-wise');
+      else if (sectionId === 'itinerary-inclusions-exclusions') target = document.getElementById('itinerary-blogs-articles') || document.getElementById('itinerary-day-wise');
+      else if (sectionId === 'itinerary-blogs-articles') target = document.getElementById('itinerary-inclusions-exclusions') || document.getElementById('itinerary-day-wise');
+    }
+    if (target) {
+      const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+      const topOffset = isMobile ? 65 : 85;
+      const elementPosition = target.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - topOffset;
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth',
+      });
+    }
+  };
+
+  useEffect(() => {
+    const handleScrollSpyAndVisibility = () => {
+      const headerEl = document.getElementById('itinerary-overview');
+      const blogsEl = document.getElementById('itinerary-blogs-articles')
+        || document.getElementById('itinerary-inclusions-exclusions')
+        || document.querySelector('.itn-main-col');
+
+      // 1. Visibility window:
+      // - Appears when user scrolls down to [Kashmir Paradise ★ 5.0 (1 Reviews)] (headerEl)
+      // - Disappears as soon as user reaches the [Similar Packages You Might Like] heading
+      if (headerEl) {
+        const headerRect = headerEl.getBoundingClientRect();
+        const hasReachedHeader = headerRect.top <= 140;
+
+        const similarHeadingEl = document.getElementById('itinerary-similar-heading')
+          || document.getElementById('itinerary-similar-packages')
+          || document.querySelector('.itn-similar-deals-section h2')
+          || document.querySelector('.itn-similar-deals-section');
+
+        let hasReachedSimilar = false;
+        if (similarHeadingEl) {
+          const similarRect = similarHeadingEl.getBoundingClientRect();
+          // Hide as soon as user reaches 'Similar Packages You Might Like' heading (heading scrolls into view before cards)
+          const threshold = Math.min(420, window.innerHeight * 0.5);
+          hasReachedSimilar = similarRect.top <= threshold;
+        } else {
+          // Fallback if no similar packages exist on this tour
+          const fallbackEl = document.getElementById('itinerary-gram-section')
+            || document.querySelector('.itn-reviews-grid')
+            || blogsEl;
+          if (fallbackEl) {
+            const fallbackRect = fallbackEl.getBoundingClientRect();
+            const threshold = Math.min(420, window.innerHeight * 0.5);
+            hasReachedSimilar = fallbackEl.id === 'itinerary-blogs-articles'
+              ? fallbackRect.bottom <= 120
+              : fallbackRect.top <= threshold;
+          }
+        }
+
+        setIsNavVisible(hasReachedHeader && !hasReachedSimilar);
+      } else {
+        setIsNavVisible(false);
+      }
+
+      // 2. Active Section ScrollSpy (using document Y position for 100% accuracy)
+      const checkPosition = window.scrollY + Math.min(220, window.innerHeight * 0.35);
+      const sectionIds = [
+        'itinerary-overview',
+        'itinerary-tour-highlights',
+        'itinerary-day-wise',
+        'itinerary-addons',
+        'itinerary-inclusions-exclusions',
+        'itinerary-blogs-articles',
+      ];
+
+      for (let i = sectionIds.length - 1; i >= 0; i--) {
+        const id = sectionIds[i];
+        const el = document.getElementById(id);
+        if (el) {
+          const top = el.getBoundingClientRect().top + window.scrollY;
+          if (checkPosition >= top) {
+            setActiveNavSection(id);
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScrollSpyAndVisibility, { passive: true });
+    window.addEventListener('resize', handleScrollSpyAndVisibility, { passive: true });
+    handleScrollSpyAndVisibility();
+    return () => {
+      window.removeEventListener('scroll', handleScrollSpyAndVisibility);
+      window.removeEventListener('resize', handleScrollSpyAndVisibility);
     };
   }, []);
 
@@ -2989,6 +4068,30 @@ export default function TourItineraryView({ destination, packageSlug }) {
   }, [pkg?.id, pkg?.slug, packageIdFromQuery, resolvedSlug]);
 
   useEffect(() => {
+    let mounted = true;
+
+    const loadBlogsData = async () => {
+      try {
+        setBlogsLoading(true);
+        const res = await getBlogs({ page: 1, limit: 100 });
+        if (!mounted) return;
+        const items = Array.isArray(res?.data) ? res.data : [];
+        setAllBlogs(items);
+      } catch (err) {
+        console.error('Error fetching blogs for package itinerary:', err);
+      } finally {
+        if (mounted) setBlogsLoading(false);
+      }
+    };
+
+    loadBlogsData();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
     if (!pkg) return;
     const draft = readPackageBookingDraft();
     if (!draft) return;
@@ -3092,12 +4195,15 @@ export default function TourItineraryView({ destination, packageSlug }) {
           const rawPoints = Array.isArray(jsonData?.points) ? jsonData.points : [];
           const parsedStops = rawPoints.map(parseCmsMapPoint).filter(Boolean);
 
+          const dynamicMapTitle = String(mapDetail.title || jsonData?.heading_content || '').trim() || 'Tour Map';
+
           if (mounted) {
             setCmsMapData({
               pageId: pageData.id,
               pageTitle: pageData.title,
               destinationName: pageData.title?.split(/—|-|\|/)[0]?.trim() || null,
-              title: mapDetail.title || pageData.title || 'Trip Itinerary',
+              title: dynamicMapTitle,
+              mapTitle: dynamicMapTitle,
               mediaUrl,
               stops: parsedStops.length > 0 ? parsedStops : null,
               rawDetail: mapDetail,
@@ -3191,6 +4297,49 @@ export default function TourItineraryView({ destination, packageSlug }) {
   const mediaItems = useMemo(() => [...media.images, ...media.videos], [media]);
   const destinations = useMemo(() => sortByOrder(pkg?.destinations), [pkg]);
 
+  const heroVideo = useMemo(() => {
+    if (!media.videos || media.videos.length === 0) return null;
+    return media.videos.find((v) => v.is_primary) || media.videos[0];
+  }, [media.videos]);
+
+  const toggleVideoMute = (e) => {
+    if (e) e.stopPropagation();
+    if (videoRef.current) {
+      const nextMuted = !videoRef.current.muted;
+      videoRef.current.muted = nextMuted;
+      setIsVideoMuted(nextMuted);
+    }
+  };
+
+  const toggleVideoPlay = (e) => {
+    if (e) e.stopPropagation();
+    if (videoRef.current) {
+      if (videoRef.current.paused) {
+        videoRef.current.play()
+          .then(() => setIsVideoPlaying(true))
+          .catch(() => {});
+      } else {
+        videoRef.current.pause();
+        setIsVideoPlaying(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (heroVideo && videoRef.current) {
+      videoRef.current.defaultMuted = true;
+      videoRef.current.muted = isVideoMuted;
+      const playPromise = videoRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => setIsVideoPlaying(true))
+          .catch(() => {
+            setIsVideoPlaying(false);
+          });
+      }
+    }
+  }, [heroVideo]);
+
   const itinerarySections = useMemo(() => destinations.map((item, index) => {
     const startDay = destinations.slice(0, index).reduce((total, previousItem) => {
       const entries = getActivityEntries(previousItem?.activities).filter((entry) => entry.activities.length);
@@ -3225,13 +4374,10 @@ export default function TourItineraryView({ destination, packageSlug }) {
   }, [cmsMapData, pkg?.slug, pkg?.name, destinationNames, countryName]);
 
   const routeButtonLabel = useMemo(() => {
-    const slugStr = String(pkg?.slug || '').toLowerCase();
-    const nameStr = String(pkg?.name || '').toLowerCase();
-    if (slugStr.includes('kashmir') || nameStr.includes('kashmir')) return 'View Kashmir Route';
-    if (cmsMapData?.destinationName) return `View ${cmsMapData.destinationName} Route`;
-    const dest = routeDestinationTitle || 'Route';
-    return `View ${dest} Route`;
-  }, [cmsMapData, pkg?.slug, pkg?.name, routeDestinationTitle]);
+    const dynamicTitle = String(cmsMapData?.mapTitle || cmsMapData?.title || '').trim();
+    if (dynamicTitle) return dynamicTitle;
+    return 'Tour Map';
+  }, [cmsMapData]);
 
   const hasRouteMap = useMemo(() => {
     const slugStr = String(pkg?.slug || '').toLowerCase();
@@ -3352,10 +4498,7 @@ export default function TourItineraryView({ destination, packageSlug }) {
     ? `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${encodeURIComponent(`I want help with ${pkg?.name || 'tour package'}: ${currentUrl}`)}`
     : `https://api.whatsapp.com/send?text=${encodeURIComponent(`I want help with ${pkg?.name || 'tour package'}: ${currentUrl}`)}`;
 
-  // Gallery 4 thumbnails
-  const galleryThumbs = useMemo(() => {
-    return (media.images || []).slice(0, 4);
-  }, [media.images]);
+
 
   // Stay Included Images
   const stayImages = useMemo(() => {
@@ -3453,6 +4596,131 @@ export default function TourItineraryView({ destination, packageSlug }) {
     [pkg?.exclusions, pkg?.exclusive]
   );
   const hasInclusionsOrExclusions = packageInclusions.length > 0 || packageExclusions.length > 0;
+
+  // Dynamic Blogs & Articles matching current package context
+  const relatedBlogs = useMemo(() => {
+    if (!pkg) return [];
+
+    const pkgName = String(pkg?.name || '').toLowerCase();
+    const pkgDesc = stripBlogHtml(pkg?.description || '').toLowerCase();
+    const destNames = (destinations || [])
+      .map((d) => String(d?.name || d?.destination?.name || '').toLowerCase().trim())
+      .filter((n) => n.length >= 3);
+    const country = String(destinations[0]?.destination?.country || pkg?.country || '').toLowerCase().trim();
+
+    // Pool from API and local fallback catalog
+    const pool = [...allBlogs, ...blogsData];
+    const seenSlugs = new Set();
+    const candidateBlogs = [];
+    for (const item of pool) {
+      if (!item?.slug || seenSlugs.has(item.slug)) continue;
+      seenSlugs.add(item.slug);
+      candidateBlogs.push(item);
+    }
+
+    // Extract significant keywords from package title & description
+    const rawTokens = (pkgName + ' ' + pkgDesc)
+      .replace(/[^a-z0-9\s]/g, ' ')
+      .split(/\s+/)
+      .filter((t) => t.length >= 4);
+
+    const stopWords = new Set([
+      'this', 'that', 'with', 'from', 'tour', 'package', 'days', 'nights',
+      'will', 'have', 'experience', 'discover', 'explore', 'visit', 'combo',
+      'trip', 'best', 'more', 'about', 'included', 'stay', 'hotel', 'city',
+      'special', 'exclusive', 'holiday', 'travel', 'travels', 'view'
+    ]);
+    const pkgTokens = Array.from(new Set(rawTokens.filter((t) => !stopWords.has(t))));
+
+    // Distinct foreign countries to avoid false positive cross-country leakage
+    const KNOWN_COUNTRIES = [
+      'india', 'thailand', 'japan', 'italy', 'france', 'tanzania',
+      'iceland', 'peru', 'australia', 'indonesia', 'spain', 'vietnam',
+      'dubai', 'switzerland', 'norway', 'maldives'
+    ];
+
+    // Landscape & theme flags from package content
+    const isBeachPkg = /beach|island|tropical|coastal|sea|ocean|coral|scuba|snorkeling|phuket|krabi|pattaya|bali|maldives/i.test(`${pkgName} ${pkgDesc}`);
+    const isMountainPkg = /mountain|snow|himalaya|valley|hill|trek|altitude|glacier|kashmir|ladakh|manali|srinagar|gulmarg/i.test(`${pkgName} ${pkgDesc}`);
+    const isDesertPkg = /desert|safari|dune|dubai|abu dhabi/i.test(`${pkgName} ${pkgDesc}`);
+    const isHoneymoonPkg = /honeymoon|romantic|couple/i.test(`${pkgName} ${pkgDesc}`);
+
+    const scoredList = candidateBlogs.map((b) => {
+      let score = 0;
+      const title = String(b.title || '').toLowerCase();
+      const excerpt = String(b.summary || b.excerpt || stripBlogHtml(b.content || '')).toLowerCase();
+      const cat = String(typeof b.category === 'object' ? b.category?.name : b.category || '').toLowerCase();
+      const metaTags = String(Array.isArray(b.meta_keywords) ? b.meta_keywords.join(' ') : b.meta_keywords || '').toLowerCase();
+      const fullText = `${title} ${excerpt} ${cat} ${metaTags}`;
+
+      // Conflict guard: Discard blog if its title focuses specifically on another distinct country
+      const conflictingCountry = KNOWN_COUNTRIES.find((c) => c !== country && title.includes(c));
+      if (conflictingCountry) {
+        return { blog: b, score: 0 };
+      }
+
+      // 1. Destination / City matches (highest relevance)
+      destNames.forEach((dest) => {
+        if (title.includes(dest)) score += 40;
+        else if (fullText.includes(dest)) score += 20;
+      });
+
+      // 2. Country matches
+      if (country && country.length >= 3) {
+        if (title.includes(country)) score += 30;
+        else if (fullText.includes(country)) score += 15;
+      }
+
+      // 3. Thematic / Landscape synergy
+      if (isBeachPkg && /beach|island|tropical|coastal|sea|ocean|coral|tropic/i.test(fullText)) {
+        score += 15;
+      }
+      if (isMountainPkg) {
+        if (/himalaya|kashmir|srinagar|gulmarg|pahalgam|ladakh/i.test(fullText)) {
+          score += 20;
+        } else if (/mountain|snow|valley|hill|trek|glacier/i.test(fullText)) {
+          score += 8;
+        }
+      }
+      if (isDesertPkg && /desert|safari|dune/i.test(fullText)) {
+        score += 15;
+      }
+      if (isHoneymoonPkg && /honeymoon|romantic/i.test(`${title} ${cat}`)) {
+        score += 15;
+      }
+
+      // 4. Token overlap from package title & description
+      pkgTokens.forEach((token) => {
+        if (token.length >= 4) {
+          if (title.includes(token)) score += 8;
+          else if (excerpt.includes(token)) score += 3;
+        }
+      });
+
+      return {
+        blog: b,
+        score,
+      };
+    });
+
+    // Filter only genuinely relevant blogs (score >= 15) and take top matching blogs
+    const matched = scoredList
+      .filter((item) => item.score >= 15)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 6)
+      .map(({ blog: b }) => ({
+        id: b.id || b.slug,
+        title: b.title,
+        slug: b.slug,
+        excerpt: b.summary || b.excerpt || stripBlogHtml(b.content || '').slice(0, 130),
+        category: (typeof b.category === 'object' ? b.category?.name : b.category) || 'Travel',
+        date: formatBlogDate(b.published_at || b.created_at || b.date),
+        author: (typeof b.author === 'object' ? b.author?.name : b.author) || 'Travel Expert',
+        image: resolveBlogImage(b),
+      }));
+
+    return matched;
+  }, [allBlogs, pkg, destinations, countryName]);
 
   // Similar Packages (Hot Deals Style)
   const displaySimilarPackages = useMemo(() => {
@@ -3965,29 +5233,103 @@ export default function TourItineraryView({ destination, packageSlug }) {
       <main className="itn-container">
         {/* Panoramic Hero Banner */}
         <div className="itn-hero-banner">
-          <Image
-            src={media.images[0]?.url || fallbackImage}
-            alt={media.images[0]?.alt || pkg.name}
-            fill
-            sizes="100vw"
-            priority
-            style={{ objectFit: 'cover' }}
-          />
+          {heroVideo ? (
+            <div className="itn-hero-video-wrapper">
+              <video
+                ref={videoRef}
+                src={heroVideo.url}
+                poster={heroVideo.poster || media.images[0]?.url || fallbackImage}
+                autoPlay
+                muted={isVideoMuted}
+                loop
+                playsInline
+                preload="auto"
+                className="itn-hero-video"
+                onPlay={() => setIsVideoPlaying(true)}
+                onPause={() => setIsVideoPlaying(false)}
+                onClick={toggleVideoPlay}
+              />
+              <div className="itn-hero-video-overlay" />
+              <div className="itn-hero-video-controls">
+                <button
+                  type="button"
+                  className="itn-hero-ctrl-btn"
+                  onClick={toggleVideoPlay}
+                  aria-label={isVideoPlaying ? 'Pause video' : 'Play video'}
+                  title={isVideoPlaying ? 'Pause video' : 'Play video'}
+                >
+                  {isVideoPlaying ? (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                      <rect x="6" y="4" width="4" height="16" rx="1.5" />
+                      <rect x="14" y="4" width="4" height="16" rx="1.5" />
+                    </svg>
+                  ) : (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                      <polygon points="5 3 19 12 5 21 5 3" />
+                    </svg>
+                  )}
+                </button>
+                <button
+                  type="button"
+                  className="itn-hero-ctrl-btn"
+                  onClick={toggleVideoMute}
+                  aria-label={isVideoMuted ? 'Unmute audio' : 'Mute audio'}
+                  title={isVideoMuted ? 'Unmute audio' : 'Mute audio'}
+                >
+                  {isVideoMuted ? (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                      <line x1="23" y1="9" x2="17" y2="15" />
+                      <line x1="17" y1="9" x2="23" y2="15" />
+                    </svg>
+                  ) : (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                      <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" />
+                    </svg>
+                  )}
+                </button>
+                <div className="itn-hero-video-badge">
+                  <span className="itn-hero-live-dot" />
+                  <span>Featured Video</span>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <Image
+              src={media.images[0]?.url || fallbackImage}
+              alt={media.images[0]?.alt || pkg.name}
+              fill
+              sizes="100vw"
+              priority
+              style={{ objectFit: 'cover' }}
+            />
+          )}
         </div>
 
         {/* Breadcrumbs */}
-        <nav className="itn-breadcrumbs" aria-label="Breadcrumb">
-          <Link href="/">Home</Link>
-          <span className="sep">›</span>
-          <Link href="/packages">Destinations</Link>
-          <span className="sep">›</span>
-          <Link href={`/tours?country=${encodeURIComponent(countryName)}`}>{countryName}</Link>
-          <span className="sep">›</span>
-          <span className="itn-breadcrumb-active">{destinationNames[0] || pkg.name}</span>
-        </nav>
+        {/* Dynamic Tour Map Heading (in place of Breadcrumbs) */}
+        {hasRouteMap ? (
+          <div className="itn-tour-map-top-bar">
+            <button
+              type="button"
+              className="itn-view-route-btn itn-tour-map-top-btn"
+              onClick={() => setRouteModalOpen(true)}
+              aria-label={routeButtonLabel}
+              title={routeButtonLabel}
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
+                <line x1="9" y1="3" x2="9" y2="18" />
+                <line x1="15" y1="6" x2="15" y2="21" />
+              </svg>
+              <span>{routeButtonLabel}</span>
+            </button>
+          </div>
+        ) : null}
 
         {/* Title, Rating, Meta & Description */}
-        <header className="itn-header">
+        <header className="itn-header" id="itinerary-overview">
           <h1 className="itn-page-title">{pkg.name}</h1>
           <div className="itn-rating-row">
             <span className="itn-star-icon">★</span>
@@ -4008,22 +5350,7 @@ export default function TourItineraryView({ destination, packageSlug }) {
               <span>{packageCategoriesList.join(', ')}</span>
             </div>
 
-            {/* Dynamic View Route Button */}
-            {hasRouteMap ? (
-              <button
-                type="button"
-                className="itn-view-route-btn"
-                onClick={() => setRouteModalOpen(true)}
-                aria-label={routeButtonLabel}
-              >
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
-                  <line x1="9" y1="3" x2="9" y2="18" />
-                  <line x1="15" y1="6" x2="15" y2="21" />
-                </svg>
-                <span>{routeButtonLabel}</span>
-              </button>
-            ) : null}
+
           </div>
           {pkg.description ? (
             <div className="itn-description-wrap">
@@ -4070,7 +5397,7 @@ export default function TourItineraryView({ destination, packageSlug }) {
           <div className="itn-main-col">
             {/* Tour Highlights Section (Matches Image 1) */}
             {tourHighlightsList.length > 0 ? (
-              <section className="itn-content-block" style={{ marginBottom: '32px', width: '100%', maxWidth: '100%' }}>
+              <section className="itn-content-block" id="itinerary-tour-highlights" style={{ marginBottom: '32px', width: '100%', maxWidth: '100%' }}>
                 <div className="itn-tour-highlights-card" style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
                   <div className="itn-tour-highlights-head" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e11d48" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
@@ -4120,7 +5447,7 @@ export default function TourItineraryView({ destination, packageSlug }) {
             ) : null}
 
             {/* 1. Preserved Day-wise Itinerary */}
-            <section className="itn-content-block">
+            <section className="itn-content-block" id="itinerary-day-wise">
               <h2 className="itn-block-title">Itinerary</h2>
               <div className="itn-itinerary-wrap">
                 {itinerarySections.map(({ item, startDay, remainingDays }, index) => (
@@ -4134,143 +5461,178 @@ export default function TourItineraryView({ destination, packageSlug }) {
               </div>
             </section>
 
-            {/* 2. Gallery Section */}
-            <section className="itn-content-block">
-              <h2 className="itn-block-title">Gallery</h2>
-              <div className="itn-gallery-grid">
-                {galleryThumbs.map((item, index) => (
-                  <div
-                    key={`gallery-thumb-${index}`}
-                    className="itn-gallery-thumb"
-                    onClick={() => setMediaOpen(true)}
-                  >
-                    <Image
-                      src={item.url}
-                      alt={item.alt || `${pkg.name} photo ${index + 1}`}
-                      fill
-                      sizes="(max-width: 768px) 50vw, 25vw"
-                      style={{ objectFit: 'cover' }}
-                    />
-                  </div>
-                ))}
-              </div>
-              <div style={{ textAlign: 'center' }}>
-                <button
-                  type="button"
-                  className="itn-btn-outline"
-                  onClick={() => setMediaOpen(true)}
-                >
-                  View More Photos
-                </button>
-              </div>
-            </section>
+
 
             {/* 3. Add On's */}
-            <section className="itn-content-block">
+            <section className="itn-content-block" id="itinerary-addons">
               <div className="itn-addons-header">
                 <div className="itn-addons-header-top">
                   <h2 className="itn-block-title itn-addons-title">
                     Add On&apos;s ({displayHotels.length}) <span className="itn-addons-sparkle">✨</span>
                   </h2>
                   {displayHotels.length > 1 ? (
-                    <span className="itn-addons-swipe-hint">
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="9 18 15 12 9 6" />
-                      </svg>
-                      Swipe
-                    </span>
+                    <div className="itn-addons-arrow-controls">
+                      <button
+                        type="button"
+                        onClick={() => scrollAddons(-1)}
+                        aria-label="Previous add-on"
+                        className="itn-addons-arrow-btn"
+                        title="Previous add-on (or press Left Arrow)"
+                      >
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="15 18 9 12 15 6" />
+                        </svg>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => scrollAddons(1)}
+                        aria-label="Next add-on"
+                        className="itn-addons-arrow-btn"
+                        title="Next add-on (or press Right Arrow)"
+                      >
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="9 18 15 12 9 6" />
+                        </svg>
+                      </button>
+                    </div>
                   ) : null}
                 </div>
                 <div className="itn-addons-accent" />
               </div>
-              <div className="itn-addons-grid">
-                {displayHotels.map((hotel) => {
-                  const hotelId = hotel.id || hotel.key;
-                  const isAdded = selectedAddonHotelIds.includes(hotelId);
-                  const perNight = Number(hotel.pricePerNight) || Number(hotel.price) || 0;
-                  const nights = Number(hotel.nights) || 1;
-                  const rooms = Number(hotel.rooms) || 1;
-                  const totalCost = perNight * nights * rooms;
-                  const hotelImg = getMediaUrl(hotel.image) || (media.images[1] ? media.images[1].url : fallbackImage);
-                  const badgeText = `Added by ${rooms || travellerCount || 2} Travellers`;
 
-                  return (
-                    <div key={hotelId} className={`itn-addon-card ${isAdded ? 'is-added' : ''}`}>
-                      <div className="itn-addon-img-wrap">
-                        <Image
-                          src={hotelImg}
-                          alt={hotel.name || 'Hotel'}
-                          fill
-                          sizes="(max-width: 768px) 100vw, 33vw"
-                          style={{ objectFit: 'cover' }}
-                          unoptimized={hotelImg.startsWith('http')}
-                        />
-                        <div className="itn-addon-badge">{badgeText}</div>
-                      </div>
+              {/* Single row horizontal carousel */}
+              <div className="itn-addons-slider-wrapper">
+                <div
+                  ref={addonsScrollRef}
+                  className="itn-addons-grid"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'ArrowLeft') {
+                      e.preventDefault();
+                      scrollAddons(-1);
+                    } else if (e.key === 'ArrowRight') {
+                      e.preventDefault();
+                      scrollAddons(1);
+                    }
+                  }}
+                  role="region"
+                  aria-label="Add-ons horizontal carousel"
+                >
+                  {displayHotels.map((hotel) => {
+                    const hotelId = hotel.id || hotel.key;
+                    const isAdded = selectedAddonHotelIds.includes(hotelId);
+                    const perNight = Number(hotel.pricePerNight) || Number(hotel.price) || 0;
+                    const nights = Number(hotel.nights) || 1;
+                    const rooms = Number(hotel.rooms) || 1;
+                    const totalCost = perNight * nights * rooms;
+                    const hotelImg = getMediaUrl(hotel.image) || (media.images[1] ? media.images[1].url : fallbackImage);
+                    const badgeText = `Added by ${rooms || travellerCount || 2} Travellers`;
 
-                      <div className="itn-addon-body">
-                        <div className="itn-addon-tag">HOTEL ADDON</div>
-                        <h3 className="itn-addon-name">{hotel.name}</h3>
-                        <div className="itn-addon-meta">
-                          <span>Room: {hotel.roomType || (hotel.starRating ? `${hotel.starRating}★ Deluxe Stay` : 'Superior')}</span>
-                          {nights ? <span className="itn-addon-dot">•</span> : null}
-                          {nights ? <span>{nights} {nights === 1 ? 'Night' : 'Nights'}</span> : null}
+                    return (
+                      <div key={hotelId} className={`itn-addon-card ${isAdded ? 'is-added' : ''}`}>
+                        <div className="itn-addon-img-wrap">
+                          <Image
+                            src={hotelImg}
+                            alt={hotel.name || 'Hotel'}
+                            fill
+                            sizes="(max-width: 768px) 100vw, 33vw"
+                            style={{ objectFit: 'cover' }}
+                            unoptimized={hotelImg.startsWith('http')}
+                          />
+                          <div className="itn-addon-badge">{badgeText}</div>
                         </div>
-                        {hotel.notes ? (
-                          <p className="itn-addon-notes" title={hotel.notes}>
-                            {hotel.notes}
-                          </p>
-                        ) : null}
 
-                        <div className="itn-addon-footer">
-                          <div className="itn-addon-price-col">
-                            <strong className="itn-addon-price">
-                              ₹ {totalCost.toLocaleString('en-IN')}
-                            </strong>
-                            {perNight && nights > 1 ? (
-                              <span className="itn-addon-per-night">₹ {perNight.toLocaleString('en-IN')} / night</span>
-                            ) : null}
+                        <div className="itn-addon-body">
+                          <div className="itn-addon-tag">HOTEL ADDON</div>
+                          <h3 className="itn-addon-name">{hotel.name}</h3>
+                          <div className="itn-addon-meta">
+                            <span>Room: {hotel.roomType || (hotel.starRating ? `${hotel.starRating}★ Deluxe Stay` : 'Superior')}</span>
+                            {nights ? <span className="itn-addon-dot">•</span> : null}
+                            {nights ? <span>{nights} {nights === 1 ? 'Night' : 'Nights'}</span> : null}
                           </div>
+                          {hotel.notes ? (
+                            <p className="itn-addon-notes" title={hotel.notes}>
+                              {hotel.notes}
+                            </p>
+                          ) : null}
 
-                          <div className="itn-addon-actions">
-                            {isAdded ? (
-                              <div className="itn-addon-added-row">
-                                <span className="itn-addon-added-label">
-                                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                                    <polyline points="20 6 9 17 4 12" />
-                                  </svg>
-                                  Added
-                                </span>
+                          <div className="itn-addon-footer">
+                            <div className="itn-addon-price-col">
+                              <strong className="itn-addon-price">
+                                ₹ {totalCost.toLocaleString('en-IN')}
+                              </strong>
+                              {perNight && nights > 1 ? (
+                                <span className="itn-addon-per-night">₹ {perNight.toLocaleString('en-IN')} / night</span>
+                              ) : null}
+                            </div>
+
+                            <div className="itn-addon-actions">
+                              {isAdded ? (
+                                <div className="itn-addon-added-row">
+                                  <span className="itn-addon-added-label">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                                      <polyline points="20 6 9 17 4 12" />
+                                    </svg>
+                                    Added
+                                  </span>
+                                  <button
+                                    type="button"
+                                    className="itn-addon-trash-btn"
+                                    onClick={() => toggleHotelAddon(hotelId)}
+                                    title="Remove from itinerary"
+                                    aria-label={`Remove ${hotel.name} from itinerary`}
+                                  >
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                      <polyline points="3 6 5 6 21 6" />
+                                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                      <line x1="10" y1="11" x2="10" y2="17" />
+                                      <line x1="14" y1="11" x2="14" y2="17" />
+                                    </svg>
+                                  </button>
+                                </div>
+                              ) : (
                                 <button
                                   type="button"
-                                  className="itn-addon-trash-btn"
+                                  className="itn-addon-btn-add"
                                   onClick={() => toggleHotelAddon(hotelId)}
-                                  title="Remove from itinerary"
-                                  aria-label={`Remove ${hotel.name} from itinerary`}
                                 >
-                                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <polyline points="3 6 5 6 21 6" />
-                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                                    <line x1="10" y1="11" x2="10" y2="17" />
-                                    <line x1="14" y1="11" x2="14" y2="17" />
-                                  </svg>
+                                  + Add to itinerary
                                 </button>
-                              </div>
-                            ) : (
-                              <button
-                                type="button"
-                                className="itn-addon-btn-add"
-                                onClick={() => toggleHotelAddon(hotelId)}
-                              >
-                                + Add to itinerary
-                              </button>
-                            )}
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
+
+                {displayHotels.length > 2 ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => scrollAddons(-1)}
+                      aria-label="Previous add-on"
+                      className="itn-addons-side-btn itn-addons-side-btn--left"
+                      title="Previous add-on"
+                    >
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="15 18 9 12 15 6" />
+                      </svg>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => scrollAddons(1)}
+                      aria-label="Next add-on"
+                      className="itn-addons-side-btn itn-addons-side-btn--right"
+                      title="Next add-on"
+                    >
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="9 18 15 12 9 6" />
+                      </svg>
+                    </button>
+                  </>
+                ) : null}
               </div>
             </section>
 
@@ -4354,6 +5716,146 @@ export default function TourItineraryView({ destination, packageSlug }) {
                       <div className="itn-exc-empty">No specific exclusions listed for this package.</div>
                     )}
                   </div>
+                </div>
+              </section>
+            ) : null}
+
+            {/* Blogs & Articles Section (Dynamically filtered by package content) */}
+            {relatedBlogs.length > 0 ? (
+              <section className="itn-content-block" id="itinerary-blogs-articles">
+                <div className="itn-blogs-header">
+                  <div className="itn-blogs-header-left">
+                    <h2 className="itn-block-title" style={{ marginBottom: 6 }}>Blogs &amp; Articles</h2>
+                    <p className="itn-blogs-subtitle">
+                      Curated travel guides and inspiring stories for your trip.
+                    </p>
+                  </div>
+                  <div className="itn-blogs-header-actions">
+                    <Link href="/blog" className="itn-blogs-view-all-link">
+                      <span>View all articles</span>
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                        <polyline points="12 5 19 12 12 19" />
+                      </svg>
+                    </Link>
+                    {relatedBlogs.length > 1 ? (
+                      <div className="itn-blogs-header-arrows">
+                        <button
+                          type="button"
+                          onClick={() => scrollBlogs(-1)}
+                          className="itn-blogs-arrow-btn"
+                          aria-label="Previous article"
+                          title="Previous article"
+                        >
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="15 18 9 12 15 6" />
+                          </svg>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => scrollBlogs(1)}
+                          className="itn-blogs-arrow-btn"
+                          aria-label="Next article"
+                          title="Next article"
+                        >
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="9 18 15 12 9 6" />
+                          </svg>
+                        </button>
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+
+                <div className="itn-blogs-carousel-wrapper">
+                  <div
+                    ref={blogsScrollRef}
+                    className="itn-blogs-row"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'ArrowLeft') {
+                        e.preventDefault();
+                        scrollBlogs(-1);
+                      } else if (e.key === 'ArrowRight') {
+                        e.preventDefault();
+                        scrollBlogs(1);
+                      }
+                    }}
+                    role="region"
+                    aria-label="Blogs and articles carousel"
+                  >
+                    {relatedBlogs.map((b) => (
+                      <Link
+                        key={b.slug || b.id}
+                        href={`/blog/${b.slug}`}
+                        className="itn-blog-card"
+                      >
+                        <div className="itn-blog-img-wrap">
+                          <Image
+                            src={b.image}
+                            alt={b.title}
+                            fill
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            className="itn-blog-img"
+                          />
+                          {b.category ? (
+                            <span className="itn-blog-category-badge">{b.category}</span>
+                          ) : null}
+                        </div>
+                        <div className="itn-blog-card-body">
+                          <div className="itn-blog-meta-row">
+                            <span className="itn-blog-date">{b.date}</span>
+                            {b.author ? (
+                              <>
+                                <span className="itn-blog-dot">•</span>
+                                <span className="itn-blog-author">{b.author}</span>
+                              </>
+                            ) : null}
+                          </div>
+                          <h3 className="itn-blog-card-title">{b.title}</h3>
+                          {b.excerpt ? (
+                            <p className="itn-blog-card-excerpt">{b.excerpt}</p>
+                          ) : null}
+                          <div className="itn-blog-card-footer">
+                            <span className="itn-blog-read-more">
+                              Read Article
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <line x1="5" y1="12" x2="19" y2="12" />
+                                <polyline points="12 5 19 12 12 19" />
+                              </svg>
+                            </span>
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+
+                  {relatedBlogs.length > 2 ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => scrollBlogs(-1)}
+                        aria-label="Previous article"
+                        className="itn-blogs-side-btn itn-blogs-side-btn--left"
+                        title="Previous article"
+                      >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="15 18 9 12 15 6" />
+                        </svg>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => scrollBlogs(1)}
+                        aria-label="Next article"
+                        className="itn-blogs-side-btn itn-blogs-side-btn--right"
+                        title="Next article"
+                      >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="9 18 15 12 9 6" />
+                        </svg>
+                      </button>
+                    </>
+                  ) : null}
                 </div>
               </section>
             ) : null}
@@ -4480,9 +5982,10 @@ export default function TourItineraryView({ destination, packageSlug }) {
         <div className="itn-full-sections">
           {/* Similar Packages You Might Like (Hot Deals Card Style) */}
           {displaySimilarPackages.length > 0 ? (
-            <section className="itn-full-block itn-similar-deals-section">
+            <section className="itn-full-block itn-similar-deals-section" id="itinerary-similar-packages">
               <div style={{ textAlign: 'center', marginBottom: 36 }}>
                 <h2
+                  id="itinerary-similar-heading"
                   className="theme-underline-heading"
                   style={{
                     fontFamily: '"Italiana", sans-serif',
@@ -4625,6 +6128,67 @@ export default function TourItineraryView({ destination, packageSlug }) {
           ) : null}
         </div>
       </main>
+
+      {/* Floating Sticky Navigation Bar (Matching User Screenshot with Dynamic Primary Colors) */}
+      <nav
+        className={`itn-floating-pill-nav ${isNavVisible ? 'is-visible' : ''}`}
+        aria-label="Package section navigation"
+      >
+        <div
+          ref={floatingNavItemsRef}
+          className="itn-floating-nav-items"
+          onTouchStart={() => {
+            isNavUserInteractingRef.current = true;
+            if (navInteractionTimeoutRef.current) clearTimeout(navInteractionTimeoutRef.current);
+          }}
+          onTouchEnd={() => {
+            if (navInteractionTimeoutRef.current) clearTimeout(navInteractionTimeoutRef.current);
+            navInteractionTimeoutRef.current = setTimeout(() => {
+              isNavUserInteractingRef.current = false;
+            }, 1000);
+          }}
+        >
+          {NAV_HEADINGS.map((nav) => {
+            const isActive = activeNavSection === nav.id;
+            return (
+              <button
+                key={nav.id}
+                id={`itn-pill-${nav.id}`}
+                data-nav-id={nav.id}
+                type="button"
+                onClick={() => scrollToNavSection(nav.id)}
+                className={`itn-floating-nav-btn ${isActive ? 'is-active' : ''}`}
+                aria-current={isActive ? 'true' : undefined}
+              >
+                <span className="itn-floating-nav-icon">
+                  {renderNavIcon(nav.icon)}
+                </span>
+                <span className="itn-floating-nav-label">{nav.label}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="itn-floating-divider" />
+
+        <div className="itn-floating-right">
+          <div className="itn-floating-price-box">
+            <div className="itn-floating-price-row">
+              <strong>{unitPriceLabel}</strong>
+              <span> / person</span>
+            </div>
+            <div className="itn-floating-price-sub">Excluding Applicable Taxes</div>
+          </div>
+
+          <button
+            type="button"
+            className="itn-floating-cta-btn"
+            onClick={openBookingModal}
+          >
+            <span>Unlock your itinerary</span>
+          </button>
+        </div>
+      </nav>
 
       {/* Sticky Mobile Bottom Booking Bar */}
       <div className="itn-mobile-sticky-bar">

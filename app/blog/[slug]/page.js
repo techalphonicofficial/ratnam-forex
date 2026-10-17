@@ -82,38 +82,45 @@ const parseSchemaMarkup = (schemaMarkup) => {
 };
 
 export async function generateMetadata({ params }) {
-  const { slug } = await params;
-  const blog = await getBlog(slug);
+  try {
+    const { slug } = await params;
+    const blog = await getBlog(slug);
 
-  if (!blog) {
+    if (!blog) {
+      return {
+        title: 'Blog Not Found',
+      };
+    }
+
     return {
-      title: 'Blog Not Found',
-    };
-  }
-
-  return {
-    title: blog.metaTitle || blog.title,
-    description: blog.metaDescription || blog.excerpt || stripHtml(blog.content).slice(0, 160),
-    keywords: blog.metaKeywords ? blog.metaKeywords.split(',').map((keyword) => keyword.trim()).filter(Boolean) : undefined,
-    openGraph: {
       title: blog.metaTitle || blog.title,
       description: blog.metaDescription || blog.excerpt || stripHtml(blog.content).slice(0, 160),
-      images: [{ url: blog.image, width: 1200, height: 630, alt: blog.title }],
-    },
-  };
+      keywords: blog.metaKeywords ? blog.metaKeywords.split(',').map((keyword) => keyword.trim()).filter(Boolean) : undefined,
+      openGraph: {
+        title: blog.metaTitle || blog.title,
+        description: blog.metaDescription || blog.excerpt || stripHtml(blog.content).slice(0, 160),
+        images: blog.image ? [{ url: blog.image, width: 1200, height: 630, alt: blog.title }] : [],
+      },
+    };
+  } catch (err) {
+    console.error('ERROR in generateMetadata:', err);
+    return { title: 'Blog | Travel Holiday' };
+  }
 }
 
 export default async function BlogArticle({ params }) {
-  const { slug } = await params;
-  const blog = await getBlog(slug);
+  try {
+    const { slug } = await params;
+    const blog = await getBlog(slug);
 
-  if (!blog) return notFound();
+    if (!blog) return notFound();
 
-  const apiRelated = (await getRelatedBlogs(blog.slug, 3))
-    .filter((item) => item.slug !== blog.slug)
+  const rawApiRelated = await getRelatedBlogs(blog.slug, 3);
+  const apiRelated = (Array.isArray(rawApiRelated) ? rawApiRelated : [])
+    .filter((item) => item && item.slug !== blog.slug)
     .map((item, index) => normalizeApiBlog(item, index))
     .slice(0, 3);
-  const fallbackRelated = blog.related
+  const fallbackRelated = Array.isArray(blog.related)
     ? blogsData.filter((item) => blog.related.includes(item.slug)).map(normalizeFallbackBlog).slice(0, 3)
     : [];
   const relatedArticles = apiRelated.length ? apiRelated : fallbackRelated;
@@ -690,4 +697,13 @@ export default async function BlogArticle({ params }) {
       `}</style>
     </main>
   );
+  } catch (err) {
+    console.error('ERROR IN BlogArticle:', err);
+    return (
+      <div style={{ padding: '100px 20px', textAlign: 'center' }}>
+        <h2>Unable to load article</h2>
+        <p>{String(err?.message || err)}</p>
+      </div>
+    );
+  }
 }

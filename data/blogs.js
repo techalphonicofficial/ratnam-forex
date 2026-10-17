@@ -154,5 +154,57 @@ export const blogsData = [
     category: 'Adventure',
     image: 'https://images.unsplash.com/photo-1526392060635-9d60198d3fe3?w=1200&q=80',
     related: ['safari-tips-tanzania']
+  },
+  {
+    id: 13,
+    slug: 'kashmir-travel-guide-srinagar-gulmarg-pahalgam',
+    title: 'The Complete Kashmir Travel Guide: Srinagar, Gulmarg & Pahalgam',
+    excerpt: 'From mesmerizing Dal Lake houseboats to snow-covered Gulmarg peaks and emerald valleys of Pahalgam, explore heaven on earth.',
+    content: `<h2>Paradise on Earth</h2><p>Kashmir is revered worldwide for its breathtaking alpine scenery, tranquil freshwater lakes, and warm hospitality. Whether taking a gentle shikara ride across Dal Lake at dawn or riding the Gulmarg Gondola above snow-draped pine forests, this northern paradise promises lifelong memories.</p>`,
+    author: 'Priya Patel',
+    date: 'Jul 18, 2024',
+    readTime: '7 min read',
+    category: 'Himalayas & Valleys',
+    image: 'https://images.unsplash.com/photo-1595815771614-ade9d652a65d?w=1200&q=80',
+    related: ['top-10-beaches-south-east-asia', 'packing-guide-tropical-vacation']
+  },
+  {
+    id: 14,
+    slug: 'thailand-island-hopping-bangkok-phuket-krabi',
+    title: 'Ultimate Thailand Island Hopping: Bangkok, Phuket & Krabi',
+    excerpt: 'Plan your dream tropical vacation across Thailand’s vibrant capital temples, turquoise sea lagoons, and white sand beach bays.',
+    content: `<h2>The Magic of Thailand</h2><p>From the bustle of Bangkok’s golden Grand Palace and street food stalls to the karst limestone cliffs of Phuket and Krabi, Thailand is the ultimate beach adventure. Discover secret coves, ride longtail boats to Phi Phi Islands, and soak in tropical sunset views.</p>`,
+    author: 'Rahul Verma',
+    date: 'Aug 04, 2024',
+    readTime: '6 min read',
+    category: 'Beaches & Islands',
+    image: 'https://images.unsplash.com/photo-1506665531195-3566af2b4dfa?w=1200&q=80',
+    related: ['top-10-beaches-south-east-asia', 'packing-guide-tropical-vacation']
+  },
+  {
+    id: 15,
+    slug: 'kashmir-dal-lake-shikara-guide',
+    title: 'A Guide to Shikara Rides & Houseboats on Dal Lake',
+    excerpt: 'Everything you need to know about experiencing traditional handcrafted houseboats, morning floating flower markets, and serene waters in Srinagar.',
+    content: `<h2>Floating on Dal Lake</h2><p>Waking up on a cedar-carved houseboat surrounded by mist rolling over the Zabarwan mountains is a bucket-list experience. Learn how to hire registered shikaras, explore floating lotus gardens, and enjoy fresh saffron kahwa tea.</p>`,
+    author: 'Samir Khan',
+    date: 'Aug 22, 2024',
+    readTime: '5 min read',
+    category: 'Travel Guide',
+    image: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=1200&q=80',
+    related: ['kashmir-travel-guide-srinagar-gulmarg-pahalgam']
+  },
+  {
+    id: 16,
+    slug: 'bangkok-night-markets-street-food',
+    title: 'Bangkok Night Markets: A Foodie’s Guide to Authentic Thai Flavours',
+    excerpt: 'Savor Michelin-lauded street pad thai, mango sticky rice, and sizzling seafood in Bangkok’s most lively nocturnal bazaars.',
+    content: `<h2>Flavours of Bangkok</h2><p>Bangkok after dark is a vibrant sensory spectacle. Navigate Chatuchak, Jodd Fairs, and Chinatown’s Yaowarat road with our expert insider guide to must-try Thai delicacies and bustling night stalls.</p>`,
+    author: 'Anjali Sharma',
+    date: 'Sep 02, 2024',
+    readTime: '6 min read',
+    category: 'Food & Culture',
+    image: 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=1200&q=80',
+    related: ['thailand-island-hopping-bangkok-phuket-krabi']
   }
 ];
