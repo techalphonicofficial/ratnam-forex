@@ -237,27 +237,6 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <div style={{ display: 'flex', alignItems: 'center', margin: '32px 0' }}>
-            <div style={{ flex: 1, height: 1, background: '#e5e7eb' }} />
-            <span style={{ padding: '0 16px', fontSize: 13, color: '#6b7280', fontWeight: 500 }}>Or continue with</span>
-            <div style={{ flex: 1, height: 1, background: '#e5e7eb' }} />
-          </div>
-
-          <div>
-            <button
-              type="button"
-              onClick={() => toast.error('Google OAuth needs a backend OAuth endpoint and Google client ID first.')}
-              style={{ width: '100%', padding: '15px 18px', background: 'white', border: '1px solid #d1d5db', borderRadius: 14, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 10, cursor: 'pointer', fontWeight: 700, color: '#374151', transition: 'background 0.2s', boxShadow: '0 2px 8px rgba(0,0,0,0.06)', fontSize: 15 }}
-              onMouseEnter={e => e.currentTarget.style.background = '#f9fafb'}
-              onMouseLeave={e => e.currentTarget.style.background = 'white'}
-            >
-              <img src="https://www.svgrepo.com/show/475656/google-color.svg" width={22} alt="Google" /> Continue with Google
-            </button>
-            {/* Previous Apple button removed from UI and kept for reference:
-            <button>Apple</button>
-            */}
-          </div>
-
           <p style={{ textAlign: 'center', marginTop: 32, fontSize: 14, color: '#6b7280' }}>
             Don&apos;t have an account? <Link href="/auth/register" style={{ fontWeight: 600, color: 'var(--color-primary)', textDecoration: 'none' }}>Sign up</Link>
           </p>
