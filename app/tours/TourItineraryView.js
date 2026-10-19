@@ -2301,6 +2301,25 @@ function ItineraryStyles() {
         transform: translateY(0);
       }
 
+      /* Desktop screens: Hide price & 'Unlock your itinerary' CTA in floating navbar */
+      @media (min-width: 769px) {
+        .itn-floating-divider {
+          display: none !important;
+        }
+        .itn-floating-right {
+          display: none !important;
+        }
+        .itn-floating-pill-nav {
+          padding: 6px 12px;
+          gap: 6px;
+          max-width: fit-content;
+        }
+        .itn-floating-nav-items {
+          justify-content: center;
+          flex: 0 1 auto;
+        }
+      }
+
       @media (max-width: 1024px) {
         .itn-floating-pill-nav {
           bottom: 16px;
@@ -4195,7 +4214,9 @@ export default function TourItineraryView({ destination, packageSlug }) {
           const rawPoints = Array.isArray(jsonData?.points) ? jsonData.points : [];
           const parsedStops = rawPoints.map(parseCmsMapPoint).filter(Boolean);
 
-          const dynamicMapTitle = String(mapDetail.title || jsonData?.heading_content || '').trim() || 'Tour Map';
+          const rawTitle = String(mapDetail.title || jsonData?.heading_content || '').trim();
+          const isTripItinerary = /^trip\s*itin/i.test(rawTitle);
+          const dynamicMapTitle = (rawTitle && !isTripItinerary) ? rawTitle : 'Tour Map';
 
           if (mounted) {
             setCmsMapData({
@@ -4317,7 +4338,7 @@ export default function TourItineraryView({ destination, packageSlug }) {
       if (videoRef.current.paused) {
         videoRef.current.play()
           .then(() => setIsVideoPlaying(true))
-          .catch(() => {});
+          .catch(() => { });
       } else {
         videoRef.current.pause();
         setIsVideoPlaying(false);
@@ -4375,7 +4396,7 @@ export default function TourItineraryView({ destination, packageSlug }) {
 
   const routeButtonLabel = useMemo(() => {
     const dynamicTitle = String(cmsMapData?.mapTitle || cmsMapData?.title || '').trim();
-    if (dynamicTitle) return dynamicTitle;
+    if (dynamicTitle && !/^trip\s*itin/i.test(dynamicTitle)) return dynamicTitle;
     return 'Tour Map';
   }, [cmsMapData]);
 

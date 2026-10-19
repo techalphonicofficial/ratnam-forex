@@ -384,7 +384,7 @@ export default function RouteMapModal({
         </div>
 
         {/* ============================================================ */}
-        {/* RIGHT COLUMN: "TRIP ITINERARY" PANEL MATCHING USER MOCKUP     */}
+        {/* RIGHT COLUMN: "TOUR MAP" / ITINERARY PANEL MATCHING USER MOCKUP */}
         {/* ============================================================ */}
         <div className="rmm-itinerary-col">
           {/* Header with Route Icon, Title, and Close Button */}
@@ -395,7 +395,7 @@ export default function RouteMapModal({
                 <circle cx="18" cy="18" r="3" />
                 <path d="M6 9v3a3 3 0 0 0 3 3h6" />
               </svg>
-              <h3 className="rmm-title">{cmsMapData?.title || 'Trip Itinerary'}</h3>
+              <h3 className="rmm-title">{cmsMapData?.title && !/^trip\s*itin/i.test(cmsMapData.title) ? cmsMapData.title : 'Tour Map'}</h3>
             </div>
             <button
               type="button"
@@ -627,7 +627,7 @@ export default function RouteMapModal({
           pointer-events: none;
         }
 
-        /* Right Column: Trip Itinerary */
+        /* Right Column: Tour Map / Itinerary */
         .rmm-itinerary-col {
           padding: 22px 24px 22px 20px;
           display: flex;
