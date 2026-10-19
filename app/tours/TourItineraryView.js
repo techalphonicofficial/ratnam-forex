@@ -3166,13 +3166,15 @@ function ItineraryStyles() {
         inset: 0;
         z-index: 1000;
         display: flex;
-        align-items: flex-start;
+        align-items: center;
         justify-content: center;
         padding: 18px;
         overflow-y: auto;
         scrollbar-width: none;
         background: rgba(5, 12, 26, .72);
         backdrop-filter: blur(10px);
+        overscroll-behavior: contain;
+        touch-action: none;
       }
       .itn-booking-modal::-webkit-scrollbar { display: none; }
       .itn-booking-panel {
@@ -3184,6 +3186,8 @@ function ItineraryStyles() {
         border-radius: 10px;
         background: #fff;
         box-shadow: 0 28px 80px rgba(2, 8, 23, .34);
+        overscroll-behavior: contain;
+        touch-action: pan-y;
       }
       .itn-booking-close {
         position: absolute;
@@ -3769,6 +3773,156 @@ function ItineraryStyles() {
         .itn-mobile-sticky-book-btn:hover {
           filter: brightness(1.08);
           transform: translateY(-1px);
+        }
+
+        /* Mobile Screen: Make popup modal 20% smaller with contained scrolling */
+        .itn-booking-modal {
+          padding: 14px 10px !important;
+          align-items: center !important;
+          justify-content: center !important;
+        }
+        .itn-booking-panel {
+          width: min(80vw, 460px) !important;
+          max-height: 80vh !important;
+          overflow-y: auto !important;
+          border-radius: 14px !important;
+          box-shadow: 0 20px 60px rgba(2, 8, 23, .45) !important;
+        }
+        .itn-booking-hero {
+          padding: 18px 18px 20px !important;
+        }
+        .itn-booking-hero span {
+          font-size: 9.5px !important;
+          letter-spacing: .7px !important;
+        }
+        .itn-booking-hero h2 {
+          font-size: 19px !important;
+          margin: 6px 0 4px !important;
+        }
+        .itn-booking-hero p {
+          font-size: 11.5px !important;
+        }
+        .itn-booking-close {
+          top: 10px !important;
+          right: 10px !important;
+          width: 28px !important;
+          height: 28px !important;
+          font-size: 14px !important;
+        }
+        .itn-booking-summary,
+        .itn-booking-payment-choice,
+        .itn-booking-travellers,
+        .itn-booking-breakdown,
+        .itn-booking-form,
+        .itn-booking-actions,
+        .itn-booking-result,
+        .itn-booking-recovery-card {
+          margin-left: 14px !important;
+          margin-right: 14px !important;
+        }
+        .itn-booking-summary {
+          padding: 14px 14px 0 !important;
+          gap: 10px !important;
+        }
+        .itn-booking-summary > div {
+          padding: 10px !important;
+        }
+        .itn-booking-summary strong {
+          font-size: 16px !important;
+        }
+        .itn-booking-payment-choice {
+          margin-top: 12px !important;
+          padding: 12px !important;
+        }
+        .itn-booking-travellers {
+          margin-top: 12px !important;
+          padding: 12px !important;
+        }
+        .itn-booking-section-title {
+          margin-bottom: 8px !important;
+        }
+        .itn-booking-section-title span {
+          font-size: 9.5px !important;
+        }
+        .itn-booking-section-title strong {
+          font-size: 11.5px !important;
+        }
+        .itn-traveller-count-row {
+          padding: 10px !important;
+          gap: 10px !important;
+          grid-template-columns: minmax(0, 1fr) 130px !important;
+        }
+        .itn-traveller-count-row strong {
+          font-size: 15px !important;
+        }
+        .itn-traveller-count-row small {
+          font-size: 10.5px !important;
+        }
+        .itn-traveller-stepper {
+          grid-template-columns: 34px 1fr 34px !important;
+          gap: 6px !important;
+        }
+        .itn-traveller-stepper button {
+          width: 34px !important;
+          height: 34px !important;
+          font-size: 16px !important;
+        }
+        .itn-traveller-stepper input {
+          height: 34px !important;
+          font-size: 13px !important;
+        }
+        .itn-guest-card {
+          grid-template-columns: 1fr 1fr !important;
+          padding: 10px !important;
+          gap: 8px !important;
+        }
+        .itn-guest-card input {
+          height: 34px !important;
+          font-size: 12px !important;
+        }
+        .itn-booking-breakdown {
+          margin-top: 12px !important;
+        }
+        .itn-booking-breakdown div {
+          padding: 8px 12px !important;
+        }
+        .itn-booking-breakdown span {
+          font-size: 11px !important;
+        }
+        .itn-booking-breakdown strong {
+          font-size: 12px !important;
+        }
+        .itn-booking-form {
+          padding: 14px 14px 0 !important;
+          gap: 10px !important;
+        }
+        .itn-booking-form label {
+          font-size: 10.5px !important;
+          gap: 4px !important;
+        }
+        .itn-booking-form input {
+          height: 36px !important;
+          font-size: 12.5px !important;
+          padding: 0 12px !important;
+        }
+        .itn-booking-form textarea {
+          min-height: 60px !important;
+          font-size: 12.5px !important;
+          padding: 8px 12px !important;
+        }
+        .itn-coupon-row button {
+          height: 36px !important;
+          font-size: 11px !important;
+        }
+        .itn-booking-actions {
+          padding: 14px !important;
+          gap: 8px !important;
+          grid-template-columns: 90px 1fr !important;
+        }
+        .itn-booking-actions button,
+        .itn-booking-actions a {
+          height: 38px !important;
+          font-size: 12.5px !important;
         }
       }
     `}</style>
@@ -4383,6 +4537,33 @@ export default function TourItineraryView({ destination, packageSlug }) {
       mounted = false;
     };
   }, []);
+
+  // Disable background scrolling whenever any popup modal is open
+  useEffect(() => {
+    const isAnyModalOpen = Boolean(
+      bookingModalOpen ||
+      routeModalOpen ||
+      mediaOpen ||
+      allReviewsModalOpen ||
+      cancellationModalOpen
+    );
+
+    if (!isAnyModalOpen) return;
+
+    const prevBodyOverflow = document.body.style.overflow;
+    const prevHtmlOverflow = document.documentElement.style.overflow;
+    const prevBodyTouchAction = document.body.style.touchAction;
+
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.touchAction = 'none';
+
+    return () => {
+      document.body.style.overflow = prevBodyOverflow;
+      document.documentElement.style.overflow = prevHtmlOverflow;
+      document.body.style.touchAction = prevBodyTouchAction;
+    };
+  }, [bookingModalOpen, routeModalOpen, mediaOpen, allReviewsModalOpen, cancellationModalOpen]);
 
   useEffect(() => {
     let mounted = true;
@@ -6544,8 +6725,21 @@ export default function TourItineraryView({ destination, packageSlug }) {
 
       {/* Booking Modal with Razorpay Checkout */}
       {bookingModalOpen ? (
-        <div className="itn-booking-modal" role="dialog" aria-modal="true" aria-label="Complete package booking">
-          <div className="itn-booking-panel">
+        <div
+          className="itn-booking-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Complete package booking"
+          onClick={(e) => {
+            if (e.target === e.currentTarget && !paymentProcessing) {
+              setBookingModalOpen(false);
+            }
+          }}
+        >
+          <div
+            className="itn-booking-panel"
+            onClick={(e) => e.stopPropagation()}
+          >
             <button
               type="button"
               className="itn-booking-close"

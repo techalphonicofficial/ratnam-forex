@@ -25,13 +25,20 @@ export default function CancellationPolicyModal({ isOpen, onClose, policyData: i
     };
     window.addEventListener('keydown', handleKeyDown);
 
-    const prevOverflow = document.body.style.overflow;
+    const prevBodyOverflow = document.body.style.overflow;
+    const prevHtmlOverflow = document.documentElement.style.overflow;
+    const prevBodyTouchAction = document.body.style.touchAction;
+
     document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.touchAction = 'none';
 
     return () => {
       mounted = false;
       window.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = prevOverflow;
+      document.body.style.overflow = prevBodyOverflow;
+      document.documentElement.style.overflow = prevHtmlOverflow;
+      document.body.style.touchAction = prevBodyTouchAction;
     };
   }, [isOpen, onClose, incomingPolicyData, fetchedData]);
 
@@ -121,6 +128,8 @@ export default function CancellationPolicyModal({ isOpen, onClose, policyData: i
           justify-content: center;
           padding: 20px 16px;
           animation: cpmFadeIn 0.25s ease-out;
+          overscroll-behavior: contain;
+          touch-action: none;
         }
 
         .cpm-container {
@@ -133,6 +142,8 @@ export default function CancellationPolicyModal({ isOpen, onClose, policyData: i
           flex-direction: column;
           overflow: hidden;
           animation: cpmSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+          overscroll-behavior: contain;
+          touch-action: pan-y;
         }
 
         .cpm-header {
@@ -405,30 +416,94 @@ export default function CancellationPolicyModal({ isOpen, onClose, policyData: i
         }
 
         @media (max-width: 640px) {
+          .cpm-backdrop {
+            padding: 12px 10px;
+          }
+          .cpm-container {
+            width: min(80vw, 80%) !important;
+            max-height: 80vh !important;
+            border-radius: 16px !important;
+          }
           .cpm-header {
-            padding: 14px 16px;
+            padding: 12px 14px;
           }
           .cpm-title {
-            font-size: 18px;
+            font-size: 16px;
           }
           .cpm-shield-icon {
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
+            border-radius: 9px;
+          }
+          .cpm-meta-pill {
+            font-size: 10px;
+          }
+          .cpm-close-btn {
+            width: 30px;
+            height: 30px;
+            font-size: 14px;
           }
           .cpm-body {
-            padding: 18px 16px;
-            font-size: 13.5px;
+            padding: 14px 14px;
+            font-size: 12.5px;
+            line-height: 1.6;
+          }
+          :global(.cpm-intro-callout) {
+            padding: 12px 14px;
+            font-size: 12.5px;
+            margin-bottom: 16px;
+          }
+          :global(.cpm-section) {
+            padding-bottom: 16px;
+            margin-bottom: 16px;
+          }
+          :global(.cpm-dynamic-content h3),
+          :global(.cpm-sec-title) {
+            font-size: 14px;
+            margin-bottom: 8px;
           }
           :global(.cpm-schedule-grid) {
             grid-template-columns: 1fr;
+            gap: 8px;
+            margin: 12px 0;
+          }
+          :global(.cpm-sched-card) {
+            padding: 9px 11px;
+            border-radius: 10px;
+          }
+          :global(.cpm-sched-time) {
+            font-size: 11px;
+          }
+          :global(.cpm-sched-charge) {
+            font-size: 17px;
+          }
+          :global(.cpm-sched-note) {
+            font-size: 10px;
+          }
+          :global(.cpm-highlight-box) {
+            padding: 10px 12px;
+            font-size: 12px;
+            gap: 8px;
+          }
+          :global(.cpm-highlight-icon) {
+            font-size: 16px;
+          }
+          :global(.cpm-acknowledgment-box) {
+            padding: 8px 12px;
+            font-size: 11.5px;
           }
           .cpm-footer {
             flex-direction: column-reverse;
-            padding: 12px 16px;
-            text-align: center;
+            padding: 10px 14px;
+            gap: 8px;
+          }
+          .cpm-footer-hint {
+            font-size: 10.5px;
           }
           .cpm-done-btn {
             width: 100%;
+            padding: 8px 18px;
+            font-size: 12px;
           }
         }
       `}</style>
