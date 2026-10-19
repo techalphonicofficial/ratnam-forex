@@ -1,29 +1,19 @@
 import Image from 'next/image';
 import { getMediaUrl, getPageBySlug } from '@/utils/api';
+import {
+  transformCancellationHtml,
+  FALLBACK_CANCELLATION_HTML,
+} from '@/utils/cancellationPolicy';
 
 export const dynamic = 'force-dynamic';
 
 const FALLBACK_HERO_IMAGE = 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=1920&q=75';
 
-const FALLBACK_POLICY_HTML = `
-  <h2><strong>General Philosophy</strong></h2>
-  <p>We believe in flexibility for all our travelers. While some bookings are strictly non-refundable due to airline and hotel policies, our flexible management fee ensures you only pay for what cannot be salvaged from third-party vendor partners.</p>
-  <h2><strong>Standard Schedule</strong></h2>
-  <ul>
-    <li><strong>60+ days before departure:</strong> 100% refund of base tour price, minus non-refundable airline fees.</li>
-    <li><strong>30 to 59 days before departure:</strong> 50% refund on hotels and tour, minus non-refundable airfare.</li>
-    <li><strong>Less than 30 days before departure:</strong> 0% refund on package unless standard travel insurance logic applies.</li>
-  </ul>
-  <h2><strong>Force Majeure</strong></h2>
-  <p>In cases of natural disasters, global pandemics, or extreme political unrest, standard cancellation policies are overridden, and ITS TRAVELS AND TOURS will attempt to issue 100% credits immediately usable towards any future booking.</p>
-  <h4><strong>Have Questions?</strong></h4>
-  <p>Contact our support team 24/7 if you need immediate assistance regarding a cancellation.</p>
-`;
-
-const findSection = (page, section) => page?.details?.find((item) => item.section === section);
+const findSection = (page, section) =>
+  page?.details?.find((item) => item.section === section || item.key === 'cancillation_key');
 
 const formatDate = (value) => {
-  if (!value) return 'January 2026';
+  if (!value) return 'October 2026';
 
   try {
     return new Intl.DateTimeFormat('en-IN', {
@@ -31,29 +21,37 @@ const formatDate = (value) => {
       year: 'numeric',
     }).format(new Date(value));
   } catch {
-    return 'January 2026';
+    return 'October 2026';
   }
 };
 
 const buildCancellationContent = (page) => {
   const storyGrid = findSection(page, 'story_grid');
   const heroImage = getMediaUrl(page?.feature_image) || FALLBACK_HERO_IMAGE;
+  const rawDesc = storyGrid?.json_data?.story_desc || FALLBACK_CANCELLATION_HTML;
+  const statsVal = Array.isArray(storyGrid?.json_data?.stats) ? storyGrid.json_data.stats[0]?.value : null;
 
   return {
     eyebrow: page?.title || 'Cancellation Policy',
     title: page?.description || page?.title || 'Cancellation & Refund Policy',
     description:
       storyGrid?.json_data?.heading_content ||
-      'Stuff happens. We completely understand. Here is everything you need to know about modifying or canceling your trips.',
+      'Transparent terms & standard refund schedule',
     image: heroImage,
     imageAlt: page?.alt_text || page?.title || 'Cancellation policy',
-    html: storyGrid?.json_data?.story_desc || FALLBACK_POLICY_HTML,
-    updatedAt: formatDate(page?.updated_at || page?.created_at),
+    html: transformCancellationHtml(rawDesc),
+    updatedAt: statsVal || formatDate(page?.updated_at || page?.created_at),
   };
 };
 
+const fetchCancellationCmsPage = async () => {
+  let page = await getPageBySlug('cancellation-policy');
+  if (!page) page = await getPageBySlug('cancellation');
+  return page;
+};
+
 export async function generateMetadata() {
-  const page = await getPageBySlug('cancellation');
+  const page = await fetchCancellationCmsPage();
   const image = getMediaUrl(page?.feature_image);
 
   return {
@@ -69,7 +67,7 @@ export async function generateMetadata() {
 }
 
 export default async function CancellationPolicy() {
-  const page = await getPageBySlug('cancellation');
+  const page = await fetchCancellationCmsPage();
   const content = buildCancellationContent(page);
 
   return (
@@ -194,6 +192,130 @@ export default async function CancellationPolicy() {
 
         .policy-content tr:nth-child(even) {
           background: #f9fafb;
+        }
+
+        .cpm-intro-callout {
+          background: #f8fafc;
+          border-left: 4px solid var(--color-primary, #AA8453);
+          border-radius: 8px;
+          padding: 18px 22px;
+          margin-bottom: 28px;
+          font-size: 15px;
+          color: #1e293b;
+        }
+        .cpm-intro-callout p {
+          margin: 0 0 10px;
+        }
+        .cpm-intro-callout p:last-child {
+          margin-bottom: 0;
+        }
+
+        .cpm-section {
+          padding-bottom: 24px;
+          margin-bottom: 24px;
+          border-bottom: 1px solid #f1f5f9;
+        }
+        .cpm-section:last-child {
+          border-bottom: none;
+          margin-bottom: 0;
+          padding-bottom: 0;
+        }
+
+        .policy-content h3 {
+          font-size: 18px;
+          font-weight: 800;
+          color: #0f172a;
+          margin: 0 0 14px;
+        }
+
+        .cpm-schedule-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 12px;
+          margin: 18px 0;
+        }
+
+        .cpm-sched-card {
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-radius: 12px;
+          padding: 14px 16px;
+          text-align: center;
+          transition: transform 0.15s ease;
+        }
+        .cpm-sched-card:hover {
+          transform: translateY(-2px);
+          border-color: #cbd5e1;
+        }
+        .cpm-sched-card--full {
+          grid-column: 1 / -1;
+          background: #fff5f5;
+          border-color: #fed7d7;
+        }
+
+        .cpm-sched-time {
+          font-size: 13px;
+          font-weight: 600;
+          color: #475569;
+          margin-bottom: 6px;
+        }
+        .cpm-sched-charge {
+          font-size: 22px;
+          font-weight: 800;
+          letter-spacing: -0.02em;
+        }
+        .cpm-sched-charge--low { color: #16a34a; }
+        .cpm-sched-charge--med { color: #d97706; }
+        .cpm-sched-charge--high { color: #ea580c; }
+        .cpm-sched-charge--critical { color: #dc2626; }
+
+        .cpm-sched-note {
+          font-size: 12px;
+          color: #64748b;
+          margin-top: 4px;
+        }
+
+        .cpm-disclaimer-text {
+          font-size: 13px;
+          color: #64748b;
+          background: #fafafa;
+          padding: 12px 16px;
+          border-radius: 8px;
+          margin-top: 14px !important;
+          border-left: 3px solid #cbd5e1;
+        }
+
+        .cpm-highlight-box {
+          display: flex;
+          align-items: flex-start;
+          gap: 12px;
+          background: #eff6ff;
+          border: 1px solid #bfdbfe;
+          border-radius: 10px;
+          padding: 14px 18px;
+          color: #1e3a8a;
+          font-size: 14px;
+          margin: 14px 0;
+        }
+        .cpm-highlight-box--amber {
+          background: #fffbeb;
+          border-color: #fde68a;
+          color: #92400e;
+        }
+        .cpm-highlight-icon {
+          font-size: 20px;
+          line-height: 1;
+        }
+
+        .cpm-acknowledgment-box {
+          background: #f0fdf4;
+          border: 1px solid #bbf7d0;
+          border-radius: 8px;
+          padding: 12px 16px;
+          color: #166534;
+          font-weight: 600;
+          font-size: 13.5px;
+          margin-top: 14px !important;
         }
       `}</style>
     </main>

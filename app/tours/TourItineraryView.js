@@ -7,6 +7,10 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import GramSection from '@/components/GramSection';
 import RouteMapModal from '@/components/RouteMapModal';
 import CancellationPolicyModal from '@/components/CancellationPolicyModal';
+import {
+  getCancellationPolicy,
+  FALLBACK_CANCELLATION_DATA,
+} from '@/utils/cancellationPolicy';
 import TourCard from '@/components/TourCard';
 import { blogsData } from '@/data/blogs';
 import {
@@ -3789,6 +3793,7 @@ export default function TourItineraryView({ destination, packageSlug }) {
   const [mediaOpen, setMediaOpen] = useState(false);
   const [routeModalOpen, setRouteModalOpen] = useState(false);
   const [cancellationModalOpen, setCancellationModalOpen] = useState(false);
+  const [cancellationPolicyData, setCancellationPolicyData] = useState(FALLBACK_CANCELLATION_DATA);
   const videoRef = useRef(null);
   const [isVideoMuted, setIsVideoMuted] = useState(true);
   const [isVideoPlaying, setIsVideoPlaying] = useState(true);
@@ -4366,6 +4371,18 @@ export default function TourItineraryView({ destination, packageSlug }) {
       mounted = false;
     };
   }, [pkg, resolvedSlug]);
+
+  useEffect(() => {
+    let mounted = true;
+    getCancellationPolicy().then((data) => {
+      if (mounted && data) {
+        setCancellationPolicyData(data);
+      }
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -5862,7 +5879,7 @@ export default function TourItineraryView({ destination, packageSlug }) {
               </section>
             ) : null}
 
-            {/* Cancellation Policy Section (3-line preview with Read More popup modal) */}
+            {/* Cancellation Policy Section (Dynamic CMS Data, 3-line preview with Read More popup modal) */}
             <section className="itn-content-block" id="itinerary-cancellation-policy">
               <div className="itn-cancellation-card">
                 <div className="itn-cancellation-card-head">
@@ -5874,16 +5891,22 @@ export default function TourItineraryView({ destination, packageSlug }) {
                       </svg>
                     </span>
                     <div>
-                      <h2 className="itn-block-title" style={{ margin: 0, fontSize: '20px' }}>Cancellation Policy</h2>
-                      <span className="itn-cancellation-subtitle">Transparent terms &amp; standard refund schedule</span>
+                      <h2 className="itn-block-title" style={{ margin: 0, fontSize: '20px' }}>
+                        {cancellationPolicyData?.title || 'Cancellation Policy'}
+                      </h2>
+                      <span className="itn-cancellation-subtitle">
+                        {cancellationPolicyData?.subtitle || 'Transparent terms & standard refund schedule'}
+                      </span>
                     </div>
                   </div>
-                  <span className="itn-cancellation-updated-pill">Updated Oct 2026</span>
+                  <span className="itn-cancellation-updated-pill">
+                    {cancellationPolicyData?.updatedPill || 'Updated Oct 2026'}
+                  </span>
                 </div>
 
                 <div className="itn-cancellation-card-body">
                   <p className="itn-cancellation-three-lines">
-                    At Tour &amp; Holiday, we understand that travel plans can change unexpectedly. Our Cancellation Policy explains the terms and conditions applicable when a customer cancels a booking, requests a date change, or seeks a refund for any tour package booked through our website. This policy applies to all tour packages offered by Tour &amp; Holiday, including domestic tours, international holidays, honeymoon packages, family tours, group trips, and customized travel packages, unless specific terms are communicated in writing at the time of booking.
+                    {cancellationPolicyData?.previewText || FALLBACK_CANCELLATION_DATA.previewText}
                   </p>
 
                   <button
@@ -6331,6 +6354,9 @@ export default function TourItineraryView({ destination, packageSlug }) {
         >
           {NAV_HEADINGS.map((nav) => {
             const isActive = activeNavSection === nav.id;
+            const label = nav.id === 'itinerary-cancellation-policy'
+              ? (cancellationPolicyData?.title || nav.label)
+              : nav.label;
             return (
               <button
                 key={nav.id}
@@ -6344,7 +6370,7 @@ export default function TourItineraryView({ destination, packageSlug }) {
                 <span className="itn-floating-nav-icon">
                   {renderNavIcon(nav.icon)}
                 </span>
-                <span className="itn-floating-nav-label">{nav.label}</span>
+                <span className="itn-floating-nav-label">{label}</span>
               </button>
             );
           })}
@@ -6431,6 +6457,7 @@ export default function TourItineraryView({ destination, packageSlug }) {
       <CancellationPolicyModal
         isOpen={cancellationModalOpen}
         onClose={() => setCancellationModalOpen(false)}
+        policyData={cancellationPolicyData}
       />
 
       {/* Media Modal */}
