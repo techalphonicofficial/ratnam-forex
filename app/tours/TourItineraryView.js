@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import GramSection from '@/components/GramSection';
 import RouteMapModal from '@/components/RouteMapModal';
+import CancellationPolicyModal from '@/components/CancellationPolicyModal';
 import TourCard from '@/components/TourCard';
 import { blogsData } from '@/data/blogs';
 import {
@@ -770,6 +771,7 @@ const NAV_HEADINGS = [
   { id: 'itinerary-day-wise', label: 'Itinerary', icon: 'itinerary' },
   { id: 'itinerary-addons', label: "Add On's", icon: 'addons' },
   { id: 'itinerary-inclusions-exclusions', label: 'Inclusions & Exclusions', icon: 'inclusions' },
+  { id: 'itinerary-cancellation-policy', label: 'Cancellation Policy', icon: 'cancellation' },
   { id: 'itinerary-blogs-articles', label: 'Blogs & Articles', icon: 'blogs' },
 ];
 
@@ -818,6 +820,13 @@ function renderNavIcon(icon) {
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
           <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+        </svg>
+      );
+    case 'cancellation':
+      return (
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          <path d="M9 12l2 2 4-4" />
         </svg>
       );
     default:
@@ -1881,6 +1890,115 @@ function ItineraryStyles() {
         color: #94a3b8;
         font-style: italic;
         padding: 12px 0;
+      }
+
+      /* Cancellation Policy Card on Package Page */
+      #itinerary-cancellation-policy {
+        margin-top: 10px;
+        margin-bottom: 44px;
+      }
+      .itn-cancellation-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 24px 28px;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+        transition: all 0.25s ease;
+      }
+      .itn-cancellation-card:hover {
+        border-color: color-mix(in srgb, var(--color-primary, #AA8453) 35%, #e2e8f0);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+      }
+      .itn-cancellation-card-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid #f1f5f9;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+      }
+      .itn-cancellation-head-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .itn-cancellation-icon-badge {
+        width: 42px;
+        height: 42px;
+        border-radius: 11px;
+        background: color-mix(in srgb, var(--color-primary, #AA8453) 14%, transparent);
+        color: var(--color-primary, #AA8453);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .itn-cancellation-subtitle {
+        display: block;
+        font-size: 13px;
+        color: #64748b;
+        margin-top: 2px;
+      }
+      .itn-cancellation-updated-pill {
+        font-size: 11.5px;
+        font-weight: 700;
+        padding: 4px 12px;
+        border-radius: 999px;
+        background: #f1f5f9;
+        color: #475569;
+        border: 1px solid #e2e8f0;
+        white-space: nowrap;
+      }
+      .itn-cancellation-three-lines {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 14.5px;
+        line-height: 1.65;
+        color: #475569;
+        margin: 0 0 18px;
+      }
+      .itn-cancellation-readmore-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: transparent;
+        border: 1.5px solid var(--color-primary, #AA8453);
+        color: var(--color-primary, #AA8453);
+        padding: 8px 20px;
+        border-radius: 999px;
+        font-size: 13.5px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 2px 8px color-mix(in srgb, var(--color-primary, #AA8453) 12%, transparent);
+      }
+      .itn-cancellation-readmore-btn:hover {
+        background: var(--color-primary, #AA8453);
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 14px color-mix(in srgb, var(--color-primary, #AA8453) 28%, transparent);
+      }
+      .itn-cancellation-readmore-btn:active {
+        transform: translateY(0);
+      }
+      @media (max-width: 640px) {
+        .itn-cancellation-card {
+          padding: 18px 18px;
+        }
+        .itn-cancellation-card-head {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 10px;
+        }
+        .itn-cancellation-readmore-btn {
+          width: 100%;
+          justify-content: center;
+        }
       }
 
       /* Blogs & Articles Section (Dynamic Itinerary Content Block) */
@@ -3670,6 +3788,7 @@ export default function TourItineraryView({ destination, packageSlug }) {
   const [error, setError] = useState('');
   const [mediaOpen, setMediaOpen] = useState(false);
   const [routeModalOpen, setRouteModalOpen] = useState(false);
+  const [cancellationModalOpen, setCancellationModalOpen] = useState(false);
   const videoRef = useRef(null);
   const [isVideoMuted, setIsVideoMuted] = useState(true);
   const [isVideoPlaying, setIsVideoPlaying] = useState(true);
@@ -3858,9 +3977,10 @@ export default function TourItineraryView({ destination, packageSlug }) {
     let target = document.getElementById(sectionId);
     if (!target) {
       if (sectionId === 'itinerary-tour-highlights') target = document.getElementById('itinerary-day-wise');
-      else if (sectionId === 'itinerary-addons') target = document.getElementById('itinerary-inclusions-exclusions') || document.getElementById('itinerary-day-wise');
-      else if (sectionId === 'itinerary-inclusions-exclusions') target = document.getElementById('itinerary-blogs-articles') || document.getElementById('itinerary-day-wise');
-      else if (sectionId === 'itinerary-blogs-articles') target = document.getElementById('itinerary-inclusions-exclusions') || document.getElementById('itinerary-day-wise');
+      else if (sectionId === 'itinerary-addons') target = document.getElementById('itinerary-inclusions-exclusions') || document.getElementById('itinerary-cancellation-policy') || document.getElementById('itinerary-day-wise');
+      else if (sectionId === 'itinerary-inclusions-exclusions') target = document.getElementById('itinerary-cancellation-policy') || document.getElementById('itinerary-blogs-articles') || document.getElementById('itinerary-day-wise');
+      else if (sectionId === 'itinerary-cancellation-policy') target = document.getElementById('itinerary-inclusions-exclusions') || document.getElementById('itinerary-day-wise');
+      else if (sectionId === 'itinerary-blogs-articles') target = document.getElementById('itinerary-cancellation-policy') || document.getElementById('itinerary-inclusions-exclusions') || document.getElementById('itinerary-day-wise');
     }
     if (target) {
       const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
@@ -3926,6 +4046,7 @@ export default function TourItineraryView({ destination, packageSlug }) {
         'itinerary-day-wise',
         'itinerary-addons',
         'itinerary-inclusions-exclusions',
+        'itinerary-cancellation-policy',
         'itinerary-blogs-articles',
       ];
 
@@ -5741,6 +5862,45 @@ export default function TourItineraryView({ destination, packageSlug }) {
               </section>
             ) : null}
 
+            {/* Cancellation Policy Section (3-line preview with Read More popup modal) */}
+            <section className="itn-content-block" id="itinerary-cancellation-policy">
+              <div className="itn-cancellation-card">
+                <div className="itn-cancellation-card-head">
+                  <div className="itn-cancellation-head-left">
+                    <span className="itn-cancellation-icon-badge">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                        <path d="M9 12l2 2 4-4" />
+                      </svg>
+                    </span>
+                    <div>
+                      <h2 className="itn-block-title" style={{ margin: 0, fontSize: '20px' }}>Cancellation Policy</h2>
+                      <span className="itn-cancellation-subtitle">Transparent terms &amp; standard refund schedule</span>
+                    </div>
+                  </div>
+                  <span className="itn-cancellation-updated-pill">Updated Oct 2026</span>
+                </div>
+
+                <div className="itn-cancellation-card-body">
+                  <p className="itn-cancellation-three-lines">
+                    At Tour &amp; Holiday, we understand that travel plans can change unexpectedly. Our Cancellation Policy explains the terms and conditions applicable when a customer cancels a booking, requests a date change, or seeks a refund for any tour package booked through our website. This policy applies to all tour packages offered by Tour &amp; Holiday, including domestic tours, international holidays, honeymoon packages, family tours, group trips, and customized travel packages, unless specific terms are communicated in writing at the time of booking.
+                  </p>
+
+                  <button
+                    type="button"
+                    className="itn-cancellation-readmore-btn"
+                    onClick={() => setCancellationModalOpen(true)}
+                    aria-label="Read full cancellation policy"
+                  >
+                    <span>Read More</span>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </section>
+
             {/* Blogs & Articles Section (Dynamically filtered by package content) */}
             {relatedBlogs.length > 0 ? (
               <section className="itn-content-block" id="itinerary-blogs-articles">
@@ -6265,6 +6425,12 @@ export default function TourItineraryView({ destination, packageSlug }) {
             }, 250);
           }
         }}
+      />
+
+      {/* Cancellation Policy Popup Modal */}
+      <CancellationPolicyModal
+        isOpen={cancellationModalOpen}
+        onClose={() => setCancellationModalOpen(false)}
       />
 
       {/* Media Modal */}
