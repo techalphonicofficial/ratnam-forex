@@ -12,6 +12,7 @@ import LoveStoryDestinations from '@/components/LoveStoryDestinations';
 import AppBanner from '@/components/AppBanner';
 
 import NewsletterForm from '@/components/NewsletterForm';
+import SeoLinksSection from '@/components/SeoLinksSection';
 import { getHomePage, getPageBySlug } from '@/utils/api';
 import { API_BASE_URL } from '@/utils/backendConfig';
 
@@ -133,6 +134,9 @@ export default async function HomePage() {
           </p>
         </div>
       </section>
+
+      {/* 10. SEO DESTINATIONS & PACKAGES DIRECTORY (HOME PAGE ONLY) */}
+      <SeoLinksSection />
     </>
   );
 }
