@@ -12,10 +12,12 @@ import {
   FALLBACK_CANCELLATION_DATA,
 } from '@/utils/cancellationPolicy';
 import TourCard from '@/components/TourCard';
+import axios from 'axios';
 import { blogsData } from '@/data/blogs';
 import {
   createPackageBooking,
   createRazorpayOrder,
+  customizeBooking,
   getBlogs,
   getHomePage,
   getMediaUrl,
@@ -769,10 +771,23 @@ function TransferConnector({ destinationName }) {
   );
 }
 
+const CUSTOM_TRAVELLER_OPTIONS = [
+  { name: 'Couple', emoji: '💑', desc: 'Romantic Getaway for 2' },
+  { name: 'Family', emoji: '👨‍👩‍👧‍👦', desc: 'Fun & Comfort for All' },
+  { name: 'Group', emoji: '👥', desc: '6+ Travellers / Friends' },
+  { name: 'Solo', emoji: '🎒', desc: 'Freedom & Exploration' },
+  { name: 'Honeymoon', emoji: '💍', desc: 'Romantic Luxury Suite' },
+  { name: 'Corporate', emoji: '💼', desc: 'Business & Team Outing' },
+  { name: 'NRI Package', emoji: '🏛️', desc: 'Root Experience Tour' },
+  { name: 'Senior Citizen', emoji: '👴', desc: 'Relaxed & Gentle Pace' },
+];
+
 const NAV_HEADINGS = [
   { id: 'itinerary-overview', label: 'Overview', icon: 'overview' },
   { id: 'itinerary-tour-highlights', label: 'Tour highlights', icon: 'highlights' },
   { id: 'itinerary-day-wise', label: 'Itinerary', icon: 'itinerary' },
+  { id: 'itinerary-excluded-items', label: 'Hotels & Transport', icon: 'excluded' },
+  { id: 'itinerary-create-itinerary', label: 'Create your Itinerary', icon: 'create' },
   { id: 'itinerary-addons', label: "Add On's", icon: 'addons' },
   { id: 'itinerary-inclusions-exclusions', label: 'Inclusions & Exclusions', icon: 'inclusions' },
   { id: 'itinerary-cancellation-policy', label: 'Cancellation Policy', icon: 'cancellation' },
@@ -802,6 +817,22 @@ function renderNavIcon(icon) {
           <line x1="16" y1="2" x2="16" y2="6" />
           <line x1="8" y1="2" x2="8" y2="6" />
           <line x1="3" y1="10" x2="21" y2="10" />
+        </svg>
+      );
+    case 'excluded':
+      return (
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="1" y="3" width="15" height="13" rx="2" />
+          <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+          <circle cx="5.5" cy="18.5" r="2.5" />
+          <circle cx="18.5" cy="18.5" r="2.5" />
+        </svg>
+      );
+    case 'create':
+      return (
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
         </svg>
       );
     case 'addons':
@@ -964,6 +995,30 @@ function ItineraryStyles() {
       .itn-tour-map-top-btn {
         margin: 0;
       }
+      .itn-title-row {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 16px;
+        flex-wrap: wrap;
+        width: 100%;
+        margin-bottom: 12px;
+      }
+      .itn-tour-map-title-wrap {
+        display: inline-flex;
+        align-items: center;
+        flex-shrink: 0;
+      }
+      .itn-tour-map-title-btn {
+        height: 34px;
+        padding: 0 14px;
+        font-size: 13px;
+        font-weight: 700;
+        border-radius: 8px;
+        white-space: nowrap;
+        box-shadow: 0 2px 6px rgba(170, 132, 83, 0.12);
+        width: auto !important;
+      }
       .itn-breadcrumbs {
         display: flex;
         align-items: center;
@@ -995,12 +1050,14 @@ function ItineraryStyles() {
         margin-bottom: 28px;
       }
       .itn-page-title {
-        margin: 0 0 10px;
+        margin: 0;
         font-size: clamp(26px, 3.4vw, 38px);
         font-weight: 800;
         color: var(--color-text-primary, #0f172a);
         line-height: 1.18;
         letter-spacing: -0.02em;
+        display: inline-block;
+        width: auto;
       }
       .itn-rating-row {
         display: flex;
@@ -1329,6 +1386,426 @@ function ItineraryStyles() {
         color: #fff;
       }
 
+      /* ============================================================ */
+      /* Excluded Services Section (Hotels & Transport)                */
+      /* ============================================================ */
+      /* Hotels & Transport Section (Hotels & Transport)              */
+      /* Styled with Dynamic Site Theme Color                         */
+      /* ============================================================ */
+      .itn-exc-header {
+        margin-bottom: 16px;
+      }
+      .itn-exc-header-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 14px;
+      }
+      .itn-exc-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: color-mix(in srgb, var(--color-primary, #AA8453) 10%, #ffffff);
+        color: var(--color-primary, #AA8453);
+        border: 1px solid color-mix(in srgb, var(--color-primary, #AA8453) 28%, transparent);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.6px;
+        padding: 4px 11px;
+        border-radius: 999px;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+      }
+      .itn-exc-title {
+        font-size: 21px;
+        font-weight: 800;
+        color: var(--color-text-primary, #0f172a);
+        margin: 0 0 6px !important;
+        letter-spacing: -0.01em;
+      }
+      .itn-exc-subtitle {
+        margin: 0;
+        font-size: 13.5px;
+        color: #64748b;
+        line-height: 1.5;
+        max-width: 620px;
+      }
+      .itn-exc-arrow-controls {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-shrink: 0;
+        margin-top: 4px;
+      }
+      .itn-exc-arrow-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 1.5px solid #cbd5e1;
+        background: #ffffff;
+        color: #0f172a;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+        padding: 0;
+      }
+      .itn-exc-arrow-btn:hover {
+        border-color: var(--color-primary, #AA8453);
+        color: var(--color-primary, #AA8453);
+        background: color-mix(in srgb, var(--color-primary, #AA8453) 10%, #ffffff);
+        transform: scale(1.08);
+      }
+
+      /* Joined Segmented Toggle Bar: [Hotels] & [Transport] with Smooth Glider */
+      .itn-exc-toggle-wrap {
+        display: flex;
+        align-items: center;
+        margin-top: 14px;
+        margin-bottom: 20px;
+        width: 100%;
+        max-width: 360px;
+      }
+      .itn-exc-toggle-bar {
+        display: flex;
+        align-items: stretch;
+        position: relative;
+        width: 100%;
+        height: 48px;
+        border-radius: 9999px;
+        background: #ffffff;
+        border: 1.5px solid color-mix(in srgb, var(--color-primary, #AA8453) 28%, #cbd5e1);
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        user-select: none;
+      }
+      /* Sliding Active Indicator Pill (Hardware-accelerated) */
+      .itn-exc-toggle-glider {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 50%;
+        height: 100%;
+        border-radius: 9999px;
+        background: var(--color-primary, #AA8453);
+        box-shadow: 0 4px 14px color-mix(in srgb, var(--color-primary, #AA8453) 38%, transparent);
+        transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+        z-index: 1;
+        pointer-events: none;
+        will-change: transform;
+      }
+      .itn-exc-toggle-bar.is-hotels-active .itn-exc-toggle-glider {
+        transform: translate3d(0%, 0, 0);
+      }
+      .itn-exc-toggle-bar.is-transport-active .itn-exc-toggle-glider {
+        transform: translate3d(100%, 0, 0);
+      }
+
+      .itn-exc-toggle-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        flex: 1 1 50%;
+        width: 50%;
+        height: 100%;
+        font-size: 14.5px;
+        font-weight: 750;
+        cursor: pointer;
+        border: none;
+        outline: none;
+        background: transparent;
+        white-space: nowrap;
+        position: relative;
+        z-index: 2;
+        font-family: inherit;
+        color: #1e293b;
+        transition: color 0.28s ease;
+        padding: 0 16px;
+      }
+      .itn-exc-toggle-btn.active {
+        color: #ffffff;
+      }
+      .itn-exc-toggle-btn svg {
+        flex-shrink: 0;
+        transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.28s ease;
+      }
+      .itn-exc-toggle-btn.active svg {
+        transform: scale(1.1);
+      }
+      .itn-exc-toggle-btn:not(.active):hover {
+        color: var(--color-primary, #AA8453);
+      }
+
+      /* Container with Dynamic Theme Tint */
+      .itn-exc-mint-container {
+        background: color-mix(in srgb, var(--color-primary, #AA8453) 5%, #fcfbf9);
+        border: 1px solid color-mix(in srgb, var(--color-primary, #AA8453) 20%, #e2e8f0);
+        border-radius: 20px;
+        padding: 20px 18px 22px;
+        position: relative;
+        overflow: hidden;
+      }
+      .itn-exc-dest-badge-wrap {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 14px;
+      }
+      .itn-exc-dest-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: #ffffff;
+        color: var(--color-primary, #AA8453);
+        border: 1px solid color-mix(in srgb, var(--color-primary, #AA8453) 30%, #e2e8f0);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 1.8px;
+        padding: 4px 16px;
+        border-radius: 999px;
+        text-transform: uppercase;
+        box-shadow: 0 1px 4px color-mix(in srgb, var(--color-primary, #AA8453) 10%, transparent);
+      }
+
+      /* Slider & Grid */
+      .itn-exc-slider-wrapper {
+        position: relative;
+        width: 100%;
+      }
+      .itn-exc-grid {
+        display: flex;
+        gap: 16px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-snap-type: x mandatory;
+        padding: 4px 2px 14px;
+        scrollbar-width: thin;
+        scrollbar-color: #cbd5e1 transparent;
+      }
+      .itn-exc-grid::-webkit-scrollbar {
+        height: 5px;
+      }
+      .itn-exc-grid::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+      }
+
+      /* Cards */
+      /* Cards */
+      .itn-exc-card {
+        flex: 0 0 240px;
+        width: 240px;
+        scroll-snap-align: start;
+        background: #ffffff;
+        border-radius: 14px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+      }
+      .itn-exc-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        border-color: color-mix(in srgb, var(--color-primary, #AA8453) 35%, #cbd5e1);
+      }
+      .itn-exc-card.is-added {
+        border-color: var(--color-primary, #AA8453);
+        box-shadow: 0 5px 16px color-mix(in srgb, var(--color-primary, #AA8453) 18%, transparent);
+      }
+
+      .itn-exc-card-img-wrap {
+        position: relative;
+        width: 100%;
+        height: 125px;
+        background: #f8fafc;
+        overflow: hidden;
+      }
+      .itn-exc-card-img-wrap--vehicle {
+        background: #ffffff;
+        padding: 6px;
+        height: 125px;
+      }
+      .itn-exc-card-img-wrap--hotel {
+        background: #0f172a;
+        height: 125px;
+      }
+      .itn-exc-card-img-badge {
+        position: absolute;
+        top: 7px;
+        left: 7px;
+        background: rgba(15, 23, 42, 0.82);
+        backdrop-filter: blur(6px);
+        color: #ffffff;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.2px;
+        padding: 2.5px 7px;
+        border-radius: 5px;
+        z-index: 2;
+      }
+
+      .itn-exc-card-body {
+        padding: 11px 13px 13px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+      }
+      .itn-exc-date-pill {
+        display: inline-block;
+        align-self: flex-start;
+        background: color-mix(in srgb, var(--color-primary, #AA8453) 10%, #ffffff);
+        color: var(--color-primary, #AA8453);
+        border: 1px solid color-mix(in srgb, var(--color-primary, #AA8453) 24%, transparent);
+        font-size: 10px;
+        font-weight: 700;
+        padding: 2px 7px;
+        border-radius: 5px;
+        margin-bottom: 5px;
+        letter-spacing: 0.2px;
+      }
+      .itn-exc-card-title {
+        font-size: 13.5px;
+        font-weight: 750;
+        color: #0f172a;
+        margin: 0 0 2px;
+        line-height: 1.25;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .itn-exc-card-route {
+        font-size: 11px;
+        color: #64748b;
+        margin: 0 0 7px;
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .itn-exc-meta-list {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        padding: 6px 0;
+        border-top: 1px solid #f1f5f9;
+        border-bottom: 1px solid #f1f5f9;
+        margin-bottom: 8px;
+      }
+      .itn-exc-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        color: #475569;
+        font-weight: 500;
+      }
+      .itn-exc-meta-item svg {
+        color: #64748b;
+        flex-shrink: 0;
+      }
+      .itn-exc-meta-dot {
+        color: #cbd5e1;
+        font-weight: 800;
+        margin: 0 2px;
+      }
+      .itn-exc-non-refundable {
+        color: #dc2626 !important;
+        font-weight: 600;
+      }
+      .itn-exc-non-refundable svg {
+        color: #dc2626 !important;
+      }
+
+      .itn-exc-card-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-top: auto;
+        padding-top: 2px;
+      }
+      .itn-exc-price-col {
+        display: flex;
+        flex-direction: column;
+      }
+      .itn-exc-price {
+        font-size: 15px;
+        font-weight: 800;
+        color: #0f172a;
+        line-height: 1.1;
+      }
+      .itn-exc-per-night {
+        font-size: 10px;
+        color: #64748b;
+        font-weight: 600;
+        margin-top: 1px;
+      }
+
+      .itn-exc-actions {
+        display: flex;
+        align-items: center;
+      }
+      .itn-exc-btn-add {
+        background: #ffffff;
+        border: 1.5px solid var(--color-primary, #AA8453);
+        color: var(--color-primary, #AA8453);
+        font-size: 11.5px;
+        font-weight: 750;
+        padding: 5px 11px;
+        border-radius: 7px;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        white-space: nowrap;
+      }
+      .itn-exc-btn-add:hover {
+        background: var(--color-primary, #AA8453);
+        color: #ffffff;
+        box-shadow: 0 3px 10px color-mix(in srgb, var(--color-primary, #AA8453) 30%, transparent);
+      }
+      .itn-exc-added-row {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .itn-exc-added-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 11.5px;
+        font-weight: 750;
+        color: var(--color-primary, #AA8453);
+        background: color-mix(in srgb, var(--color-primary, #AA8453) 12%, #ffffff);
+        padding: 5px 9px;
+        border-radius: 6px;
+        border: 1px solid color-mix(in srgb, var(--color-primary, #AA8453) 35%, transparent);
+      }
+      .itn-exc-trash-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        border: 1px solid #fee2e2;
+        background: #fef2f2;
+        color: #ef4444;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.18s ease;
+        padding: 0;
+      }
+      .itn-exc-trash-btn:hover {
+        background: #dc2626;
+        color: #ffffff;
+        border-color: #dc2626;
+      }
+
       /* Stay Included / Add On's Section */
       .itn-addons-header {
         margin-bottom: 18px;
@@ -1393,12 +1870,6 @@ function ItineraryStyles() {
         background: color-mix(in srgb, var(--color-primary, #0f766e) 10%, transparent);
         padding: 3px 10px;
         border-radius: 999px;
-      }
-      .itn-addons-accent {
-        width: 52px;
-        height: 3.5px;
-        background: var(--color-primary, #0f766e);
-        border-radius: 3px;
       }
       .itn-addons-slider-wrapper {
         position: relative;
@@ -1740,7 +2211,7 @@ function ItineraryStyles() {
         align-items: stretch;
       }
       .itn-inc-card,
-      .itn-exc-card {
+      .itn-exclusions-card {
         border-radius: 16px;
         padding: 22px 24px;
         display: flex;
@@ -1756,17 +2227,17 @@ function ItineraryStyles() {
         transform: translateY(-2px);
         box-shadow: 0 8px 24px rgba(22, 101, 52, 0.08);
       }
-      .itn-exc-card {
+      .itn-exclusions-card {
         background: linear-gradient(180deg, #fff1f2 0%, #ffffff 100%);
         border: 1px solid #fecdd3;
         box-shadow: 0 4px 18px rgba(225, 29, 72, 0.04);
       }
-      .itn-exc-card:hover {
+      .itn-exclusions-card:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 24px rgba(225, 29, 72, 0.08);
       }
       .itn-inc-card-head,
-      .itn-exc-card-head {
+      .itn-exclusions-card-head {
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -1777,7 +2248,7 @@ function ItineraryStyles() {
       .itn-inc-card-head {
         border-bottom-color: #bbf7d0;
       }
-      .itn-exc-card-head {
+      .itn-exclusions-card-head {
         border-bottom-color: #fecdd3;
       }
       .itn-inc-head-badge,
@@ -2270,12 +2741,13 @@ function ItineraryStyles() {
         }
       }
 
-      /* Floating Pill Sticky Navigation Bar (PickYourTrail Style with Dynamic Color) */
+      /* Floating Pill Sticky Navigation Bar (Shifted to Top for Desktop & Mobile) */
       .itn-floating-pill-nav {
         position: fixed;
-        bottom: 24px;
+        top: 80px;
+        bottom: auto;
         left: 50%;
-        transform: translateX(-50%) translateY(45px);
+        transform: translateX(-50%) translateY(-25px);
         opacity: 0;
         visibility: hidden;
         pointer-events: none;
@@ -2289,7 +2761,7 @@ function ItineraryStyles() {
         -webkit-backdrop-filter: blur(16px);
         border: 1px solid rgba(255, 255, 255, 0.12);
         border-radius: 9999px;
-        box-shadow: 0 20px 48px rgba(0, 0, 0, 0.38), 0 4px 14px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 10px 32px rgba(0, 0, 0, 0.35), 0 2px 10px rgba(0, 0, 0, 0.2);
         max-width: min(96vw, 1220px);
         transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, visibility 0.3s ease;
       }
@@ -2337,29 +2809,37 @@ function ItineraryStyles() {
         flex-shrink: 0;
         user-select: none;
         -webkit-user-select: none;
-        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        transition: color 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+                    background-color 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+                    box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+                    transform 0.18s ease;
         text-decoration: none;
         position: relative;
+        will-change: transform, background-color, color;
       }
       .itn-floating-nav-btn:hover {
         color: #ffffff;
         background: rgba(255, 255, 255, 0.09);
       }
+      .itn-floating-nav-btn:active {
+        transform: scale(0.96);
+      }
       .itn-floating-nav-btn.is-active {
-        color: #ffffff;
+        color: #ffffff !important;
         font-weight: 700;
-        background: color-mix(in srgb, var(--color-primary, #0f766e) 24%, rgba(255, 255, 255, 0.08));
-        box-shadow: inset 0 -2.5px 0 var(--color-primary, #0f766e);
+        background: color-mix(in srgb, var(--color-primary, #0f766e) 28%, rgba(255, 255, 255, 0.1)) !important;
+        box-shadow: inset 0 -2.5px 0 var(--color-primary, #0f766e), 0 2px 12px color-mix(in srgb, var(--color-primary, #0f766e) 30%, transparent) !important;
       }
       .itn-floating-nav-btn.is-active .itn-floating-nav-icon {
         color: var(--color-primary, #0f766e);
+        transform: scale(1.08);
       }
       .itn-floating-nav-icon {
         display: inline-flex;
         align-items: center;
         justify-content: center;
         color: rgba(255, 255, 255, 0.55);
-        transition: color 0.2s ease;
+        transition: color 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
       }
       .itn-floating-divider {
         width: 1px;
@@ -2422,8 +2902,12 @@ function ItineraryStyles() {
       .itn-floating-cta-btn:active {
         transform: translateY(0);
       }
+      .itn-floating-cta-btn.is-active {
+        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.85), 0 6px 22px color-mix(in srgb, var(--color-primary, #0f766e) 65%, transparent);
+        filter: brightness(1.15);
+      }
 
-      /* Desktop screens: Hide price & 'Unlock your itinerary' CTA in floating navbar */
+      /* Desktop screens: Hide price & 'Create Your Itinerary' CTA in floating navbar */
       @media (min-width: 769px) {
         .itn-floating-divider {
           display: none !important;
@@ -2444,7 +2928,8 @@ function ItineraryStyles() {
 
       @media (max-width: 1024px) {
         .itn-floating-pill-nav {
-          bottom: 16px;
+          top: 76px;
+          bottom: auto;
           padding: 6px 8px 6px 12px;
           gap: 10px;
         }
@@ -2463,18 +2948,22 @@ function ItineraryStyles() {
         .itn-mobile-sticky-bar {
           display: none !important;
         }
+        #itn-pill-itinerary-create-itinerary {
+          display: none !important;
+        }
         .itn-floating-pill-nav {
-          bottom: 12px;
+          top: 74px;
+          bottom: auto;
           left: 8px;
           right: 8px;
-          transform: translateY(70px);
+          transform: translateY(-25px);
           max-width: none;
           width: calc(100% - 16px);
           border-radius: 9999px;
           padding: 6px 8px 6px 12px;
           gap: 8px;
           justify-content: space-between;
-          box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45), 0 2px 10px rgba(0, 0, 0, 0.25);
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.2);
         }
         .itn-floating-pill-nav.is-visible {
           transform: translateY(0);
@@ -2527,7 +3016,8 @@ function ItineraryStyles() {
       }
       @media (max-width: 480px) {
         .itn-floating-pill-nav {
-          bottom: 10px;
+          top: 74px;
+          bottom: auto;
           left: 6px;
           right: 6px;
           width: calc(100% - 12px);
@@ -2757,7 +3247,7 @@ function ItineraryStyles() {
       /* Sidebar Cards */
       .itn-sidebar {
         position: sticky;
-        top: 96px;
+        top: 144px;
         display: flex;
         flex-direction: column;
         gap: 16px;
@@ -3402,6 +3892,38 @@ function ItineraryStyles() {
           background: #f8fafc !important;
           border: 1px solid #e2e8f0 !important;
         }
+        .itn-tour-map-title-wrap {
+          display: flex !important;
+          flex-shrink: 0 !important;
+        }
+        .itn-title-row {
+          display: flex !important;
+          align-items: center !important;
+          justify-content: space-between !important;
+          gap: 12px !important;
+          width: 100% !important;
+          margin-bottom: 8px !important;
+        }
+        .itn-page-title {
+          font-size: 21px !important;
+          line-height: 1.25 !important;
+          margin: 0 !important;
+          flex: 1 !important;
+          min-width: 0 !important;
+          text-align: left !important;
+        }
+        .itn-tour-map-title-btn {
+          height: 32px !important;
+          padding: 0 12px !important;
+          font-size: 12px !important;
+          font-weight: 700 !important;
+          border-radius: 6px !important;
+          white-space: nowrap !important;
+          flex-shrink: 0 !important;
+          margin: 0 !important;
+          width: auto !important;
+          box-shadow: 0 2px 6px rgba(170, 132, 83, 0.12) !important;
+        }
         .itn-view-route-btn {
           width: 100% !important;
           justify-content: center !important;
@@ -3430,11 +3952,16 @@ function ItineraryStyles() {
           overflow: visible !important;
         }
         .itn-tour-highlights-head {
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          text-align: center !important;
           margin-bottom: 12px !important;
           gap: 8px !important;
         }
         .itn-tour-highlights-title {
           font-size: 17px !important;
+          text-align: center !important;
         }
         .itn-tour-highlights-list {
           gap: 12px !important;
@@ -3568,7 +4095,281 @@ function ItineraryStyles() {
           border-radius: 8px !important;
         }
 
+        /* Centered Section Headings on Mobile (Excluding Main Page Title) */
+        .itn-content-block > .itn-block-title,
+        .itn-full-block > .itn-block-title {
+          text-align: center !important;
+        }
+
+        /* Excluded Services Section Mobile - 20% Smaller & Compact */
+        #itinerary-excluded-items {
+          margin-top: 10px !important;
+          margin-bottom: 20px !important;
+        }
+        .itn-exc-header {
+          text-align: center !important;
+          margin-bottom: 6px !important;
+        }
+        .itn-exc-header-top {
+          display: flex !important;
+          justify-content: center !important;
+          text-align: center !important;
+        }
+        .itn-exc-title {
+          font-size: 21px !important;
+          text-align: center !important;
+          margin-bottom: 4px !important;
+        }
+        .itn-exc-subtitle {
+          font-size: 13.5px !important;
+          line-height: 1.5 !important;
+          text-align: center !important;
+          margin-left: auto !important;
+          margin-right: auto !important;
+          max-width: 92% !important;
+          margin-bottom: 6px !important;
+        }
+        .itn-exc-toggle-wrap {
+          width: 100% !important;
+          max-width: 250px !important;
+          margin: 6px auto 14px !important;
+        }
+        .itn-exc-toggle-bar {
+          width: 100% !important;
+          height: 36px !important;
+          display: flex !important;
+          padding: 3px !important;
+        }
+        .itn-exc-toggle-btn {
+          flex: 1 1 50% !important;
+          width: 50% !important;
+          padding: 0 8px !important;
+          font-size: 12px !important;
+          gap: 5px !important;
+        }
+        .itn-exc-toggle-btn svg {
+          width: 14px !important;
+          height: 14px !important;
+        }
+        .itn-exc-grid {
+          display: flex !important;
+          flex-direction: row !important;
+          flex-wrap: nowrap !important;
+          overflow-x: auto !important;
+          overflow-y: hidden !important;
+          -webkit-overflow-scrolling: touch !important;
+          scroll-snap-type: x mandatory !important;
+          gap: 12px !important;
+          margin-top: 6px !important;
+          padding: 10px 4px 14px !important;
+          scrollbar-width: none !important;
+        }
+        .itn-exc-grid::-webkit-scrollbar {
+          display: none !important;
+        }
+        .itn-exc-grid:has(> .itn-exc-card:only-child) {
+          justify-content: center !important;
+        }
+        .itn-exc-card {
+          flex: 0 0 264px !important;
+          width: 264px !important;
+          max-width: 78vw !important;
+          scroll-snap-align: start !important;
+          margin-top: 4px !important;
+          border-radius: 14px !important;
+          background: #ffffff !important;
+          border: 1px solid #e2e8f0 !important;
+          box-shadow: 0 3px 14px rgba(0, 0, 0, 0.05) !important;
+          display: flex !important;
+          flex-direction: column !important;
+          overflow: hidden !important;
+        }
+        .itn-exc-card:hover {
+          transform: translateY(-2px) !important;
+        }
+        .itn-exc-card-img-wrap,
+        .itn-exc-card-img-wrap--hotel {
+          height: 138px !important;
+          position: relative !important;
+          width: 100% !important;
+          background: #0f172a !important;
+          overflow: hidden !important;
+        }
+        .itn-exc-card-img-wrap--vehicle {
+          height: 138px !important;
+          position: relative !important;
+          width: 100% !important;
+          background: #f8fafc !important;
+          padding: 6px !important;
+          overflow: hidden !important;
+        }
+        .itn-exc-card-img-badge {
+          top: 8px !important;
+          left: 8px !important;
+          font-size: 9.5px !important;
+          font-weight: 750 !important;
+          padding: 3px 8px !important;
+          border-radius: 5px !important;
+          background: rgba(15, 23, 42, 0.82) !important;
+          backdrop-filter: blur(6px) !important;
+          color: #ffffff !important;
+          letter-spacing: 0.2px !important;
+        }
+        .itn-exc-card-body {
+          padding: 10px 12px 11px !important;
+          display: flex !important;
+          flex-direction: column !important;
+          flex: 1 !important;
+        }
+        .itn-exc-date-pill {
+          display: inline-block !important;
+          align-self: flex-start !important;
+          font-size: 9.5px !important;
+          font-weight: 700 !important;
+          padding: 2px 7px !important;
+          border-radius: 4px !important;
+          margin-bottom: 4px !important;
+          background: color-mix(in srgb, var(--color-primary, #AA8453) 10%, #ffffff) !important;
+          color: var(--color-primary, #AA8453) !important;
+          border: 1px solid color-mix(in srgb, var(--color-primary, #AA8453) 26%, transparent) !important;
+          letter-spacing: 0.2px !important;
+        }
+        .itn-exc-card-title {
+          font-size: 14.5px !important;
+          font-weight: 750 !important;
+          color: #0f172a !important;
+          margin: 0 0 2px !important;
+          line-height: 1.25 !important;
+          white-space: normal !important;
+          word-break: break-word !important;
+        }
+        .itn-exc-card-route {
+          font-size: 11px !important;
+          color: #64748b !important;
+          margin: 0 0 7px !important;
+          font-weight: 500 !important;
+          white-space: nowrap !important;
+          overflow: hidden !important;
+          text-overflow: ellipsis !important;
+        }
+        .itn-exc-meta-list {
+          display: flex !important;
+          flex-direction: column !important;
+          gap: 4px !important;
+          padding: 5px 0 !important;
+          border-top: 1px solid #f1f5f9 !important;
+          border-bottom: 1px solid #f1f5f9 !important;
+          margin-bottom: 8px !important;
+        }
+        .itn-exc-meta-item {
+          display: flex !important;
+          align-items: center !important;
+          gap: 5px !important;
+          font-size: 11px !important;
+          color: #475569 !important;
+          font-weight: 500 !important;
+          white-space: nowrap !important;
+        }
+        .itn-exc-meta-item svg {
+          color: #64748b !important;
+          flex-shrink: 0 !important;
+          width: 13px !important;
+          height: 13px !important;
+        }
+        .itn-exc-meta-dot {
+          color: #cbd5e1 !important;
+          font-weight: 800 !important;
+          margin: 0 2px !important;
+        }
+        .itn-exc-non-refundable {
+          color: #dc2626 !important;
+          font-weight: 600 !important;
+        }
+        .itn-exc-non-refundable svg {
+          color: #dc2626 !important;
+        }
+        .itn-exc-card-footer {
+          display: flex !important;
+          align-items: flex-end !important;
+          justify-content: space-between !important;
+          gap: 8px !important;
+          margin-top: auto !important;
+          padding-top: 2px !important;
+        }
+        .itn-exc-price-col {
+          display: flex !important;
+          flex-direction: column !important;
+        }
+        .itn-exc-price {
+          font-size: 16px !important;
+          font-weight: 800 !important;
+          color: #0f172a !important;
+          line-height: 1.1 !important;
+        }
+        .itn-exc-per-night {
+          font-size: 10px !important;
+          color: #64748b !important;
+          font-weight: 500 !important;
+          margin-top: 1px !important;
+          white-space: nowrap !important;
+        }
+        .itn-exc-btn-add {
+          background: #ffffff !important;
+          border: 1.5px solid var(--color-primary, #AA8453) !important;
+          color: var(--color-primary, #AA8453) !important;
+          font-size: 11px !important;
+          font-weight: 750 !important;
+          padding: 5px 11px !important;
+          border-radius: 6px !important;
+          white-space: nowrap !important;
+          cursor: pointer !important;
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+        .itn-exc-added-label {
+          font-size: 11px !important;
+          font-weight: 750 !important;
+          color: var(--color-primary, #AA8453) !important;
+          background: color-mix(in srgb, var(--color-primary, #AA8453) 12%, #ffffff) !important;
+          padding: 4px 8px !important;
+          border-radius: 6px !important;
+          border: 1px solid color-mix(in srgb, var(--color-primary, #AA8453) 35%, transparent) !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          gap: 4px !important;
+        }
+        .itn-exc-trash-btn {
+          width: 28px !important;
+          height: 28px !important;
+          border-radius: 6px !important;
+        }
+
         /* Add On's: Scrollable Single Row */
+        .itn-addons-header {
+          text-align: center !important;
+        }
+        .itn-addons-header-top {
+          display: flex !important;
+          flex-direction: column !important;
+          align-items: center !important;
+          justify-content: center !important;
+          text-align: center !important;
+          gap: 6px !important;
+        }
+        .itn-addons-header-top > div:first-child {
+          width: 100% !important;
+          text-align: center !important;
+        }
+        .itn-addons-title {
+          text-align: center !important;
+        }
+        #itinerary-addons .itn-addons-header-top p {
+          text-align: center !important;
+          margin-left: auto !important;
+          margin-right: auto !important;
+        }
+        .itn-addons-arrow-controls {
+          display: none !important;
+        }
         .itn-addons-swipe-hint {
           display: inline-flex !important;
         }
@@ -3616,6 +4417,17 @@ function ItineraryStyles() {
         }
 
         /* Inclusions & Exclusions: 1-Column Stack */
+        .itn-inc-exc-header {
+          text-align: center !important;
+        }
+        #itinerary-inclusions-exclusions .itn-block-title {
+          text-align: center !important;
+        }
+        .itn-inc-exc-subtitle {
+          text-align: center !important;
+          margin-left: auto !important;
+          margin-right: auto !important;
+        }
         .itn-inc-exc-grid {
           display: flex !important;
           flex-direction: column !important;
@@ -3630,10 +4442,62 @@ function ItineraryStyles() {
         .itn-exc-head-badge h3 {
           font-size: 15px !important;
         }
+        .itn-inc-head-badge,
+        .itn-exc-head-badge {
+          justify-content: center !important;
+        }
         .itn-inc-item,
         .itn-exc-item {
           font-size: 13px !important;
           gap: 8px !important;
+        }
+
+        /* Cancellation Policy Header Centering on Mobile */
+        .itn-cancellation-card-head {
+          display: flex !important;
+          flex-direction: column !important;
+          align-items: center !important;
+          text-align: center !important;
+          gap: 8px !important;
+        }
+        .itn-cancellation-head-left {
+          display: flex !important;
+          flex-direction: column !important;
+          align-items: center !important;
+          text-align: center !important;
+          gap: 6px !important;
+        }
+        #itinerary-cancellation-policy .itn-block-title {
+          text-align: center !important;
+        }
+        .itn-cancellation-subtitle {
+          text-align: center !important;
+          display: block !important;
+        }
+
+        /* Blogs & Articles Header Centering on Mobile */
+        .itn-blogs-header {
+          display: flex !important;
+          flex-direction: column !important;
+          align-items: center !important;
+          text-align: center !important;
+          gap: 10px !important;
+        }
+        .itn-blogs-header-left {
+          text-align: center !important;
+          width: 100% !important;
+        }
+        #itinerary-blogs-articles .itn-block-title {
+          text-align: center !important;
+        }
+        .itn-blogs-subtitle {
+          text-align: center !important;
+          margin-left: auto !important;
+          margin-right: auto !important;
+        }
+        .itn-blogs-header-actions {
+          justify-content: center !important;
+          width: 100% !important;
         }
 
         /* Similar Packages: Matches Hot Deals Section on Mobile */
@@ -3925,6 +4789,1042 @@ function ItineraryStyles() {
           font-size: 12.5px !important;
         }
       }
+
+      /* =========================================================
+         Create Our Itinerary Section Styles
+         ========================================================= */
+      .itn-create-itinerary-section {
+        background: #ffffff !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 16px !important;
+        padding: 28px !important;
+        margin-bottom: 32px !important;
+        box-shadow: 0 4px 24px rgba(15, 23, 42, 0.04) !important;
+      }
+      .itn-create-itn-header {
+        margin-bottom: 24px;
+      }
+      .itn-create-itn-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #f0fdf4;
+        color: #166534;
+        border: 1px solid #bbf7d0;
+        font-weight: 800;
+        font-size: 11px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+      }
+      .itn-create-itn-title {
+        font-size: 24px !important;
+        font-weight: 800 !important;
+        color: #0f172a !important;
+        margin: 0 0 6px !important;
+      }
+      .itn-create-itn-subtitle {
+        font-size: 13.5px;
+        color: #64748b;
+        margin: 0;
+        line-height: 1.5;
+      }
+      .itn-create-step-card {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 22px;
+        margin-bottom: 20px;
+      }
+      .itn-create-step-head {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        margin-bottom: 18px;
+      }
+      .itn-create-step-num {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: var(--color-primary, #0f766e);
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 14px;
+        flex-shrink: 0;
+        box-shadow: 0 2px 8px color-mix(in srgb, var(--color-primary, #0f766e) 35%, transparent);
+      }
+      .itn-create-step-title {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 700;
+        color: #0f172a;
+      }
+      .itn-create-step-desc {
+        margin: 2px 0 0;
+        font-size: 12.5px;
+        color: #64748b;
+      }
+      /* Single Selected Package Card Styles */
+      .itn-custom-single-pkg-card {
+        background: #ffffff;
+        border: 2px solid var(--color-primary, #0f766e);
+        border-radius: 16px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: row;
+        box-shadow: 0 8px 28px color-mix(in srgb, var(--color-primary, #0f766e) 14%, transparent);
+        transition: all 0.25s ease;
+      }
+      .itn-custom-single-pkg-card:hover {
+        box-shadow: 0 12px 36px color-mix(in srgb, var(--color-primary, #0f766e) 22%, transparent);
+      }
+      .itn-custom-single-pkg-media {
+        position: relative;
+        flex: 0 0 280px;
+        min-height: 200px;
+        background: #0f172a;
+      }
+      .itn-custom-single-dur-badge {
+        position: absolute;
+        bottom: 12px;
+        left: 12px;
+        background: rgba(15, 23, 42, 0.88);
+        color: #ffffff;
+        font-size: 11.5px;
+        font-weight: 700;
+        padding: 4px 9px;
+        border-radius: 6px;
+        backdrop-filter: blur(4px);
+        letter-spacing: 0.3px;
+        z-index: 2;
+      }
+      .itn-custom-single-selected-pill {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        background: #166534;
+        color: #ffffff;
+        font-size: 11px;
+        font-weight: 800;
+        padding: 4px 10px;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        letter-spacing: 0.4px;
+        z-index: 2;
+      }
+      .itn-custom-single-pkg-info {
+        padding: 22px 24px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        justify-content: space-between;
+      }
+      .itn-custom-single-pkg-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 6px;
+      }
+      .itn-custom-single-pkg-dest {
+        font-size: 11.5px;
+        font-weight: 800;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+      }
+      .itn-custom-single-check-status {
+        font-size: 11.5px;
+        font-weight: 800;
+        color: #16a34a;
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        padding: 2px 8px;
+        border-radius: 999px;
+      }
+      .itn-custom-single-pkg-name {
+        font-size: 20px;
+        font-weight: 800;
+        color: #0f172a;
+        margin: 0 0 10px;
+        line-height: 1.3;
+      }
+      .itn-custom-single-features {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+      .itn-custom-feat-pill {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        color: #334155;
+        font-size: 11.5px;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+      }
+      .itn-custom-single-pkg-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding-top: 14px;
+        border-top: 1px solid #f1f5f9;
+        margin-top: auto;
+      }
+      .itn-custom-single-price-lbl {
+        font-size: 11.5px;
+        font-weight: 600;
+        color: #64748b;
+        display: block;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .itn-custom-single-price-val {
+        font-size: 20px;
+        font-weight: 900;
+        color: var(--color-primary, #0f766e);
+        display: flex;
+        align-items: baseline;
+        gap: 4px;
+      }
+      .itn-custom-single-price-val small {
+        font-size: 12px;
+        font-weight: 600;
+        color: #64748b;
+      }
+      .itn-custom-single-cta-btn {
+        background: linear-gradient(135deg, var(--color-primary, #0f766e) 0%, #115e59 100%);
+        color: #ffffff;
+        border: none;
+        padding: 12px 22px;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 800;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 14px color-mix(in srgb, var(--color-primary, #0f766e) 30%, transparent);
+        white-space: nowrap;
+      }
+      .itn-custom-single-cta-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 22px color-mix(in srgb, var(--color-primary, #0f766e) 40%, transparent);
+      }
+      .itn-custom-field-block {
+        margin-bottom: 18px;
+      }
+      .itn-custom-field-block:last-child {
+        margin-bottom: 0;
+      }
+      .itn-custom-field-label {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 13px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 8px;
+      }
+      .itn-custom-selected-hint {
+        font-size: 12px;
+        font-weight: 500;
+        color: #64748b;
+      }
+      .itn-custom-selected-hint strong {
+        color: var(--color-primary, #0f766e);
+      }
+      .itn-custom-traveller-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        gap: 10px;
+      }
+      .itn-custom-traveller-card {
+        position: relative;
+        background: #ffffff;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 12px 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.18s ease;
+        outline: none;
+      }
+      .itn-custom-traveller-card:hover {
+        border-color: #cbd5e1;
+        transform: translateY(-2px);
+      }
+      .itn-custom-traveller-card.is-picked {
+        border-color: var(--color-primary, #0f766e);
+        background: #f0fdfa;
+        box-shadow: 0 4px 14px color-mix(in srgb, var(--color-primary, #0f766e) 15%, transparent);
+        transform: translateY(-2px);
+      }
+      .itn-custom-traveller-icon-wrap {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: #f1f5f9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 6px;
+      }
+      .itn-custom-traveller-emoji {
+        font-size: 20px;
+      }
+      .itn-custom-traveller-card.is-picked .itn-custom-traveller-icon-wrap {
+        background: #ccfbf1;
+      }
+      .itn-custom-traveller-title {
+        font-size: 12px;
+        font-weight: 700;
+        color: #0f172a;
+      }
+      .itn-custom-traveller-sub {
+        font-size: 10px;
+        color: #64748b;
+        margin-top: 2px;
+        line-height: 1.2;
+      }
+      .itn-custom-traveller-check-indicator {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        font-size: 9px;
+        font-weight: 900;
+        color: #ffffff;
+        background: var(--color-primary, #0f766e);
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .itn-custom-rooms-box {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .itn-custom-room-row {
+        background: #f8fafc;
+        border: 1px solid #edf2f7;
+        border-radius: 10px;
+        padding: 12px;
+      }
+      .itn-custom-room-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+      .itn-custom-room-badge {
+        font-size: 11px;
+        font-weight: 800;
+        color: #475569;
+        letter-spacing: 0.5px;
+      }
+      .itn-custom-room-del {
+        border: none;
+        background: transparent;
+        color: #e11d48;
+        font-size: 11px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .itn-custom-guest-steppers {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      .itn-custom-guest-col {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #ffffff;
+        padding: 8px 12px;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+      }
+      .itn-custom-guest-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #334155;
+      }
+      .itn-custom-counter {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .itn-custom-counter button {
+        width: 28px;
+        height: 28px;
+        border-radius: 6px;
+        border: 1px solid #cbd5e1;
+        background: #f8fafc;
+        font-size: 16px;
+        font-weight: 700;
+        color: #0f172a;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.15s;
+      }
+      .itn-custom-counter button:hover {
+        background: #e2e8f0;
+      }
+      .itn-custom-counter span {
+        font-size: 13.5px;
+        font-weight: 800;
+        min-width: 16px;
+        text-align: center;
+        color: #0f172a;
+      }
+      .itn-custom-child-ages-wrap {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+        padding-top: 8px;
+        border-top: 1px dashed #cbd5e1;
+      }
+      .itn-custom-child-age-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11.5px;
+        color: #475569;
+      }
+      .itn-custom-child-age-item select {
+        padding: 4px 8px;
+        border-radius: 6px;
+        border: 1px solid #cbd5e1;
+        font-size: 12px;
+        background: #ffffff;
+        outline: none;
+      }
+      .itn-custom-add-room-btn {
+        align-self: flex-start;
+        padding: 8px 14px;
+        border-radius: 8px;
+        border: 1.5px dashed var(--color-primary, #0f766e);
+        background: #f0fdfa;
+        color: var(--color-primary, #0f766e);
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+      .itn-custom-add-room-btn:hover {
+        background: #ccfbf1;
+      }
+      .itn-custom-grid-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 18px;
+      }
+      .itn-custom-dur-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+      }
+      .itn-custom-dur-pill {
+        padding: 10px 6px;
+        border-radius: 8px;
+        border: 1.5px solid #e2e8f0;
+        background: #ffffff;
+        font-size: 12px;
+        font-weight: 700;
+        color: #334155;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        text-align: center;
+      }
+      .itn-custom-dur-pill:hover {
+        border-color: #cbd5e1;
+      }
+      .itn-custom-dur-pill.active {
+        border-color: var(--color-primary, #0f766e);
+        background: var(--color-primary, #0f766e);
+        color: #ffffff;
+      }
+      .itn-custom-text-input {
+        width: 100%;
+        height: 42px;
+        border-radius: 8px;
+        border: 1.5px solid #e2e8f0;
+        padding: 0 14px;
+        font-size: 13.5px;
+        outline: none;
+        background: #ffffff;
+        transition: border-color 0.2s;
+        box-sizing: border-box;
+        color: #0f172a;
+      }
+      .itn-custom-text-input:focus {
+        border-color: var(--color-primary, #0f766e);
+      }
+      .itn-custom-city-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+      .itn-custom-city-chip {
+        padding: 6px 12px;
+        border-radius: 20px;
+        border: 1px solid #e2e8f0;
+        background: #ffffff;
+        font-size: 12px;
+        font-weight: 600;
+        color: #475569;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+      .itn-custom-city-chip:hover {
+        border-color: #cbd5e1;
+      }
+      .itn-custom-city-chip.active {
+        background: #0f172a;
+        color: #ffffff;
+        border-color: #0f172a;
+      }
+      .itn-custom-city-other {
+        margin-top: 4px;
+      }
+      .itn-custom-pref-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+      }
+      .itn-custom-pref-col {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .itn-custom-pref-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: #0f172a;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 2px;
+      }
+      .itn-custom-radio-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .itn-custom-radio-card {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        background: #ffffff;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 10px 12px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+      .itn-custom-radio-card:hover {
+        border-color: #cbd5e1;
+      }
+      .itn-custom-radio-card.active {
+        border-color: var(--color-primary, #0f766e);
+        background: #f0fdfa;
+      }
+      .itn-custom-radio-card input {
+        margin-top: 3px;
+        accent-color: var(--color-primary, #0f766e);
+      }
+      .itn-custom-radio-card strong {
+        display: block;
+        font-size: 12.5px;
+        color: #0f172a;
+      }
+      .itn-custom-radio-card small {
+        display: block;
+        font-size: 10.5px;
+        color: #64748b;
+        margin-top: 1px;
+      }
+      .itn-custom-contact-form {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 18px;
+      }
+      .itn-custom-form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      .itn-custom-input-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #334155;
+      }
+      .itn-custom-input-full {
+        grid-column: 1 / -1;
+      }
+      .itn-custom-textarea {
+        width: 100%;
+        border-radius: 8px;
+        border: 1.5px solid #e2e8f0;
+        padding: 10px 14px;
+        font-size: 13px;
+        outline: none;
+        background: #ffffff;
+        resize: vertical;
+        box-sizing: border-box;
+        color: #0f172a;
+        font-family: inherit;
+      }
+      .itn-custom-textarea:focus {
+        border-color: var(--color-primary, #0f766e);
+      }
+      .itn-custom-error-box {
+        margin-top: 14px;
+        padding: 10px 14px;
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        color: #b91c1c;
+        border-radius: 8px;
+        font-size: 12.5px;
+        font-weight: 600;
+      }
+      .itn-custom-summary-bar {
+        margin-top: 20px;
+        padding-top: 16px;
+        border-top: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .itn-custom-summary-content {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        flex: 1;
+      }
+      .itn-custom-summary-label {
+        font-size: 11px;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .itn-custom-summary-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .itn-custom-sum-pill {
+        background: #f1f5f9;
+        color: #334155;
+        font-size: 11.5px;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 6px;
+      }
+      .itn-custom-sum-pill-pkg {
+        background: #fef3c7;
+        color: #92400e;
+        font-weight: 700;
+      }
+      .itn-custom-submit-btn {
+        padding: 12px 28px;
+        background: linear-gradient(135deg, var(--color-primary, #0f766e) 0%, #0d5f59 100%);
+        color: #ffffff;
+        font-size: 14px;
+        font-weight: 800;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 4px 16px color-mix(in srgb, var(--color-primary, #0f766e) 30%, transparent);
+        transition: all 0.2s ease;
+        white-space: nowrap;
+      }
+      .itn-custom-submit-btn:hover {
+        filter: brightness(1.1);
+        transform: translateY(-1px);
+      }
+      .itn-custom-submit-btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+      }
+      .itn-custom-spinner {
+        width: 14px;
+        height: 14px;
+        border: 2px solid rgba(255, 255, 255, 0.35);
+        border-top-color: #ffffff;
+        border-radius: 50%;
+        animation: itnSpin 0.7s linear infinite;
+      }
+      @keyframes itnSpin {
+        to { transform: rotate(360deg); }
+      }
+      .itn-custom-success-card {
+        background: #f0fdf4;
+        border: 2px solid #86efac;
+        border-radius: 16px;
+        padding: 32px 24px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+      }
+      .itn-custom-success-icon {
+        width: 54px;
+        height: 54px;
+        border-radius: 50%;
+        background: #22c55e;
+        color: #ffffff;
+        font-size: 28px;
+        font-weight: 900;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 8px 24px rgba(34, 197, 94, 0.35);
+      }
+      .itn-custom-success-badge {
+        font-size: 11px;
+        font-weight: 800;
+        color: #166534;
+        background: #dcfce7;
+        padding: 4px 12px;
+        border-radius: 999px;
+        letter-spacing: 0.5px;
+      }
+      .itn-custom-success-title {
+        font-size: 22px;
+        font-weight: 800;
+        color: #14532d;
+        margin: 4px 0 0;
+      }
+      .itn-custom-success-desc {
+        font-size: 13.5px;
+        color: #166534;
+        max-width: 600px;
+        margin: 0;
+        line-height: 1.5;
+      }
+      .itn-custom-ref-box {
+        background: #ffffff;
+        border: 1px dashed #86efac;
+        padding: 8px 18px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: #14532d;
+      }
+      .itn-custom-ref-box strong {
+        font-size: 16px;
+        font-weight: 900;
+        letter-spacing: 1px;
+        color: #15803d;
+      }
+      .itn-custom-summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 10px;
+        width: 100%;
+        max-width: 760px;
+        background: #ffffff;
+        border: 1px solid #bbf7d0;
+        border-radius: 12px;
+        padding: 16px;
+        text-align: left;
+        margin: 10px 0;
+      }
+      .itn-custom-summary-item {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .itn-custom-summary-item span {
+        font-size: 11px;
+        color: #64748b;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+      .itn-custom-summary-item strong {
+        font-size: 12.5px;
+        color: #0f172a;
+      }
+      .itn-custom-reset-btn {
+        padding: 10px 22px;
+        border-radius: 8px;
+        border: 1.5px solid #166534;
+        background: #ffffff;
+        color: #166534;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+      .itn-custom-reset-btn:hover {
+        background: #dcfce7;
+      }
+      .itn-custom-step1-action-bar {
+        margin-top: 18px;
+        padding-top: 16px;
+        border-top: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .itn-custom-step1-summary {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+      }
+      .itn-custom-step1-lbl {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #64748b;
+      }
+      .itn-custom-step1-pkgname {
+        font-size: 15px;
+        font-weight: 800;
+        color: #0f172a;
+      }
+      .itn-custom-step1-pkgmeta {
+        font-size: 12.5px;
+        font-weight: 600;
+        color: var(--color-primary, #0f766e);
+      }
+      .itn-custom-step1-cta-btn {
+        padding: 12px 24px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, var(--color-primary, #0f766e) 0%, #0d5f59 100%);
+        color: #ffffff;
+        border: none;
+        font-size: 13.5px;
+        font-weight: 800;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 4px 14px color-mix(in srgb, var(--color-primary, #0f766e) 30%, transparent);
+        transition: all 0.2s ease;
+      }
+      .itn-custom-step1-cta-btn:hover {
+        filter: brightness(1.1);
+        transform: translateY(-1px);
+      }
+      .itn-custom-modal-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        background: rgba(15, 23, 42, 0.72);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        animation: itnModalFadeIn 0.25s ease-out;
+      }
+      @keyframes itnModalFadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      .itn-custom-modal-panel {
+        background: #ffffff;
+        border-radius: 20px;
+        width: 100%;
+        max-width: 860px;
+        max-height: 88vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.35);
+        overflow: hidden;
+        border: 1px solid rgba(226, 232, 240, 0.9);
+        animation: itnModalSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      @keyframes itnModalSlideUp {
+        from { opacity: 0; transform: translateY(24px) scale(0.98); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+      }
+      .itn-custom-modal-header {
+        padding: 18px 24px;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        background: #fafaf9;
+        flex-shrink: 0;
+      }
+      .itn-custom-modal-head-left {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .itn-custom-modal-title {
+        font-size: 20px;
+        font-weight: 800;
+        color: #0f172a;
+        margin: 4px 0 2px;
+      }
+      .itn-custom-modal-subtitle {
+        font-size: 13px;
+        color: #64748b;
+        margin: 0;
+      }
+      .itn-custom-modal-subtitle strong {
+        color: var(--color-primary, #0f766e);
+      }
+      .itn-custom-modal-close {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 1.5px solid #e2e8f0;
+        background: #ffffff;
+        color: #475569;
+        font-size: 15px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        flex-shrink: 0;
+      }
+      .itn-custom-modal-close:hover {
+        background: #f1f5f9;
+        color: #0f172a;
+        border-color: #cbd5e1;
+      }
+      .itn-custom-modal-body {
+        padding: 22px 24px;
+        overflow-y: auto;
+        flex: 1;
+        scrollbar-width: thin;
+      }
+      .itn-custom-modal-steps {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+      .itn-custom-success-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      @media (max-width: 768px) {
+        .itn-create-itinerary-section {
+          padding: 16px !important;
+        }
+        .itn-create-step-card {
+          padding: 14px !important;
+        }
+        .itn-custom-pref-grid {
+          grid-template-columns: 1fr !important;
+        }
+        .itn-custom-grid-row {
+          grid-template-columns: 1fr !important;
+        }
+        .itn-custom-dur-grid {
+          grid-template-columns: repeat(2, 1fr) !important;
+        }
+        .itn-custom-form-grid {
+          grid-template-columns: 1fr !important;
+        }
+        .itn-custom-guest-steppers {
+          grid-template-columns: 1fr !important;
+        }
+        .itn-custom-summary-bar {
+          flex-direction: column !important;
+          align-items: stretch !important;
+        }
+        .itn-custom-submit-btn {
+          width: 100% !important;
+          justify-content: center !important;
+        }
+        .itn-custom-single-pkg-card {
+          flex-direction: column !important;
+        }
+        .itn-custom-single-pkg-media {
+          flex: none !important;
+          width: 100% !important;
+          height: 180px !important;
+        }
+        .itn-custom-single-pkg-info {
+          padding: 16px 14px !important;
+        }
+        .itn-custom-single-pkg-name {
+          font-size: 17px !important;
+          margin-bottom: 8px !important;
+        }
+        .itn-custom-single-pkg-footer {
+          flex-direction: column !important;
+          align-items: stretch !important;
+          gap: 12px !important;
+        }
+        .itn-custom-single-cta-btn {
+          width: 100% !important;
+          justify-content: center !important;
+          padding: 13px 18px !important;
+        }
+        .itn-custom-modal-overlay {
+          padding: 8px !important;
+          align-items: flex-end !important;
+        }
+        .itn-custom-modal-panel {
+          max-height: 94vh !important;
+          border-radius: 18px 18px 0 0 !important;
+        }
+        .itn-custom-modal-header {
+          padding: 14px 16px !important;
+        }
+        .itn-custom-modal-body {
+          padding: 14px 12px !important;
+        }
+      }
     `}</style>
   );
 }
@@ -3976,7 +5876,198 @@ export default function TourItineraryView({ destination, packageSlug }) {
   const [similarActiveIndex, setSimilarActiveIndex] = useState(0);
   const similarScrollRef = useRef(null);
   const addonsScrollRef = useRef(null);
+  const excludedScrollRef = useRef(null);
   const blogsScrollRef = useRef(null);
+
+  // "Create your Itinerary" Custom Package Section State
+  const [customModalOpen, setCustomModalOpen] = useState(false);
+  const [customSelectedPkgId, setCustomSelectedPkgId] = useState(null);
+  const [customTravelWith, setCustomTravelWith] = useState('Couple');
+  const [customRooms, setCustomRooms] = useState([{ id: 1, adults: 2, children: 0, childAges: [] }]);
+  const [customDuration, setCustomDuration] = useState('5-6 Days');
+  const [customDepartureCity, setCustomDepartureCity] = useState('Delhi');
+  const [customCustomCityInput, setCustomCustomCityInput] = useState('');
+  const [customDepartureDate, setCustomDepartureDate] = useState('');
+  const [customHotelCategory, setCustomHotelCategory] = useState('4 Star Deluxe');
+  const [customMealPlan, setCustomMealPlan] = useState('Breakfast & Dinner (MAP)');
+  const [customVehicleType, setCustomVehicleType] = useState('Private AC Sedan (Dzire / Etios)');
+  const [customContactName, setCustomContactName] = useState('');
+  const [customContactPhone, setCustomContactPhone] = useState('');
+  const [customContactEmail, setCustomContactEmail] = useState('');
+  const [customSpecialNotes, setCustomSpecialNotes] = useState('');
+  const [customItinerarySubmitting, setCustomItinerarySubmitting] = useState(false);
+  const [customItinerarySubmitted, setCustomItinerarySubmitted] = useState(false);
+  const [customItineraryRefId, setCustomItineraryRefId] = useState('');
+  const [customItineraryError, setCustomItineraryError] = useState('');
+
+  // Auto-fill customer contact from stored auth
+  useEffect(() => {
+    const auth = getStoredAuth();
+    if (auth) {
+      if (auth.name || auth.fullName) setCustomContactName(auth.name || auth.fullName || '');
+      if (auth.phone || auth.mobile) setCustomContactPhone(auth.phone || auth.mobile || '');
+      if (auth.email) setCustomContactEmail(auth.email || '');
+    }
+  }, []);
+
+  // Handle ESC key to close custom modal
+  useEffect(() => {
+    if (!customModalOpen) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && !customItinerarySubmitting) {
+        setCustomModalOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [customModalOpen, customItinerarySubmitting]);
+
+  const addCustomRoom = () => {
+    setCustomRooms(prev => [...prev, { id: Date.now(), adults: 2, children: 0, childAges: [] }]);
+  };
+
+  const removeCustomRoom = (roomId) => {
+    setCustomRooms(prev => prev.filter(r => r.id !== roomId));
+  };
+
+  const updateCustomRoom = (roomId, field, value) => {
+    setCustomRooms(prev => prev.map(r => {
+      if (r.id !== roomId) return r;
+      if (field === 'children') {
+        const nextCount = Number(value) || 0;
+        let newAges = Array.isArray(r.childAges) ? [...r.childAges] : [];
+        if (nextCount > newAges.length) {
+          while (newAges.length < nextCount) newAges.push(5);
+        } else if (nextCount < newAges.length) {
+          newAges = newAges.slice(0, nextCount);
+        }
+        return { ...r, children: nextCount, childAges: newAges };
+      }
+      return { ...r, [field]: value };
+    }));
+  };
+
+  const customTotalTravellers = useMemo(() => {
+    return customRooms.reduce((acc, r) => acc + (Number(r.adults) || 0) + (Number(r.children) || 0), 0);
+  }, [customRooms]);
+
+  const currentPkgOption = useMemo(() => {
+    const days = Number(pkg?.duration_days) || Number(pkg?.duration) || 6;
+    const nights = Math.max(days - 1, 1);
+    const durationStr = `${nights}N / ${days}D`;
+    const priceVal = Number(pkg?.price) > 0 ? Number(pkg?.price) : 24999;
+    const destStr = pkg?.destinations?.[0]?.destination?.name || pkg?.location || destination || 'Holiday Tour';
+    const pkgName = pkg?.name || pkg?.title || 'Tour Package';
+    return {
+      id: pkg?.id || 'current-pkg',
+      slug: pkg?.slug || resolvedSlug,
+      name: pkgName,
+      duration: durationStr,
+      price: priceVal,
+      image: getMediaUrl(pkg?.main_image) || fallbackImage,
+      destination: destStr,
+      isCurrent: true,
+    };
+  }, [pkg, resolvedSlug, destination]);
+
+  const activeCustomPkg = currentPkgOption;
+
+  const handleCreateCustomItinerary = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    if (!customContactName.trim()) {
+      setCustomItineraryError('Please enter your full name so our team can address you properly.');
+      return;
+    }
+    if (!customContactPhone.trim()) {
+      setCustomItineraryError('Please enter your mobile or WhatsApp number to receive your quote.');
+      return;
+    }
+
+    setCustomItinerarySubmitting(true);
+    setCustomItineraryError('');
+
+    const effectiveCity = customCustomCityInput.trim() || customDepartureCity;
+    const generatedRefId = `RF-ITN-${Date.now().toString().slice(-6)}`;
+
+    const payload = {
+      customer: {
+        name: customContactName.trim(),
+        phone: customContactPhone.trim(),
+        email: customContactEmail.trim() || `${customContactPhone.trim()}@guest.ratnamforex.com`,
+      },
+      trip: {
+        destination: activeCustomPkg?.destination || pkg?.name || destination || 'Custom Tour',
+        destination_slug: activeCustomPkg?.slug || pkg?.slug || resolvedSlug || '',
+        package_name: activeCustomPkg?.name || pkg?.name || 'Tour Package',
+        package_id: activeCustomPkg?.id || pkg?.id || null,
+        travel_with: customTravelWith,
+        duration: customDuration,
+        departure_city: effectiveCity,
+        departure_date: customDepartureDate || new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0],
+        total_travellers: customTotalTravellers,
+        rooms: customRooms.map(r => ({
+          adults: Number(r.adults) || 0,
+          children: Number(r.children) || 0,
+          child_ages: r.childAges || [],
+        })),
+        hotel_category: customHotelCategory,
+        meal_plan: customMealPlan,
+        vehicle_type: customVehicleType,
+        special_requests: customSpecialNotes.trim(),
+      },
+      source: 'create_our_itinerary_section',
+      custom_booking_id: generatedRefId,
+      created_at: new Date().toISOString(),
+    };
+
+    try {
+      // 1. Submit to customizeBooking endpoint (syncs to CRM Pipeline 6 + backend customize)
+      await customizeBooking(payload).catch((err) => {
+        console.warn('customizeBooking warning:', err);
+      });
+
+      // 2. Also submit to trip-inquiries for direct appearance in Admin Panel Trip Inquiries
+      try {
+        await axios.post('/api/trip-inquiries', {
+          customer: payload.customer,
+          trip: {
+            ...payload.trip,
+            notes: `Package: ${payload.trip.package_name} | Stay: ${customHotelCategory} | Meals: ${customMealPlan} | Cab: ${customVehicleType}${customSpecialNotes ? ` | Notes: ${customSpecialNotes}` : ''}`,
+          },
+          source: 'Create Our Itinerary Flow',
+        }, {
+          headers: { 'Content-Type': 'application/json' },
+        });
+      } catch (inqErr) {
+        console.warn('Trip inquiry submission warning:', inqErr);
+      }
+
+      setCustomItineraryRefId(generatedRefId);
+      setCustomItinerarySubmitted(true);
+      setCustomItinerarySubmitting(false);
+    } catch (err) {
+      console.error('Error creating custom itinerary:', err);
+      setCustomItineraryRefId(generatedRefId);
+      setCustomItinerarySubmitted(true);
+      setCustomItinerarySubmitting(false);
+    }
+  };
+
+  const scrollExcluded = (dir) => {
+    if (!excludedScrollRef.current) return;
+    const el = excludedScrollRef.current;
+    const card = el.querySelector('.itn-exc-card');
+    const isMobileView = typeof window !== 'undefined' && window.innerWidth < 768;
+    const scrollAmount = card ? (card.offsetWidth + (isMobileView ? 14 : 18)) : (isMobileView ? 284 : 328);
+    const maxScroll = el.scrollWidth - el.clientWidth;
+    if (dir > 0 && el.scrollLeft >= maxScroll - 10) {
+      el.scrollTo({ left: 0, behavior: 'smooth' });
+    } else if (dir < 0 && el.scrollLeft <= 10) {
+      el.scrollTo({ left: maxScroll, behavior: 'smooth' });
+    } else {
+      el.scrollBy({ left: dir * scrollAmount, behavior: 'smooth' });
+    }
+  };
 
   const scrollBlogs = (dir) => {
     if (!blogsScrollRef.current) return;
@@ -4038,6 +6129,9 @@ export default function TourItineraryView({ destination, packageSlug }) {
   const [isDescExpanded, setIsDescExpanded] = useState(false);
   const [canExpandDesc, setCanExpandDesc] = useState(false);
   const [selectedAddonHotelIds, setSelectedAddonHotelIds] = useState([]);
+  const [excludedActiveTab, setExcludedActiveTab] = useState('hotels');
+  const [selectedAddonTransportIds, setSelectedAddonTransportIds] = useState([]);
+  const [selectedAddonActivityIds, setSelectedAddonActivityIds] = useState([]);
   const [videoReviewsData, setVideoReviewsData] = useState(null);
 
   useEffect(() => {
@@ -4059,6 +6153,8 @@ export default function TourItineraryView({ destination, packageSlug }) {
   const floatingNavItemsRef = useRef(null);
   const isNavUserInteractingRef = useRef(false);
   const navInteractionTimeoutRef = useRef(null);
+  const isProgrammaticScrollRef = useRef(false);
+  const programmaticScrollTimerRef = useRef(null);
 
   // Auto-scroll the navbar horizontally to center/bring into view the active section button
   useEffect(() => {
@@ -4133,9 +6229,16 @@ export default function TourItineraryView({ destination, packageSlug }) {
 
   const scrollToNavSection = (sectionId) => {
     setActiveNavSection(sectionId);
+    isProgrammaticScrollRef.current = true;
+    if (programmaticScrollTimerRef.current) {
+      clearTimeout(programmaticScrollTimerRef.current);
+    }
+
     let target = document.getElementById(sectionId);
     if (!target) {
       if (sectionId === 'itinerary-tour-highlights') target = document.getElementById('itinerary-day-wise');
+      else if (sectionId === 'itinerary-excluded-items') target = document.getElementById('itinerary-excluded-items') || document.getElementById('itinerary-day-wise');
+      else if (sectionId === 'itinerary-create-itinerary') target = document.getElementById('itinerary-create-itinerary') || document.getElementById('itinerary-addons');
       else if (sectionId === 'itinerary-addons') target = document.getElementById('itinerary-inclusions-exclusions') || document.getElementById('itinerary-cancellation-policy') || document.getElementById('itinerary-day-wise');
       else if (sectionId === 'itinerary-inclusions-exclusions') target = document.getElementById('itinerary-cancellation-policy') || document.getElementById('itinerary-blogs-articles') || document.getElementById('itinerary-day-wise');
       else if (sectionId === 'itinerary-cancellation-policy') target = document.getElementById('itinerary-inclusions-exclusions') || document.getElementById('itinerary-day-wise');
@@ -4143,7 +6246,7 @@ export default function TourItineraryView({ destination, packageSlug }) {
     }
     if (target) {
       const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
-      const topOffset = isMobile ? 65 : 85;
+      const topOffset = isMobile ? 142 : 140;
       const elementPosition = target.getBoundingClientRect().top;
       const offsetPosition = elementPosition + window.pageYOffset - topOffset;
       window.scrollTo({
@@ -4151,6 +6254,11 @@ export default function TourItineraryView({ destination, packageSlug }) {
         behavior: 'smooth',
       });
     }
+
+    // Keep active selection locked on the clicked section during smooth scroll animation
+    programmaticScrollTimerRef.current = setTimeout(() => {
+      isProgrammaticScrollRef.current = false;
+    }, 850);
   };
 
   useEffect(() => {
@@ -4161,8 +6269,6 @@ export default function TourItineraryView({ destination, packageSlug }) {
         || document.querySelector('.itn-main-col');
 
       // 1. Visibility window:
-      // - Appears when user scrolls down to [Kashmir Paradise ★ 5.0 (1 Reviews)] (headerEl)
-      // - Disappears as soon as user reaches the [Similar Packages You Might Like] heading
       if (headerEl) {
         const headerRect = headerEl.getBoundingClientRect();
         const hasReachedHeader = headerRect.top <= 140;
@@ -4175,11 +6281,9 @@ export default function TourItineraryView({ destination, packageSlug }) {
         let hasReachedSimilar = false;
         if (similarHeadingEl) {
           const similarRect = similarHeadingEl.getBoundingClientRect();
-          // Hide as soon as user reaches 'Similar Packages You Might Like' heading (heading scrolls into view before cards)
           const threshold = Math.min(420, window.innerHeight * 0.5);
           hasReachedSimilar = similarRect.top <= threshold;
         } else {
-          // Fallback if no similar packages exist on this tour
           const fallbackEl = document.getElementById('itinerary-gram-section')
             || document.querySelector('.itn-reviews-grid')
             || blogsEl;
@@ -4197,37 +6301,69 @@ export default function TourItineraryView({ destination, packageSlug }) {
         setIsNavVisible(false);
       }
 
-      // 2. Active Section ScrollSpy (using document Y position for 100% accuracy)
-      const checkPosition = window.scrollY + Math.min(220, window.innerHeight * 0.35);
-      const sectionIds = [
-        'itinerary-overview',
-        'itinerary-tour-highlights',
-        'itinerary-day-wise',
-        'itinerary-addons',
-        'itinerary-inclusions-exclusions',
-        'itinerary-cancellation-policy',
-        'itinerary-blogs-articles',
-      ];
+      // 2. Active Section ScrollSpy: only update activeNavSection if user is manually scrolling
+      if (!isProgrammaticScrollRef.current) {
+        const checkPosition = window.scrollY + Math.min(220, window.innerHeight * 0.35);
+        const sectionIds = [
+          'itinerary-overview',
+          'itinerary-tour-highlights',
+          'itinerary-day-wise',
+          'itinerary-excluded-items',
+          'itinerary-create-itinerary',
+          'itinerary-addons',
+          'itinerary-inclusions-exclusions',
+          'itinerary-cancellation-policy',
+          'itinerary-blogs-articles',
+        ];
 
-      for (let i = sectionIds.length - 1; i >= 0; i--) {
-        const id = sectionIds[i];
-        const el = document.getElementById(id);
-        if (el) {
-          const top = el.getBoundingClientRect().top + window.scrollY;
-          if (checkPosition >= top) {
-            setActiveNavSection(id);
-            break;
+        for (let i = sectionIds.length - 1; i >= 0; i--) {
+          const id = sectionIds[i];
+          const el = document.getElementById(id);
+          if (el) {
+            const top = el.getBoundingClientRect().top + window.scrollY;
+            if (checkPosition >= top) {
+              setActiveNavSection(id);
+              break;
+            }
           }
         }
       }
     };
 
-    window.addEventListener('scroll', handleScrollSpyAndVisibility, { passive: true });
-    window.addEventListener('resize', handleScrollSpyAndVisibility, { passive: true });
+    let ticking = false;
+    const onScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          handleScrollSpyAndVisibility();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    const handleUserInterrupt = () => {
+      if (isProgrammaticScrollRef.current) {
+        isProgrammaticScrollRef.current = false;
+        if (programmaticScrollTimerRef.current) {
+          clearTimeout(programmaticScrollTimerRef.current);
+        }
+      }
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    window.addEventListener('wheel', handleUserInterrupt, { passive: true });
+    window.addEventListener('touchmove', handleUserInterrupt, { passive: true });
     handleScrollSpyAndVisibility();
+
     return () => {
-      window.removeEventListener('scroll', handleScrollSpyAndVisibility);
-      window.removeEventListener('resize', handleScrollSpyAndVisibility);
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      window.removeEventListener('wheel', handleUserInterrupt);
+      window.removeEventListener('touchmove', handleUserInterrupt);
+      if (programmaticScrollTimerRef.current) {
+        clearTimeout(programmaticScrollTimerRef.current);
+      }
     };
   }, []);
 
@@ -4545,7 +6681,8 @@ export default function TourItineraryView({ destination, packageSlug }) {
       routeModalOpen ||
       mediaOpen ||
       allReviewsModalOpen ||
-      cancellationModalOpen
+      cancellationModalOpen ||
+      customModalOpen
     );
 
     if (!isAnyModalOpen) return;
@@ -4563,7 +6700,7 @@ export default function TourItineraryView({ destination, packageSlug }) {
       document.documentElement.style.overflow = prevHtmlOverflow;
       document.body.style.touchAction = prevBodyTouchAction;
     };
-  }, [bookingModalOpen, routeModalOpen, mediaOpen, allReviewsModalOpen, cancellationModalOpen]);
+  }, [bookingModalOpen, routeModalOpen, mediaOpen, allReviewsModalOpen, cancellationModalOpen, customModalOpen]);
 
   useEffect(() => {
     let mounted = true;
@@ -4733,26 +6870,17 @@ export default function TourItineraryView({ destination, packageSlug }) {
   const daysCount = Number(pkg?.duration_days) || 6;
   const nightsCount = Math.max(daysCount - 1, 1);
 
-  // Fallback hotel addon if package doesn't have _hotels configured in backend
+  // Show only dynamic hotels from backend data. If none, do not show any hotels.
   const displayHotels = useMemo(() => {
-    if (packageHotels.length > 0) return packageHotels;
-    const destName = destinationNames[0] || pkg?.name || 'Destination';
-    return [
-      {
-        id: `default-hotel-${pkg?.id || '1'}`,
-        key: `default-hotel-${pkg?.id || '1'}`,
-        name: `${destName} Heritage Luxury Stay`,
-        destinationName: destName,
-        image: media.images[1]?.url || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80',
-        starRating: 5,
-        guestRating: 4.8,
-        pricePerNight: 4500,
-        nights: Math.max(nightsCount, 1),
-        rooms: 1,
-        roomType: 'Superior Room',
-      },
-    ];
-  }, [packageHotels, destinationNames, pkg?.name, pkg?.id, media.images, nightsCount]);
+    return Array.isArray(packageHotels) ? packageHotels : [];
+  }, [packageHotels]);
+
+  // Default to transport tab if no dynamic hotels exist for this package
+  useEffect(() => {
+    if (displayHotels.length === 0) {
+      setExcludedActiveTab('transport');
+    }
+  }, [displayHotels.length]);
 
   const toggleHotelAddon = (hotelId) => {
     setSelectedAddonHotelIds((prev) => {
@@ -4776,6 +6904,147 @@ export default function TourItineraryView({ destination, packageSlug }) {
     }, 0);
   }, [selectedHotels]);
 
+  const displayTransfers = useMemo(() => {
+    const dest0 = destinationNames[0] || routeStart;
+    const dest1 = destinationNames[1] || destinationNames[0] || routeStart;
+    const destLast = destinationNames[destinationNames.length - 1] || routeEnd;
+
+    return [
+      {
+        id: `transfer-arrival-${pkg?.id || '1'}`,
+        title: `${routeStart} Airport to Hotel Transfer`,
+        route: `${routeStart} Airport → ${dest0} Hotel`,
+        dateTag: 'Day 1 • Arrival',
+        vehicleType: 'Private transfer',
+        vehicleName: 'Maruti Suzuki Ertiga Cab',
+        vehicleImg: '/images/transfers/ertiga_cab.jpg',
+        duration: '45 mins',
+        passengers: `${Math.max(travellerCount, 4)} Passengers in 1 vehicle`,
+        refundable: false,
+        price: 1800,
+        destinationName: dest0,
+      },
+      {
+        id: `transfer-intercity-${pkg?.id || '2'}`,
+        title: destinationNames.length > 1
+          ? `${dest0} to ${dest1} Scenic Mountain Transfer`
+          : `${dest0} Full Day Sightseeing & Viewpoints Cab`,
+        route: destinationNames.length > 1
+          ? `${dest0} → ${dest1}`
+          : `${dest0} Hotel ⇄ Top Tourist Attractions`,
+        dateTag: 'Day 2 • Intercity',
+        vehicleType: 'Private transfer',
+        vehicleName: 'Toyota Innova Crysta (AC)',
+        vehicleImg: '/images/transfers/innova_crysta.jpg',
+        duration: destinationNames.length > 1 ? '1hr 50mins' : 'Full Day (8 hrs)',
+        passengers: `${Math.max(travellerCount, 4)} Passengers in 1 vehicle`,
+        refundable: false,
+        price: 2800,
+        destinationName: dest1,
+      },
+      {
+        id: `transfer-departure-${pkg?.id || '3'}`,
+        title: `Hotel to ${routeEnd} Airport Drop`,
+        route: `${destLast} Hotel → ${routeEnd} Airport`,
+        dateTag: `Day ${daysCount} • Departure`,
+        vehicleType: 'Private transfer',
+        vehicleName: 'Toyota Innova Crysta',
+        vehicleImg: '/images/transfers/innova_crysta.jpg',
+        duration: '50 mins',
+        passengers: `${Math.max(travellerCount, 4)} Passengers in 1 vehicle`,
+        refundable: false,
+        price: 1800,
+        destinationName: routeEnd,
+      },
+    ];
+  }, [destinationNames, routeStart, routeEnd, pkg?.id, daysCount, travellerCount]);
+
+  const toggleTransportAddon = (transferId) => {
+    setSelectedAddonTransportIds((prev) => {
+      if (prev.includes(transferId)) {
+        return prev.filter((id) => id !== transferId);
+      }
+      return [...prev, transferId];
+    });
+  };
+
+  const selectedTransfers = useMemo(() => {
+    return displayTransfers.filter((t) => selectedAddonTransportIds.includes(t.id));
+  }, [displayTransfers, selectedAddonTransportIds]);
+
+  const totalTransportAddonPrice = useMemo(() => {
+    return selectedTransfers.reduce((sum, t) => sum + (Number(t?.price) || 0), 0);
+  }, [selectedTransfers]);
+
+  const displayActivities = useMemo(() => {
+    const dest = destinationNames[0] || routeDestinationTitle || 'Kashmir';
+    return [
+      {
+        id: `act-shikara-${pkg?.id || '1'}`,
+        name: `Scenic Shikara Ride on ${dest === 'Kashmir' || dest === 'Srinagar' ? 'Dal Lake' : `${dest} Lake`}`,
+        category: 'Activity Addon',
+        tag: 'ACTIVITY ADDON',
+        badge: 'Most Popular • 85% Picked',
+        duration: '1 Hour Sunset Cruise',
+        image: 'https://images.unsplash.com/photo-1595815771614-ade9d652a65d?auto=format&fit=crop&w=600&q=80',
+        notes: 'Glide peacefully across traditional wooden houseboats, floating flower markets, and snow-capped peaks.',
+        price: 800,
+      },
+      {
+        id: `act-cablecar-${pkg?.id || '2'}`,
+        name: 'Gondola Cable Car Ride (Phase 1 & Phase 2)',
+        category: 'Adventure Pass',
+        tag: 'ACTIVITY ADDON',
+        badge: 'Must Experience',
+        duration: '3 - 4 Hours',
+        image: 'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=600&q=80',
+        notes: 'Ascend to Kongdoori and Apharwat Peak at 13,780 ft with breathtaking panoramic snow mountain vistas.',
+        price: 1950,
+      },
+      {
+        id: `act-ponytrail-${pkg?.id || '3'}`,
+        name: 'Guided Valley Pony Trekking Trail',
+        category: 'Nature Trail',
+        tag: 'ACTIVITY ADDON',
+        badge: 'Family Favorite',
+        duration: '2 Hours',
+        image: 'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=600&q=80',
+        notes: 'Explore picturesque pine meadows, roaring mountain streams, and serene scenic valley vistas.',
+        price: 1200,
+      },
+      {
+        id: `act-jeepsafari-${pkg?.id || '4'}`,
+        name: 'Private Snow Jeep Safari to Mountain Hamlets',
+        category: 'Excursion Pass',
+        tag: 'ACTIVITY ADDON',
+        badge: 'Scenic Adventure',
+        duration: 'Half Day (4 Hours)',
+        image: 'https://images.unsplash.com/photo-1506015391300-4802dc74de2e?auto=format&fit=crop&w=600&q=80',
+        notes: 'Exclusive 4x4 Jeep drive through untouched mountain passes, alpine forests, and pristine scenic trails.',
+        price: 2500,
+      },
+    ];
+  }, [destinationNames, routeDestinationTitle, pkg?.id]);
+
+  const toggleActivityAddon = (actId) => {
+    setSelectedAddonActivityIds((prev) => {
+      if (prev.includes(actId)) {
+        return prev.filter((id) => id !== actId);
+      }
+      return [...prev, actId];
+    });
+  };
+
+  const selectedActivities = useMemo(() => {
+    return displayActivities.filter((a) => selectedAddonActivityIds.includes(a.id));
+  }, [displayActivities, selectedAddonActivityIds]);
+
+  const totalActivityAddonPrice = useMemo(() => {
+    return selectedActivities.reduce((sum, a) => sum + (Number(a?.price) || 0), 0);
+  }, [selectedActivities]);
+
+  const totalAllAddonsPrice = totalHotelAddonPrice + totalTransportAddonPrice + totalActivityAddonPrice;
+
   const reviewCount = Number(reviewSummary?.count) || (reviews.length ? reviews.length : 325);
   const averageRating = Number(reviewSummary?.average_rating) || (
     reviews.length
@@ -4797,14 +7066,14 @@ export default function TourItineraryView({ destination, packageSlug }) {
   const packageBaseAmountVal = activeCouponAmounts ? Number(activeCouponAmounts.package_base_amount) || 0 : packageBaseAmount;
   const packageBaseLabel = packageBaseAmountVal > 0 ? `₹ ${packageBaseAmountVal.toLocaleString('en-IN')}` : 'On req';
   const priceLabel = packageBaseLabel;
-  const baseForTax = packageBaseAmountVal + totalHotelAddonPrice;
+  const baseForTax = packageBaseAmountVal + totalAllAddonsPrice;
   const taxAmount = activeCouponAmounts
     ? Number(activeCouponAmounts.tax_amount) || 0
     : baseForTax > 0 && taxPercent > 0
       ? Math.round((baseForTax * taxPercent) / 100)
       : 0;
   const packageTotal = (activeCouponAmounts ? Number(activeCouponAmounts.package_total) || 0 : baseForTax + taxAmount) - couponDiscountAmount;
-  const originalPriceLabel = (packageBaseAmount + totalHotelAddonPrice) > 0 ? `₹ ${(packageBaseAmount + totalHotelAddonPrice).toLocaleString('en-IN')}` : 'On req';
+  const originalPriceLabel = (packageBaseAmount + totalAllAddonsPrice) > 0 ? `₹ ${(packageBaseAmount + totalAllAddonsPrice).toLocaleString('en-IN')}` : 'On req';
   const unitPriceLabel = `₹ ${packageUnitAmount.toLocaleString('en-IN')}`;
   const travellerLabel = `${travellerCount} ${travellerCount === 1 ? 'traveller' : 'travellers'}`;
   const taxLabel = taxPercent > 0 ? `${taxType || 'Tax'} ${formatTaxPercent(taxPercent)}%` : taxType || 'Tax';
@@ -5130,7 +7399,7 @@ export default function TourItineraryView({ destination, packageSlug }) {
 
   const buildBookingDraft = (overrides = {}) => {
     const auth = getStoredAuth() || {};
-    const finalBaseAmount = packageBaseAmountVal + totalHotelAddonPrice;
+    const finalBaseAmount = packageBaseAmountVal + totalAllAddonsPrice;
 
     return {
       package_id: pkg?.id || null,
@@ -5149,6 +7418,19 @@ export default function TourItineraryView({ destination, packageSlug }) {
         totalPrice: (Number(h.pricePerNight) || Number(h.price) || 0) * (Number(h.nights) || 1) * (Number(h.rooms) || 1),
       })),
       hotel_addons_total: totalHotelAddonPrice,
+      transport_addons: selectedTransfers.map((t) => ({
+        id: t.id,
+        title: t.title,
+        route: t.route,
+        price: t.price,
+      })),
+      transport_addons_total: totalTransportAddonPrice,
+      activity_addons: selectedActivities.map((a) => ({
+        id: a.id,
+        name: a.name,
+        price: a.price,
+      })),
+      activity_addons_total: totalActivityAddonPrice,
       tax_type: taxType || null,
       tax_percent: taxPercent,
       tax_amount: taxAmount,
@@ -5647,30 +7929,31 @@ export default function TourItineraryView({ destination, packageSlug }) {
           )}
         </div>
 
-        {/* Breadcrumbs */}
-        {/* Dynamic Tour Map Heading (in place of Breadcrumbs) */}
-        {hasRouteMap ? (
-          <div className="itn-tour-map-top-bar">
-            <button
-              type="button"
-              className="itn-view-route-btn itn-tour-map-top-btn"
-              onClick={() => setRouteModalOpen(true)}
-              aria-label={routeButtonLabel}
-              title={routeButtonLabel}
-            >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
-                <line x1="9" y1="3" x2="9" y2="18" />
-                <line x1="15" y1="6" x2="15" y2="21" />
-              </svg>
-              <span>{routeButtonLabel}</span>
-            </button>
-          </div>
-        ) : null}
-
         {/* Title, Rating, Meta & Description */}
         <header className="itn-header" id="itinerary-overview">
-          <h1 className="itn-page-title">{pkg.name}</h1>
+          <div className="itn-title-row">
+            <h1 className="itn-page-title">{pkg.name}</h1>
+
+            {/* Tour Map Button (In the same row just after heading) */}
+            {hasRouteMap ? (
+              <div className="itn-tour-map-title-wrap">
+                <button
+                  type="button"
+                  className="itn-view-route-btn itn-tour-map-title-btn"
+                  onClick={() => setRouteModalOpen(true)}
+                  aria-label={routeButtonLabel}
+                  title={routeButtonLabel}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
+                    <line x1="9" y1="3" x2="9" y2="18" />
+                    <line x1="15" y1="6" x2="15" y2="21" />
+                  </svg>
+                  <span>{routeButtonLabel}</span>
+                </button>
+              </div>
+            ) : null}
+          </div>
           <div className="itn-rating-row">
             <span className="itn-star-icon">★</span>
             <strong className="itn-rating-val">{ratingLabel}</strong>
@@ -5803,41 +8086,429 @@ export default function TourItineraryView({ destination, packageSlug }) {
 
 
 
-            {/* 3. Add On's */}
-            <section className="itn-content-block" id="itinerary-addons">
-              <div className="itn-addons-header">
-                <div className="itn-addons-header-top">
-                  <h2 className="itn-block-title itn-addons-title">
-                    Add On&apos;s ({displayHotels.length}) <span className="itn-addons-sparkle">✨</span>
-                  </h2>
-                  {displayHotels.length > 1 ? (
-                    <div className="itn-addons-arrow-controls">
+            {/* 2.5 Excluded Services: [Hotels] & [Transport] */}
+            <section className="itn-content-block" id="itinerary-excluded-items">
+              <div className="itn-exc-header">
+                <div className="itn-exc-header-top">
+                  <div>
+                    <h2 className="itn-block-title itn-exc-title">
+                      Hotels &amp; Transport
+                    </h2>
+                    <p className="itn-exc-subtitle">
+                      Explore your stay arrangements and transfer details. Review included features or customize with verified hotels and private transport below.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Segmented Toggle Bar: [Hotels] & [Transport] with Smooth Glider Animation */}
+                <div className="itn-exc-toggle-wrap">
+                  <div
+                    className={`itn-exc-toggle-bar ${excludedActiveTab === 'transport' ? 'is-transport-active' : 'is-hotels-active'}`}
+                    role="tablist"
+                    aria-label="Category tabs"
+                  >
+                    {/* Animated Sliding Glider Pill */}
+                    <span className="itn-exc-toggle-glider" aria-hidden="true" />
+
+                    <button
+                      type="button"
+                      role="tab"
+                      id="tab-btn-hotels"
+                      aria-selected={excludedActiveTab === 'hotels'}
+                      className={`itn-exc-toggle-btn itn-exc-btn-hotels ${excludedActiveTab === 'hotels' ? 'active' : ''}`}
+                      onClick={() => setExcludedActiveTab('hotels')}
+                    >
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M3 5a1 1 0 0 0-1 1v12a1 1 0 1 0 2 0v-2h16v2a1 1 0 1 0 2 0V10a3 3 0 0 0-3-3h-7V6a1 1 0 0 0-1-1H3zm3 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm6 0h5a1 1 0 0 1 1 1v3h-6V9z" />
+                      </svg>
+                      <span>Hotels</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      role="tab"
+                      id="tab-btn-transport"
+                      aria-selected={excludedActiveTab === 'transport'}
+                      className={`itn-exc-toggle-btn itn-exc-btn-transport ${excludedActiveTab === 'transport' ? 'active' : ''}`}
+                      onClick={() => setExcludedActiveTab('transport')}
+                    >
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.85 7h10.29l1.04 3H5.81l1.04-3zM7.5 16c-.83 0-1.5-.67-1.5-1.5S6.67 13 7.5 13s1.5.67 1.5 1.5S8.33 16 7.5 16zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
+                      </svg>
+                      <span>Transport</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="itn-exc-slider-wrapper">
+                <div
+                  ref={excludedScrollRef}
+                  className="itn-exc-grid"
+                  tabIndex={0}
+                  role="region"
+                  aria-label="Excluded items carousel"
+                >
+                    {excludedActiveTab === 'hotels' ? (
+                      /* Transferred Hotels Content - Dynamic Hotels Only */
+                      displayHotels.length > 0 ? (
+                        displayHotels.map((hotel) => {
+                          const hotelId = hotel.id || hotel.key;
+                          const isAdded = selectedAddonHotelIds.includes(hotelId);
+                          const perNight = Number(hotel.pricePerNight) || Number(hotel.price) || 0;
+                          const nights = Number(hotel.nights) || 1;
+                          const rooms = Number(hotel.rooms) || 1;
+                          const totalCost = perNight * nights * rooms;
+                          const hotelImg = getMediaUrl(hotel.image) || (media.images[1] ? media.images[1].url : fallbackImage);
+                          const badgeText = hotel.starRating ? `${hotel.starRating}★ Hotel Stay` : (hotel.roomType || 'Verified Stay');
+
+                          return (
+                            <div key={hotelId} className={`itn-exc-card ${isAdded ? 'is-added' : ''}`}>
+                              <div className="itn-exc-card-img-wrap itn-exc-card-img-wrap--hotel">
+                                <Image
+                                  src={hotelImg}
+                                  alt={hotel.name || 'Hotel'}
+                                  fill
+                                  sizes="(max-width: 768px) 100vw, 33vw"
+                                  style={{ objectFit: 'cover' }}
+                                  unoptimized={hotelImg.startsWith('http')}
+                                />
+                                <div className="itn-exc-card-img-badge">{badgeText}</div>
+                              </div>
+
+                              <div className="itn-exc-card-body">
+                                <div className="itn-exc-date-pill">
+                                  {nights ? `${nights} ${nights === 1 ? 'Night' : 'Nights'} Stay` : 'Verified Stay'}
+                                </div>
+                                <h3 className="itn-exc-card-title">{hotel.name}</h3>
+                                <p className="itn-exc-card-route">
+                                  {hotel.destinationName || routeDestinationTitle} • {hotel.roomType || (hotel.starRating ? `${hotel.starRating}★ Deluxe Stay` : 'Superior Room')}
+                                </p>
+
+                                <div className="itn-exc-meta-list">
+                                  <div className="itn-exc-meta-item">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                      <path d="M2 4v16M2 8h18a2 2 0 0 1 2 2v10M2 17h20M6 8v9" />
+                                    </svg>
+                                    <span>Room: {hotel.roomType || 'Deluxe Room'}</span>
+                                    <span className="itn-exc-meta-dot">•</span>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                      <circle cx="12" cy="12" r="10" />
+                                      <polyline points="12 6 12 12 16 14" />
+                                    </svg>
+                                    <span>{nights} {nights === 1 ? 'Night' : 'Nights'}</span>
+                                  </div>
+
+                                  <div className="itn-exc-meta-item itn-exc-non-refundable">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                      <circle cx="12" cy="12" r="10" />
+                                      <line x1="15" y1="9" x2="9" y2="15" />
+                                      <line x1="9" y1="9" x2="15" y2="15" />
+                                    </svg>
+                                    <span>Non Refundable</span>
+                                  </div>
+
+                                  <div className="itn-exc-meta-item">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                      <circle cx="9" cy="7" r="4" />
+                                      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                                      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                    </svg>
+                                    <span>{travellerCount || 2} Guests in {rooms} {rooms === 1 ? 'Room' : 'Rooms'}</span>
+                                  </div>
+                                </div>
+
+                                <div className="itn-exc-card-footer">
+                                  <div className="itn-exc-price-col">
+                                    <strong className="itn-exc-price">
+                                      ₹ {totalCost.toLocaleString('en-IN')}
+                                    </strong>
+                                    {perNight && nights > 1 ? (
+                                      <span className="itn-exc-per-night">₹ {perNight.toLocaleString('en-IN')} / night</span>
+                                    ) : null}
+                                  </div>
+
+                                  <div className="itn-exc-actions">
+                                    {isAdded ? (
+                                      <div className="itn-exc-added-row">
+                                        <span className="itn-exc-added-label">
+                                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                                            <polyline points="20 6 9 17 4 12" />
+                                          </svg>
+                                          Added
+                                        </span>
+                                        <button
+                                          type="button"
+                                          className="itn-exc-trash-btn"
+                                          onClick={() => toggleHotelAddon(hotelId)}
+                                          title="Remove from itinerary"
+                                          aria-label={`Remove ${hotel.name}`}
+                                        >
+                                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <polyline points="3 6 5 6 21 6" />
+                                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                            <line x1="10" y1="11" x2="10" y2="17" />
+                                            <line x1="14" y1="11" x2="14" y2="17" />
+                                          </svg>
+                                        </button>
+                                      </div>
+                                    ) : (
+                                      <button
+                                        type="button"
+                                        className="itn-exc-btn-add"
+                                        onClick={() => toggleHotelAddon(hotelId)}
+                                      >
+                                        + Add to itinerary
+                                      </button>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })
+                      ) : (
+                        <div
+                          className="itn-exc-empty-state"
+                          style={{
+                            padding: '36px 20px',
+                            textAlign: 'center',
+                            width: '100%',
+                            color: '#64748b',
+                            background: '#f8fafc',
+                            borderRadius: '16px',
+                            border: '1px dashed #cbd5e1',
+                          }}
+                        >
+                          <svg
+                            width="28"
+                            height="28"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="#94a3b8"
+                            strokeWidth="1.8"
+                            style={{ margin: '0 auto 8px', display: 'block' }}
+                          >
+                            <path d="M3 5a1 1 0 0 0-1 1v12a1 1 0 1 0 2 0v-2h16v2a1 1 0 1 0 2 0V10a3 3 0 0 0-3-3h-7V6a1 1 0 0 0-1-1H3zm3 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm6 0h5a1 1 0 0 1 1 1v3h-6V9z" />
+                          </svg>
+                          <p style={{ margin: 0, fontSize: '0.92rem', fontWeight: 500 }}>
+                            No hotel accommodations listed for this package.
+                          </p>
+                        </div>
+                      )
+                    ) : (
+                      /* Transport Content - Inspired by Screenshot */
+                      displayTransfers.map((transfer) => {
+                        const isAdded = selectedAddonTransportIds.includes(transfer.id);
+
+                        return (
+                          <div key={transfer.id} className={`itn-exc-card ${isAdded ? 'is-added' : ''}`}>
+                            <div className="itn-exc-card-img-wrap itn-exc-card-img-wrap--vehicle">
+                              <Image
+                                src={transfer.vehicleImg}
+                                alt={transfer.vehicleName}
+                                fill
+                                sizes="(max-width: 768px) 100vw, 33vw"
+                                style={{ objectFit: 'contain' }}
+                              />
+                              <div className="itn-exc-card-img-badge">{transfer.vehicleName}</div>
+                            </div>
+
+                            <div className="itn-exc-card-body">
+                              <div className="itn-exc-date-pill">
+                                {transfer.dateTag}
+                              </div>
+                              <h3 className="itn-exc-card-title">{transfer.title}</h3>
+                              <p className="itn-exc-card-route">
+                                {transfer.route}
+                              </p>
+
+                              <div className="itn-exc-meta-list">
+                                <div className="itn-exc-meta-item">
+                                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <rect x="1" y="3" width="15" height="13" rx="2" />
+                                    <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+                                    <circle cx="5.5" cy="18.5" r="2.5" />
+                                    <circle cx="18.5" cy="18.5" r="2.5" />
+                                  </svg>
+                                  <span>{transfer.vehicleType}</span>
+                                  <span className="itn-exc-meta-dot">•</span>
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <polyline points="12 6 12 12 16 14" />
+                                  </svg>
+                                  <span>{transfer.duration}</span>
+                                </div>
+
+                                <div className="itn-exc-meta-item itn-exc-non-refundable">
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <line x1="15" y1="9" x2="9" y2="15" />
+                                    <line x1="9" y1="9" x2="15" y2="15" />
+                                  </svg>
+                                  <span>Non Refundable</span>
+                                </div>
+
+                                <div className="itn-exc-meta-item">
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                    <circle cx="9" cy="7" r="4" />
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                  </svg>
+                                  <span>{transfer.passengers}</span>
+                                </div>
+                              </div>
+
+                              <div className="itn-exc-card-footer">
+                                <div className="itn-exc-price-col">
+                                  <strong className="itn-exc-price">
+                                    ₹ {transfer.price.toLocaleString('en-IN')}
+                                  </strong>
+                                  <span className="itn-exc-per-night">Per vehicle</span>
+                                </div>
+
+                                <div className="itn-exc-actions">
+                                  {isAdded ? (
+                                    <div className="itn-exc-added-row">
+                                      <span className="itn-exc-added-label">
+                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                                          <polyline points="20 6 9 17 4 12" />
+                                        </svg>
+                                        Added
+                                      </span>
+                                      <button
+                                        type="button"
+                                        className="itn-exc-trash-btn"
+                                        onClick={() => toggleTransportAddon(transfer.id)}
+                                        title="Remove from itinerary"
+                                        aria-label={`Remove ${transfer.title}`}
+                                      >
+                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                          <polyline points="3 6 5 6 21 6" />
+                                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                          <line x1="10" y1="11" x2="10" y2="17" />
+                                          <line x1="14" y1="11" x2="14" y2="17" />
+                                        </svg>
+                                      </button>
+                                    </div>
+                                  ) : (
+                                    <button
+                                      type="button"
+                                      className="itn-exc-btn-add"
+                                      onClick={() => toggleTransportAddon(transfer.id)}
+                                    >
+                                      + Add to itinerary
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                </div>
+            </section>
+
+            {/* Create your Itinerary Section */}
+            <section className="itn-content-block itn-create-itinerary-section" id="itinerary-create-itinerary">
+              <div className="itn-create-itn-header">
+                <h2 className="itn-block-title itn-create-itn-title">
+                  Create your Itinerary <span className="itn-addons-sparkle">✨</span>
+                </h2>
+                <p className="itn-create-itn-subtitle">
+                  Tailor travel style, room setup, meal plans &amp; private cabs for this holiday package.
+                </p>
+              </div>
+
+              <div className="itn-create-itn-body">
+                <div className="itn-custom-single-pkg-card">
+                  <div className="itn-custom-single-pkg-media">
+                    <Image
+                      src={activeCustomPkg?.image || fallbackImage}
+                      alt={activeCustomPkg?.name || pkg?.name || 'Tour Package'}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 320px"
+                      style={{ objectFit: 'cover' }}
+                      unoptimized={typeof activeCustomPkg?.image === 'string' && activeCustomPkg.image.startsWith('http')}
+                    />
+                    <div className="itn-custom-single-dur-badge">
+                      {activeCustomPkg?.duration || '5N / 6D'}
+                    </div>
+                    <div className="itn-custom-single-selected-pill">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                      <span>Selected Base Package</span>
+                    </div>
+                  </div>
+
+                  <div className="itn-custom-single-pkg-info">
+                    <div>
+                      <div className="itn-custom-single-pkg-top">
+                        <span className="itn-custom-single-pkg-dest">
+                          {activeCustomPkg?.destination || destination || 'Holiday Destination'}
+                        </span>
+                        <span className="itn-custom-single-check-status">
+                          ✓ Selected
+                        </span>
+                      </div>
+
+                      <h3 className="itn-custom-single-pkg-name">
+                        {activeCustomPkg?.name || pkg?.name || 'Tour Package'}
+                      </h3>
+
+                      <div className="itn-custom-single-features">
+                        <span className="itn-custom-feat-pill">🏨 Stays &amp; Hotels</span>
+                        <span className="itn-custom-feat-pill">🍽️ Meal Plans</span>
+                        <span className="itn-custom-feat-pill">🚗 Private Transfers</span>
+                        <span className="itn-custom-feat-pill">👥 Room Customization</span>
+                      </div>
+                    </div>
+
+                    <div className="itn-custom-single-pkg-footer">
+                      <div className="itn-custom-single-price-box">
+                        <span className="itn-custom-single-price-lbl">Starting Price</span>
+                        <div className="itn-custom-single-price-val">
+                          <strong>₹ {(activeCustomPkg?.price || pkg?.price || 24999).toLocaleString('en-IN')}</strong>
+                          <small>/ person</small>
+                        </div>
+                      </div>
+
                       <button
                         type="button"
-                        onClick={() => scrollAddons(-1)}
-                        aria-label="Previous add-on"
-                        className="itn-addons-arrow-btn"
-                        title="Previous add-on (or press Left Arrow)"
+                        className="itn-custom-single-cta-btn"
+                        onClick={() => setCustomModalOpen(true)}
+                        id="btn-customize-itinerary-open"
                       >
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          <polyline points="15 18 9 12 15 6" />
-                        </svg>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => scrollAddons(1)}
-                        aria-label="Next add-on"
-                        className="itn-addons-arrow-btn"
-                        title="Next add-on (or press Right Arrow)"
-                      >
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          <polyline points="9 18 15 12 9 6" />
+                        <span>Customize Your Itinerary ✨</span>
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <line x1="5" y1="12" x2="19" y2="12" />
+                          <polyline points="12 5 19 12 12 19" />
                         </svg>
                       </button>
                     </div>
-                  ) : null}
+                  </div>
                 </div>
-                <div className="itn-addons-accent" />
+              </div>
+            </section>
+
+            {/* 3. Add On's & Activities */}
+            <section className="itn-content-block" id="itinerary-addons">
+              <div className="itn-addons-header">
+                <div className="itn-addons-header-top">
+                  <div>
+                    <h2 className="itn-block-title itn-addons-title">
+                      Add On&apos;s &amp; Activities ({displayActivities.length}) <span className="itn-addons-sparkle">✨</span>
+                    </h2>
+                    <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#64748b' }}>
+                      Enhance your trip with unforgettable local experiences and activity passes.
+                    </p>
+                  </div>
+                </div>
               </div>
 
               {/* Single row horizontal carousel */}
@@ -5858,52 +8529,43 @@ export default function TourItineraryView({ destination, packageSlug }) {
                   role="region"
                   aria-label="Add-ons horizontal carousel"
                 >
-                  {displayHotels.map((hotel) => {
-                    const hotelId = hotel.id || hotel.key;
-                    const isAdded = selectedAddonHotelIds.includes(hotelId);
-                    const perNight = Number(hotel.pricePerNight) || Number(hotel.price) || 0;
-                    const nights = Number(hotel.nights) || 1;
-                    const rooms = Number(hotel.rooms) || 1;
-                    const totalCost = perNight * nights * rooms;
-                    const hotelImg = getMediaUrl(hotel.image) || (media.images[1] ? media.images[1].url : fallbackImage);
-                    const badgeText = `Added by ${rooms || travellerCount || 2} Travellers`;
+                  {displayActivities.map((activity) => {
+                    const isAdded = selectedAddonActivityIds.includes(activity.id);
 
                     return (
-                      <div key={hotelId} className={`itn-addon-card ${isAdded ? 'is-added' : ''}`}>
+                      <div key={activity.id} className={`itn-addon-card ${isAdded ? 'is-added' : ''}`}>
                         <div className="itn-addon-img-wrap">
                           <Image
-                            src={hotelImg}
-                            alt={hotel.name || 'Hotel'}
+                            src={activity.image}
+                            alt={activity.name}
                             fill
                             sizes="(max-width: 768px) 100vw, 33vw"
                             style={{ objectFit: 'cover' }}
-                            unoptimized={hotelImg.startsWith('http')}
+                            unoptimized={activity.image.startsWith('http')}
                           />
-                          <div className="itn-addon-badge">{badgeText}</div>
+                          <div className="itn-addon-badge">{activity.badge}</div>
                         </div>
 
                         <div className="itn-addon-body">
-                          <div className="itn-addon-tag">HOTEL ADDON</div>
-                          <h3 className="itn-addon-name">{hotel.name}</h3>
+                          <div className="itn-addon-tag">{activity.tag}</div>
+                          <h3 className="itn-addon-name">{activity.name}</h3>
                           <div className="itn-addon-meta">
-                            <span>Room: {hotel.roomType || (hotel.starRating ? `${hotel.starRating}★ Deluxe Stay` : 'Superior')}</span>
-                            {nights ? <span className="itn-addon-dot">•</span> : null}
-                            {nights ? <span>{nights} {nights === 1 ? 'Night' : 'Nights'}</span> : null}
+                            <span>{activity.category}</span>
+                            <span className="itn-addon-dot">•</span>
+                            <span>{activity.duration}</span>
                           </div>
-                          {hotel.notes ? (
-                            <p className="itn-addon-notes" title={hotel.notes}>
-                              {hotel.notes}
+                          {activity.notes ? (
+                            <p className="itn-addon-notes" title={activity.notes}>
+                              {activity.notes}
                             </p>
                           ) : null}
 
                           <div className="itn-addon-footer">
                             <div className="itn-addon-price-col">
                               <strong className="itn-addon-price">
-                                ₹ {totalCost.toLocaleString('en-IN')}
+                                ₹ {activity.price.toLocaleString('en-IN')}
                               </strong>
-                              {perNight && nights > 1 ? (
-                                <span className="itn-addon-per-night">₹ {perNight.toLocaleString('en-IN')} / night</span>
-                              ) : null}
+                              <span className="itn-addon-per-night">Per person</span>
                             </div>
 
                             <div className="itn-addon-actions">
@@ -5918,9 +8580,9 @@ export default function TourItineraryView({ destination, packageSlug }) {
                                   <button
                                     type="button"
                                     className="itn-addon-trash-btn"
-                                    onClick={() => toggleHotelAddon(hotelId)}
+                                    onClick={() => toggleActivityAddon(activity.id)}
                                     title="Remove from itinerary"
-                                    aria-label={`Remove ${hotel.name} from itinerary`}
+                                    aria-label={`Remove ${activity.name}`}
                                   >
                                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                       <polyline points="3 6 5 6 21 6" />
@@ -5934,7 +8596,7 @@ export default function TourItineraryView({ destination, packageSlug }) {
                                 <button
                                   type="button"
                                   className="itn-addon-btn-add"
-                                  onClick={() => toggleHotelAddon(hotelId)}
+                                  onClick={() => toggleActivityAddon(activity.id)}
                                 >
                                   + Add to itinerary
                                 </button>
@@ -5947,7 +8609,7 @@ export default function TourItineraryView({ destination, packageSlug }) {
                   })}
                 </div>
 
-                {displayHotels.length > 2 ? (
+                {displayActivities.length > 2 ? (
                   <>
                     <button
                       type="button"
@@ -6022,8 +8684,8 @@ export default function TourItineraryView({ destination, packageSlug }) {
                   </div>
 
                   {/* Exclusions Card */}
-                  <div className="itn-exc-card">
-                    <div className="itn-exc-card-head">
+                  <div className="itn-exclusions-card">
+                    <div className="itn-exclusions-card-head">
                       <div className="itn-exc-head-badge">
                         <span className="itn-exc-head-icon">
                           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -6299,12 +8961,36 @@ export default function TourItineraryView({ destination, packageSlug }) {
               {totalHotelAddonPrice > 0 ? (
                 <div className="itn-side-addon-pill">
                   <div className="itn-side-addon-pill-left">
-                    <span className="itn-side-addon-badge">Hotel Addon</span>
+                    <span className="itn-side-addon-badge">Hotel</span>
                     <span className="itn-side-addon-name">
                       {selectedHotels.map((h) => h.name).join(', ')}
                     </span>
                   </div>
                   <strong className="itn-side-addon-val">+ ₹ {totalHotelAddonPrice.toLocaleString('en-IN')}</strong>
+                </div>
+              ) : null}
+
+              {totalTransportAddonPrice > 0 ? (
+                <div className="itn-side-addon-pill">
+                  <div className="itn-side-addon-pill-left">
+                    <span className="itn-side-addon-badge">Transport</span>
+                    <span className="itn-side-addon-name">
+                      {selectedTransfers.map((t) => t.title).join(', ')}
+                    </span>
+                  </div>
+                  <strong className="itn-side-addon-val">+ ₹ {totalTransportAddonPrice.toLocaleString('en-IN')}</strong>
+                </div>
+              ) : null}
+
+              {totalActivityAddonPrice > 0 ? (
+                <div className="itn-side-addon-pill">
+                  <div className="itn-side-addon-pill-left">
+                    <span className="itn-side-addon-badge">Activity</span>
+                    <span className="itn-side-addon-name">
+                      {selectedActivities.map((a) => a.name).join(', ')}
+                    </span>
+                  </div>
+                  <strong className="itn-side-addon-val">+ ₹ {totalActivityAddonPrice.toLocaleString('en-IN')}</strong>
                 </div>
               ) : null}
 
@@ -6570,10 +9256,17 @@ export default function TourItineraryView({ destination, packageSlug }) {
 
           <button
             type="button"
-            className="itn-floating-cta-btn"
-            onClick={openBookingModal}
+            className={`itn-floating-cta-btn ${activeNavSection === 'itinerary-create-itinerary' ? 'is-active' : ''}`}
+            onClick={() => scrollToNavSection('itinerary-create-itinerary')}
+            aria-label="Create your Itinerary"
           >
-            <span>Unlock your itinerary</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+              </svg>
+              <span>Create your Itinerary</span>
+            </span>
           </button>
         </div>
       </nav>
@@ -6723,6 +9416,523 @@ export default function TourItineraryView({ destination, packageSlug }) {
         </div>
       ) : null}
 
+      {/* Create your Itinerary Custom Modal Popup */}
+      {customModalOpen ? (
+        <div
+          className="itn-custom-modal-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Create your Itinerary"
+          onClick={(e) => {
+            if (e.target === e.currentTarget && !customItinerarySubmitting) {
+              setCustomModalOpen(false);
+            }
+          }}
+        >
+          <div
+            className="itn-custom-modal-panel"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="itn-custom-modal-header">
+              <div className="itn-custom-modal-head-left">
+                <h3 className="itn-custom-modal-title">
+                  Create your Itinerary <span className="itn-addons-sparkle">✨</span>
+                </h3>
+                <p className="itn-custom-modal-subtitle">
+                  Package: <strong>{activeCustomPkg?.name || pkg?.name}</strong> · {activeCustomPkg?.duration || '5N / 6D'} · ₹ {(activeCustomPkg?.price || pkg?.price || 24999).toLocaleString('en-IN')}
+                </p>
+              </div>
+              <button
+                type="button"
+                className="itn-custom-modal-close"
+                onClick={() => {
+                  if (!customItinerarySubmitting) setCustomModalOpen(false);
+                }}
+                aria-label="Close modal"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="itn-custom-modal-body">
+              {customItinerarySubmitted ? (
+                /* Success celebration card */
+                <div className="itn-custom-success-card">
+                  <div className="itn-custom-success-icon">✓</div>
+                  <span className="itn-custom-success-badge">INQUIRY SAVED TO ADMIN PANEL</span>
+                  <h3 className="itn-custom-success-title">Your Custom Itinerary Has Been Created!</h3>
+                  <p className="itn-custom-success-desc">
+                    Thank you! We have received your custom package request in our admin panel. Our tour specialists are reviewing your selections and will reach out with the finalized itinerary and custom quote.
+                  </p>
+                  <div className="itn-custom-ref-box">
+                    <span>Reference ID:</span>
+                    <strong>{customItineraryRefId}</strong>
+                  </div>
+                  <div className="itn-custom-summary-grid">
+                    <div className="itn-custom-summary-item">
+                      <span>Selected Package</span>
+                      <strong>{activeCustomPkg?.name || pkg?.name}</strong>
+                    </div>
+                    <div className="itn-custom-summary-item">
+                      <span>Travel With</span>
+                      <strong>{customTravelWith} ({customTotalTravellers} Pax, {customRooms.length} Room{customRooms.length > 1 ? 's' : ''})</strong>
+                    </div>
+                    <div className="itn-custom-summary-item">
+                      <span>Duration</span>
+                      <strong>{customDuration}</strong>
+                    </div>
+                    <div className="itn-custom-summary-item">
+                      <span>Departure</span>
+                      <strong>{customCustomCityInput.trim() || customDepartureCity} {customDepartureDate ? `· ${customDepartureDate}` : ''}</strong>
+                    </div>
+                    <div className="itn-custom-summary-item">
+                      <span>Stay Category</span>
+                      <strong>{customHotelCategory}</strong>
+                    </div>
+                    <div className="itn-custom-summary-item">
+                      <span>Meal Plan</span>
+                      <strong>{customMealPlan}</strong>
+                    </div>
+                    <div className="itn-custom-summary-item">
+                      <span>Vehicle</span>
+                      <strong>{customVehicleType}</strong>
+                    </div>
+                    <div className="itn-custom-summary-item">
+                      <span>Lead Contact</span>
+                      <strong>{customContactName} ({customContactPhone})</strong>
+                    </div>
+                  </div>
+                  <div className="itn-custom-success-actions">
+                    <button
+                      type="button"
+                      className="itn-custom-submit-btn"
+                      onClick={() => setCustomModalOpen(false)}
+                    >
+                      Done &amp; Close
+                    </button>
+                    <button
+                      type="button"
+                      className="itn-custom-reset-btn"
+                      onClick={() => {
+                        setCustomItinerarySubmitted(false);
+                        setCustomItineraryRefId('');
+                      }}
+                    >
+                      Customize Another Itinerary
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="itn-custom-modal-steps">
+                  {/* Step 1: Custom Package Style Preferences */}
+                  <div className="itn-create-step-card">
+                    <div className="itn-create-step-head">
+                      <span className="itn-create-step-num">1</span>
+                      <div>
+                        <h3 className="itn-create-step-title">Customize Holiday Style &amp; Configuration</h3>
+                        <p className="itn-create-step-desc">Pick who is travelling, room setup, duration, and departure.</p>
+                      </div>
+                    </div>
+
+                    {/* A. Who are you travelling with? (Arched custom style) */}
+                    <div className="itn-custom-field-block">
+                      <label className="itn-custom-field-label">
+                        <span>Who are you travelling with?</span>
+                        <small className="itn-custom-selected-hint">Selected: <strong>{customTravelWith}</strong></small>
+                      </label>
+                      <div className="itn-custom-traveller-grid">
+                        {CUSTOM_TRAVELLER_OPTIONS.map((t) => {
+                          const isPicked = customTravelWith === t.name;
+                          return (
+                            <button
+                              key={t.name}
+                              type="button"
+                              className={`itn-custom-traveller-card ${isPicked ? 'is-picked' : ''}`}
+                              onClick={() => setCustomTravelWith(t.name)}
+                            >
+                              <div className="itn-custom-traveller-icon-wrap">
+                                <span className="itn-custom-traveller-emoji">{t.emoji}</span>
+                              </div>
+                              <span className="itn-custom-traveller-title">{t.name}</span>
+                              <span className="itn-custom-traveller-sub">{t.desc}</span>
+                              {isPicked ? (
+                                <span className="itn-custom-traveller-check-indicator">✓</span>
+                              ) : null}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* B. Room & Guest Setup */}
+                    <div className="itn-custom-field-block">
+                      <label className="itn-custom-field-label">
+                        <span>Room &amp; Guest Setup</span>
+                        <small className="itn-custom-selected-hint">
+                          {customRooms.length} {customRooms.length === 1 ? 'Room' : 'Rooms'} · {customTotalTravellers} {customTotalTravellers === 1 ? 'Guest' : 'Guests'}
+                        </small>
+                      </label>
+                      <div className="itn-custom-rooms-box">
+                        {customRooms.map((room, rIdx) => (
+                          <div key={room.id} className="itn-custom-room-row">
+                            <div className="itn-custom-room-top">
+                              <span className="itn-custom-room-badge">ROOM {rIdx + 1}</span>
+                              {customRooms.length > 1 ? (
+                                <button
+                                  type="button"
+                                  className="itn-custom-room-del"
+                                  onClick={() => removeCustomRoom(room.id)}
+                                >
+                                  Remove Room
+                                </button>
+                              ) : null}
+                            </div>
+                            <div className="itn-custom-guest-steppers">
+                              <div className="itn-custom-guest-col">
+                                <span className="itn-custom-guest-label">Adults (12+ yrs)</span>
+                                <div className="itn-custom-counter">
+                                  <button
+                                    type="button"
+                                    onClick={() => updateCustomRoom(room.id, 'adults', Math.max(1, room.adults - 1))}
+                                  >
+                                    -
+                                  </button>
+                                  <span>{room.adults}</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => updateCustomRoom(room.id, 'adults', room.adults + 1)}
+                                  >
+                                    +
+                                  </button>
+                                </div>
+                              </div>
+                              <div className="itn-custom-guest-col">
+                                <span className="itn-custom-guest-label">Children (0-11 yrs)</span>
+                                <div className="itn-custom-counter">
+                                  <button
+                                    type="button"
+                                    onClick={() => updateCustomRoom(room.id, 'children', Math.max(0, room.children - 1))}
+                                  >
+                                    -
+                                  </button>
+                                  <span>{room.children}</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => updateCustomRoom(room.id, 'children', room.children + 1)}
+                                  >
+                                    +
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                            {room.children > 0 ? (
+                              <div className="itn-custom-child-ages-wrap">
+                                {room.childAges.map((age, aIdx) => (
+                                  <div key={aIdx} className="itn-custom-child-age-item">
+                                    <span>Age of Child {aIdx + 1}:</span>
+                                    <select
+                                      value={age}
+                                      onChange={(e) => {
+                                        const newAges = [...room.childAges];
+                                        newAges[aIdx] = Number(e.target.value);
+                                        updateCustomRoom(room.id, 'childAges', newAges);
+                                      }}
+                                    >
+                                      {[...Array(12)].map((_, idx) => (
+                                        <option key={idx} value={idx}>{idx} {idx <= 1 ? 'yr' : 'yrs'}</option>
+                                      ))}
+                                    </select>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : null}
+                          </div>
+                        ))}
+                        {customRooms.length < 4 ? (
+                          <button
+                            type="button"
+                            className="itn-custom-add-room-btn"
+                            onClick={addCustomRoom}
+                          >
+                            + Add Another Room
+                          </button>
+                        ) : null}
+                      </div>
+                    </div>
+
+                    {/* C. Duration & Departure Date */}
+                    <div className="itn-custom-grid-row">
+                      <div className="itn-custom-field-block">
+                        <label className="itn-custom-field-label">Holiday Duration</label>
+                        <div className="itn-custom-dur-grid">
+                          {['3-4 Days', '5-6 Days', '7-8 Days', '9-15 Days'].map((d) => (
+                            <button
+                              key={d}
+                              type="button"
+                              className={`itn-custom-dur-pill ${customDuration === d ? 'active' : ''}`}
+                              onClick={() => setCustomDuration(d)}
+                            >
+                              <span>{d}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="itn-custom-field-block">
+                        <label className="itn-custom-field-label">Departure Date</label>
+                        <input
+                          type="date"
+                          min={new Date().toISOString().split('T')[0]}
+                          value={customDepartureDate}
+                          onChange={(e) => setCustomDepartureDate(e.target.value)}
+                          className="itn-custom-text-input"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Departure City Quick Chips + Custom Input */}
+                    <div className="itn-custom-field-block">
+                      <label className="itn-custom-field-label">
+                        <span>Departure City</span>
+                        <small className="itn-custom-selected-hint">Selected: <strong>{customCustomCityInput.trim() || customDepartureCity}</strong></small>
+                      </label>
+                      <div className="itn-custom-city-chips">
+                        {['Delhi', 'Mumbai', 'Bangalore', 'Kolkata', 'Hyderabad', 'Chennai', 'Ahmedabad', 'Pune'].map((city) => (
+                          <button
+                            key={city}
+                            type="button"
+                            className={`itn-custom-city-chip ${customDepartureCity === city && !customCustomCityInput ? 'active' : ''}`}
+                            onClick={() => {
+                              setCustomDepartureCity(city);
+                              setCustomCustomCityInput('');
+                            }}
+                          >
+                            {city}
+                          </button>
+                        ))}
+                      </div>
+                      <input
+                        type="text"
+                        placeholder="Or enter other departure city / airport..."
+                        value={customCustomCityInput}
+                        onChange={(e) => setCustomCustomCityInput(e.target.value)}
+                        className="itn-custom-text-input itn-custom-city-other"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Step 2: Package Style Inclusions */}
+                  <div className="itn-create-step-card">
+                    <div className="itn-create-step-head">
+                      <span className="itn-create-step-num">2</span>
+                      <div>
+                        <h3 className="itn-create-step-title">Package Style &amp; Inclusions</h3>
+                        <p className="itn-create-step-desc">Select hotel standard, meal plan, and transport as in the package creation form.</p>
+                      </div>
+                    </div>
+
+                    <div className="itn-custom-pref-grid">
+                      {/* Stay Category */}
+                      <div className="itn-custom-pref-col">
+                        <span className="itn-custom-pref-title">
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 21h18" /><path d="M5 21V7l8-4v18" /><path d="M19 21V11l-6-4" /></svg>
+                          Hotel Category
+                        </span>
+                        <div className="itn-custom-radio-list">
+                          {[
+                            { id: '3 Star Standard', label: '3★ Standard Comfort', badge: 'Budget Friendly' },
+                            { id: '4 Star Deluxe', label: '4★ Deluxe Luxury', badge: 'Most Popular' },
+                            { id: '5 Star Luxury', label: '5★ Premium Resort & Heritage', badge: 'VIP Experience' },
+                          ].map((opt) => (
+                            <label
+                              key={opt.id}
+                              className={`itn-custom-radio-card ${customHotelCategory === opt.id ? 'active' : ''}`}
+                            >
+                              <input
+                                type="radio"
+                                name="hotelCategory"
+                                value={opt.id}
+                                checked={customHotelCategory === opt.id}
+                                onChange={() => setCustomHotelCategory(opt.id)}
+                              />
+                              <div>
+                                <strong>{opt.label}</strong>
+                                <small>{opt.badge}</small>
+                              </div>
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Meal Plan */}
+                      <div className="itn-custom-pref-col">
+                        <span className="itn-custom-pref-title">
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1" /><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" /></svg>
+                          Meal Plan
+                        </span>
+                        <div className="itn-custom-radio-list">
+                          {[
+                            { id: 'Breakfast Only (CP)', label: 'Breakfast Included (CP)', badge: 'Continental Plan' },
+                            { id: 'Breakfast & Dinner (MAP)', label: 'Breakfast & Dinner (MAP)', badge: 'Recommended' },
+                            { id: 'All Meals (AP)', label: 'All Meals Included (AP)', badge: 'Breakfast, Lunch & Dinner' },
+                          ].map((opt) => (
+                            <label
+                              key={opt.id}
+                              className={`itn-custom-radio-card ${customMealPlan === opt.id ? 'active' : ''}`}
+                            >
+                              <input
+                                type="radio"
+                                name="mealPlan"
+                                value={opt.id}
+                                checked={customMealPlan === opt.id}
+                                onChange={() => setCustomMealPlan(opt.id)}
+                              />
+                              <div>
+                                <strong>{opt.label}</strong>
+                                <small>{opt.badge}</small>
+                              </div>
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Vehicle / Cab */}
+                      <div className="itn-custom-pref-col">
+                        <span className="itn-custom-pref-title">
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="10" rx="2" /><circle cx="7" cy="16" r="2" /><circle cx="17" cy="16" r="2" /></svg>
+                          Transport / Private Cab
+                        </span>
+                        <div className="itn-custom-radio-list">
+                          {[
+                            { id: 'Private AC Sedan (Dzire / Etios)', label: 'Private Sedan (Dzire / Etios)', badge: '1-4 Passengers' },
+                            { id: 'Private AC SUV (Innova / Ertiga)', label: 'Private SUV (Innova / Ertiga)', badge: '4-6 Passengers' },
+                            { id: 'Tempo Traveller (12-16 Seater)', label: 'Tempo Traveller (12-16 Seater)', badge: 'Group Travel' },
+                            { id: 'No Cab / Self Drive', label: 'No Cab / Self Transfer', badge: 'Only Stays & Passes' },
+                          ].map((opt) => (
+                            <label
+                              key={opt.id}
+                              className={`itn-custom-radio-card ${customVehicleType === opt.id ? 'active' : ''}`}
+                            >
+                              <input
+                                type="radio"
+                                name="vehicleType"
+                                value={opt.id}
+                                checked={customVehicleType === opt.id}
+                                onChange={() => setCustomVehicleType(opt.id)}
+                              />
+                              <div>
+                                <strong>{opt.label}</strong>
+                                <small>{opt.badge}</small>
+                              </div>
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Step 3: Contact & Submission */}
+                  <div className="itn-create-step-card">
+                    <div className="itn-create-step-head">
+                      <span className="itn-create-step-num">3</span>
+                      <div>
+                        <h3 className="itn-create-step-title">Your Details &amp; Custom Requests</h3>
+                        <p className="itn-create-step-desc">Enter your contact info so the admin panel can record and send your customized quote.</p>
+                      </div>
+                    </div>
+
+                    <div className="itn-custom-contact-form">
+                      <div className="itn-custom-form-grid">
+                        <label className="itn-custom-input-wrap">
+                          <span>Full Name *</span>
+                          <input
+                            type="text"
+                            required
+                            placeholder="e.g. Rahul Sharma"
+                            value={customContactName}
+                            onChange={(e) => setCustomContactName(e.target.value)}
+                            className="itn-custom-text-input"
+                          />
+                        </label>
+                        <label className="itn-custom-input-wrap">
+                          <span>WhatsApp / Phone Number *</span>
+                          <input
+                            type="tel"
+                            required
+                            placeholder="e.g. +91 98765 43210"
+                            value={customContactPhone}
+                            onChange={(e) => setCustomContactPhone(e.target.value)}
+                            className="itn-custom-text-input"
+                          />
+                        </label>
+                        <label className="itn-custom-input-wrap itn-custom-input-full">
+                          <span>Email Address</span>
+                          <input
+                            type="email"
+                            placeholder="e.g. rahul@example.com"
+                            value={customContactEmail}
+                            onChange={(e) => setCustomContactEmail(e.target.value)}
+                            className="itn-custom-text-input"
+                          />
+                        </label>
+                        <label className="itn-custom-input-wrap itn-custom-input-full">
+                          <span>Special Requests &amp; Notes (Optional)</span>
+                          <textarea
+                            rows={3}
+                            placeholder="e.g. Shikara boat ride timing, candlelight dinner on anniversary, river view room preference..."
+                            value={customSpecialNotes}
+                            onChange={(e) => setCustomSpecialNotes(e.target.value)}
+                            className="itn-custom-textarea"
+                          />
+                        </label>
+                      </div>
+
+                      {customItineraryError ? (
+                        <div className="itn-custom-error-box">
+                          {customItineraryError}
+                        </div>
+                      ) : null}
+
+                      {/* Live Summary Bar */}
+                      <div className="itn-custom-summary-bar">
+                        <div className="itn-custom-summary-content">
+                          <span className="itn-custom-summary-label">Itinerary Overview:</span>
+                          <div className="itn-custom-summary-pills">
+                            <span className="itn-custom-sum-pill itn-custom-sum-pill-pkg">📦 {activeCustomPkg?.name || pkg?.name}</span>
+                            <span className="itn-custom-sum-pill">👥 {customTravelWith}</span>
+                            <span className="itn-custom-sum-pill">⏱️ {customDuration}</span>
+                            <span className="itn-custom-sum-pill">🏨 {customHotelCategory}</span>
+                            <span className="itn-custom-sum-pill">📍 From {customCustomCityInput.trim() || customDepartureCity}</span>
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          className="itn-custom-submit-btn"
+                          disabled={customItinerarySubmitting}
+                          onClick={handleCreateCustomItinerary}
+                        >
+                          {customItinerarySubmitting ? (
+                            <>
+                              <span className="itn-custom-spinner" />
+                              <span>Sending to Admin...</span>
+                            </>
+                          ) : (
+                            <>
+                              <span>Submit &amp; Create Itinerary ✨</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       {/* Booking Modal with Razorpay Checkout */}
       {bookingModalOpen ? (
         <div
@@ -6839,8 +10049,20 @@ export default function TourItineraryView({ destination, packageSlug }) {
               </div>
               {totalHotelAddonPrice > 0 ? (
                 <div style={{ color: '#0f766e' }}>
-                  <span>Hotel Addon ({selectedHotels.map((h) => h.name).join(', ')})</span>
+                  <span>Hotel ({selectedHotels.map((h) => h.name).join(', ')})</span>
                   <strong>+ ₹ {totalHotelAddonPrice.toLocaleString('en-IN')}</strong>
+                </div>
+              ) : null}
+              {totalTransportAddonPrice > 0 ? (
+                <div style={{ color: '#0f766e' }}>
+                  <span>Transport ({selectedTransfers.map((t) => t.title).join(', ')})</span>
+                  <strong>+ ₹ {totalTransportAddonPrice.toLocaleString('en-IN')}</strong>
+                </div>
+              ) : null}
+              {totalActivityAddonPrice > 0 ? (
+                <div style={{ color: '#0f766e' }}>
+                  <span>Activity ({selectedActivities.map((a) => a.name).join(', ')})</span>
+                  <strong>+ ₹ {totalActivityAddonPrice.toLocaleString('en-IN')}</strong>
                 </div>
               ) : null}
               <div>
@@ -6911,8 +10133,20 @@ export default function TourItineraryView({ destination, packageSlug }) {
               <div><span>Base package</span><strong>{packageBaseLabel}</strong></div>
               {totalHotelAddonPrice > 0 ? (
                 <div style={{ color: '#0f766e', fontWeight: 600 }}>
-                  <span>Hotel Addon ({selectedHotels.map((h) => h.name).join(', ')})</span>
+                  <span>Hotel ({selectedHotels.map((h) => h.name).join(', ')})</span>
                   <strong>+ ₹ {totalHotelAddonPrice.toLocaleString('en-IN')}</strong>
+                </div>
+              ) : null}
+              {totalTransportAddonPrice > 0 ? (
+                <div style={{ color: '#0f766e', fontWeight: 600 }}>
+                  <span>Transport ({selectedTransfers.map((t) => t.title).join(', ')})</span>
+                  <strong>+ ₹ {totalTransportAddonPrice.toLocaleString('en-IN')}</strong>
+                </div>
+              ) : null}
+              {totalActivityAddonPrice > 0 ? (
+                <div style={{ color: '#0f766e', fontWeight: 600 }}>
+                  <span>Activity ({selectedActivities.map((a) => a.name).join(', ')})</span>
+                  <strong>+ ₹ {totalActivityAddonPrice.toLocaleString('en-IN')}</strong>
                 </div>
               ) : null}
               {couponDiscountAmount > 0 ? <div><span>Original package</span><strong>{originalPriceLabel}</strong></div> : null}

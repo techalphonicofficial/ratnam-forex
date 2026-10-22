@@ -270,6 +270,24 @@ export default function CustomizeFlow() {
   const [itinerarySubmitResponse, setItinerarySubmitResponse] = useState(null);
   const [itinerarySubmitError, setItinerarySubmitError] = useState('');
   const [cmsPageData, setCmsPageData] = useState(null);
+  const [contactName, setContactName] = useState('');
+  const [contactPhone, setContactPhone] = useState('');
+  const [contactEmail, setContactEmail] = useState('');
+
+  useEffect(() => {
+    const auth = getStoredAuth();
+    if (auth) {
+      if (auth.name || auth.fullName || auth.user?.name) {
+        setContactName((prev) => prev || auth.name || auth.fullName || auth.user?.name || '');
+      }
+      if (auth.phone || auth.mobile || auth.user?.phone) {
+        setContactPhone((prev) => prev || auth.phone || auth.mobile || auth.user?.phone || '');
+      }
+      if (auth.email || auth.user?.email) {
+        setContactEmail((prev) => prev || auth.email || auth.user?.email || '');
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (step === 0 && data?.travelWith) {
@@ -621,14 +639,31 @@ export default function CustomizeFlow() {
   const goNext = (overrideStep = null) => setStep(prev => overrideStep !== null ? overrideStep : prev + 1);
 
   const handleDestination = (dest) => {
-    const matchedDest = destinationOptions.find(d => d.name === dest);
-    if (matchedDest?.hasPackage) {
-      router.push(`/package/${matchedDest.packageSlug}`);
-      return;
-    }
-    
-    alert('Packages are coming soon for this destination!');
-    return;
+    setData(d => {
+      const updated = { ...d, destination: dest, cities: [] };
+      if (updated.travelWith) {
+        if (updated.rooms && updated.rooms.length > 0) {
+          // If travellers and rooms are already configured, proceed to Duration (Step 2)
+          setStep(2);
+          setSubStep('');
+        } else if (updated.travelWith === 'Couple') {
+          updated.rooms = [{ id: 1, adults: 2, children: 0, childAges: [] }];
+          setStep(2);
+          setSubStep('');
+        } else if (updated.travelWith === 'Solo') {
+          updated.rooms = [{ id: 1, adults: 1, children: 0, childAges: [] }];
+          setStep(2);
+          setSubStep('');
+        } else {
+          setStep(1);
+          setSubStep('room-config');
+        }
+      } else {
+        setStep(1);
+        setSubStep('');
+      }
+      return updated;
+    });
   };
 
   const handleTravellerType = (type) => {
@@ -750,7 +785,7 @@ export default function CustomizeFlow() {
     });
   };
 
-  const buildItineraryPayload = () => {
+  const buildItineraryPayload = (overrides = {}) => {
     const auth = getStoredAuth();
     const selectedCityDetails = data.cities.map((cityName) => {
       const city = getCityByName(cityName);
@@ -765,12 +800,16 @@ export default function CustomizeFlow() {
       };
     });
 
+    const effectiveName = overrides.name !== undefined ? overrides.name : (contactName || auth?.name || auth?.fullName || auth?.user?.name || '');
+    const effectivePhone = overrides.phone !== undefined ? overrides.phone : (contactPhone || auth?.phone || auth?.mobile || auth?.user?.phone || '');
+    const effectiveEmail = overrides.email !== undefined ? overrides.email : (contactEmail || auth?.email || auth?.user?.email || '');
+
     return {
       customer: {
         id: auth?.id || auth?.customer_id || auth?.user_id || null,
-        name: auth?.name || '',
-        email: auth?.email || '',
-        phone: auth?.phone || '',
+        name: effectiveName,
+        email: effectiveEmail,
+        phone: effectivePhone,
       },
       trip: {
         destination: data.destination,
@@ -793,16 +832,6 @@ export default function CustomizeFlow() {
   };
 
   const handleBuildItinerary = () => {
-    const auth = getStoredAuth();
-
-    if (!auth?.token) {
-      const returnUrl = typeof window !== 'undefined'
-        ? `${window.location.pathname}${window.location.search}`
-        : '/customize';
-      router.push(`/auth/login?redirect=${encodeURIComponent(returnUrl)}`);
-      return;
-    }
-
     const payload = buildItineraryPayload();
     setItineraryPayload(payload);
     setItinerarySubmitState('idle');
@@ -818,7 +847,16 @@ export default function CustomizeFlow() {
   };
 
   const handleConfirmItinerary = async () => {
-    const payload = itineraryPayload || readStoredCustomizePayload() || buildItineraryPayload();
+    const auth = getStoredAuth();
+    const effectiveName = contactName.trim() || auth?.name || auth?.fullName || auth?.user?.name || 'Custom Itinerary Traveler';
+    const effectivePhone = contactPhone.trim() || auth?.phone || auth?.mobile || auth?.user?.phone || '';
+    const effectiveEmail = contactEmail.trim() || auth?.email || auth?.user?.email || '';
+
+    const payload = buildItineraryPayload({
+      name: effectiveName,
+      phone: effectivePhone,
+      email: effectiveEmail,
+    });
 
     setConfirmedItineraryPayload(payload);
     setItineraryPayload(payload);
@@ -1514,6 +1552,25 @@ export default function CustomizeFlow() {
       ['Cities', payload.trip.cities.map((city) => city.name).join(', ')],
     ];
 
+    if (itinerarySubmitState === 'success') {
+      if (payload.customer?.name) {
+        summaryRows.push(['Traveler', payload.customer.name]);
+      }
+      if (payload.customer?.phone) {
+        summaryRows.push(['Mobile', payload.customer.phone]);
+      }
+      if (payload.customer?.email) {
+        summaryRows.push(['Email', payload.customer.email]);
+      }
+    }
+
+    const savedCustomBookingId =
+      itinerarySubmitResponse?.data?.custom_booking_id ||
+      itinerarySubmitResponse?.data?.id ||
+      itinerarySubmitResponse?.custom_booking_id ||
+      itinerarySubmitResponse?.id ||
+      '';
+
     return (
       <div className="customize-modal-overlay" style={{ position: 'fixed', inset: 0, zIndex: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'fadeIn 0.3s' }}>
         <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }} onClick={() => setSubStep('')} />
@@ -1568,16 +1625,6 @@ export default function CustomizeFlow() {
                 <div style={{ color: '#047857', fontSize: 13, fontWeight: 900, marginBottom: responseRows.length ? 10 : 0 }}>
                   {itinerarySubmitResponse?.success === false ? 'Request received' : 'Saved successfully'}
                 </div>
-                {/* {responseRows.length > 0 && (
-                  <div style={{ display: 'grid', gap: 8 }}>
-                    {responseRows.map(([label, value]) => (
-                      <div key={label} style={{ display: 'grid', gridTemplateColumns: '132px 1fr', gap: 10, fontSize: 12 }}>
-                        <span style={{ color: '#047857', fontWeight: 800, textTransform: 'capitalize' }}>{String(label).replace(/_/g, ' ')}</span>
-                        <span style={{ color: '#064e3b', fontWeight: 700 }}>{String(value)}</span>
-                      </div>
-                    ))}
-                  </div>
-                )} */}
               </div>
             )}
 
@@ -1590,14 +1637,61 @@ export default function CustomizeFlow() {
               ))}
             </div>
 
-            {/* <pre style={{ maxHeight: 180, overflow: 'auto', margin: '0 0 20px', padding: 14, borderRadius: 8, background: '#0f172a', color: '#e5e7eb', fontSize: 11, lineHeight: 1.5, textAlign: 'left' }}>
-              {JSON.stringify(payload, null, 2)}
-            </pre> */}
+            {itinerarySubmitState !== 'success' && (
+              <div style={{ marginBottom: 20, padding: '14px 16px', background: '#f8fafc', borderRadius: 10, border: '1px solid #e2e8f0' }}>
+                <div style={{ fontSize: 13, fontWeight: 800, color: '#1e293b', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span>Customer & Contact Details</span>
+                  <span style={{ fontSize: 11, fontWeight: 500, color: '#64748b' }}>(Captured in Admin CRM)</span>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', marginBottom: 4 }}>Full Name *</label>
+                    <input
+                      type="text"
+                      value={contactName}
+                      onChange={(e) => setContactName(e.target.value)}
+                      placeholder="Your Full Name"
+                      style={{ width: '100%', height: 38, padding: '0 12px', borderRadius: 6, border: '1px solid #cbd5e1', fontSize: 13, outline: 'none', boxSizing: 'border-box' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', marginBottom: 4 }}>Mobile Number *</label>
+                    <input
+                      type="tel"
+                      value={contactPhone}
+                      onChange={(e) => setContactPhone(e.target.value)}
+                      placeholder="e.g. +91 9876543210"
+                      style={{ width: '100%', height: 38, padding: '0 12px', borderRadius: 6, border: '1px solid #cbd5e1', fontSize: 13, outline: 'none', boxSizing: 'border-box' }}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', marginBottom: 4 }}>Email Address</label>
+                  <input
+                    type="email"
+                    value={contactEmail}
+                    onChange={(e) => setContactEmail(e.target.value)}
+                    placeholder="e.g. name@example.com (optional)"
+                    style={{ width: '100%', height: 38, padding: '0 12px', borderRadius: 6, border: '1px solid #cbd5e1', fontSize: 13, outline: 'none', boxSizing: 'border-box' }}
+                  />
+                </div>
+              </div>
+            )}
 
             {itinerarySubmitState === 'success' ? (
-              <button onClick={() => setSubStep('')} style={{ width: '100%', padding: 16, borderRadius: 8, background: 'var(--color-primary)', color: '#fff', border: 'none', fontWeight: 800, fontSize: 15, cursor: 'pointer' }}>
-                Done
-              </button>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, width: '100%' }}>
+                {savedCustomBookingId ? (
+                  <Link
+                    href={`/itineraries/${savedCustomBookingId}`}
+                    style={{ width: '100%', padding: 14, borderRadius: 8, background: '#0f766e', color: '#fff', border: 'none', fontWeight: 800, fontSize: 14, textAlign: 'center', textDecoration: 'none', display: 'block', boxSizing: 'border-box' }}
+                  >
+                    View Customized Itinerary &rarr;
+                  </Link>
+                ) : null}
+                <button onClick={() => setSubStep('')} style={{ width: '100%', padding: 16, borderRadius: 8, background: 'var(--color-primary)', color: '#fff', border: 'none', fontWeight: 800, fontSize: 15, cursor: 'pointer' }}>
+                  Done
+                </button>
+              </div>
             ) : (
               <button
                 onClick={handleConfirmItinerary}

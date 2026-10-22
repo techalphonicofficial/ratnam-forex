@@ -19,8 +19,10 @@ export default function PremiumDestinationLayout({
   const [activeSection, setActiveSection] = useState('overview');
   const [isExpanded, setIsExpanded] = useState(false);
   const [isNavSticky, setIsNavSticky] = useState(false);
+  const [headerOffset, setHeaderOffset] = useState(60);
   const navRef = useRef(null);
   const sentinelRef = useRef(null);
+  const readMoreRef = useRef(null);
   const readLessRef = useRef(null);
   const bottomContentRef = useRef(null);
 
@@ -327,14 +329,43 @@ export default function PremiumDestinationLayout({
   // (Observers removed; merged into handleScroll below for maximum reliability)
 
   useEffect(() => {
+    const updateHeaderOffset = () => {
+      const custHeader = document.querySelector('.cust-header');
+      if (custHeader && window.getComputedStyle(custHeader).display !== 'none') {
+        setHeaderOffset(custHeader.offsetHeight || 60);
+        return;
+      }
+      const mobHeader = document.querySelector('.cust-mobile-header');
+      if (mobHeader && window.getComputedStyle(mobHeader).display !== 'none') {
+        setHeaderOffset(mobHeader.offsetHeight || 75);
+        return;
+      }
+      const siteHeader = document.querySelector('.navbar-wrapper');
+      if (siteHeader && window.getComputedStyle(siteHeader).display !== 'none') {
+        setHeaderOffset(siteHeader.offsetHeight || 70);
+        return;
+      }
+      setHeaderOffset(0);
+    };
+
+    updateHeaderOffset();
+    window.addEventListener('resize', updateHeaderOffset);
+    return () => window.removeEventListener('resize', updateHeaderOffset);
+  }, []);
+
+  useEffect(() => {
     const handleScroll = () => {
+      const navH = navRef.current?.offsetHeight || 56;
+      const totalOffset = headerOffset + navH;
+
       // 1. Update active nav pill section
       const sections = ['overview', 'highlights', 'activities', 'tips', 'info', 'time'];
-      for (const section of sections) {
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const section = sections[i];
         const el = document.getElementById(`section-${section}`);
         if (el) {
           const rect = el.getBoundingClientRect();
-          if (rect.top >= 0 && rect.top <= 300) {
+          if (rect.top <= totalOffset + 80) {
             setActiveSection(section);
             break;
           }
@@ -343,41 +374,46 @@ export default function PremiumDestinationLayout({
 
       // 2. Handle sticky nav state
       const sentinel = sentinelRef.current;
+      const readMore = readMoreRef.current;
       const readLess = readLessRef.current;
       const bottomContent = bottomContentRef.current;
 
       if (sentinel) {
         const sentinelRect = sentinel.getBoundingClientRect();
-        // Sticky activates when user scrolls past sentinel (top <= 0)
-        if (sentinelRect.top <= 0) {
-          let pastContent = false;
+        // Sticky activates when user scrolls past sentinel below header
+        if (sentinelRect.top <= headerOffset) {
+          let pastButton = false;
 
-          // If the destination picker section is in view, stop hovering
-          if (bottomContent) {
-            const bottomRect = bottomContent.getBoundingClientRect();
-            // 60px buffer (roughly height of the sticky nav)
-            if (bottomRect.top <= 60) {
-              pastContent = true;
+          if (!isExpanded && readMore) {
+            const rect = readMore.getBoundingClientRect();
+            // Disappear when the Read More button scrolls past the sticky navbar
+            if (rect.bottom <= totalOffset) {
+              pastButton = true;
+            }
+          } else if (isExpanded && readLess) {
+            const rect = readLess.getBoundingClientRect();
+            // Disappear when the Read Less button scrolls past the sticky navbar
+            if (rect.bottom <= totalOffset) {
+              pastButton = true;
+            }
+          } else if (bottomContent) {
+            const rect = bottomContent.getBoundingClientRect();
+            if (rect.top <= totalOffset) {
+              pastButton = true;
             }
           }
 
-          // Also check read less if expanded
-          if (readLess && !pastContent) {
-            const readLessRect = readLess.getBoundingClientRect();
-            if (readLessRect.top <= 60) {
-              pastContent = true;
-            }
-          }
-
-          setIsNavSticky(!pastContent);
+          setIsNavSticky(!pastButton);
         } else {
           setIsNavSticky(false);
         }
       }
     };
-    window.addEventListener('scroll', handleScroll);
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [headerOffset, isExpanded]);
 
   // Auto-scroll the nav bar to keep the active item visible
   useEffect(() => {
@@ -390,20 +426,21 @@ export default function PremiumDestinationLayout({
   const getNavHeight = () => navRef.current?.offsetHeight || 56;
 
   const scrollTo = (id) => {
+    const totalOffset = headerOffset + getNavHeight() + 16;
     if (id !== 'overview' && !isExpanded) {
       setIsExpanded(true);
       setTimeout(() => {
         const el = document.getElementById(`section-${id}`);
         if (el) {
-          const y = el.getBoundingClientRect().top + window.scrollY - getNavHeight() - 16;
+          const y = el.getBoundingClientRect().top + window.scrollY - totalOffset;
           window.scrollTo({ top: y, behavior: 'smooth' });
         }
-      }, 80);
+      }, 100);
       return;
     }
     const el = document.getElementById(`section-${id}`);
     if (el) {
-      const y = el.getBoundingClientRect().top + window.scrollY - getNavHeight() - 16;
+      const y = el.getBoundingClientRect().top + window.scrollY - totalOffset;
       window.scrollTo({ top: y, behavior: 'smooth' });
     }
   };
@@ -418,8 +455,10 @@ export default function PremiumDestinationLayout({
       '--theme-primary': themeType === 'corporate' ? '#1E5AA8' : (themeType === 'nri' ? '#1759A6' : (themeType === 'group' ? '#9D4A93' : (themeType === 'family' ? '#2F7F7B' : (themeType === 'pilgrim' ? '#E98216' : (themeType === 'budget' ? '#2E7D32' : (themeType === 'trending' ? '#D32F2F' : 'var(--pink-primary)')))))),
       '--theme-dark': themeType === 'corporate' ? '#0D1B2A' : (themeType === 'nri' ? '#0B2342' : (themeType === 'group' ? '#7D3A75' : (themeType === 'family' ? '#245C59' : (themeType === 'pilgrim' ? '#C9650A' : (themeType === 'budget' ? '#1F3B28' : (themeType === 'trending' ? '#B71C1C' : 'var(--pink-dark)')))))),
       '--theme-soft': themeType === 'corporate' ? '#E6F2FD' : (themeType === 'nri' ? '#F4F7FA' : (themeType === 'group' ? '#F5E6F5' : (themeType === 'family' ? '#F2F7F4' : (themeType === 'pilgrim' ? '#F3D49A' : (themeType === 'budget' ? '#F1F8EF' : (themeType === 'trending' ? '#FFCEC0' : 'var(--pink-soft)')))))),
+      '--theme-light': themeType === 'corporate' ? '#E6F2FD' : (themeType === 'nri' ? '#F4F7FA' : (themeType === 'group' ? '#F5E6F5' : (themeType === 'family' ? '#EBF5F3' : (themeType === 'pilgrim' ? '#FDF2E2' : (themeType === 'budget' ? '#E8F5E9' : (themeType === 'trending' ? '#FFEBEE' : '#FCE7ED')))))),
       '--theme-text-sec': themeType === 'corporate' ? '#4B5563' : (themeType === 'nri' ? '#596575' : (themeType === 'group' ? '#6B5969' : (themeType === 'family' ? '#5E6870' : (themeType === 'pilgrim' ? '#64615D' : (themeType === 'budget' ? '#575F5A' : (themeType === 'trending' ? '#555555' : 'var(--text-sec)')))))),
       '--theme-text-main': themeType === 'corporate' ? '#0D1B2A' : (themeType === 'nri' ? '#173A63' : (themeType === 'group' ? '#5A2A54' : (themeType === 'family' ? '#245C59' : (themeType === 'pilgrim' ? '#4A2A16' : (themeType === 'budget' ? '#1B5E20' : (themeType === 'trending' ? '#8B1E1E' : 'var(--text-main)')))))),
+      '--sticky-header-offset': `${headerOffset}px`,
     }}>
       {(themeType === 'pilgrim' || themeType === 'budget' || themeType === 'trending') && (
         <style dangerouslySetInnerHTML={{
@@ -564,44 +603,45 @@ export default function PremiumDestinationLayout({
         </div>
       </section>
 
-      {/* Sentinel: sits at the bottom of the hero. When it scrolls out of view,
-          the IntersectionObserver triggers the sticky nav class. */}
+      {/* Sentinel: sits at the bottom of the hero */}
       <div ref={sentinelRef} style={{ height: 1 }} />
 
-      {/* NAV BAR: in normal flow initially; becomes fixed after hero scrolls past */}
-      <div
-        ref={navRef}
-        className={`premium-sidebar${isNavSticky ? ' is-sticky' : ''}`}
-      >
-        {/* Pill capsule nav — centered, compact, floating */}
-        <div className="nav-pill-wrapper">
-          <nav className="nav-links">
-            {[
-              { id: 'overview', label: (cmsParsed.navTabs?.[0]?.value) || (themeType === 'trending' ? 'Trending Package' : 'Overview') },
-              { id: 'highlights', label: (cmsParsed.navTabs?.[1]?.value) || 'Highlights' },
-              { id: 'activities', label: (cmsParsed.navTabs?.[2]?.value) || 'Must Do Activities' },
-              { id: 'tips', label: (cmsParsed.navTabs?.[3]?.value) || 'Travel Tips & Tricks' },
-              { id: 'info', label: (cmsParsed.navTabs?.[4]?.value) || 'Know Before You Go' },
-              { id: 'time', label: (cmsParsed.navTabs?.[5]?.value) || 'Best Time to Visit' },
-            ].map((link) => (
-              <button
-                key={link.id}
-                data-nav-id={link.id}
-                className={`nav-link${activeSection === link.id ? ' active' : ''}`}
-                onClick={() => scrollTo(link.id)}
-              >
-                {link.label}
-              </button>
-            ))}
-          </nav>
+      {/* NAV BAR: in normal flow initially; becomes fixed floating below header */}
+      <div style={{ minHeight: isNavSticky ? (navRef.current?.offsetHeight || 56) : 'auto' }}>
+        <div
+          ref={navRef}
+          className={`premium-sidebar${isNavSticky ? ' is-sticky' : ''}`}
+          style={{
+            top: isNavSticky ? `${headerOffset}px` : 'auto',
+          }}
+        >
+          {/* Pill capsule nav — centered, compact, floating */}
+          <div className="nav-pill-wrapper">
+            <nav className="nav-links">
+              {[
+                { id: 'overview', label: (cmsParsed.navTabs?.[0]?.value) || (themeType === 'trending' ? 'Trending Package' : 'Overview') },
+                { id: 'highlights', label: (cmsParsed.navTabs?.[1]?.value) || 'Highlights' },
+                { id: 'activities', label: (cmsParsed.navTabs?.[2]?.value) || 'Must Do Activities' },
+                { id: 'tips', label: (cmsParsed.navTabs?.[3]?.value) || 'Travel Tips & Tricks' },
+                { id: 'info', label: (cmsParsed.navTabs?.[4]?.value) || 'Know Before You Go' },
+                { id: 'time', label: (cmsParsed.navTabs?.[5]?.value) || 'Best Time to Visit' },
+              ].map((link) => (
+                <button
+                  key={link.id}
+                  data-nav-id={link.id}
+                  className={`nav-link${activeSection === link.id ? ' active' : ''}`}
+                  onClick={() => scrollTo(link.id)}
+                >
+                  {link.label}
+                </button>
+              ))}
+            </nav>
+          </div>
         </div>
       </div>
 
-      {/*
-        Content wrapper. When nav is sticky (fixed), we add padding-top equal to
-        the nav height so the content isn't hidden behind it.
-      */}
-      <div style={{ paddingTop: isNavSticky ? (navRef.current?.offsetHeight || 56) : 0 }}>
+      {/* Content wrapper */}
+      <div>
         {/* Main 2-Column Content (center + right) */}
         <section className="premium-main">
 
@@ -775,7 +815,7 @@ export default function PremiumDestinationLayout({
               </div>
 
               {!isExpanded && (
-                <div style={{ textAlign: 'right', width: '100%' }}>
+                <div ref={readMoreRef} style={{ textAlign: 'right', width: '100%' }}>
                   <button className="read-more-btn" onClick={() => setIsExpanded(true)}>
                     Read More ↓
                   </button>
@@ -1527,7 +1567,7 @@ export default function PremiumDestinationLayout({
 
         /* ── NAV BAR ─────────────────────────────────────────────── */
 
-        /* Outer band: full-width, white background strip */
+        /* Outer band: full-width in normal flow initially */
         .premium-sidebar {
           position: relative;
           width: 100%;
@@ -1537,18 +1577,26 @@ export default function PremiumDestinationLayout({
           display: flex;
           justify-content: center;
           align-items: center;
+          transition: background 0.25s ease, box-shadow 0.25s ease, padding 0.25s ease;
         }
-        /* When sticky: band gets solid white bg + subtle shadow */
+        /* When sticky: fixed band floating directly underneath header */
         .premium-sidebar.is-sticky {
           position: fixed;
-          top: 0;
+          top: var(--sticky-header-offset, 60px);
           left: 0;
           right: 0;
           width: 100%;
-          background: rgba(255,255,255,0.97);
-          backdrop-filter: blur(8px);
-          box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+          z-index: 950;
+          background: rgba(255, 255, 255, 0.98);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
           padding: 10px 20px;
+          animation: slideDownNav 0.22s ease-out;
+        }
+        @keyframes slideDownNav {
+          from { opacity: 0; transform: translateY(-8px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
 
         /* Inner pill capsule */
@@ -1591,25 +1639,28 @@ export default function PremiumDestinationLayout({
           font-weight: 500;
           color: #4A5568;
           cursor: pointer;
-          transition: background 0.2s ease, color 0.2s ease;
+          transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
           white-space: nowrap;
           flex-shrink: 0;
           font-family: inherit;
           line-height: 1;
         }
         .nav-link:hover {
-          background: var(--theme-light);
+          background: var(--theme-light, var(--theme-soft, #FCE7ED));
           color: var(--theme-primary);
+          transform: translateY(-1px);
         }
         /* Active tab: solid filled pill */
         .nav-link.active {
           background: var(--theme-primary);
           color: #ffffff;
           font-weight: 600;
+          box-shadow: 0 2px 8px color-mix(in srgb, var(--theme-primary) 35%, transparent);
         }
         .nav-link.active:hover {
           background: var(--theme-dark);
           color: #ffffff;
+          transform: none;
         }
 
         /* MAIN 2-COLUMN CONTENT */

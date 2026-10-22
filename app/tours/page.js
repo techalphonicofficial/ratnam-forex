@@ -2154,7 +2154,7 @@ function ToursContent() {
     }
   };
 
-  if (itineraryDestination && isItineraryView) {
+  if (packageSlug || (itineraryDestination && isItineraryView)) {
     return <TourItineraryView destination={itineraryDestination} packageSlug={packageSlug} />;
   }
 
