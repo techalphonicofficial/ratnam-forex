@@ -1,28 +1,107 @@
 import Link from 'next/link';
-import { getHomeDestinations, getPackageCategories } from '@/utils/api';
+import { getDestinations, getPackageCategories, getPackages } from '@/utils/api';
+
+const formatName = (str) => {
+  if (!str) return '';
+  return str
+    .trim()
+    .split(' ')
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
+};
+
+const fallbackIndianDestinations = [
+  { name: 'Andaman', slug: 'andaman' },
+  { name: 'Himachal', slug: 'himachal' },
+  { name: 'Rajasthan', slug: 'rajasthan' },
+  { name: 'Uttarakhand', slug: 'uttarakhand' },
+  { name: 'Sikkim', slug: 'sikkim' },
+  { name: 'Darjeeling', slug: 'darjeeling' },
+  { name: 'Meghalaya', slug: 'meghalaya' },
+  { name: 'Ladakh', slug: 'ladakh' },
+  { name: 'Ooty', slug: 'ooty' },
+];
+
+const fallbackHoneymoonPackages = [
+  { name: 'Kashmir Paradise', slug: 'kashmir-paradise', package_type: 'domestic' },
+  { name: 'Thailand Beach Combo — 7N8D', slug: 'thailand-beach-combo-7n8d', package_type: 'domestic' },
+  { name: 'Bangkok Explorer', slug: 'bangkok-explorer-5n6d', package_type: 'international' },
+  { name: 'Switzerland Alps Adventure — 7N8D', slug: 'switzerland-alps-adventure-7n8d', package_type: 'domestic' },
+  { name: 'Paris Honeymoon Special — 6N7D', slug: 'paris-honeymoon-special-6n7d', package_type: 'international' },
+  { name: 'Dubai Family Fun — 3N4D', slug: 'dubai-family-fun-3n4d', package_type: 'domestic' },
+  { name: 'Maldives Overwater Bungalow — 5N6D', slug: 'maldives-overwater-bungalow-5n6d', package_type: 'domestic' },
+  { name: 'Bali Adventure Rush — 4N5D', slug: 'bali-adventure-rush-4n5d', package_type: 'international' },
+  { name: 'Bali Bliss — 5N6D Honeymoon', slug: 'bali-bliss-5n6d-honeymoon', package_type: 'domestic' },
+];
 
 export default async function SeoLinksSection() {
-  const trendingDestinations = (await getHomeDestinations('trending')) || [];
-  const visaFreeDestinations = (await getHomeDestinations('visa-free')) || [];
-  const categories = (await getPackageCategories()) || [];
+  const [allDestinationsRaw, categories, allPackagesRaw] = await Promise.all([
+    getDestinations(),
+    getPackageCategories(),
+    getPackages({ limit: 200 }),
+  ]);
 
-  // Deduplicate destinations by name
-  const allDestinationsMap = new Map();
-  [...trendingDestinations, ...visaFreeDestinations].forEach(d => {
-    if (d && d.name) allDestinationsMap.set(d.name, d);
+  const allDestinations = Array.isArray(allDestinationsRaw) ? allDestinationsRaw : [];
+  const allPackages = Array.isArray(allPackagesRaw) ? allPackagesRaw : [];
+
+  // Filter out invalid/test entries
+  const validDestinations = allDestinations.filter(
+    (d) => d && d.name && d.name.trim() && d.slug && d.slug !== 'rajjjjj'
+  );
+
+  // 1. International Destinations: type === 'international'
+  const internationalDestinations = validDestinations.filter(
+    (d) => String(d.type || '').toLowerCase().trim() === 'international'
+  );
+
+  // 2. Domestic Destinations: type === 'domestic' or Kashmir
+  const domesticApiDestinations = validDestinations.filter((d) => {
+    const type = String(d.type || '').toLowerCase().trim();
+    const slug = String(d.slug || '').toLowerCase().trim();
+    return type === 'domestic' || slug === 'kashmir';
   });
-  const allDestinations = Array.from(allDestinationsMap.values());
 
-  const destinationsList = allDestinations.slice(0, 16);
-  const categoriesList = categories.filter(c => c && c.title).slice(0, 16);
-  const honeymoonList = allDestinations.slice(0, 12);
-
+  // Combine dynamic domestic destinations with fallback Indian destinations (no duplicates)
+  const domesticNamesSet = new Set(
+    domesticApiDestinations.map((d) => d.name.toLowerCase().trim())
+  );
   const indianDestinationsList = [
-    'Kerala', 'Goa', 'Andaman', 'Himachal', 'Kashmir', 'Rajasthan',
-    'Uttarakhand', 'Sikkim', 'Darjeeling', 'Meghalaya', 'Ladakh', 'Ooty'
+    ...domesticApiDestinations,
+    ...fallbackIndianDestinations.filter((f) => !domesticNamesSet.has(f.name.toLowerCase())),
   ];
 
-  if (!destinationsList.length && !categoriesList.length) return null;
+  const categoriesList = Array.isArray(categories)
+    ? categories.filter((c) => c && c.title).slice(0, 16)
+    : [];
+
+  // 3. Honeymoon Packages (using the exact same logic as HoneymoonToursSection.js):
+  // Filter packages that belong to 'honeymoon' category or have honeymoon in name/slug
+  const hasCategory = (pkg, categoryMatch) =>
+    Array.isArray(pkg?.package_categories) &&
+    pkg.package_categories.some(
+      (cat) =>
+        String(cat?.slug || '').toLowerCase().includes(categoryMatch) ||
+        String(cat?.title || '').toLowerCase().includes(categoryMatch)
+    );
+
+  const isHoneymoonPackage = (pkg) =>
+    hasCategory(pkg, 'honeymoon') ||
+    /honeymoon|romantic/i.test(`${pkg?.name || ''} ${pkg?.slug || ''}`);
+
+  const dynamicHoneymoonPackages = allPackages.filter(
+    (p) => p && p.slug && p.name && isHoneymoonPackage(p)
+  );
+
+  const rawHoneymoonList = dynamicHoneymoonPackages.length > 0
+    ? dynamicHoneymoonPackages
+    : fallbackHoneymoonPackages;
+
+  // Deduplicate by slug
+  const honeymoonPackagesList = rawHoneymoonList.filter(
+    (p, index, self) => index === self.findIndex((t) => t.slug === p.slug)
+  );
+
+  if (!internationalDestinations.length && !indianDestinationsList.length && !honeymoonPackagesList.length) return null;
 
   return (
     <section className="seo-links-section">
@@ -34,19 +113,18 @@ export default async function SeoLinksSection() {
           background-position: center;
           background-color: #FAFAFA; /* Slightly off-white fallback */
           color: #E2E8F0;
-          padding: 60px 40px 40px; /* Added left and right padding */
+          padding: 60px 40px 40px;
           border-top: 1px solid rgba(255, 255, 255, 0.05);
-          /* text-align removed for left alignment */
         }
 
         .seo-category-title {
           font-family: "Italiana", sans-serif;
           font-size: 36px;
-          margin-bottom: 36px; /* Increased margin-bottom for laptop */
-          color: var(--color-text-primary, #1F2A44); /* Dark dynamic text color */
+          margin-bottom: 36px;
+          color: var(--color-text-primary, #1F2A44);
           font-weight: 600;
           letter-spacing: 0.5px;
-          text-align: center; /* Center align headings everywhere */
+          text-align: center;
           position: relative;
         }
 
@@ -66,7 +144,7 @@ export default async function SeoLinksSection() {
         }
 
         .seo-link {
-          color: #1F2A44; /* Dark Navy text for light background */
+          color: #1F2A44;
           text-decoration: none;
           font-size: 18px;
           font-weight: 400;
@@ -74,13 +152,13 @@ export default async function SeoLinksSection() {
         }
 
         .seo-link:hover {
-          color: var(--color-secondary, #FF6000); /* Brand Orange on hover */
-          transform: translateX(4px); /* Changed back to translateX for left alignment */
+          color: var(--color-secondary, #FF6000);
+          transform: translateX(4px);
         }
 
         .seo-divider {
           height: 1px;
-          background-color: rgba(31, 42, 68, 0.1); /* Darker divider line */
+          background-color: rgba(31, 42, 68, 0.1);
           margin: 40px 0;
           width: 100%;
         }
@@ -119,17 +197,22 @@ export default async function SeoLinksSection() {
       `}</style>
 
       <div className="container">
-
-        {/* 1. International Holiday Destinations */}
-        {destinationsList.length > 0 && (
+        {/* 1. International Holiday Destinations (type: 'international') */}
+        {internationalDestinations.length > 0 && (
           <div className="seo-block">
             <div style={{ textAlign: 'center' }}>
-              <h3 className="theme-underline-heading seo-category-title">International Holiday Destinations</h3>
+              <h3 className="theme-underline-heading seo-category-title">
+                International Holiday Destinations
+              </h3>
             </div>
             <div className="seo-links-grid">
-              {destinationsList.map((d, i) => (
-                <Link key={i} href={`/tours?search=${encodeURIComponent(d.name)}`} className="seo-link">
-                  {d.name} Tour Packages
+              {internationalDestinations.slice(0, 16).map((d, i) => (
+                <Link
+                  key={d.slug || i}
+                  href={`/tours?search=${encodeURIComponent(d.name)}&destination=${encodeURIComponent(d.slug)}`}
+                  className="seo-link"
+                >
+                  {formatName(d.name)} Tour Packages
                 </Link>
               ))}
             </div>
@@ -137,59 +220,80 @@ export default async function SeoLinksSection() {
           </div>
         )}
 
-        {/* 1.5 Indian Holiday Packages */}
+        {/* 2. Indian Holiday Packages (type: 'domestic') */}
         {indianDestinationsList.length > 0 && (
           <div className="seo-block">
             <div style={{ textAlign: 'center' }}>
-              <h3 className="theme-underline-heading seo-category-title">Indian Holiday Packages</h3>
+              <h3 className="theme-underline-heading seo-category-title">
+                Indian Holiday Packages
+              </h3>
             </div>
             <div className="seo-links-grid">
-              {indianDestinationsList.map((name, i) => (
-                <Link key={i} href={`/tours?search=${encodeURIComponent(name)}`} className="seo-link">
-                  {name} Tour Packages
+              {indianDestinationsList.slice(0, 16).map((d, i) => (
+                <Link
+                  key={d.slug || i}
+                  href={`/tours?search=${encodeURIComponent(d.name)}&destination=${encodeURIComponent(d.slug || d.name.toLowerCase())}`}
+                  className="seo-link"
+                >
+                  {formatName(d.name)} Tour Packages
                 </Link>
               ))}
             </div>
-            {(categoriesList.length > 0 || honeymoonList.length > 0) && <div className="seo-divider"></div>}
+            {(categoriesList.length > 0 || honeymoonPackagesList.length > 0) && (
+              <div className="seo-divider"></div>
+            )}
           </div>
         )}
 
-        {/* 2. Themed Destinations */}
+        {/* Themed Destinations (Optional) */}
         {categoriesList.length > 0 && (
           <div className="seo-block">
             <div style={{ textAlign: 'center' }}>
-              <h3 className="theme-underline-heading seo-category-title">Themed Destinations</h3>
+              <h3 className="theme-underline-heading seo-category-title">
+                Themed Destinations
+              </h3>
             </div>
             <div className="seo-links-grid">
               {categoriesList.map((c, i) => {
-                const label = c.title.toLowerCase().includes('package') ? c.title : `${c.title} Packages`;
+                const label = c.title.toLowerCase().includes('package')
+                  ? c.title
+                  : `${c.title} Packages`;
                 return (
-                  <Link key={i} href={`/collections/${c.slug}`} className="seo-link">
+                  <Link
+                    key={i}
+                    href={`/collections/${c.slug}`}
+                    className="seo-link"
+                  >
                     {label}
                   </Link>
                 );
               })}
             </div>
-            {honeymoonList.length > 0 && <div className="seo-divider"></div>}
+            {honeymoonPackagesList.length > 0 && <div className="seo-divider"></div>}
           </div>
         )}
 
-        {/* 3. Honeymoon Packages */}
-        {honeymoonList.length > 0 && (
+        {/* 3. Honeymoon Packages (All Domestic and International packages) */}
+        {honeymoonPackagesList.length > 0 && (
           <div className="seo-block">
             <div style={{ textAlign: 'center' }}>
-              <h3 className="theme-underline-heading seo-category-title">Honeymoon Packages</h3>
+              <h3 className="theme-underline-heading seo-category-title">
+                Honeymoon Packages
+              </h3>
             </div>
             <div className="seo-links-grid">
-              {honeymoonList.map((d, i) => (
-                <Link key={i} href={`/tours?search=${encodeURIComponent(d.name)}`} className="seo-link">
-                  {d.name} Honeymoon Packages
+              {honeymoonPackagesList.map((p, i) => (
+                <Link
+                  key={p.slug || i}
+                  href={`/package/${p.slug}`}
+                  className="seo-link"
+                >
+                  {p.name?.trim()}
                 </Link>
               ))}
             </div>
           </div>
         )}
-
       </div>
     </section>
   );

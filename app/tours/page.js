@@ -6,8 +6,65 @@ import { useState, useMemo, useEffect, useRef, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import TourCard from '@/components/TourCard';
 import { TourCardSkeleton } from '@/components/SkeletonLoader';
-import { getMediaUrl, getPackageFilters, getPackages, normalizePackageToTour } from '@/utils/api';
+import {
+  getMediaUrl,
+  getPackageFilters,
+  getPackages,
+  normalizePackageToTour,
+  getPageBySlug,
+  getPages,
+  getDestinations,
+  isDomesticDestination,
+  isInternationalDestination,
+  isDomesticPackage,
+  isInternationalPackage,
+} from '@/utils/api';
 import TourItineraryView from './TourItineraryView';
+
+const DESTINATION_HERO_PRESETS = {
+  kashmir: 'https://images.unsplash.com/photo-1595815771614-ade9d652a65d?w=1920&q=85',
+  himachal: 'https://images.unsplash.com/photo-1506197603052-3cc9c3a201bd?w=1920&q=85',
+  manali: 'https://images.unsplash.com/photo-1506197603052-3cc9c3a201bd?w=1920&q=85',
+  shimla: 'https://images.unsplash.com/photo-1506197603052-3cc9c3a201bd?w=1920&q=85',
+  kerala: 'https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=1920&q=85',
+  munnar: 'https://images.unsplash.com/photo-1596401057633-54a8fe8ef647?w=1920&q=85',
+  rajasthan: 'https://images.unsplash.com/photo-1599661046289-e31897846e41?w=1920&q=85',
+  jaipur: 'https://images.unsplash.com/photo-1599661046289-e31897846e41?w=1920&q=85',
+  udaipur: 'https://images.unsplash.com/photo-1599661046289-e31897846e41?w=1920&q=85',
+  goa: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?w=1920&q=85',
+  andaman: 'https://images.unsplash.com/photo-1589182373726-e4f658ab50f0?w=1920&q=85',
+  ladakh: 'https://images.unsplash.com/photo-1581793745862-99fde7fa73d2?w=1920&q=85',
+  leh: 'https://images.unsplash.com/photo-1581793745862-99fde7fa73d2?w=1920&q=85',
+  uttarakhand: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1920&q=85',
+  rishikesh: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1920&q=85',
+  sikkim: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=1920&q=85',
+  darjeeling: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?w=1920&q=85',
+  varanasi: 'https://images.unsplash.com/photo-1561361513-2d000a50f0dc?w=1920&q=85',
+  delhi: 'https://images.unsplash.com/photo-1587474260584-136574528ed5?w=1920&q=85',
+  bali: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=1920&q=85',
+  maldives: 'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=1920&q=85',
+  thailand: 'https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?w=1920&q=85',
+  bangkok: 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=1920&q=85',
+  phuket: 'https://images.unsplash.com/photo-1589394815804-964ed0be2eb5?w=1920&q=85',
+  dubai: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=1920&q=85',
+  'abu dhabi': 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=1920&q=85',
+  switzerland: 'https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?w=1920&q=85',
+  europe: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=1920&q=85',
+  singapore: 'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?w=1920&q=85',
+  vietnam: 'https://images.unsplash.com/photo-1528127269322-539801943592?w=1920&q=85',
+  malaysia: 'https://images.unsplash.com/photo-1596422846543-75c6fc197f07?w=1920&q=85',
+  australia: 'https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?w=1920&q=85',
+  japan: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=1920&q=85',
+  tokyo: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=1920&q=85',
+  paris: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=1920&q=85',
+  'new york': 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=1920&q=85',
+  'los angeles': 'https://images.unsplash.com/photo-1580655653885-65763b2597d0?w=1920&q=85',
+  azerbaijan: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=1920&q=85',
+  philippines: 'https://images.unsplash.com/photo-1518509562904-e7ef99cdcc86?w=1920&q=85',
+  seychelles: 'https://images.unsplash.com/photo-1589556264800-08ae9e129a8c?w=1920&q=85',
+  'new zealand': 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1920&q=85',
+  'south africa': 'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=1920&q=85',
+};
 
 const DEFAULT_TOUR_TYPES = [
   { key: 'all', label: 'All', count: 0 },
@@ -1451,8 +1508,17 @@ const buildApiQueryFromFilters = (filters) => {
 };
 
 const fetchPackagesFromQuery = async (query) => {
+  const search = String(query.search || '').toLowerCase().trim();
+  const isBroadSearch = !search || search === 'india' || search === 'indian' || search === 'international';
+
+  if (isBroadSearch) {
+    const allPkgs = await getPackages({ limit: 100 });
+    if (Array.isArray(allPkgs) && allPkgs.length) {
+      return allPkgs;
+    }
+  }
+
   const packages = await getPackages(query);
-  const search = query.search;
   const usedPlainSearch = search && Object.keys(query).length === 1 && query.search === search;
 
   if (packages.length || !usedPlainSearch) {
@@ -1466,7 +1532,8 @@ const fetchPackagesFromQuery = async (query) => {
     }
   }
 
-  return packages;
+  const allFallback = await getPackages({ limit: 100 });
+  return Array.isArray(allFallback) ? allFallback : packages;
 };
 
 const getUrlSearchValue = (searchParams) =>
@@ -1747,7 +1814,41 @@ function ToursContent() {
   const packageSlug = searchParams.get('package') || searchParams.get('slug');
   const initialSearch = getUrlSearchValue(searchParams);
   const overviewTitleRaw = searchParams.get('destination') || searchParams.get('search');
-  const destinationHeading = overviewTitleRaw ? `${formatHeadingValue(overviewTitleRaw)} Tour Packages` : 'Holiday Tour Packages';
+  const isGenericOverview = !overviewTitleRaw || ['india', 'indian', 'international'].includes(String(overviewTitleRaw).toLowerCase().trim());
+  const [allApiDestinations, setAllApiDestinations] = useState([]);
+  const [allCmsPages, setAllCmsPages] = useState([]);
+
+  useEffect(() => {
+    let mounted = true;
+    getDestinations().then((dests) => {
+      if (mounted && Array.isArray(dests)) {
+        setAllApiDestinations(dests);
+      }
+    });
+    getPages().then((pages) => {
+      if (mounted && Array.isArray(pages)) {
+        setAllCmsPages(pages);
+      }
+    });
+    return () => { mounted = false; };
+  }, []);
+
+  useEffect(() => {
+    const rawSearch = String(overviewTitleRaw || initialSearch || '').toLowerCase().trim();
+    if (rawSearch === 'nri') {
+      router.replace('/customize?step=0&subStep=room-config&traveller=NRI');
+    } else if (rawSearch === 'corporate' || rawSearch === 'corprate') {
+      router.replace('/customize?step=0&subStep=room-config&traveller=Corporate');
+    }
+  }, [overviewTitleRaw, initialSearch, router]);
+
+  const domesticApiDestinations = useMemo(() => {
+    return allApiDestinations.filter(isDomesticDestination);
+  }, [allApiDestinations]);
+
+  const internationalApiDestinations = useMemo(() => {
+    return allApiDestinations.filter(isInternationalDestination);
+  }, [allApiDestinations]);
 
   const [activeRegion, setActiveRegion] = useState('North India');
   const [activeIntlRegion, setActiveIntlRegion] = useState('Southeast Asia');
@@ -1873,6 +1974,12 @@ function ToursContent() {
     const raw = String(overviewTitleRaw || filters.search || '').toLowerCase().trim();
     if (raw === 'international' || raw.includes('international')) return false;
     if (!raw || raw === 'india' || raw === 'indian') return true;
+    if (domesticApiDestinations.some((d) => String(d.name || '').toLowerCase() === raw || String(d.slug || '').toLowerCase() === raw)) {
+      return true;
+    }
+    if (internationalApiDestinations.some((d) => String(d.name || '').toLowerCase() === raw || String(d.slug || '').toLowerCase() === raw)) {
+      return false;
+    }
     const indianKeywords = [
       'kashmir', 'kerala', 'goa', 'rajasthan', 'himachal', 'uttarakhand',
       'ladakh', 'sikkim', 'delhi', 'mumbai', 'jaipur', 'agra', 'manali',
@@ -1882,50 +1989,301 @@ function ToursContent() {
       'north india', 'south india', 'east india', 'west india', 'central india'
     ];
     return indianKeywords.some((k) => raw.includes(k));
-  }, [overviewTitleRaw, filters.search]);
+  }, [overviewTitleRaw, filters.search, domesticApiDestinations, internationalApiDestinations]);
+
+  const destinationHeading = isGenericOverview
+    ? (isIndianPage ? 'Indian Tour Packages' : 'International Tour Packages')
+    : `${formatHeadingValue(overviewTitleRaw)} Tour Packages`;
+
+  const [cmsPageData, setCmsPageData] = useState(null);
+  const [cmsLoading, setCmsLoading] = useState(true);
+
+  const targetCmsSlug = useMemo(() => {
+    const explicitSlug = searchParams.get('cms_slug') || searchParams.get('page_slug');
+    if (explicitSlug) return explicitSlug;
+
+    if (isGenericOverview) {
+      return isIndianPage ? 'India-tour-package' : 'international-tour-package';
+    }
+
+    const raw = String(overviewTitleRaw || filters.search || '').toLowerCase().trim();
+    if (!raw) {
+      return isIndianPage ? 'India-tour-package' : 'international-tour-package';
+    }
+
+    // Check all CMS pages for a matching slug or title for this destination
+    const cleanRaw = raw.replace(/[^a-z0-9]/g, '');
+    const matched = allCmsPages.find((p) => {
+      const pSlug = String(p.slug || '').toLowerCase();
+      const cleanSlug = pSlug.replace(/[^a-z0-9]/g, '');
+      const pTitle = String(p.title || '').toLowerCase();
+      const cleanTitle = pTitle.replace(/[^a-z0-9]/g, '');
+      return (
+        cleanSlug === cleanRaw ||
+        cleanSlug === `${cleanRaw}paradise` ||
+        cleanSlug === `${cleanRaw}tourpackage` ||
+        cleanSlug.includes(cleanRaw) ||
+        cleanTitle.includes(cleanRaw)
+      );
+    });
+
+    if (matched?.slug) return matched.slug;
+
+    return null;
+  }, [searchParams, isGenericOverview, isIndianPage, overviewTitleRaw, filters.search, allCmsPages]);
+
+  useEffect(() => {
+    let isMounted = true;
+    if (!targetCmsSlug) {
+      setCmsPageData(null);
+      setCmsLoading(false);
+      return;
+    }
+
+    const loadCmsData = async () => {
+      setCmsLoading(true);
+      try {
+        const res = await getPageBySlug(targetCmsSlug);
+        if (!isMounted) return;
+        const pageData = res?.data || res;
+        if (pageData && pageData.details) {
+          setCmsPageData(pageData);
+        } else {
+          setCmsPageData(null);
+        }
+      } catch (err) {
+        console.warn('Failed to fetch CMS page data:', targetCmsSlug, err);
+        if (isMounted) setCmsPageData(null);
+      } finally {
+        if (isMounted) setCmsLoading(false);
+      }
+    };
+
+    loadCmsData();
+    return () => {
+      isMounted = false;
+    };
+  }, [targetCmsSlug]);
+
+  const cmsSectionsMap = useMemo(() => {
+    const map = {};
+    if (!cmsPageData?.details || !Array.isArray(cmsPageData.details)) return map;
+    cmsPageData.details.forEach((item) => {
+      let parsedJson = item.json_data;
+      if (typeof parsedJson === 'string') {
+        try {
+          parsedJson = JSON.parse(parsedJson);
+        } catch {
+          parsedJson = {};
+        }
+      }
+      map[item.key] = {
+        ...item,
+        json_data: parsedJson || {},
+      };
+    });
+    return map;
+  }, [cmsPageData]);
+
+  const normalizeTabName = (name) => String(name || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+
+  const cmsHero = cmsSectionsMap['hero_key'];
+  const dynamicHeroTitle = useMemo(() => {
+    if (isGenericOverview) {
+      return cmsHero?.title || (isIndianPage ? 'INDIAN TOUR PACKAGES' : 'INTERNATIONAL TOUR PACKAGES');
+    }
+    const formatted = formatHeadingValue(overviewTitleRaw).toUpperCase();
+    if (
+      cmsHero?.title &&
+      !cmsHero.title.toLowerCase().includes('hotels & transport') &&
+      !cmsHero.title.toLowerCase().includes('hotel') &&
+      !cmsHero.title.toLowerCase().includes('transport') &&
+      !cmsHero.title.toLowerCase().includes('add on') &&
+      !cmsHero.title.toLowerCase().includes('india tour') &&
+      !cmsHero.title.toLowerCase().includes('international tour') &&
+      (cmsHero.title.toLowerCase().includes(String(overviewTitleRaw || '').toLowerCase()) ||
+       cmsHero.title.toLowerCase().includes('tour') ||
+       cmsHero.title.toLowerCase().includes('package'))
+    ) {
+      const t = cmsHero.title.trim().toUpperCase();
+      return t.endsWith('PACKAGES') || t.endsWith('TOURS') ? t : `${t} TOUR PACKAGES`;
+    }
+    return `${formatted} TOUR PACKAGES`;
+  }, [isGenericOverview, cmsHero?.title, isIndianPage, overviewTitleRaw]);
+
+  const dynamicHeroBg = useMemo(() => {
+    if (isGenericOverview) {
+      const genericMedia = cmsHero?.json_data?.media_url || cmsHero?.image || cmsPageData?.feature_image;
+      if (genericMedia) return getMediaUrl(genericMedia);
+      return isIndianPage
+        ? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1920&q=85'
+        : 'https://images.unsplash.com/photo-1488085061387-422e29b40080?w=1920&q=85';
+    }
+
+    // 1. Destination specific CMS page media
+    const destCmsMedia = cmsHero?.json_data?.media_url || cmsHero?.image || cmsPageData?.feature_image;
+    if (destCmsMedia) return getMediaUrl(destCmsMedia);
+
+    const rawKey = String(overviewTitleRaw || filters.search || '').toLowerCase().trim();
+
+    // 2. Matching destination from API destinations (getDestinations)
+    const matchedDest = allApiDestinations.find((d) => {
+      const dName = String(d.name || '').toLowerCase().trim();
+      const dSlug = String(d.slug || '').toLowerCase().trim();
+      return dName === rawKey || dSlug === rawKey || rawKey.includes(dName) || dName.includes(rawKey);
+    });
+    if (matchedDest?.feature_image) {
+      return getMediaUrl(matchedDest.feature_image);
+    }
+
+    // 3. First package image for this destination
+    const tourWithImg = apiTours.find((t) => t.image || t.main_image);
+    if (tourWithImg) {
+      const imgUrl = tourWithImg.image || tourWithImg.main_image;
+      if (imgUrl) return getMediaUrl(imgUrl);
+    }
+
+    // 4. Curated preset for this destination
+    for (const [key, url] of Object.entries(DESTINATION_HERO_PRESETS)) {
+      if (rawKey.includes(key) || key.includes(rawKey)) {
+        return url;
+      }
+    }
+
+    // 5. Default high-res landscape
+    return isIndianPage
+      ? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1920&q=85'
+      : 'https://images.unsplash.com/photo-1488085061387-422e29b40080?w=1920&q=85';
+  }, [isGenericOverview, cmsHero, cmsPageData, isIndianPage, overviewTitleRaw, filters.search, allApiDestinations, apiTours]);
+
+  const cmsNavbar = cmsSectionsMap['Navbar'];
+  const cmsTabs = useMemo(() => {
+    const rawTabs = cmsNavbar?.json_data?.tabs;
+    if (Array.isArray(rawTabs) && rawTabs.length > 0) {
+      return rawTabs;
+    }
+    return null;
+  }, [cmsNavbar]);
+
+  // Only show guide section if dynamic tabs exist
+  const hasGuideContent = Boolean(cmsTabs && cmsTabs.length > 0);
+
+  const ribbonTabs = useMemo(() => {
+    if (cmsTabs && cmsTabs.length > 0) {
+      return cmsTabs.map((t) => (t.title || '').trim()).filter(Boolean);
+    }
+    return [];
+  }, [cmsTabs]);
+
+  const guideMainHeading = useMemo(() => {
+    if (cmsTabs?.[0]?.content) {
+      const h2Match = cmsTabs[0].content.match(/<h2[^>]*>(?:<strong>)?(.*?)(?:<\/strong>)?<\/h2>/i);
+      if (h2Match && h2Match[1]) {
+        return h2Match[1].replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').trim();
+      }
+    }
+    return guideData.mainHeading || (overviewTitleRaw ? `${formatHeadingValue(overviewTitleRaw)} Travel Guide` : 'Holiday Tour Packages & Destinations Guide');
+  }, [cmsTabs, guideData, overviewTitleRaw]);
+
+  const guideSummaryParagraphs = useMemo(() => {
+    if (cmsTabs?.[0]?.content) {
+      const h3Idx = cmsTabs[0].content.indexOf('<h3');
+      const intro = h3Idx !== -1 ? cmsTabs[0].content.slice(0, h3Idx) : cmsTabs[0].content;
+      const pMatches = intro.match(/<p[^>]*>(.*?)<\/p>/gi);
+      if (pMatches && pMatches.length > 0) {
+        const paras = pMatches.map((p) => p.replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').trim()).filter(Boolean);
+        if (paras.length > 0) return paras;
+      }
+    }
+    return Array.isArray(guideData.cityGuide.summary) ? guideData.cityGuide.summary : [guideData.cityGuide.summary];
+  }, [cmsTabs, guideData]);
+
+  const currentActiveCmsTab = useMemo(() => {
+    if (!cmsTabs) return null;
+    const normActive = normalizeTabName(activeGuideTab);
+    return cmsTabs.find((t) => normalizeTabName(t.title) === normActive) || null;
+  }, [cmsTabs, activeGuideTab]);
+
+  const currentTabBodyHtml = useMemo(() => {
+    if (!currentActiveCmsTab?.content) return '';
+    const h3Idx = currentActiveCmsTab.content.indexOf('<h3');
+    let body = h3Idx !== -1 ? currentActiveCmsTab.content.slice(h3Idx) : currentActiveCmsTab.content;
+    body = body.replace(/<p>\s*<strong>\s*(?:Section \d|← Previous|Next:).*?<\/strong>\s*<\/p>/gi, '').trim();
+    return body;
+  }, [currentActiveCmsTab]);
+
+  const allTabsBodyHtml = useMemo(() => {
+    if (!cmsTabs) return '';
+    return cmsTabs
+      .filter((t) => normalizeTabName(t.title) !== 'TRAVELARTICLES' && Boolean(t.content))
+      .map((t) => {
+        const h3Idx = t.content.indexOf('<h3');
+        let body = h3Idx !== -1 ? t.content.slice(h3Idx) : t.content;
+        body = body.replace(/<p>\s*<strong>\s*(?:Section \d|← Previous|Next:).*?<\/strong>\s*<\/p>/gi, '').trim();
+        return `<div class="cms-guide-section-block" id="guide-section-${normalizeTabName(t.title)}">${body}</div>`;
+      })
+      .join('<hr style="margin: 36px 0; border: none; border-top: 1px solid #e5e7eb;" />');
+  }, [cmsTabs]);
+
+  const cmsGuideTabList = useMemo(() => {
+    if (!cmsTabs) return [];
+    return cmsTabs.filter((t) => normalizeTabName(t.title) !== 'TRAVELARTICLES' && Boolean(t.content));
+  }, [cmsTabs]);
+
+  const currentTabIndex = useMemo(() => {
+    return cmsGuideTabList.findIndex(
+      (t) => normalizeTabName(t.title) === normalizeTabName(activeGuideTab)
+    );
+  }, [cmsGuideTabList, activeGuideTab]);
+
+  const prevGuideTab = currentTabIndex > 0 ? cmsGuideTabList[currentTabIndex - 1] : null;
+  const nextGuideTab = (currentTabIndex >= 0 && currentTabIndex < cmsGuideTabList.length - 1) ? cmsGuideTabList[currentTabIndex + 1] : null;
+
+  const midSection01 = cmsSectionsMap['Mid_Section01'];
+  const midSection02 = cmsSectionsMap['Mid_Section02'];
+  const midSection03 = cmsSectionsMap['Mid_Section03'];
+  const popularDestinationSection = cmsSectionsMap['Popular_Destination'];
+  const yourPackageSection = cmsSectionsMap['Your_Package'];
+  const articlesSection = cmsSectionsMap['Articles'];
 
   const filteredTours = useMemo(() => {
     let result = [...apiTours];
 
     if (filters.search) {
       const q = filters.search.toLowerCase().trim();
-      const indianKeys = [
-        'india', 'kashmir', 'kerala', 'goa', 'rajasthan', 'himachal', 'uttarakhand',
-        'ladakh', 'sikkim', 'delhi', 'mumbai', 'jaipur', 'agra', 'manali',
-        'shimla', 'ooty', 'munnar', 'darjeeling', 'andaman'
-      ];
       if (q === 'india' || q === 'indian') {
-        const indianMatches = result.filter((t) => {
-          const hay = `${t.title || ''} ${t.location || ''} ${t.country || ''} ${t.continent || ''} ${t.dest || ''}`.toLowerCase();
-          return indianKeys.some((k) => hay.includes(k));
-        });
-        if (indianMatches.length > 0) {
-          result = indianMatches;
-        }
+        result = result.filter(isDomesticPackage);
       } else if (q === 'international') {
-        const intlKeys = [
-          'bali', 'dubai', 'uae', 'thailand', 'bangkok', 'phuket', 'maldives',
-          'singapore', 'switzerland', 'vietnam', 'paris', 'london', 'europe',
-          'malaysia', 'sri lanka', 'mauritius', 'japan', 'turkey', 'georgia',
-          'baku', 'egypt', 'almaty', 'tashkent', 'rome', 'greece', 'spain',
-          'international'
-        ];
-        const intlMatches = result.filter((t) => {
-          const hay = `${t.title || ''} ${t.location || ''} ${t.country || ''} ${t.continent || ''} ${t.dest || ''}`.toLowerCase();
-          return intlKeys.some((k) => hay.includes(k));
-        });
-        if (intlMatches.length > 0) {
-          result = intlMatches;
-        }
+        result = result.filter(isInternationalPackage);
       } else {
-        result = result.filter(
-          (t) =>
-            (t.title || '').toLowerCase().includes(q) ||
-            (t.location || '').toLowerCase().includes(q) ||
-            (t.country || '').toLowerCase().includes(q) ||
-            (t.continent || '').toLowerCase().includes(q) ||
-            (t.dest || '').toLowerCase().includes(q)
-        );
+        result = result.filter((t) => {
+          const title = String(t.title || '').toLowerCase();
+          const location = String(t.location || '').toLowerCase();
+          const country = String(t.country || '').toLowerCase();
+          const continent = String(t.continent || '').toLowerCase();
+          const dest = String(t.dest || '').toLowerCase();
+          const slug = String(t.slug || '').toLowerCase();
+          const hasDestMatch = (t.destinations || []).some((d) => {
+            const dn = String(d.destination?.name || '').toLowerCase();
+            const ds = String(d.destination?.slug || '').toLowerCase();
+            return dn.includes(q) || ds.includes(q);
+          });
+          return (
+            title.includes(q) ||
+            location.includes(q) ||
+            country.includes(q) ||
+            continent.includes(q) ||
+            dest.includes(q) ||
+            slug.includes(q) ||
+            hasDestMatch
+          );
+        });
+      }
+    } else {
+      if (isIndianPage) {
+        result = result.filter(isDomesticPackage);
+      } else {
+        result = result.filter(isInternationalPackage);
       }
     }
 
@@ -1962,7 +2320,7 @@ function ToursContent() {
     }
 
     return result;
-  }, [apiTours, filters, filterOptions]);
+  }, [apiTours, filters, filterOptions, isIndianPage]);
 
   const resetFilters = () => {
     setFilters({
@@ -2079,7 +2437,7 @@ function ToursContent() {
 
   const centerTabInNav = (tabKey) => {
     if (typeof window === 'undefined') return;
-    const tabId = `tab-btn-${String(tabKey || '').toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+    const tabId = `tab-btn-${normalizeTabName(tabKey)}`;
     const btn = document.getElementById(tabId);
     const container = navTabsContainerRef.current || document.getElementById('nav-tabs-ribbon-container');
     if (btn && container) {
@@ -2101,40 +2459,9 @@ function ToursContent() {
   const handleNavTabClick = (tab) => {
     setActiveTab(tab);
 
-    const guideTabs = ['CITY GUIDE', 'Places to visit', 'KNOW BEFORE YOU GO', 'Things to do', 'STAY & FOOD'];
+    const norm = normalizeTabName(tab);
 
-    if (guideTabs.includes(tab)) {
-      setActiveGuideTab(tab);
-      setIsOverviewExpanded(true);
-
-      setTimeout(() => {
-        centerTabInNav(tab);
-      }, 40);
-
-      const sectionIdMap = {
-        'CITY GUIDE': 'guide-section-city-guide',
-        'KNOW BEFORE YOU GO': 'guide-section-know-before-you-go',
-        'Places to visit': 'guide-section-places-to-visit',
-        'Things to do': 'guide-section-things-to-do',
-        'STAY & FOOD': 'guide-section-stay-food',
-      };
-
-      setTimeout(() => {
-        const targetId = sectionIdMap[tab] || 'city-guide';
-        const elem = document.getElementById(targetId) || document.getElementById('city-guide');
-        if (elem) {
-          const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
-          elem.scrollIntoView({
-            behavior: 'smooth',
-            block: isMobile ? 'center' : 'start',
-          });
-        }
-      }, 70);
-
-      return;
-    }
-
-    if (tab === 'Travel Articles') {
+    if (norm === 'TRAVELARTICLES') {
       setTimeout(() => {
         centerTabInNav(tab);
       }, 40);
@@ -2149,9 +2476,35 @@ function ToursContent() {
           });
         }
       }, 70);
-
       return;
     }
+
+    setActiveGuideTab(tab);
+    setIsOverviewExpanded(true);
+
+    setTimeout(() => {
+      centerTabInNav(tab);
+    }, 40);
+
+    const sectionIdMap = {
+      'CITYGUIDE': 'guide-section-city-guide',
+      'KNOWBEFOREYOUGO': 'guide-section-know-before-you-go',
+      'PLACESTOVISIT': 'guide-section-places-to-visit',
+      'THINGSTODO': 'guide-section-things-to-do',
+      'STAYFOOD': 'guide-section-stay-food',
+    };
+
+    setTimeout(() => {
+      const targetId = sectionIdMap[norm] || `guide-section-${norm}` || 'city-guide';
+      const elem = document.getElementById(targetId) || document.getElementById('city-guide');
+      if (elem) {
+        const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+        elem.scrollIntoView({
+          behavior: 'smooth',
+          block: isMobile ? 'center' : 'start',
+        });
+      }
+    }, 70);
   };
 
   if (packageSlug || (itineraryDestination && isItineraryView)) {
@@ -2163,7 +2516,13 @@ function ToursContent() {
   const setCurrentActiveRegion = isIndianPage ? setActiveRegion : setActiveIntlRegion;
   const regionData = currentRegionMap[currentActiveRegion] || Object.values(currentRegionMap)[0];
 
-  const activeCityList = isIndianPage ? INDIAN_MAJOR_CITIES_LIST : MAJOR_CITIES_LIST;
+  const activeCityList = useMemo(() => {
+    const list = isIndianPage ? domesticApiDestinations : internationalApiDestinations;
+    if (list && list.length > 0) {
+      return ['All', ...list.map((d) => d.name)];
+    }
+    return isIndianPage ? INDIAN_MAJOR_CITIES_LIST : MAJOR_CITIES_LIST;
+  }, [isIndianPage, domesticApiDestinations, internationalApiDestinations]);
   const activeDestScope = isIndianPage ? 'indian' : 'international';
   const activeFeaturedDestinations = isIndianPage ? FEATURED_INDIAN_DESTINATIONS : FEATURED_INTERNATIONAL_DESTINATIONS;
 
@@ -2184,8 +2543,8 @@ function ToursContent() {
       }}>
         {/* Background Image with warm golden hour vibes */}
         <Image
-          src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1920&q=85"
-          alt="Holiday Tour Packages"
+          src={dynamicHeroBg}
+          alt={dynamicHeroTitle || 'Holiday Tour Packages'}
           fill
           priority
           sizes="100vw"
@@ -2223,7 +2582,7 @@ function ToursContent() {
             textTransform: 'uppercase',
             textShadow: '0 4px 30px rgba(0,0,0,0.55)',
           }}>
-            {overviewTitleRaw ? `${formatHeadingValue(overviewTitleRaw).toUpperCase()} TOUR PACKAGES` : 'HOLIDAY TOUR PACKAGES'}
+            {dynamicHeroTitle}
           </h1>
         </div>
 
@@ -2294,15 +2653,16 @@ function ToursContent() {
 
       {/* ══════════════════════════════════════════════════════════
           2 & 3. DESTINATION GUIDE WRAPPER WITH STICKY FLOATING SUB-NAVBAR
-          (Sticks/hovers while accessing read more section till read more button)
+          (Rendered dynamically only when guide tabs exist)
       ══════════════════════════════════════════════════════════ */}
-      <div
-        id="destination-guide-wrapper"
-        style={{
-          position: 'relative',
-          width: '100%',
-        }}
-      >
+      {hasGuideContent && (
+        <div
+          id="destination-guide-wrapper"
+          style={{
+            position: 'relative',
+            width: '100%',
+          }}
+        >
         {/* Floating / Sticky Sub-Nav Tabs Ribbon (Matches Image 1) */}
         <div
           style={{
@@ -2334,19 +2694,12 @@ function ToursContent() {
               scrollBehavior: 'smooth',
             }}
           >
-            {[
-              'CITY GUIDE',
-              'Places to visit',
-              'KNOW BEFORE YOU GO',
-              'Things to do',
-              'STAY & FOOD',
-              'Travel Articles',
-            ].map((tab) => {
-              const isActive = activeTab === tab;
+            {ribbonTabs.map((tab) => {
+              const isActive = normalizeTabName(activeTab) === normalizeTabName(tab);
               return (
                 <button
                   key={tab}
-                  id={`tab-btn-${tab.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+                  id={`tab-btn-${normalizeTabName(tab)}`}
                   onClick={() => handleNavTabClick(tab)}
                   onMouseEnter={(e) => {
                     if (!isActive) {
@@ -2402,26 +2755,101 @@ function ToursContent() {
             }}>
               {/* Main Header */}
               <h2 className="mobile-text-center" style={{ fontSize: 24, fontWeight: 800, color: '#111827', margin: '0 0 10px 0' }}>
-                {guideData.mainHeading || (overviewTitleRaw ? `${formatHeadingValue(overviewTitleRaw)} Travel Guide` : 'Holiday Tour Packages & Destinations Guide')}
+                {guideMainHeading}
               </h2>
               <div
                 className={`city-guide-summary ${!isOverviewExpanded ? 'mobile-clamp-3' : ''}`}
                 style={{ fontSize: 14.5, color: '#4b5563', lineHeight: 1.8, margin: '0 0 22px 0' }}
               >
-                {Array.isArray(guideData.cityGuide.summary) ? (
-                  guideData.cityGuide.summary.map((para, i) => (
-                    <p key={i} style={{ margin: i === 0 ? '0 0 10px 0' : 0 }}>
-                      {para}
-                    </p>
-                  ))
-                ) : (
-                  <p style={{ margin: 0 }}>{guideData.cityGuide.summary}</p>
-                )}
+                {guideSummaryParagraphs.map((para, i) => (
+                  <p key={i} style={{ margin: i === 0 ? '0 0 10px 0' : 0 }}>
+                    {para}
+                  </p>
+                ))}
               </div>
 
               {/* Expanded Content Section navigated from the above hovering navbar */}
               {isOverviewExpanded && (
                 <div style={{ animation: 'fadeUp 0.3s ease' }}>
+                  <style>{`
+                    .cms-guide-html {
+                      font-size: 14.5px;
+                      line-height: 1.8;
+                      color: #4b5563;
+                    }
+                    .cms-guide-html h2 {
+                      font-size: 22px;
+                      font-weight: 800;
+                      color: #111827;
+                      margin: 10px 0 14px 0;
+                    }
+                    .cms-guide-html h3 {
+                      font-size: 18px;
+                      font-weight: 800;
+                      color: #111827;
+                      margin: 18px 0 14px 0;
+                      display: flex;
+                      align-items: center;
+                      gap: 8px;
+                    }
+                    .cms-guide-html h4 {
+                      font-size: 15px;
+                      font-weight: 700;
+                      color: var(--color-primary, #E98216);
+                      margin: 22px 0 12px 0;
+                      text-transform: uppercase;
+                      letter-spacing: 0.5px;
+                    }
+                    .cms-guide-html p {
+                      margin: 0 0 10px 0;
+                    }
+                    .cms-guide-html strong {
+                      color: #111827;
+                      font-weight: 700;
+                    }
+                    .cms-guide-html ul {
+                      padding-left: 20px;
+                      margin-bottom: 14px;
+                    }
+                    .cms-guide-html li {
+                      margin-bottom: 6px;
+                    }
+                  `}</style>
+                  {cmsTabs && cmsTabs.length > 0 ? (
+                    activeGuideTab === 'ALL' ? (
+                      <div className="cms-guide-html" dangerouslySetInnerHTML={{ __html: allTabsBodyHtml }} />
+                    ) : currentActiveCmsTab ? (
+                      <div id={`guide-section-${normalizeTabName(currentActiveCmsTab.title)}`}>
+                        <div className="cms-guide-html" dangerouslySetInnerHTML={{ __html: currentTabBodyHtml }} />
+                        
+                        {/* Dynamic Navigation Footer */}
+                        <div style={{ marginTop: 24, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10, padding: '12px 18px', background: '#f8fafc', borderRadius: 12, border: '1px solid #f1f5f9' }}>
+                          {prevGuideTab ? (
+                            <button
+                              onClick={() => handleNavTabClick(prevGuideTab.title.trim())}
+                              style={{ background: 'none', border: 'none', color: '#64748b', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, padding: 0 }}
+                            >
+                              ← Previous: {prevGuideTab.title.trim()}
+                            </button>
+                          ) : (
+                            <span style={{ fontSize: 12.5, color: '#64748b', fontWeight: 600 }}>
+                              Section {currentTabIndex + 1} of {cmsGuideTabList.length}: {currentActiveCmsTab.title.trim()}
+                            </span>
+                          )}
+
+                          {nextGuideTab && (
+                            <button
+                              onClick={() => handleNavTabClick(nextGuideTab.title.trim())}
+                              style={{ background: 'none', border: 'none', color: 'var(--color-primary, #E98216)', fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, padding: 0 }}
+                            >
+                              Next: {nextGuideTab.title.trim()} →
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ) : null
+                  ) : (
+                    <>
 
                   {/* 1. OVERVIEW & HIGHLIGHTS CONTENT */}
                   {(activeGuideTab === 'CITY GUIDE' || activeGuideTab === 'ALL') && (
@@ -2776,6 +3204,8 @@ function ToursContent() {
                       </div>
                     </div>
                   )}
+                    </>
+                  )}
 
                 </div>
               )}
@@ -2825,9 +3255,10 @@ function ToursContent() {
           </section>
         </div>
       </div>
+      )}
 
       {/* Main container for remainder of page */}
-      <div className="container" style={{ maxWidth: 1240, margin: '0 auto', padding: '16px 16px 80px' }}>
+      <div className="container" style={{ maxWidth: 1240, margin: '0 auto', padding: hasGuideContent ? '16px 16px 80px' : '40px 16px 80px' }}>
 
         {/* ══════════════════════════════════════════════════════════
             4. EXPLORE DESTINATION / CITY BY REGION (Indian & International)
@@ -2836,7 +3267,7 @@ function ToursContent() {
           {/* Header */}
           <div className="mobile-text-center" style={{ marginBottom: 16 }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: '#9ca3af', letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 6 }}>
-              {isIndianPage ? 'EXPLORE DESTINATION / CITY BY REGION' : 'EXPLORE INTERNATIONAL DESTINATIONS BY REGION'}
+              {midSection01?.description || midSection01?.title || (isIndianPage ? 'EXPLORE DESTINATION / CITY BY REGION' : 'EXPLORE INTERNATIONAL DESTINATIONS BY REGION')}
             </div>
             
             {/* Region Tabs */}
@@ -2991,10 +3422,10 @@ function ToursContent() {
         <section id="city-explorer" style={{ marginBottom: 52 }}>
           <div className="mobile-text-center" style={{ marginBottom: 14 }}>
             <div style={{ fontSize: 13, fontWeight: 800, color: '#111827', letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 2 }}>
-              CITY EXPLORER
+              {midSection02?.title || 'CITY EXPLORER'}
             </div>
             <div style={{ fontSize: 11, fontWeight: 700, color: '#9ca3af', letterSpacing: 1.2, textTransform: 'uppercase' }}>
-              DESTINATION / MAJOR CITIES
+              {midSection02?.description || 'DESTINATION / MAJOR CITIES'}
             </div>
           </div>
 
@@ -3087,7 +3518,7 @@ function ToursContent() {
               textTransform: 'uppercase',
               margin: 0,
             }}>
-              PACKAGE DEALS
+              {midSection03?.title || (isIndianPage ? 'INDIAN PACKAGES' : 'INTERNATIONAL PACKAGES')}
             </h2>
           </div>
 
@@ -3134,7 +3565,7 @@ function ToursContent() {
               <div className="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4 pb-2 border-bottom">
                 <div>
                   <span style={{ fontWeight: 800, fontSize: 16, color: '#111827' }}>
-                    {filteredTours.length} Tours Found
+                    {isGenericOverview ? (isIndianPage ? 'Indian Packages' : 'International Packages') : `${formatHeadingValue(overviewTitleRaw)} Packages`}: {filteredTours.length} {filteredTours.length === 1 ? 'Tour' : 'Tours'} Found
                   </span>
                   {filters.type !== 'all' && (
                     <span style={{ color: '#6b7280', fontSize: 13, marginLeft: 8 }}>
@@ -3235,7 +3666,7 @@ function ToursContent() {
         <section id="popular-destinations" style={{ marginBottom: 64, paddingTop: 10 }}>
           <div className="mobile-text-center" style={{ marginBottom: 22 }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: '#9ca3af', letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 4 }}>
-              {isIndianPage ? 'EXPLORE INCREDIBLE INDIA' : 'EXPLORE BEYOND BORDERS'}
+              {popularDestinationSection?.description || (isIndianPage ? 'EXPLORE INCREDIBLE INDIA' : 'EXPLORE BEYOND BORDERS')}
             </div>
             <h2 style={{
               fontFamily: '"Italiana", serif',
@@ -3246,7 +3677,7 @@ function ToursContent() {
               textTransform: 'uppercase',
               margin: 0,
             }}>
-              {isIndianPage ? 'POPULAR INDIAN DESTINATIONS' : 'POPULAR INTERNATIONAL DESTINATIONS'}
+              {popularDestinationSection?.title || (isIndianPage ? 'POPULAR INDIAN DESTINATIONS' : 'POPULAR INTERNATIONAL DESTINATIONS')}
             </h2>
             <div style={{ fontSize: 13, color: '#6b7280', fontWeight: 500, marginTop: 4 }}>
               {isIndianPage
@@ -3395,7 +3826,7 @@ function ToursContent() {
               textTransform: 'uppercase',
               margin: 0,
             }}>
-              CREATE YOUR OWN PACKAGE
+              {yourPackageSection?.json_data?.heading_content || yourPackageSection?.title || 'CREATE YOUR OWN PACKAGE'}
             </h2>
           </div>
 
@@ -3574,7 +4005,7 @@ function ToursContent() {
               color: '#111827',
               margin: 0,
             }}>
-              Trending travel articles
+              {articlesSection?.json_data?.heading_content || articlesSection?.title || 'Trending travel articles'}
             </h2>
           </div>
 

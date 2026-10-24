@@ -1,7 +1,7 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import DestinationPicker from '@/components/DestinationPicker';
 import PremiumDestinationLayout from '@/components/PremiumDestinationLayout';
 import { customizeBooking, getCrowdLevelsBySlug, getDestinations, getHomeDestinations, getHomeCategories, getMediaUrl, getRelatedDestinationsByCountry, getStoredAuth, searchAirports, getPageBySlug, getPackages, normalizePackageToTour } from '@/utils/api';
@@ -183,10 +183,8 @@ const normalizePickerDestination = (destination) => ({
   raw: destination,
 });
 
-const readCustomizeUrlDraft = () => {
-  if (typeof window === 'undefined') return null;
-
-  const params = new URLSearchParams(window.location.search);
+const parseSearchParamsDraft = (params) => {
+  if (!params) return null;
   const hasCustomizeParams = CUSTOMIZE_URL_KEYS.some((key) => params.has(key));
   if (!hasCustomizeParams) return null;
 
@@ -205,6 +203,28 @@ const readCustomizeUrlDraft = () => {
     step: getUrlStep(params.get('step')),
     subStep: params.get('subStep') || '',
   };
+};
+
+const readCustomizeUrlDraft = (searchParams) => {
+  if (searchParams) return parseSearchParamsDraft(searchParams);
+  if (typeof window === 'undefined') return null;
+  const params = new URLSearchParams(window.location.search);
+  return parseSearchParamsDraft(params);
+};
+
+const isThemePackage = (val) => {
+  if (!val || typeof val !== 'string') return false;
+  const s = val.trim().toLowerCase();
+  return (
+    s.startsWith('honeymoon') ||
+    s.startsWith('family') ||
+    s.startsWith('group') ||
+    s.startsWith('nri') ||
+    s.startsWith('pilgrim') ||
+    s.startsWith('budget') ||
+    s.startsWith('trending') ||
+    s.startsWith('corp')
+  );
 };
 
 const writeCustomizeUrlDraft = ({ data, step, subStep }) => {
@@ -233,14 +253,17 @@ const writeCustomizeUrlDraft = ({ data, step, subStep }) => {
   }
 };
 
-export default function CustomizeFlow() {
+function CustomizeFlow() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const initialDraft = useMemo(() => parseSearchParamsDraft(searchParams), [searchParams]);
+
   const brand = getProjectConfig();
   const [companyInfo, setCompanyInfo] = useState(null);
   const brandLogo = getLogoUrl(companyInfo?.logo || companyInfo?.company_logo_url);
   const brandName = companyInfo?.legalName || companyInfo?.companyName || companyInfo?.brandName || brand.legalName;
-  const [step, setStep] = useState(0);
-  const [subStep, setSubStep] = useState(''); // 'room-config', 'login-modal'
+  const [step, setStep] = useState(() => (initialDraft ? initialDraft.step : 0));
+  const [subStep, setSubStep] = useState(() => (initialDraft ? initialDraft.subStep : '')); // 'room-config', 'login-modal'
   const [calendarBaseDate, setCalendarBaseDate] = useState(() => getMonthStart());
   const [travellerOptions, setTravellerOptions] = useState(TRAVELLERS);
   const [destinationOptions, setDestinationOptions] = useState([]);
@@ -262,8 +285,8 @@ export default function CustomizeFlow() {
   const [crowdLoading, setCrowdLoading] = useState(false);
   const [crowdError, setCrowdError] = useState('');
 
-  const [data, setData] = useState(INITIAL_CUSTOMIZE_DATA);
-  const [urlReady, setUrlReady] = useState(false);
+  const [data, setData] = useState(() => initialDraft?.data || INITIAL_CUSTOMIZE_DATA);
+  const [urlReady, setUrlReady] = useState(true);
   const [itineraryPayload, setItineraryPayload] = useState(null);
   const [confirmedItineraryPayload, setConfirmedItineraryPayload] = useState(null);
   const [itinerarySubmitState, setItinerarySubmitState] = useState('idle');
@@ -273,6 +296,9 @@ export default function CustomizeFlow() {
   const [contactName, setContactName] = useState('');
   const [contactPhone, setContactPhone] = useState('');
   const [contactEmail, setContactEmail] = useState('');
+
+  const activeTravelWith = data.travelWith || searchParams?.get('traveller') || '';
+  const isPackage = isThemePackage(activeTravelWith);
 
   useEffect(() => {
     const auth = getStoredAuth();
@@ -290,12 +316,31 @@ export default function CustomizeFlow() {
   }, []);
 
   useEffect(() => {
-    if (step === 0 && data?.travelWith) {
-      let slugBase = data.travelWith.trim().split(' ')[0];
-      if (data.travelWith === 'NRI Package' || data.travelWith === 'Nri') slugBase = 'NRI';
-      if (data.travelWith === 'Corporate Package ( 2+ People )') slugBase = 'Corporate';
+    if (step === 0 && activeTravelWith) {
+      const tw = activeTravelWith.trim().toLowerCase();
+      let slug = '';
+      if (tw.startsWith('trending')) {
+        slug = 'trending-package';
+      } else if (tw.startsWith('nri')) {
+        slug = 'NRI-Package';
+      } else if (tw.startsWith('corporate') || tw.startsWith('corprate')) {
+        slug = 'Corporate-Package';
+      } else if (tw.startsWith('budget')) {
+        slug = 'Budget-Package';
+      } else if (tw.startsWith('pilgrim')) {
+        slug = 'Pilgrim-Package';
+      } else if (tw.startsWith('group')) {
+        slug = 'Group-Package';
+      } else if (tw.startsWith('family')) {
+        slug = 'Family-Package';
+      } else if (tw.startsWith('honeymoon')) {
+        slug = 'Honeymoon-Package';
+      } else {
+        const slugBase = activeTravelWith.trim().split(' ')[0];
+        slug = `${slugBase}-Package`;
+      }
       
-      getPageBySlug(`${slugBase}-Package`).then(res => {
+      getPageBySlug(slug).then(res => {
         if (res?.data) {
           setCmsPageData(res.data);
         } else if (res) {
@@ -303,7 +348,7 @@ export default function CustomizeFlow() {
         }
       });
     }
-  }, [step, data?.travelWith]);
+  }, [step, activeTravelWith]);
 
   useEffect(() => {
     let mounted = true;
@@ -417,32 +462,33 @@ export default function CustomizeFlow() {
     };
   }, []);
 
-  // Load the draft from URL params so the flow can be shared or restored without localStorage.
-  const isFamilyGlobal = data?.travelWith === 'Family';
-  const isGroupGlobal = data?.travelWith === 'Group';
-  const isNriGlobal = data?.travelWith === 'NRI Package' || data?.travelWith === 'Nri';
-  const isPilgrimGlobal = data?.travelWith === 'Pilgrim' || data?.travelWith === 'Pilgrim Package';
-  const isBudgetGlobal = data?.travelWith === 'Budget' || data?.travelWith === 'Budget Package';
-  const isTrendingGlobal = data?.travelWith === 'Trending' || data?.travelWith === 'Trending Package';
-  const isCorporateGlobal = data?.travelWith === 'Corporate' || data?.travelWith === 'Corprate' || data?.travelWith === 'Corporate Package ( 2+ People )';
+  // Global theme flags derived from active travel theme
+  const twLower = activeTravelWith.trim().toLowerCase();
+  const isFamilyGlobal = twLower.startsWith('family');
+  const isGroupGlobal = twLower.startsWith('group');
+  const isNriGlobal = twLower.startsWith('nri');
+  const isPilgrimGlobal = twLower.startsWith('pilgrim');
+  const isBudgetGlobal = twLower.startsWith('budget');
+  const isTrendingGlobal = twLower.startsWith('trending');
+  const isCorporateGlobal = twLower.startsWith('corp');
 
   useEffect(() => {
     if (typeof document !== 'undefined') {
       if (isFamilyGlobal) {
         document.body.classList.add('teal-theme');
-        document.body.classList.remove('blush-theme', 'purple-theme', 'nri-theme', 'saffron-theme', 'budget-theme', 'trending-theme');
+        document.body.classList.remove('blush-theme', 'purple-theme', 'nri-theme', 'saffron-theme', 'budget-theme', 'trending-theme', 'corporate-theme');
       } else if (isGroupGlobal) {
         document.body.classList.add('purple-theme');
-        document.body.classList.remove('blush-theme', 'teal-theme', 'nri-theme', 'saffron-theme', 'budget-theme', 'trending-theme');
+        document.body.classList.remove('blush-theme', 'teal-theme', 'nri-theme', 'saffron-theme', 'budget-theme', 'trending-theme', 'corporate-theme');
       } else if (isNriGlobal) {
         document.body.classList.add('nri-theme');
-        document.body.classList.remove('blush-theme', 'teal-theme', 'purple-theme', 'saffron-theme', 'budget-theme', 'trending-theme');
+        document.body.classList.remove('blush-theme', 'teal-theme', 'purple-theme', 'saffron-theme', 'budget-theme', 'trending-theme', 'corporate-theme');
       } else if (isPilgrimGlobal) {
         document.body.classList.add('saffron-theme');
-        document.body.classList.remove('blush-theme', 'teal-theme', 'purple-theme', 'nri-theme', 'budget-theme', 'trending-theme');
+        document.body.classList.remove('blush-theme', 'teal-theme', 'purple-theme', 'nri-theme', 'budget-theme', 'trending-theme', 'corporate-theme');
       } else if (isBudgetGlobal) {
         document.body.classList.add('budget-theme');
-        document.body.classList.remove('blush-theme', 'teal-theme', 'purple-theme', 'nri-theme', 'saffron-theme', 'trending-theme');
+        document.body.classList.remove('blush-theme', 'teal-theme', 'purple-theme', 'nri-theme', 'saffron-theme', 'trending-theme', 'corporate-theme');
       } else if (isTrendingGlobal) {
         document.body.classList.add('trending-theme');
         document.body.classList.remove('blush-theme', 'teal-theme', 'purple-theme', 'nri-theme', 'saffron-theme', 'budget-theme', 'corporate-theme');
@@ -461,43 +507,31 @@ export default function CustomizeFlow() {
     };
   }, [isFamilyGlobal, isGroupGlobal, isNriGlobal, isPilgrimGlobal, isBudgetGlobal, isTrendingGlobal, isCorporateGlobal]);
 
-  // Load the draft from URL params so the flow can be shared or restored without localStorage.
+  // Sync state if initialDraft changes (e.g. forward/backward navigation)
   useEffect(() => {
-    if (typeof window === 'undefined') return undefined;
+    if (!initialDraft) return;
 
-    const frame = requestAnimationFrame(() => {
-      const urlDraft = readCustomizeUrlDraft();
+    const nextData = normalizeDraftData(initialDraft.data);
+    let nextStep = initialDraft.step || (nextData.destination ? 1 : 0);
+    let nextSubStep = initialDraft.subStep || '';
 
-      if (!urlDraft) {
-        setUrlReady(true);
-        return;
+    if (nextData.destination && nextData.travelWith && !initialDraft.step) {
+      if (nextData.travelWith === 'Couple') {
+        nextData.rooms = [{ id: 1, adults: 2, children: 0, childAges: [] }];
+        nextStep = 2;
+      } else if (nextData.travelWith === 'Solo') {
+        nextData.rooms = [{ id: 1, adults: 1, children: 0, childAges: [] }];
+        nextStep = 2;
+      } else {
+        nextStep = 1;
+        nextSubStep = 'room-config';
       }
+    }
 
-      const nextData = normalizeDraftData(urlDraft.data);
-      let nextStep = urlDraft.step || (nextData.destination ? 1 : 0);
-      let nextSubStep = urlDraft.subStep || '';
-
-      if (nextData.destination && nextData.travelWith && !urlDraft.step) {
-        if (nextData.travelWith === 'Couple') {
-          nextData.rooms = [{ id: 1, adults: 2, children: 0, childAges: [] }];
-          nextStep = 2;
-        } else if (nextData.travelWith === 'Solo') {
-          nextData.rooms = [{ id: 1, adults: 1, children: 0, childAges: [] }];
-          nextStep = 2;
-        } else {
-          nextStep = 1;
-          nextSubStep = 'room-config';
-        }
-      }
-
-      setData(nextData);
-      setStep(nextStep);
-      setSubStep(nextSubStep);
-      setUrlReady(true);
-    });
-
-    return () => cancelAnimationFrame(frame);
-  }, []);
+    setData(nextData);
+    setStep(nextStep);
+    setSubStep(nextSubStep);
+  }, [initialDraft]);
 
   useEffect(() => {
     if (!urlReady) return;
@@ -888,29 +922,30 @@ export default function CustomizeFlow() {
   // 1-Based Breadcrumbs
   const BREADCRUMBS = [
     { label: data.destination || 'Destination', active: step === 0 },
-    { label: data.travelWith ? `${data.travelWith} (${data.rooms.reduce((acc, r) => acc + r.adults + r.children, 0)} Pax, ${data.rooms.length} Room)` : 'Travellers', active: step === 1 },
+    { label: activeTravelWith ? `${activeTravelWith} (${(data.rooms || []).reduce((acc, r) => acc + (Number(r.adults) || 0) + (Number(r.children) || 0), 0)} Pax, ${(data.rooms || []).length} Room)` : 'Travellers', active: step === 1 },
     { label: data.duration || 'Duration', active: step === 2 },
     { label: data.departureCity ? data.departureCity.split(',')[0] : 'Departure City', active: step === 3 },
     { label: data.departureDate || 'Departure Date', active: step === 4 },
-    { label: data.cities.length ? `${data.cities.length} Citys` : 'Cities', active: step === 5 },
+    { label: (data.cities || []).length ? `${data.cities.length} Citys` : 'Cities', active: step === 5 },
   ];
 
   /* ─────────────────────────────────────────────────────────────────
      Step 1: Destination
   ───────────────────────────────────────────────────────────────── */
   const renderDestination = () => {
-    if (data.travelWith === 'Honeymoon' || data.travelWith === 'Family' || data.travelWith === 'Group' || data.travelWith === 'NRI Package' || data.travelWith === 'Nri' || data.travelWith === 'Pilgrim' || data.travelWith === 'Budget' || data.travelWith === 'Budget Package' || data.travelWith === 'Trending' || data.travelWith === 'Corporate' || data.travelWith === 'Corprate' || data.travelWith === 'Corporate Package ( 2+ People )') {
-      const isFamily = data.travelWith === 'Family';
-      const isGroup = data.travelWith === 'Group';
-      const isNri = data.travelWith === 'NRI Package' || data.travelWith === 'Nri';
-      const isPilgrim = data.travelWith === 'Pilgrim';
-      const isBudget = data.travelWith === 'Budget' || data.travelWith === 'Budget Package';
-      const isTrending = data.travelWith === 'Trending';
-      const isCorporate = data.travelWith === 'Corporate' || data.travelWith === 'Corprate' || data.travelWith === 'Corporate Package ( 2+ People )';
+    if (isPackage) {
+      const isFamily = isFamilyGlobal;
+      const isGroup = isGroupGlobal;
+      const isNri = isNriGlobal;
+      const isPilgrim = isPilgrimGlobal;
+      const isBudget = isBudgetGlobal;
+      const isTrending = isTrendingGlobal;
+      const isCorporate = isCorporateGlobal;
       const pkg = {
-        name: isCorporate ? 'Corporate Package' : (isNri ? 'Bringing you closer to your roots' : (isGroup ? 'Group Packages ( 6+ People )' : (isFamily ? 'Family Packages' : (isPilgrim ? 'Pilgrim Packages' : (isBudget ? 'Budget Packages' : (isTrending ? 'Trending Destinations, Unforgettable Journeys' : 'Honeymoon Packages')))))),
+        name: isCorporate ? 'Corporate Package' : (isNri ? 'Bringing you closer to your roots' : (isGroup ? 'Group Packages ( 6+ People )' : (isFamily ? 'Family Packages' : (isPilgrim ? 'Pilgrim Packages' : (isBudget ? 'Budget Packages' : (isTrending ? (cmsPageData?.title || 'Trending Destinations, Unforgettable Journeys') : 'Honeymoon Packages')))))),
         rating: 4.9,
         review_count: 3200,
+        description: cmsPageData?.description || (isTrending ? 'Discover handpicked trending travel packages designed for unforgettable journeys. From scenic getaways and beautiful beaches to vibrant cities and cultural experiences, explore destinations that travelers love.' : undefined),
       };
 
       const media = {
@@ -2201,7 +2236,7 @@ export default function CustomizeFlow() {
       </div>
 
       {/* Main Content Area */}
-      {(data.travelWith === 'Honeymoon' || data.travelWith === 'Family' || data.travelWith === 'Group' || data.travelWith === 'NRI Package' || data.travelWith === 'Nri' || data.travelWith === 'Pilgrim' || data.travelWith === 'Budget' || data.travelWith === 'Budget Package' || data.travelWith === 'Trending' || data.travelWith === 'Corporate' || data.travelWith === 'Corprate' || data.travelWith === 'Corporate Package ( 2+ People )') && step === 0 ? (
+      {isPackage && step === 0 ? (
         <main style={{ padding: 0, width: '100vw', maxWidth: '100%' }}>
           {renderDestination()}
         </main>
@@ -2216,8 +2251,18 @@ export default function CustomizeFlow() {
         </main>
       )}
 
-
-
     </div>
+  );
+}
+
+export default function CustomizePage() {
+  return (
+    <Suspense fallback={
+      <div style={{ minHeight: '100vh', background: '#090d14', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: 40, height: 40, border: '3px solid rgba(255,255,255,0.2)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      </div>
+    }>
+      <CustomizeFlow />
+    </Suspense>
   );
 }

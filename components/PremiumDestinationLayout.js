@@ -111,6 +111,21 @@ export default function PremiumDestinationLayout({
             });
           }
 
+          if (highlightsList.length === 0) {
+            const blocks = hlRaw.match(/<p>[^<]+<\/p>\s*<h4>[^<]+<\/h4>/gi) || [];
+            blocks.forEach(block => {
+              const iconMatch = block.match(/<p>([^<]+)<\/p>/i);
+              const titleMatch = block.match(/<h4>([^<]+)<\/h4>/i);
+              if (iconMatch && titleMatch) {
+                highlightsList.push({
+                  icon: iconMatch[1].trim(),
+                  title: titleMatch[1].trim(),
+                  subtitle: ''
+                });
+              }
+            });
+          }
+
           // 3. Timeline
           if (highlightsParts.length > 1) {
             const tlRaw = '<h4>Must Do Activities</h4>' + highlightsParts[1];

@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { getFeaturedTourHref } from '@/components/FeaturedToursRow';
 import TourCard from '@/components/TourCard';
-import { getTripInquiries, getMediaUrl, getPackages, normalizePackageToTour } from '@/utils/api';
+import { getTripInquiries, getMediaUrl, getPackages, normalizePackageToTour, isInternationalPackage } from '@/utils/api';
 
 /* ── Filter options ──────────────────────────────────── */
 const FILTER_OPTIONS = {
@@ -102,12 +102,10 @@ export default function ExploreWorldSection() {
     const fetchWorldPackages = async () => {
       setIsLoading(true);
       try {
-        const result = await getPackages();
+        const result = await getPackages({ limit: 100 });
         if (!mounted) return;
-        const pkgs = Array.isArray(result) ? result.map(normalizePackageToTour) : [];
-        // Filter out India packages to show only international
-        const intlPkgs = pkgs.filter(pkg => pkg.country?.toLowerCase() !== 'india');
-        setWorldPackages(intlPkgs);
+        const pkgs = Array.isArray(result) ? result.filter(isInternationalPackage).map(normalizePackageToTour) : [];
+        setWorldPackages(pkgs);
       } catch (err) {
         console.error('Failed to load international packages', err);
       } finally {

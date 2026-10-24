@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Link from 'next/link';
-import { getPackages, normalizePackageToTour } from '@/utils/api';
+import { getPackages, normalizePackageToTour, isDomesticPackage, isInternationalPackage } from '@/utils/api';
 
 const MAX_PRICE = 1000000;
 const formatPriceNumber = (value) => Number(value || 0).toLocaleString('en-IN');
@@ -15,6 +15,11 @@ const hasCategory = (pkg, categoryMatch) =>
     String(cat?.slug || '').toLowerCase().includes(categoryMatch) ||
     String(cat?.title || '').toLowerCase().includes(categoryMatch)
   );
+
+const cleanDescription = (desc) => {
+  if (!desc || typeof desc !== 'string') return '';
+  return desc.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+};
 
 export default function HoneymoonToursSection({ themeClass = '', cmsPage = null }) {
   const isFamily = themeClass.includes('teal');
@@ -74,7 +79,7 @@ export default function HoneymoonToursSection({ themeClass = '', cmsPage = null 
         const packages = await getPackages({ limit: 200 });
         if (isMounted) {
           const formattedTours = packages.map(normalizePackageToTour);
-          const themeTours = formattedTours.filter(t => {
+          let themeTours = formattedTours.filter(t => {
             const rawPkg = packages.find(p => p.id === t.id) || t;
 
             if (isCorporate) return hasCategory(rawPkg, 'corporate');
@@ -83,11 +88,14 @@ export default function HoneymoonToursSection({ themeClass = '', cmsPage = null 
             if (isNri) return hasCategory(rawPkg, 'nri');
             if (isPilgrim) return hasCategory(rawPkg, 'pilgrim');
             if (isBudget) return hasCategory(rawPkg, 'budget');
-            if (isTrending) return hasCategory(rawPkg, 'trending');
+            if (isTrending) return hasCategory(rawPkg, 'trending') || rawPkg?.is_trending;
 
             // Default Honeymoon
             return hasCategory(rawPkg, 'honeymoon');
           });
+          if (isTrending && themeTours.length === 0) {
+            themeTours = formattedTours.slice(0, 10);
+          }
           setApiTours(themeTours);
         }
       } catch (err) {
@@ -103,9 +111,9 @@ export default function HoneymoonToursSection({ themeClass = '', cmsPage = null 
   const filteredTours = useMemo(() => {
     let result = [...apiTours];
     if (regionFilter === 'Indian') {
-      result = result.filter(t => t.package_type === 'domestic');
+      result = result.filter(t => isDomesticPackage(t));
     } else if (regionFilter === 'International') {
-      result = result.filter(t => t.package_type === 'international');
+      result = result.filter(t => isInternationalPackage(t));
     }
     return result;
   }, [apiTours, regionFilter]);
@@ -306,8 +314,21 @@ export default function HoneymoonToursSection({ themeClass = '', cmsPage = null 
                   <span style={{ color: '#4a8bb3', fontStyle: 'italic', fontSize: '28px' }}>{isCorporate ? 'in' : (isPilgrim || isNri || isBudget ? 'to' : (isTrending ? 'best of' : 'with'))}</span><br />
                   <span className="hm-details-loc" style={{ fontWeight: '500', display: 'block' }}>{activeTour.location || activeTour.title.split(' ')[0]}</span>
                 </h3>
-                <p className="hm-details-desc" style={{ color: '#444', fontWeight: '500' }}>
-                  {activeTour.description || `Temple trails, sunlit shores and slow island mornings. Find your own rhythm in ${activeTour.location || 'this beautiful destination'}.`}
+                <p
+                  className="hm-details-desc"
+                  style={{
+                    color: '#444',
+                    fontWeight: '500',
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    lineHeight: '1.6',
+                    maxHeight: '3.2em',
+                  }}
+                >
+                  {cleanDescription(activeTour.description) || `Temple trails, sunlit shores and slow island mornings. Find your own rhythm in ${activeTour.location || 'this beautiful destination'}.`}
                 </p>
                 <div style={{ marginTop: 'auto', paddingTop: '30px', marginLeft: '-80px' }}>
                   {renderThumbnails(false)}
@@ -329,8 +350,19 @@ export default function HoneymoonToursSection({ themeClass = '', cmsPage = null 
                     {isCorporate ? 'in' : (isPilgrim || isNri || isBudget ? 'to' : (isTrending ? 'best of' : 'with'))} {activeTour.location || activeTour.title.split(' ')[0]}
                   </div>
                 </h3>
-                <p className="hm-mobile-card-desc">
-                  {activeTour.description || 'Affordable Maldives package on a beautiful local island.'}
+                <p
+                  className="hm-mobile-card-desc"
+                  style={{
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    lineHeight: '1.5',
+                    maxHeight: '3em',
+                  }}
+                >
+                  {cleanDescription(activeTour.description) || 'Affordable Maldives package on a beautiful local island.'}
                 </p>
 
                 <div className="hm-mobile-img-box">
@@ -371,7 +403,17 @@ export default function HoneymoonToursSection({ themeClass = '', cmsPage = null 
         .hm-featured-price { font-size: 22px; }
         .hm-details-title { font-size: 36px; margin-bottom: 16px; }
         .hm-details-loc { font-size: 46px; margin-top: 4px; }
-        .hm-details-desc { font-size: 15px; margin-bottom: 24px; line-height: 1.6; }
+        .hm-details-desc {
+          font-size: 15px;
+          margin-bottom: 24px;
+          line-height: 1.6;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-height: 3.2em;
+        }
         .hm-featured-content { position: absolute; bottom: 30px; left: 30px; right: 30px; color: #fff; z-index: 2; }
         .hm-featured-action-row { display: flex; align-items: center; gap: 12px; }
 
@@ -396,7 +438,19 @@ export default function HoneymoonToursSection({ themeClass = '', cmsPage = null 
           .hm-mobile-unified-card { background: #FFF0F3; border-radius: 20px; padding: 16px; text-align: center; margin-bottom: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
           .hm-mobile-card-heart { margin-bottom: 12px; opacity: 0.9; }
           .hm-mobile-card-title { margin: 0 0 10px 0; }
-          .hm-mobile-card-desc { font-size: 13px; color: #555; line-height: 1.5; margin: 0 0 18px 0; padding: 0 10px; }
+          .hm-mobile-card-desc {
+            font-size: 13px;
+            color: #555;
+            line-height: 1.5;
+            margin: 0 0 18px 0;
+            padding: 0 10px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-height: 3em;
+          }
           
           .hm-mobile-img-box { position: relative; border-radius: 15px; overflow: hidden; height: 165px; width: 100%; }
           .hm-mobile-img-box img { width: 100%; height: 100%; object-fit: cover; }

@@ -2,9 +2,69 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
-import { getHomePage, getMediaUrl, getPackageReviews } from '@/utils/api';
+import { getHomePage, getMediaUrl, getCmsReviews, getPageBySlug } from '@/utils/api';
+import ReviewDetailModal from '@/components/ReviewDetailModal';
 
 const statIcons = ['✈️', '😊', '⭐'];
+
+const fallbackReviews = [
+  {
+    title: 'Rohan Kapoor',
+    badge: '⭐⭐⭐⭐⭐',
+    img: '/uploads/media/med-1792735802928-906832751.jpg',
+    content: '<p>“Everything was organized nicely and the package matched the details shown.</p>',
+  },
+  {
+    title: 'Aarav Mehta',
+    badge: '⭐⭐⭐⭐⭐',
+    img: '/uploads/media/med-1792735717709-697689722.jpg',
+    content: '<p>“The itinerary was well planned and the booking experience was smooth.</p>',
+  },
+  {
+    title: 'Raj Singh',
+    badge: '⭐⭐⭐⭐',
+    img: '/uploads/media/med-1792735637071-658927799.jpg',
+    content: '<p>“Good hotels, helpful support, and enough time to enjoy the destination.</p>',
+  },
+  {
+    title: 'Prachi Maurya',
+    badge: '⭐⭐⭐⭐⭐',
+    img: '/uploads/media/med-1792735864111-570068965.jpg',
+    content: '<p>“Everything was organized nicely and the package matched the details shown.</p>',
+  },
+];
+
+const cleanReviewContent = (content) => {
+  if (!content) return '';
+  const text = String(content)
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/\s+/g, ' ');
+  return text.replace(/^[\s"“'”]+|[\s"“'”]+$/g, '').trim();
+};
+
+const getStars = (badge, rating) => {
+  if (typeof badge === 'string' && badge.trim()) {
+    const trimmed = badge.trim();
+    if (trimmed.includes('⭐') || trimmed.includes('★')) {
+      return trimmed;
+    }
+    const num = parseFloat(trimmed);
+    if (!isNaN(num) && num > 0) {
+      return '⭐'.repeat(Math.min(5, Math.max(1, Math.round(num))));
+    }
+  }
+  if (typeof rating === 'number' && rating > 0) {
+    return '⭐'.repeat(Math.min(5, Math.max(1, Math.round(rating))));
+  }
+  return '⭐⭐⭐⭐⭐';
+};
+
 
 const fallbackStats = [
   { number: '3400+', label: 'Holidays\nCustomized', icon: statIcons[0] },
@@ -29,10 +89,12 @@ const fallbackGallery = [
 
 export default function WhyChooseSection() {
   const [content, setContent] = useState(null);
-  const [blogs, setBlogs] = useState([]);
-  const [currentBlogIndex, setCurrentBlogIndex] = useState(0);
+  const [reviews, setReviews] = useState(fallbackReviews);
+  const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
   const [currentFeatureIndex, setCurrentFeatureIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedReviewIndex, setSelectedReviewIndex] = useState(0);
 
   useEffect(() => {
     let mounted = true;
@@ -77,9 +139,19 @@ export default function WhyChooseSection() {
       });
 
       try {
-        const reviewsRes = await getPackageReviews({ packageSlug: 'thailand-beach-combo-7n8d', status: 'approved' });
-        if (reviewsRes?.reviews) {
-          setBlogs(reviewsRes.reviews);
+        const cmsReviews = await getCmsReviews();
+        if (Array.isArray(cmsReviews) && cmsReviews.length > 0) {
+          setReviews(cmsReviews);
+        } else {
+          const reviewsPage = await getPageBySlug('reviews');
+          const details = Array.isArray(reviewsPage?.details) ? reviewsPage.details : [];
+          const tabsSec = details.find(
+            (item) => item.section === 'tabs_section' || item.key === 'hero_key' || item.json_data?.tabs
+          );
+          const tabs = tabsSec?.json_data?.tabs;
+          if (Array.isArray(tabs) && tabs.length > 0) {
+            setReviews(tabs);
+          }
         }
       } catch (err) {
         console.error("Failed to fetch reviews for why choose section", err);
@@ -267,6 +339,13 @@ export default function WhyChooseSection() {
           position: relative;
           text-align: left;
           height: 100%;
+          cursor: pointer;
+          transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+        }
+        .premium-review-card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 18px 40px rgba(0,0,0,0.12);
+          border-color: rgba(184, 134, 11, 0.35);
         }
         .review-eyebrow {
           position: absolute;
@@ -331,6 +410,9 @@ export default function WhyChooseSection() {
           font-size: 18px;
           border: 2px solid #fff;
           box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+          overflow: hidden;
+          position: relative;
+          flex-shrink: 0;
         }
 
         /* ── Nav Buttons ── */
@@ -477,44 +559,78 @@ export default function WhyChooseSection() {
               </div>
             )}
 
-            {/* Manual Blog Slider */}
-            {blogs.length > 0 && (
+            {/* Dynamic Review Slider */}
+            {reviews.length > 0 && (
               <div className="blog-slider-container">
                 <button
                   className="blog-nav-btn blog-nav-left"
-                  onClick={() => setCurrentBlogIndex((prev) => (prev - 1 + blogs.length) % blogs.length)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCurrentReviewIndex((prev) => (prev - 1 + reviews.length) % reviews.length);
+                  }}
+                  aria-label="Previous review"
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
                 </button>
 
                 <div style={{ overflow: 'hidden', borderRadius: 12, padding: '10px 0' }}>
-                  <div style={{ display: 'flex', transition: 'transform 0.4s ease', transform: `translateX(-${currentBlogIndex * 100}%)` }}>
-                    {blogs.map((review) => {
-                      const dateObj = new Date(review.created_at);
-                      const month = dateObj.toLocaleString('en-US', { month: 'short' });
-                      const rating = review.rating || 5;
-                      const stars = '⭐'.repeat(rating);
+                  <div style={{ display: 'flex', transition: 'transform 0.4s ease', transform: `translateX(-${currentReviewIndex * 100}%)` }}>
+                    {reviews.map((review, idx) => {
+                      const name = (review.title || review.reviewer_name || review.name || 'Happy Traveler').trim();
+                      const stars = getStars(review.badge, review.rating);
+                      const comment = cleanReviewContent(review.content || review.comment);
+                      const initial = name ? name.charAt(0).toUpperCase() : 'T';
+                      const avatarUrl = review.img ? getMediaUrl(review.img) : null;
 
                       return (
-                        <div key={review.id} style={{ width: '100%', flexShrink: 0, padding: '0 4px' }}>
-                          <div className="premium-review-card">
-                            <div className="review-eyebrow">Happy Traveler</div>
+                        <div key={review.id || `review-${idx}`} style={{ width: '100%', flexShrink: 0, padding: '0 4px' }}>
+                          <div
+                            className="premium-review-card"
+                            onClick={() => {
+                              setSelectedReviewIndex(idx);
+                              setIsModalOpen(true);
+                            }}
+                            role="button"
+                            tabIndex={0}
+                            title="Click to view full review"
+                          >
+                            <div className="review-eyebrow">
+                              Happy Traveler
+                              <span style={{ marginLeft: 6, opacity: 0.6, fontSize: 11 }}>↗</span>
+                            </div>
                             <div className="review-quote-icon">“</div>
                             <div className="review-comment">
-                              {review.comment || 'Great experience from planning to the trip. Everything was seamless!'}
+                              {comment || 'Great experience from planning to the trip. Everything was seamless!'}
                             </div>
                             <div className="review-bottom">
                               <div className="reviewer-info">
-                                <div className="reviewer-name">{review.reviewer_name}</div>
+                                <div className="reviewer-name">{name}</div>
                                 <div className="reviewer-stars">{stars}</div>
                               </div>
                               <div className="reviewer-avatar">
-                                {review.reviewer_name ? review.reviewer_name.charAt(0).toUpperCase() : 'T'}
+                                {avatarUrl ? (
+                                  <img
+                                    src={avatarUrl}
+                                    alt={name}
+                                    style={{
+                                      width: '100%',
+                                      height: '100%',
+                                      objectFit: 'cover',
+                                      display: 'block',
+                                    }}
+                                    onError={(e) => {
+                                      e.currentTarget.style.display = 'none';
+                                      if (e.currentTarget.nextElementSibling) {
+                                        e.currentTarget.nextElementSibling.style.display = 'flex';
+                                      }
+                                    }}
+                                  />
+                                ) : null}
+                                <span style={{ display: avatarUrl ? 'none' : 'flex' }}>{initial}</span>
                               </div>
                             </div>
                           </div>
                         </div>
-
                       );
                     })}
                   </div>
@@ -522,7 +638,11 @@ export default function WhyChooseSection() {
 
                 <button
                   className="blog-nav-btn blog-nav-right"
-                  onClick={() => setCurrentBlogIndex((prev) => (prev + 1) % blogs.length)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCurrentReviewIndex((prev) => (prev + 1) % reviews.length);
+                  }}
+                  aria-label="Next review"
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
                 </button>
@@ -539,6 +659,18 @@ export default function WhyChooseSection() {
           </div>
         </div>
       </div>
+
+      {/* Individual Review Popup Modal */}
+      <ReviewDetailModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        reviews={reviews}
+        currentIndex={selectedReviewIndex}
+        onNavigate={(newIdx) => {
+          setSelectedReviewIndex(newIdx);
+          setCurrentReviewIndex(newIdx);
+        }}
+      />
     </section>
   );
 }

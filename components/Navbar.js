@@ -9,36 +9,36 @@ import { getDestinationHref } from '@/utils/destinationLinks';
 /* ── Mega-menu data ───────────────────────────────────── */
 const destinationCols = [
   [
-    { name: 'Bali', tag: 'TRENDING', tagClr: 'var(--color-card)', tagBg: 'var(--color-secondary)', href: '/tour?search=Bali' },
-    { name: 'Maldives', tag: 'HONEYMOON', tagClr: 'var(--color-card)', tagBg: 'var(--color-secondary)', href: '/tour?search=Maldives' },
-    { name: 'Thailand', tag: 'BUDGET', tagClr: 'var(--color-card)', tagBg: 'var(--color-secondary)', href: '/tour?search=Thailand' },
+    { name: 'Bali', tag: 'TRENDING', tagClr: 'var(--color-card)', tagBg: 'var(--color-secondary)', href: '/packages?destination=Bali' },
+    { name: 'Maldives', tag: 'HONEYMOON', tagClr: 'var(--color-card)', tagBg: 'var(--color-secondary)', href: '/packages?destination=Maldives' },
+    { name: 'Thailand', tag: 'BUDGET', tagClr: 'var(--color-card)', tagBg: 'var(--color-secondary)', href: '/packages?destination=Thailand' },
   ],
   [
-    { name: 'Dubai', tag: null, href: '/tour?search=Dubai' },
-    { name: 'Switzerland', tag: 'LUXURY', tagClr: 'var(--color-card)', tagBg: 'var(--color-secondary)', href: '/tour?search=Switzerland' },
-    { name: 'Singapore', tag: null, href: '/tour?search=Singapore' },
+    { name: 'Dubai', tag: null, href: '/packages?destination=Dubai' },
+    { name: 'Switzerland', tag: 'LUXURY', tagClr: 'var(--color-card)', tagBg: 'var(--color-secondary)', href: '/packages?destination=Switzerland' },
+    { name: 'Singapore', tag: null, href: '/packages?destination=Singapore' },
   ],
   [
-    { name: 'Australia', tag: null, href: '/tour?search=Australia' },
-    { name: 'Japan', tag: null, href: '/tour?search=Japan' },
-    { name: 'Explore 40+ Destinations →', href: '/tours?destination', isExplore: true },
+    { name: 'Australia', tag: null, href: '/packages?destination=Australia' },
+    { name: 'Japan', tag: null, href: '/packages?destination=Japan' },
+    { name: 'Explore 40+ Destinations →', href: '/packages?destination=International', isExplore: true },
   ],
 ];
 
 const indiaDropdownCols = [
   [
-    { name: 'Kashmir Paradise', tag: 'POPULAR', tagClr: 'var(--color-card)', tagBg: 'var(--color-secondary)', href: '/tour?search=Kashmir' },
-    { name: 'Himachal Escape', tag: null, href: '/tour?search=Himachal' },
-    { name: 'Kerala Backwaters', tag: 'TRENDING', tagClr: 'var(--color-card)', tagBg: 'var(--color-secondary)', href: '/tour?search=Kerala' },
+    { name: 'Kashmir Paradise', tag: 'POPULAR', tagClr: 'var(--color-card)', tagBg: 'var(--color-secondary)', href: '/packages?destination=Kashmir' },
+    { name: 'Himachal Escape', tag: null, href: '/packages?destination=Himachal' },
+    { name: 'Kerala Backwaters', tag: 'TRENDING', tagClr: 'var(--color-card)', tagBg: 'var(--color-secondary)', href: '/packages?destination=Kerala' },
   ],
   [
-    { name: 'Rajasthan Royal', tag: null, href: '/tour?search=Rajasthan' },
-    { name: 'Goa Beach Bliss', tag: null, href: '/tour?search=Goa' },
-    { name: 'Andaman Islands', tag: null, href: '/tour?search=Andaman' },
+    { name: 'Rajasthan Royal', tag: null, href: '/packages?destination=Rajasthan' },
+    { name: 'Goa Beach Bliss', tag: null, href: '/packages?destination=Goa' },
+    { name: 'Andaman Islands', tag: null, href: '/packages?destination=Andaman' },
   ],
   [
-    { name: 'Leh Ladakh', tag: 'ADVENTURE', tagClr: 'var(--color-primary)', tagBg: 'var(--color-primary-light)', href: '/tour?search=Ladakh' },
-    { name: 'Varanasi Spiritual', tag: null, href: '/tour?search=Varanasi' },
+    { name: 'Leh Ladakh', tag: 'ADVENTURE', tagClr: 'var(--color-primary)', tagBg: 'var(--color-primary-light)', href: '/packages?destination=Ladakh' },
+    { name: 'Varanasi Spiritual', tag: null, href: '/packages?destination=Varanasi' },
     { name: 'Explore All India →', href: '/packages?destination=India', isExplore: true },
   ],
 ];
@@ -105,7 +105,7 @@ const buildDestinationCols = (destinations = [], exploreHref, exploreLabel) => {
     tag: d.is_trending ? 'TRENDING' : null,
     tagClr: 'var(--color-card)',
     tagBg: 'var(--color-secondary)',
-    href: `/tour?search=${encodeURIComponent(d.name)}`
+    href: `/packages?destination=${encodeURIComponent(d.name)}`
   }));
 
   if (!items.length) return [];
@@ -922,15 +922,17 @@ export default function Navbar({ brand, companyInfo }) {
   const [navInternationalCols, setNavInternationalCols] = useState(destinationCols);
 
   useEffect(() => {
-    import('@/utils/api').then(({ getDestinations }) => {
-      getDestinations({ type: 'domestic' }).then(res => {
-        if (res && res.length) {
-          setNavDomesticCols(buildDestinationCols(res, '/packages?destination=India', 'Explore All India →'));
-        }
-      });
-      getDestinations({ type: 'international' }).then(res => {
-        if (res && res.length) {
-          setNavInternationalCols(buildDestinationCols(res, '/packages?destination=International', 'Explore 40+ Destinations →'));
+    import('@/utils/api').then(({ getDestinations, isDomesticDestination, isInternationalDestination }) => {
+      getDestinations().then(allDests => {
+        if (allDests && allDests.length) {
+          const domestic = allDests.filter(isDomesticDestination);
+          const international = allDests.filter(isInternationalDestination);
+          if (domestic.length) {
+            setNavDomesticCols(buildDestinationCols(domestic, '/packages?destination=India', 'Explore All India →'));
+          }
+          if (international.length) {
+            setNavInternationalCols(buildDestinationCols(international, '/packages?destination=International', 'Explore 40+ Destinations →'));
+          }
         }
       });
     }).catch(console.error);
@@ -1648,7 +1650,7 @@ export default function Navbar({ brand, companyInfo }) {
           color: var(--color-text-primary);
           font-size: 13px;
           font-weight: 900;
-          overflow-wrap: anywhere;
+          overflow                                                                                                                                                                                                                                                                                                                                                                                         -wrap: anywhere;
         }
         .forex-result-grid b {
           display: block;
@@ -1806,7 +1808,7 @@ export default function Navbar({ brand, companyInfo }) {
 
                 <li>
                   <Link
-                    href="/tours?search=nri"
+                    href="/customize?step=0&subStep=room-config&traveller=NRI"
                     className={`nav-plain-link`}
                     style={{ color: 'var(--color-text-secondary)' }}
                   >
@@ -1815,7 +1817,7 @@ export default function Navbar({ brand, companyInfo }) {
                 </li>
                 <li>
                   <Link
-                    href="/tours?search=corporate"
+                    href="/customize?step=0&subStep=room-config&traveller=Corporate"
                     className={`nav-plain-link`}
                     style={{ color: 'var(--color-text-secondary)' }}
                   >

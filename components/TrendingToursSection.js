@@ -108,11 +108,15 @@ export default function TrendingToursSection({ themeClass = '', cmsPage = null }
           : 'honeymoon';
 
         const seenIds = new Set();
-        const themeTours = formattedTours.filter((t) => {
+        let themeTours = formattedTours.filter((t) => {
           if (!hasCategory(t, currentCategory) || seenIds.has(t.id)) return false;
           seenIds.add(t.id);
           return true;
         });
+
+        if (isTrending && themeTours.length === 0) {
+          themeTours = formattedTours.slice(0, 12);
+        }
 
         // Even for family/group/etc., fetch reviews if it exists to keep UI identical
         const ratedTours = await Promise.all(

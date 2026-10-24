@@ -7,6 +7,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import GramSection from '@/components/GramSection';
 import RouteMapModal from '@/components/RouteMapModal';
 import CancellationPolicyModal from '@/components/CancellationPolicyModal';
+import ReviewDetailModal from '@/components/ReviewDetailModal';
 import {
   getCancellationPolicy,
   FALLBACK_CANCELLATION_DATA,
@@ -19,6 +20,7 @@ import {
   createRazorpayOrder,
   customizeBooking,
   getBlogs,
+  getCmsReviews,
   getHomePage,
   getMediaUrl,
   getPackageBySlug,
@@ -30,6 +32,7 @@ import {
   getStoredToken,
   loginCustomer,
   normalizePackageToTour,
+  searchCountryCityLocations,
   validateBookingCoupon,
   verifyRazorpayPayment,
 } from '@/utils/api';
@@ -155,6 +158,35 @@ const FALLBACK_REVIEWS = [
     date: '1 month ago',
   },
 ];
+
+const cleanReviewContent = (content) => {
+  if (!content) return '';
+  const text = String(content)
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/\s+/g, ' ');
+  return text.replace(/^[\s"“'”]+|[\s"“'”]+$/g, '').trim();
+};
+
+const parseStarRating = (badge, rating) => {
+  if (typeof badge === 'string' && badge.trim()) {
+    const starMatches = badge.match(/[⭐★]/g);
+    if (starMatches && starMatches.length > 0) {
+      return starMatches.length;
+    }
+    const num = parseFloat(badge);
+    if (!isNaN(num) && num > 0) return Math.min(5, Math.max(1, Math.round(num)));
+  }
+  if (typeof rating === 'number' && rating > 0) {
+    return Math.min(5, Math.max(1, Math.round(rating)));
+  }
+  return 5;
+};
 
 const titleCase = (value) =>
   String(value || '')
@@ -372,6 +404,269 @@ const parseCmsMapPoint = (point, idx) => {
     name: cityName,
     badgeText: bullets.map((b) => b.text).join(' & ') || cityName,
     bullets: bullets.filter((b) => b.text && b.text.length > 0),
+  };
+};
+
+const parseCmsTransferTab = (tab, idx = 0, pkgId = '1') => {
+  if (!tab) return null;
+
+  const rawTitle = String(tab.title || '').trim();
+  const rawBadge = String(tab.badge || '').trim();
+  const rawImg = String(tab.img || '').trim();
+  const rawContent = String(tab.content || '').trim();
+
+  // Decode common HTML entities
+  const decodedContent = rawContent
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&bull;/gi, '•')
+    .replace(/&middot;/gi, '•')
+    .replace(/&#8226;/gi, '•')
+    .replace(/&rarr;/gi, '→');
+
+  // Split into paragraphs / lines
+  const lines = decodedContent
+    .split(/<\/p>|<br\s*\/?>|<div>/i)
+    .map((line) => line.replace(/<[^>]+>/g, '').trim())
+    .filter(Boolean);
+
+  // 1. Vehicle Name: e.g. "Maruti Suzuki Ertiga Cab", "Toyota Innova Crysta (AC)"
+  let vehicleName = '';
+  const strongMatch = decodedContent.match(/<strong[^>]*>([^<]+)<\/strong>/i);
+  if (lines.length > 0 && !/[→⇄\->]|passenger|₹|refundable|itinerary|arrival|departure/i.test(lines[0])) {
+    vehicleName = lines[0];
+  } else if (strongMatch && !/refundable|itinerary|₹|passenger/i.test(strongMatch[1])) {
+    vehicleName = strongMatch[1].trim();
+  }
+  if (!vehicleName) {
+    vehicleName = 'Private Transfer Cab';
+  }
+
+  // 2. Route: e.g. "Kashmir Airport → Kashmir Hotel", "Kashmir → Kashmir"
+  let route = '';
+  const routeLine = lines.find((l) => /[→⇄\->]/.test(l) && !/passenger|itinerary|refundable|₹|vehicle/i.test(l));
+  if (routeLine) {
+    route = routeLine;
+  } else if (lines[1] && !/passenger|refundable|₹|itinerary/i.test(lines[1])) {
+    route = lines[1];
+  } else {
+    route = rawTitle || 'City to Hotel Transfer';
+  }
+
+  // 3. Vehicle Type and Duration: e.g. "Private transfer • 45 mins", "Private transfer • 1hr 50mins"
+  let vehicleType = 'Private transfer';
+  let duration = '45 mins';
+  const typeDurLine = lines.find((l) =>
+    /[•·|]/.test(l) ||
+    /(?:min|mins|minute|minutes|hr|hrs|hour|hours)/i.test(l)
+  );
+
+  if (typeDurLine) {
+    const parts = typeDurLine.split(/[•·|]/).map((p) => p.trim()).filter(Boolean);
+    if (parts.length >= 2) {
+      if (/(?:min|hr|hour)/i.test(parts[0])) {
+        duration = parts[0];
+        vehicleType = parts[1];
+      } else {
+        vehicleType = parts[0];
+        duration = parts[1];
+      }
+    } else if (parts.length === 1) {
+      const durMatch = parts[0].match(/(?:(\d+\s*(?:hr|hrs|hour|hours)\s*)?(\d+\s*(?:min|mins|minutes)?)|(?:full\s*day(?:[^\)]*)?))/i);
+      if (durMatch && durMatch[0]) {
+        duration = durMatch[0].trim();
+        const remType = parts[0].replace(durMatch[0], '').replace(/[•·\-]/g, '').trim();
+        if (remType) vehicleType = remType;
+      } else {
+        vehicleType = parts[0];
+      }
+    }
+  }
+
+  // 4. Refundable:
+  const hasNonRefundable = /non[-\s]*refundable/i.test(decodedContent);
+  const hasRefundable = /(?:^|[^\w-])(?:refundable|free\s*cancellation)/i.test(decodedContent) || /✔️|✔/i.test(decodedContent);
+  const isRefundable = Boolean(hasRefundable && !hasNonRefundable);
+  const isNonRefundable = Boolean(hasNonRefundable || !isRefundable);
+
+  // 5. Passengers: e.g. "4 Passengers in 1 vehicle"
+  let passengers = '4 Passengers in 1 vehicle';
+  const passLine = lines.find((l) => /passenger/i.test(l) && !/₹|per vehicle/i.test(l));
+  if (passLine) {
+    passengers = passLine;
+  }
+
+  // 6. Price: e.g. "₹ 1,800Per vehicle" or "₹ 2,800Per vehicle"
+  let price = 1800;
+  const priceMatch = decodedContent.match(/(?:₹|rs\.?|inr)\s*([\d,]+)/i);
+  if (priceMatch) {
+    price = parseInt(priceMatch[1].replace(/,/g, ''), 10) || 0;
+  } else {
+    const numPerVeh = decodedContent.match(/([\d,]+)\s*(?:per\s*vehicle|\/-\s*per)/i);
+    if (numPerVeh) {
+      price = parseInt(numPerVeh[1].replace(/,/g, ''), 10) || 0;
+    }
+  }
+
+  // 7. Image:
+  let vehicleImg = '';
+  if (rawImg) {
+    vehicleImg = getMediaUrl(rawImg);
+  }
+  if (!vehicleImg) {
+    if (/innova/i.test(vehicleName)) {
+      vehicleImg = '/images/transfers/innova_crysta.jpg';
+    } else {
+      vehicleImg = '/images/transfers/ertiga_cab.jpg';
+    }
+  }
+
+  // 8. Unique ID:
+  const slugifiedTitle = rawTitle
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)+/g, '');
+  const id = `cms-transfer-${pkgId || 'pkg'}-${idx}-${slugifiedTitle || idx}`;
+
+  return {
+    id,
+    title: rawTitle || vehicleName,
+    route,
+    dateTag: rawBadge || `Day ${idx + 1}`,
+    vehicleType,
+    vehicleName,
+    vehicleImg,
+    duration,
+    passengers,
+    refundable: isRefundable,
+    nonRefundable: isNonRefundable,
+    refundableLabel: isRefundable ? 'Refundable' : 'Non Refundable',
+    price,
+  };
+};
+
+const parseCmsActivityTab = (tab, idx = 0, pkgId = '1') => {
+  if (!tab) return null;
+
+  const rawTitle = String(tab.title || '').trim();
+  const rawBadge = String(tab.badge || '').trim();
+  const rawImg = String(tab.img || '').trim();
+  const rawContent = String(tab.content || '').trim();
+
+  // Decode common HTML entities
+  const decodedContent = rawContent
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&bull;/gi, '•')
+    .replace(/&middot;/gi, '•')
+    .replace(/&#8226;/gi, '•');
+
+  // Split into paragraphs / lines
+  const lines = decodedContent
+    .split(/<\/p>|<br\s*\/?>|<div>/i)
+    .map((line) => line.replace(/<[^>]+>/g, '').trim())
+    .filter(Boolean);
+
+  // 1. Tag: e.g. "ACTIVITY ADDON" or first strong match or default
+  let tag = 'ACTIVITY ADDON';
+  const strongMatches = [...decodedContent.matchAll(/<strong[^>]*>([^<]+)<\/strong>/gi)].map((m) => m[1].trim());
+  if (lines.length > 0 && /addon|activity|pass|trail|cruise|tour|experience/i.test(lines[0]) && !/₹|per/i.test(lines[0])) {
+    tag = lines[0];
+  } else if (strongMatches[0] && !/₹|per|itinerary/i.test(strongMatches[0])) {
+    tag = strongMatches[0];
+  }
+
+  // 2. Category and Duration: e.g. "Activity Addon • 1 Hour Sunset Cruise", "Adventure Pass • 3 - 4 Hours", "Nature Trail • 2 Hours"
+  let category = 'Activity Addon';
+  let duration = '1 - 2 Hours';
+  const metaLine = lines.find((l) =>
+    /[•·|]/.test(l) &&
+    !/₹|per person|itinerary|Glide|Ascend|Explore/i.test(l)
+  );
+
+  if (metaLine) {
+    const parts = metaLine.split(/[•·|]/).map((p) => p.trim()).filter(Boolean);
+    if (parts.length >= 2) {
+      if (/(?:hour|hours|hr|hrs|min|mins|day)/i.test(parts[0])) {
+        duration = parts[0];
+        category = parts[1];
+      } else {
+        category = parts[0];
+        duration = parts[1];
+      }
+    } else if (parts.length === 1) {
+      if (/(?:hour|hours|hr|hrs|min|mins|day)/i.test(parts[0])) {
+        duration = parts[0];
+      } else {
+        category = parts[0];
+      }
+    }
+  }
+
+  // 3. Notes / Description:
+  let notes = '';
+  const notesLine = lines.find((l) =>
+    l.length > 25 &&
+    !/[•·|]/.test(l) &&
+    !/₹|per person|\+ add to itinerary|^activity addon$/i.test(l)
+  );
+  if (notesLine) {
+    notes = notesLine;
+  } else {
+    const candidate = lines.find((l) =>
+      !/^(activity addon|adventure pass|nature trail)$/i.test(l) &&
+      !/₹|per person|per vehicle|add to itinerary/i.test(l) &&
+      !/[•·|]/.test(l)
+    );
+    if (candidate) notes = candidate;
+  }
+
+  // 4. Price: e.g. "₹ 800", "₹ 1,950", "₹ 1,200"
+  let price = 800;
+  const priceMatch = decodedContent.match(/(?:₹|rs\.?|inr)\s*([\d,]+)/i);
+  if (priceMatch) {
+    price = parseInt(priceMatch[1].replace(/,/g, ''), 10) || 0;
+  } else {
+    const numPerPerson = decodedContent.match(/([\d,]+)\s*(?:per\s*person|\/-\s*per)/i);
+    if (numPerPerson) {
+      price = parseInt(numPerPerson[1].replace(/,/g, ''), 10) || 0;
+    }
+  }
+
+  // 5. Image:
+  let image = '';
+  if (rawImg) {
+    image = getMediaUrl(rawImg);
+  }
+  if (!image) {
+    if (/shikara/i.test(rawTitle)) {
+      image = 'https://images.unsplash.com/photo-1595815771614-ade9d652a65d?auto=format&fit=crop&w=600&q=80';
+    } else if (/gondola|cable/i.test(rawTitle)) {
+      image = 'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=600&q=80';
+    } else if (/pony|horse/i.test(rawTitle)) {
+      image = 'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=600&q=80';
+    } else {
+      image = 'https://images.unsplash.com/photo-1506015391300-4802dc74de2e?auto=format&fit=crop&w=600&q=80';
+    }
+  }
+
+  // 6. Unique ID:
+  const slugifiedTitle = rawTitle
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)+/g, '');
+  const id = `cms-addon-${pkgId || 'pkg'}-${idx}-${slugifiedTitle || idx}`;
+
+  return {
+    id,
+    name: rawTitle,
+    category,
+    tag: tag || 'ACTIVITY ADDON',
+    badge: rawBadge || 'Experience Pass',
+    duration,
+    image,
+    notes,
+    price,
   };
 };
 
@@ -1714,6 +2009,13 @@ function ItineraryStyles() {
         color: #cbd5e1;
         font-weight: 800;
         margin: 0 2px;
+      }
+      .itn-exc-refundable {
+        color: #16a34a !important;
+        font-weight: 600;
+      }
+      .itn-exc-refundable svg {
+        color: #16a34a !important;
       }
       .itn-exc-non-refundable {
         color: #dc2626 !important;
@@ -3142,12 +3444,19 @@ function ItineraryStyles() {
       }
       .itn-review-card {
         border: 1px solid var(--color-border, #e2e8f0);
-        border-radius: 10px;
+        border-radius: 12px;
         padding: 18px;
         background: #fff;
         box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
         display: flex;
         flex-direction: column;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      }
+      .itn-review-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+        border-color: var(--color-primary, #0f766e);
       }
       .itn-review-header {
         display: flex;
@@ -3161,16 +3470,18 @@ function ItineraryStyles() {
         gap: 10px;
       }
       .itn-review-avatar {
-        width: 36px;
-        height: 36px;
+        width: 38px;
+        height: 38px;
         border-radius: 50%;
         background: color-mix(in srgb, var(--color-primary, #0f766e) 15%, #f1f5f9);
         color: var(--color-primary, #0f766e);
-        display: grid;
-        place-items: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         font-weight: 800;
         font-size: 14px;
         overflow: hidden;
+        flex-shrink: 0;
       }
       .itn-review-name {
         font-size: 13px;
@@ -3658,41 +3969,68 @@ function ItineraryStyles() {
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 18px;
+        padding: 24px 16px;
         overflow-y: auto;
-        scrollbar-width: none;
-        background: rgba(5, 12, 26, .72);
+        overflow-x: hidden;
+        background: rgba(5, 12, 26, .78);
         backdrop-filter: blur(10px);
         overscroll-behavior: contain;
-        touch-action: none;
+        touch-action: pan-y;
+        -webkit-overflow-scrolling: touch;
       }
-      .itn-booking-modal::-webkit-scrollbar { display: none; }
       .itn-booking-panel {
         position: relative;
-        width: min(100%, 760px);
-        margin: auto 0;
-        overflow: hidden;
+        width: min(100%, 780px);
+        max-height: min(92vh, 92dvh);
+        overflow-y: auto;
+        overflow-x: hidden;
+        margin: auto;
         border: 1px solid rgba(255,255,255,.42);
-        border-radius: 10px;
+        border-radius: 14px;
         background: #fff;
-        box-shadow: 0 28px 80px rgba(2, 8, 23, .34);
+        box-shadow: 0 28px 80px rgba(2, 8, 23, .4);
         overscroll-behavior: contain;
         touch-action: pan-y;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        scrollbar-color: #94a3b8 #f1f5f9;
+      }
+      .itn-booking-panel::-webkit-scrollbar {
+        width: 8px;
+      }
+      .itn-booking-panel::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 8px;
+      }
+      .itn-booking-panel::-webkit-scrollbar-thumb {
+        background: #94a3b8;
+        border-radius: 8px;
+      }
+      .itn-booking-panel::-webkit-scrollbar-thumb:hover {
+        background: var(--color-primary, #0f766e);
       }
       .itn-booking-close {
         position: absolute;
         top: 14px;
         right: 14px;
-        z-index: 2;
-        width: 34px;
-        height: 34px;
+        z-index: 10;
+        width: 36px;
+        height: 36px;
         border-radius: 50%;
-        background: rgba(255,255,255,.14);
+        background: rgba(255,255,255,.2);
         color: #fff;
         font-size: 18px;
         font-weight: 900;
         border: none;
         cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s, transform 0.2s;
+      }
+      .itn-booking-close:hover {
+        background: rgba(255,255,255,.38);
+        transform: scale(1.08);
       }
       .itn-booking-hero {
         position: relative;
@@ -4281,6 +4619,13 @@ function ItineraryStyles() {
           font-weight: 800 !important;
           margin: 0 2px !important;
         }
+        .itn-exc-refundable {
+          color: #16a34a !important;
+          font-weight: 600 !important;
+        }
+        .itn-exc-refundable svg {
+          color: #16a34a !important;
+        }
         .itn-exc-non-refundable {
           color: #dc2626 !important;
           font-weight: 600 !important;
@@ -4639,18 +4984,23 @@ function ItineraryStyles() {
           transform: translateY(-1px);
         }
 
-        /* Mobile Screen: Make popup modal 20% smaller with contained scrolling */
+        /* Mobile Screen: Make popup modal responsive with contained scrolling */
         .itn-booking-modal {
-          padding: 14px 10px !important;
+          padding: 16px 10px !important;
           align-items: center !important;
           justify-content: center !important;
+          overflow-y: auto !important;
+          touch-action: pan-y !important;
         }
         .itn-booking-panel {
-          width: min(80vw, 460px) !important;
-          max-height: 80vh !important;
+          width: min(94vw, 560px) !important;
+          max-height: min(90vh, 90dvh) !important;
           overflow-y: auto !important;
+          overflow-x: hidden !important;
           border-radius: 14px !important;
           box-shadow: 0 20px 60px rgba(2, 8, 23, .45) !important;
+          touch-action: pan-y !important;
+          -webkit-overflow-scrolling: touch !important;
         }
         .itn-booking-hero {
           padding: 18px 18px 20px !important;
@@ -5314,6 +5664,158 @@ function ItineraryStyles() {
       .itn-custom-city-other {
         margin-top: 4px;
       }
+      .itn-custom-city-search-wrap {
+        position: relative;
+        margin-top: 6px;
+        width: 100%;
+      }
+      .itn-custom-city-input-inner {
+        position: relative;
+        display: flex;
+        align-items: center;
+        width: 100%;
+      }
+      .itn-custom-city-search-icon {
+        position: absolute;
+        left: 12px;
+        pointer-events: none;
+        color: #94a3b8;
+        flex-shrink: 0;
+      }
+      .itn-custom-city-input-inner .itn-custom-city-other {
+        padding-left: 38px;
+        padding-right: 38px;
+        margin-top: 0;
+        width: 100%;
+      }
+      .itn-custom-city-spinner {
+        position: absolute;
+        right: 12px;
+        width: 16px;
+        height: 16px;
+        border: 2px solid #e2e8f0;
+        border-top-color: var(--color-primary, #0f766e);
+        border-radius: 50%;
+        animation: itnCitySpin 0.6s linear infinite;
+      }
+      @keyframes itnCitySpin {
+        to { transform: rotate(360deg); }
+      }
+      .itn-custom-city-clear-btn {
+        position: absolute;
+        right: 10px;
+        background: #f1f5f9;
+        border: none;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        font-size: 11px;
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+      .itn-custom-city-clear-btn:hover {
+        background: #e2e8f0;
+        color: #0f172a;
+      }
+      .itn-custom-city-dropdown {
+        position: absolute;
+        top: calc(100% + 4px);
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        box-shadow: 0 14px 35px -8px rgba(15, 23, 42, 0.18);
+        max-height: 250px;
+        overflow-y: auto;
+        animation: itnDropdownFade 0.15s ease-out;
+      }
+      @keyframes itnDropdownFade {
+        from { opacity: 0; transform: translateY(-4px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .itn-custom-city-list {
+        display: flex;
+        flex-direction: column;
+        padding: 6px;
+      }
+      .itn-custom-city-item {
+        background: none;
+        border: none;
+        padding: 9px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        text-align: left;
+        width: 100%;
+        font-family: inherit;
+        transition: background 0.15s ease;
+      }
+      .itn-custom-city-item:hover,
+      .itn-custom-city-item:focus {
+        background: #f1f5f9;
+        outline: none;
+      }
+      .itn-custom-city-item-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+        flex: 1;
+      }
+      .itn-custom-city-pin {
+        color: var(--color-primary, #0f766e);
+        flex-shrink: 0;
+      }
+      .itn-custom-city-item-text {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .itn-custom-city-name {
+        font-size: 13px;
+        font-weight: 600;
+        color: #0f172a;
+      }
+      .itn-custom-city-country {
+        font-size: 12px;
+        color: #64748b;
+      }
+      .itn-custom-city-type-pill {
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 3px 7px;
+        border-radius: 6px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        color: #64748b;
+        flex-shrink: 0;
+      }
+      .itn-custom-city-item:hover .itn-custom-city-type-pill {
+        background: #e2e8f0;
+        color: #334155;
+      }
+      .itn-custom-city-empty-state,
+      .itn-custom-city-loading-state {
+        padding: 16px;
+        font-size: 13px;
+        color: #64748b;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
       .itn-custom-pref-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -5852,7 +6354,10 @@ export default function TourItineraryView({ destination, packageSlug }) {
   const [isVideoMuted, setIsVideoMuted] = useState(true);
   const [isVideoPlaying, setIsVideoPlaying] = useState(true);
   const [cmsMapData, setCmsMapData] = useState(null);
+  const [cmsPageData, setCmsPageData] = useState(null);
   const [allReviewsModalOpen, setAllReviewsModalOpen] = useState(false);
+  const [cmsReviews, setCmsReviews] = useState([]);
+  const [selectedReviewIndex, setSelectedReviewIndex] = useState(0);
   const [partialBooking, setPartialBooking] = useState(null);
   const [paymentMode, setPaymentMode] = useState('partial');
   const [bookingModalOpen, setBookingModalOpen] = useState(false);
@@ -5887,6 +6392,100 @@ export default function TourItineraryView({ destination, packageSlug }) {
   const [customDuration, setCustomDuration] = useState('5-6 Days');
   const [customDepartureCity, setCustomDepartureCity] = useState('Delhi');
   const [customCustomCityInput, setCustomCustomCityInput] = useState('');
+  const [customCitySuggestions, setCustomCitySuggestions] = useState([]);
+  const [customCityLoading, setCustomCityLoading] = useState(false);
+  const [customCityDropdownOpen, setCustomCityDropdownOpen] = useState(false);
+  const customCityDropdownRef = useRef(null);
+
+  // Dynamic City Search via /api/v1/locations/country-city with slug & text matching
+  useEffect(() => {
+    const rawQuery = customCustomCityInput.trim();
+    if (!rawQuery || rawQuery.length < 2) {
+      setCustomCitySuggestions([]);
+      setCustomCityLoading(false);
+      return;
+    }
+
+    let active = true;
+    setCustomCityLoading(true);
+
+    const timer = setTimeout(async () => {
+      try {
+        const querySlug = rawQuery.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+        const cleanQuery = rawQuery.replace(/[-_]+/g, ' ').trim();
+
+        // 1. Fetch suggestions from API
+        const res = await searchCountryCityLocations({ search: cleanQuery, limit: 30 });
+        if (!active) return;
+
+        let items = Array.isArray(res?.cities) && res.cities.length > 0
+          ? res.cities
+          : (Array.isArray(res?.suggestions) ? res.suggestions : []);
+
+        // Filter / rank with slug logic & text matching
+        const enriched = items.map((item) => {
+          const name = item.name || item.label || '';
+          const slug = item.slug || name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+          const label = item.label || (item.country_name ? `${name}, ${item.country_name}` : name);
+          return {
+            ...item,
+            name,
+            slug,
+            label,
+          };
+        });
+
+        // Prioritize exact slug match or startsWith
+        enriched.sort((a, b) => {
+          const aExact = a.slug === querySlug || a.name.toLowerCase() === rawQuery.toLowerCase();
+          const bExact = b.slug === querySlug || b.name.toLowerCase() === rawQuery.toLowerCase();
+          if (aExact && !bExact) return -1;
+          if (!aExact && bExact) return 1;
+
+          const aStarts = a.slug.startsWith(querySlug) || a.name.toLowerCase().startsWith(rawQuery.toLowerCase());
+          const bStarts = b.slug.startsWith(querySlug) || b.name.toLowerCase().startsWith(rawQuery.toLowerCase());
+          if (aStarts && !bStarts) return -1;
+          if (!aStarts && bStarts) return 1;
+
+          return 0;
+        });
+
+        setCustomCitySuggestions(enriched);
+        setCustomCityDropdownOpen(enriched.length > 0);
+      } catch (err) {
+        console.warn('City search failed:', err);
+        if (active) setCustomCitySuggestions([]);
+      } finally {
+        if (active) setCustomCityLoading(false);
+      }
+    }, 250);
+
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
+  }, [customCustomCityInput]);
+
+  // Click outside to close city suggestions dropdown
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (customCityDropdownRef.current && !customCityDropdownRef.current.contains(e.target)) {
+        setCustomCityDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const handleSelectCitySuggestion = (cityItem) => {
+    const selectedName = cityItem.name || cityItem.label || '';
+    const selectedLabel = cityItem.label || selectedName;
+    setCustomCustomCityInput(selectedLabel);
+    setCustomDepartureCity(selectedName);
+    setCustomCityDropdownOpen(false);
+  };
   const [customDepartureDate, setCustomDepartureDate] = useState('');
   const [customHotelCategory, setCustomHotelCategory] = useState('4 Star Deluxe');
   const [customMealPlan, setCustomMealPlan] = useState('Breakfast & Dinner (MAP)');
@@ -5921,6 +6520,18 @@ export default function TourItineraryView({ destination, packageSlug }) {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [customModalOpen, customItinerarySubmitting]);
+
+  // Handle ESC key to close booking modal
+  useEffect(() => {
+    if (!bookingModalOpen) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && !paymentProcessing) {
+        setBookingModalOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [bookingModalOpen, paymentProcessing]);
 
   const addCustomRoom = () => {
     setCustomRooms(prev => [...prev, { id: Date.now(), adults: 2, children: 0, childAges: [] }]);
@@ -6502,6 +7113,40 @@ export default function TourItineraryView({ destination, packageSlug }) {
     };
   }, [pkg?.id, pkg?.slug, packageIdFromQuery, resolvedSlug]);
 
+  // Load Dynamic Reviews from CMS (/api/v1/pages/slug/reviews)
+  useEffect(() => {
+    let mounted = true;
+    const loadCmsReviews = async () => {
+      try {
+        const res = await getCmsReviews();
+        if (mounted && Array.isArray(res) && res.length > 0) {
+          setCmsReviews(res);
+          return;
+        }
+        const reviewsPage = await getPageBySlug('reviews');
+        const details = Array.isArray(reviewsPage?.details) ? reviewsPage.details : [];
+        const tabsSec = details.find(
+          (item) => item.section === 'tabs_section' || item.key === 'hero_key' || item.json_data?.tabs
+        );
+        let tabs = tabsSec?.json_data?.tabs;
+        if (typeof tabsSec?.json_data === 'string') {
+          try {
+            tabs = JSON.parse(tabsSec.json_data)?.tabs;
+          } catch {}
+        }
+        if (mounted && Array.isArray(tabs) && tabs.length > 0) {
+          setCmsReviews(tabs);
+        }
+      } catch (err) {
+        console.warn('Failed to load CMS reviews in TourItineraryView:', err);
+      }
+    };
+    loadCmsReviews();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   useEffect(() => {
     let mounted = true;
 
@@ -6593,7 +7238,10 @@ export default function TourItineraryView({ destination, packageSlug }) {
         }
 
         if (!mounted || !pageData) {
-          if (mounted) setCmsMapData(null);
+          if (mounted) {
+            setCmsMapData(null);
+            setCmsPageData(null);
+          }
           return;
         }
 
@@ -6605,7 +7253,10 @@ export default function TourItineraryView({ destination, packageSlug }) {
         const isTitleMatch = Boolean(targetTitle && (pageTitle === targetTitle || pageTitle.includes(targetTitle) || targetTitle.includes(pageTitle)));
 
         if (!isSlugMatch && !isTitleMatch) {
-          if (mounted) setCmsMapData(null);
+          if (mounted) {
+            setCmsMapData(null);
+            setCmsPageData(null);
+          }
           return;
         }
 
@@ -6635,6 +7286,7 @@ export default function TourItineraryView({ destination, packageSlug }) {
           const dynamicMapTitle = (rawTitle && !isTripItinerary) ? rawTitle : 'Tour Map';
 
           if (mounted) {
+            setCmsPageData(pageData);
             setCmsMapData({
               pageId: pageData.id,
               pageTitle: pageData.title,
@@ -6647,11 +7299,15 @@ export default function TourItineraryView({ destination, packageSlug }) {
             });
           }
         } else if (mounted) {
+          setCmsPageData(pageData);
           setCmsMapData(null);
         }
       } catch (err) {
         console.warn('Unable to load CMS map data:', err);
-        if (mounted) setCmsMapData(null);
+        if (mounted) {
+          setCmsMapData(null);
+          setCmsPageData(null);
+        }
       }
     };
 
@@ -6870,17 +7526,53 @@ export default function TourItineraryView({ destination, packageSlug }) {
   const daysCount = Number(pkg?.duration_days) || 6;
   const nightsCount = Math.max(daysCount - 1, 1);
 
+  // Dynamic Hero Section Data from CMS page (Hotels & Transport hero_key)
+  const cmsHeroData = useMemo(() => {
+    if (!cmsPageData?.details || !Array.isArray(cmsPageData.details)) return null;
+    const heroDetail = cmsPageData.details.find(
+      (d) => d.key === 'hero_key' || (d.section === 'tabs_section' && (d.key === 'hero_key' || /hotel.*transport/i.test(d.title || '')))
+    );
+    if (!heroDetail) return null;
+
+    let jsonData = heroDetail.json_data;
+    if (typeof jsonData === 'string') {
+      try {
+        jsonData = JSON.parse(jsonData);
+      } catch {
+        jsonData = {};
+      }
+    }
+
+    return {
+      title: heroDetail.title || jsonData?.heading_content || 'Hotels & Transport',
+      blockDesc: jsonData?.block_desc || '',
+      tabs: Array.isArray(jsonData?.tabs) ? jsonData.tabs : [],
+    };
+  }, [cmsPageData]);
+
   // Show only dynamic hotels from backend data. If none, do not show any hotels.
   const displayHotels = useMemo(() => {
     return Array.isArray(packageHotels) ? packageHotels : [];
   }, [packageHotels]);
 
-  // Default to transport tab if no dynamic hotels exist for this package
+  // Dynamic Transfers mapped from CMS hero_key. If none, returns empty array to show graceful empty state.
+  const displayTransfers = useMemo(() => {
+    const rawTabs = cmsHeroData?.tabs;
+    if (!Array.isArray(rawTabs) || rawTabs.length === 0) return [];
+
+    return rawTabs
+      .map((tab, idx) => parseCmsTransferTab(tab, idx, pkg?.id))
+      .filter(Boolean);
+  }, [cmsHeroData, pkg?.id]);
+
+  // Default active tab handling based on dynamic data availability
   useEffect(() => {
-    if (displayHotels.length === 0) {
+    if (displayHotels.length === 0 && displayTransfers.length > 0) {
       setExcludedActiveTab('transport');
+    } else if (displayTransfers.length === 0 && displayHotels.length > 0) {
+      setExcludedActiveTab('hotels');
     }
-  }, [displayHotels.length]);
+  }, [displayHotels.length, displayTransfers.length]);
 
   const toggleHotelAddon = (hotelId) => {
     setSelectedAddonHotelIds((prev) => {
@@ -6904,61 +7596,6 @@ export default function TourItineraryView({ destination, packageSlug }) {
     }, 0);
   }, [selectedHotels]);
 
-  const displayTransfers = useMemo(() => {
-    const dest0 = destinationNames[0] || routeStart;
-    const dest1 = destinationNames[1] || destinationNames[0] || routeStart;
-    const destLast = destinationNames[destinationNames.length - 1] || routeEnd;
-
-    return [
-      {
-        id: `transfer-arrival-${pkg?.id || '1'}`,
-        title: `${routeStart} Airport to Hotel Transfer`,
-        route: `${routeStart} Airport → ${dest0} Hotel`,
-        dateTag: 'Day 1 • Arrival',
-        vehicleType: 'Private transfer',
-        vehicleName: 'Maruti Suzuki Ertiga Cab',
-        vehicleImg: '/images/transfers/ertiga_cab.jpg',
-        duration: '45 mins',
-        passengers: `${Math.max(travellerCount, 4)} Passengers in 1 vehicle`,
-        refundable: false,
-        price: 1800,
-        destinationName: dest0,
-      },
-      {
-        id: `transfer-intercity-${pkg?.id || '2'}`,
-        title: destinationNames.length > 1
-          ? `${dest0} to ${dest1} Scenic Mountain Transfer`
-          : `${dest0} Full Day Sightseeing & Viewpoints Cab`,
-        route: destinationNames.length > 1
-          ? `${dest0} → ${dest1}`
-          : `${dest0} Hotel ⇄ Top Tourist Attractions`,
-        dateTag: 'Day 2 • Intercity',
-        vehicleType: 'Private transfer',
-        vehicleName: 'Toyota Innova Crysta (AC)',
-        vehicleImg: '/images/transfers/innova_crysta.jpg',
-        duration: destinationNames.length > 1 ? '1hr 50mins' : 'Full Day (8 hrs)',
-        passengers: `${Math.max(travellerCount, 4)} Passengers in 1 vehicle`,
-        refundable: false,
-        price: 2800,
-        destinationName: dest1,
-      },
-      {
-        id: `transfer-departure-${pkg?.id || '3'}`,
-        title: `Hotel to ${routeEnd} Airport Drop`,
-        route: `${destLast} Hotel → ${routeEnd} Airport`,
-        dateTag: `Day ${daysCount} • Departure`,
-        vehicleType: 'Private transfer',
-        vehicleName: 'Toyota Innova Crysta',
-        vehicleImg: '/images/transfers/innova_crysta.jpg',
-        duration: '50 mins',
-        passengers: `${Math.max(travellerCount, 4)} Passengers in 1 vehicle`,
-        refundable: false,
-        price: 1800,
-        destinationName: routeEnd,
-      },
-    ];
-  }, [destinationNames, routeStart, routeEnd, pkg?.id, daysCount, travellerCount]);
-
   const toggleTransportAddon = (transferId) => {
     setSelectedAddonTransportIds((prev) => {
       if (prev.includes(transferId)) {
@@ -6976,55 +7613,49 @@ export default function TourItineraryView({ destination, packageSlug }) {
     return selectedTransfers.reduce((sum, t) => sum + (Number(t?.price) || 0), 0);
   }, [selectedTransfers]);
 
+  // Dynamic Addon Section Data from CMS page (Add On's & Activities addon_key)
+  const cmsAddonData = useMemo(() => {
+    if (!cmsPageData?.details || !Array.isArray(cmsPageData.details)) return null;
+    const addonDetail = cmsPageData.details.find(
+      (d) => d.key === 'addon_key' || (d.section === 'tabs_section' && (d.key === 'addon_key' || /add\s*on|activit/i.test(d.title || '')))
+    );
+    if (!addonDetail) return null;
+
+    let jsonData = addonDetail.json_data;
+    if (typeof jsonData === 'string') {
+      try {
+        jsonData = JSON.parse(jsonData);
+      } catch {
+        jsonData = {};
+      }
+    }
+
+    return {
+      title: addonDetail.title || jsonData?.heading_content || "Add On's & Activities ✨",
+      blockDesc: jsonData?.block_desc || '',
+      tabs: Array.isArray(jsonData?.tabs) ? jsonData.tabs : [],
+    };
+  }, [cmsPageData]);
+
+  // Dynamic Addons / Activities mapped from CMS addon_key. If none, returns empty array.
   const displayActivities = useMemo(() => {
-    const dest = destinationNames[0] || routeDestinationTitle || 'Kashmir';
-    return [
-      {
-        id: `act-shikara-${pkg?.id || '1'}`,
-        name: `Scenic Shikara Ride on ${dest === 'Kashmir' || dest === 'Srinagar' ? 'Dal Lake' : `${dest} Lake`}`,
-        category: 'Activity Addon',
-        tag: 'ACTIVITY ADDON',
-        badge: 'Most Popular • 85% Picked',
-        duration: '1 Hour Sunset Cruise',
-        image: 'https://images.unsplash.com/photo-1595815771614-ade9d652a65d?auto=format&fit=crop&w=600&q=80',
-        notes: 'Glide peacefully across traditional wooden houseboats, floating flower markets, and snow-capped peaks.',
-        price: 800,
-      },
-      {
-        id: `act-cablecar-${pkg?.id || '2'}`,
-        name: 'Gondola Cable Car Ride (Phase 1 & Phase 2)',
-        category: 'Adventure Pass',
-        tag: 'ACTIVITY ADDON',
-        badge: 'Must Experience',
-        duration: '3 - 4 Hours',
-        image: 'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=600&q=80',
-        notes: 'Ascend to Kongdoori and Apharwat Peak at 13,780 ft with breathtaking panoramic snow mountain vistas.',
-        price: 1950,
-      },
-      {
-        id: `act-ponytrail-${pkg?.id || '3'}`,
-        name: 'Guided Valley Pony Trekking Trail',
-        category: 'Nature Trail',
-        tag: 'ACTIVITY ADDON',
-        badge: 'Family Favorite',
-        duration: '2 Hours',
-        image: 'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=600&q=80',
-        notes: 'Explore picturesque pine meadows, roaring mountain streams, and serene scenic valley vistas.',
-        price: 1200,
-      },
-      {
-        id: `act-jeepsafari-${pkg?.id || '4'}`,
-        name: 'Private Snow Jeep Safari to Mountain Hamlets',
-        category: 'Excursion Pass',
-        tag: 'ACTIVITY ADDON',
-        badge: 'Scenic Adventure',
-        duration: 'Half Day (4 Hours)',
-        image: 'https://images.unsplash.com/photo-1506015391300-4802dc74de2e?auto=format&fit=crop&w=600&q=80',
-        notes: 'Exclusive 4x4 Jeep drive through untouched mountain passes, alpine forests, and pristine scenic trails.',
-        price: 2500,
-      },
-    ];
-  }, [destinationNames, routeDestinationTitle, pkg?.id]);
+    const rawTabs = cmsAddonData?.tabs;
+    if (!Array.isArray(rawTabs) || rawTabs.length === 0) return [];
+
+    return rawTabs
+      .map((tab, idx) => parseCmsActivityTab(tab, idx, pkg?.id))
+      .filter(Boolean);
+  }, [cmsAddonData, pkg?.id]);
+
+  const addonSectionTitle = useMemo(() => {
+    if (displayActivities.length === 0) {
+      return "Add On's & Activities ✨";
+    }
+    if (cmsAddonData?.title) {
+      return cmsAddonData.title.replace(/\(\d+\)/, `(${displayActivities.length})`);
+    }
+    return `Add On's & Activities (${displayActivities.length}) ✨`;
+  }, [cmsAddonData?.title, displayActivities.length]);
 
   const toggleActivityAddon = (actId) => {
     setSelectedAddonActivityIds((prev) => {
@@ -7045,12 +7676,19 @@ export default function TourItineraryView({ destination, packageSlug }) {
 
   const totalAllAddonsPrice = totalHotelAddonPrice + totalTransportAddonPrice + totalActivityAddonPrice;
 
-  const reviewCount = Number(reviewSummary?.count) || (reviews.length ? reviews.length : 325);
-  const averageRating = Number(reviewSummary?.average_rating) || (
-    reviews.length
-      ? reviews.reduce((sum, review) => sum + (Number(review.rating) || 0), 0) / reviews.length
-      : 4.8
-  );
+  const packageSpecificReviews = useMemo(() => {
+    const raw = (Array.isArray(pkg?.reviews) && pkg.reviews.length > 0)
+      ? pkg.reviews
+      : (Array.isArray(reviews) && reviews.length > 0 ? reviews : []);
+    return raw.filter((r) => !r.status || r.status === 'approved' || r.status === 'published');
+  }, [pkg?.reviews, reviews]);
+
+  const reviewCount = packageSpecificReviews.length > 0
+    ? packageSpecificReviews.length
+    : (Number(reviewSummary?.count) || (cmsReviews.length ? cmsReviews.length : 325));
+  const averageRating = packageSpecificReviews.length > 0
+    ? (packageSpecificReviews.reduce((sum, review) => sum + (Number(review.rating) || 0), 0) / packageSpecificReviews.length)
+    : (Number(reviewSummary?.average_rating) || (reviews.length ? reviews.reduce((sum, review) => sum + (Number(review.rating) || 0), 0) / reviews.length : 4.8));
   const ratingLabel = averageRating ? averageRating.toFixed(1) : '4.8';
 
   const packageUnitAmount = Number(pkg?.price) > 0 ? Number(pkg?.price) : 19999;
@@ -7346,30 +7984,77 @@ export default function TourItineraryView({ destination, packageSlug }) {
     return merged.slice(0, 8);
   }, [similarPackages]);
 
-  // Reviews list for cards
+  // Dynamic Reviews list for cards and popup modal
   const displayReviews = useMemo(() => {
-    if (reviews.length >= 3) {
-      return reviews.slice(0, 3).map((r) => ({
-        name: r.reviewer_name || r.customer?.name || 'Happy Traveler',
-        rating: Number(r.rating) || 5.0,
-        comment: r.comment || r.title || 'An unforgettable experience with wonderful memories.',
-        date: r.created_at ? formatReviewDate(r.created_at).replace('Reviewed on: ', '') : 'Recently',
-        avatar: null,
-      }));
+    // 1. First priority: Real package reviews from GET /api/v1/packages/{slug} or /api/v1/package-review
+    const pkgReviews = (Array.isArray(pkg?.reviews) && pkg.reviews.length > 0)
+      ? pkg.reviews
+      : (Array.isArray(reviews) && reviews.length > 0 ? reviews : []);
+
+    const validPkgReviews = pkgReviews.filter(
+      (r) => !r.status || r.status === 'approved' || r.status === 'published'
+    );
+
+    if (validPkgReviews.length > 0) {
+      return validPkgReviews.map((r, idx) => {
+        const name = (r.reviewer_name || r.name || r.customer?.name || 'Happy Traveler').trim();
+        const numRating = Number(r.rating) || parseStarRating(r.badge, r.rating) || 5.0;
+        const comment = cleanReviewContent(r.comment || r.content || r.title || 'An unforgettable experience with wonderful memories.');
+        const avatar = r.media?.[0]?.url
+          ? getMediaUrl(r.media[0].url)
+          : (r.img ? getMediaUrl(r.img) : (r.avatar || null));
+        return {
+          ...r,
+          id: r.id || `pkg-rev-${idx}`,
+          name,
+          title: r.title ? r.title.trim() : name,
+          reviewer_name: name,
+          rating: numRating,
+          comment,
+          content: r.comment || r.content || comment,
+          badge: r.badge || '⭐'.repeat(Math.min(5, Math.max(1, Math.round(numRating)))),
+          date: r.created_at ? formatReviewDate(r.created_at).replace('Reviewed on: ', '') : (r.date || 'Verified traveler'),
+          avatar,
+          img: r.media?.[0]?.url || r.img || null,
+        };
+      });
     }
-    const list = reviews.map((r) => ({
-      name: r.reviewer_name || r.customer?.name || 'Happy Traveler',
-      rating: Number(r.rating) || 5.0,
-      comment: r.comment || r.title || 'An unforgettable experience with wonderful memories.',
-      date: r.created_at ? formatReviewDate(r.created_at).replace('Reviewed on: ', '') : 'Recently',
+
+    // 2. Second priority: CMS reviews from /api/v1/pages/slug/reviews if package has no reviews yet
+    if (cmsReviews && cmsReviews.length > 0) {
+      return cmsReviews.map((r, idx) => {
+        const name = (r.title || r.name || r.reviewer_name || 'Happy Traveler').trim();
+        const numRating = parseStarRating(r.badge, r.rating);
+        const comment = cleanReviewContent(r.content || r.comment || 'An unforgettable experience with wonderful memories.');
+        const avatar = r.img ? getMediaUrl(r.img) : null;
+        return {
+          ...r,
+          id: r.id || `cms-rev-${idx}`,
+          name,
+          title: name,
+          reviewer_name: name,
+          rating: numRating,
+          comment,
+          content: r.content || comment,
+          badge: r.badge || '⭐'.repeat(numRating),
+          date: r.date || (idx === 0 ? '2 weeks ago' : idx === 1 ? '3 weeks ago' : '1 month ago'),
+          avatar,
+          img: r.img || null,
+        };
+      });
+    }
+
+    // 3. Fallback reviews for when both are unavailable
+    return FALLBACK_REVIEWS.map((fb, i) => ({
+      ...fb,
+      id: `fb-rev-${i}`,
+      title: fb.name,
+      reviewer_name: fb.name,
+      content: fb.comment,
       avatar: null,
+      badge: '⭐'.repeat(Math.round(fb.rating || 5)),
     }));
-    for (const fb of FALLBACK_REVIEWS) {
-      if (list.length >= 3) break;
-      list.push(fb);
-    }
-    return list.slice(0, 3);
-  }, [reviews]);
+  }, [pkg?.reviews, reviews, cmsReviews]);
 
   const packageCategoriesList = useMemo(() => {
     if (Array.isArray(pkg?.package_categories) && pkg.package_categories.length > 0) {
@@ -7954,7 +8639,20 @@ export default function TourItineraryView({ destination, packageSlug }) {
               </div>
             ) : null}
           </div>
-          <div className="itn-rating-row">
+          <div
+            className="itn-rating-row"
+            onClick={() => {
+              const el = document.getElementById('itinerary-reviews');
+              if (el) {
+                el.scrollIntoView({ behavior: 'smooth' });
+              } else if (displayReviews.length > 0) {
+                setSelectedReviewIndex(0);
+                setAllReviewsModalOpen(true);
+              }
+            }}
+            style={{ cursor: 'pointer' }}
+            title="Click to view traveler reviews"
+          >
             <span className="itn-star-icon">★</span>
             <strong className="itn-rating-val">{ratingLabel}</strong>
             <span className="itn-review-count">({reviewCount} Reviews)</span>
@@ -8092,10 +8790,10 @@ export default function TourItineraryView({ destination, packageSlug }) {
                 <div className="itn-exc-header-top">
                   <div>
                     <h2 className="itn-block-title itn-exc-title">
-                      Hotels &amp; Transport
+                      {cmsHeroData?.title || 'Hotels & Transport'}
                     </h2>
                     <p className="itn-exc-subtitle">
-                      Explore your stay arrangements and transfer details. Review included features or customize with verified hotels and private transport below.
+                      {cmsHeroData?.blockDesc || 'Explore your stay arrangements and transfer details. Review included features or customize with verified hotels and private transport below.'}
                     </p>
                   </div>
                 </div>
@@ -8199,14 +8897,24 @@ export default function TourItineraryView({ destination, packageSlug }) {
                                     <span>{nights} {nights === 1 ? 'Night' : 'Nights'}</span>
                                   </div>
 
-                                  <div className="itn-exc-meta-item itn-exc-non-refundable">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                      <circle cx="12" cy="12" r="10" />
-                                      <line x1="15" y1="9" x2="9" y2="15" />
-                                      <line x1="9" y1="9" x2="15" y2="15" />
-                                    </svg>
-                                    <span>Non Refundable</span>
-                                  </div>
+                                  {hotel.refundable ? (
+                                    <div className="itn-exc-meta-item itn-exc-refundable">
+                                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <polyline points="8 12 11 15 16 9" />
+                                      </svg>
+                                      <span>Refundable</span>
+                                    </div>
+                                  ) : (
+                                    <div className="itn-exc-meta-item itn-exc-non-refundable">
+                                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <line x1="15" y1="9" x2="9" y2="15" />
+                                        <line x1="9" y1="9" x2="15" y2="15" />
+                                      </svg>
+                                      <span>Non Refundable</span>
+                                    </div>
+                                  )}
 
                                   <div className="itn-exc-meta-item">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -8298,116 +9006,164 @@ export default function TourItineraryView({ destination, packageSlug }) {
                         </div>
                       )
                     ) : (
-                      /* Transport Content - Inspired by Screenshot */
-                      displayTransfers.map((transfer) => {
-                        const isAdded = selectedAddonTransportIds.includes(transfer.id);
+                      /* Transport Content - Dynamic from hero_key */
+                      displayTransfers.length > 0 ? (
+                        displayTransfers.map((transfer) => {
+                          const isAdded = selectedAddonTransportIds.includes(transfer.id);
 
-                        return (
-                          <div key={transfer.id} className={`itn-exc-card ${isAdded ? 'is-added' : ''}`}>
-                            <div className="itn-exc-card-img-wrap itn-exc-card-img-wrap--vehicle">
-                              <Image
-                                src={transfer.vehicleImg}
-                                alt={transfer.vehicleName}
-                                fill
-                                sizes="(max-width: 768px) 100vw, 33vw"
-                                style={{ objectFit: 'contain' }}
-                              />
-                              <div className="itn-exc-card-img-badge">{transfer.vehicleName}</div>
-                            </div>
-
-                            <div className="itn-exc-card-body">
-                              <div className="itn-exc-date-pill">
-                                {transfer.dateTag}
-                              </div>
-                              <h3 className="itn-exc-card-title">{transfer.title}</h3>
-                              <p className="itn-exc-card-route">
-                                {transfer.route}
-                              </p>
-
-                              <div className="itn-exc-meta-list">
-                                <div className="itn-exc-meta-item">
-                                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <rect x="1" y="3" width="15" height="13" rx="2" />
-                                    <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
-                                    <circle cx="5.5" cy="18.5" r="2.5" />
-                                    <circle cx="18.5" cy="18.5" r="2.5" />
-                                  </svg>
-                                  <span>{transfer.vehicleType}</span>
-                                  <span className="itn-exc-meta-dot">•</span>
-                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <polyline points="12 6 12 12 16 14" />
-                                  </svg>
-                                  <span>{transfer.duration}</span>
-                                </div>
-
-                                <div className="itn-exc-meta-item itn-exc-non-refundable">
-                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <line x1="15" y1="9" x2="9" y2="15" />
-                                    <line x1="9" y1="9" x2="15" y2="15" />
-                                  </svg>
-                                  <span>Non Refundable</span>
-                                </div>
-
-                                <div className="itn-exc-meta-item">
-                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                                    <circle cx="9" cy="7" r="4" />
-                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                                  </svg>
-                                  <span>{transfer.passengers}</span>
-                                </div>
+                          return (
+                            <div key={transfer.id} className={`itn-exc-card ${isAdded ? 'is-added' : ''}`}>
+                              <div className="itn-exc-card-img-wrap itn-exc-card-img-wrap--vehicle">
+                                <Image
+                                  src={transfer.vehicleImg}
+                                  alt={transfer.vehicleName}
+                                  fill
+                                  sizes="(max-width: 768px) 100vw, 33vw"
+                                  style={{ objectFit: 'contain' }}
+                                  onError={(e) => {
+                                    if (e?.currentTarget) {
+                                      e.currentTarget.src = '/images/transfers/ertiga_cab.jpg';
+                                    }
+                                  }}
+                                />
+                                <div className="itn-exc-card-img-badge">{transfer.vehicleName}</div>
                               </div>
 
-                              <div className="itn-exc-card-footer">
-                                <div className="itn-exc-price-col">
-                                  <strong className="itn-exc-price">
-                                    ₹ {transfer.price.toLocaleString('en-IN')}
-                                  </strong>
-                                  <span className="itn-exc-per-night">Per vehicle</span>
+                              <div className="itn-exc-card-body">
+                                <div className="itn-exc-date-pill">
+                                  {transfer.dateTag}
                                 </div>
+                                <h3 className="itn-exc-card-title">{transfer.title}</h3>
+                                <p className="itn-exc-card-route">
+                                  {transfer.route}
+                                </p>
 
-                                <div className="itn-exc-actions">
-                                  {isAdded ? (
-                                    <div className="itn-exc-added-row">
-                                      <span className="itn-exc-added-label">
-                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                                          <polyline points="20 6 9 17 4 12" />
-                                        </svg>
-                                        Added
-                                      </span>
-                                      <button
-                                        type="button"
-                                        className="itn-exc-trash-btn"
-                                        onClick={() => toggleTransportAddon(transfer.id)}
-                                        title="Remove from itinerary"
-                                        aria-label={`Remove ${transfer.title}`}
-                                      >
-                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                          <polyline points="3 6 5 6 21 6" />
-                                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                                          <line x1="10" y1="11" x2="10" y2="17" />
-                                          <line x1="14" y1="11" x2="14" y2="17" />
-                                        </svg>
-                                      </button>
+                                <div className="itn-exc-meta-list">
+                                  <div className="itn-exc-meta-item">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                      <rect x="1" y="3" width="15" height="13" rx="2" />
+                                      <polygon points="16 8 20 8 23 11 23 16 16 16 8" />
+                                      <circle cx="5.5" cy="18.5" r="2.5" />
+                                      <circle cx="18.5" cy="18.5" r="2.5" />
+                                    </svg>
+                                    <span>{transfer.vehicleType}</span>
+                                    <span className="itn-exc-meta-dot">•</span>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                      <circle cx="12" cy="12" r="10" />
+                                      <polyline points="12 6 12 12 16 14" />
+                                    </svg>
+                                    <span>{transfer.duration}</span>
+                                  </div>
+
+                                  {transfer.refundable ? (
+                                    <div className="itn-exc-meta-item itn-exc-refundable">
+                                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <polyline points="8 12 11 15 16 9" />
+                                      </svg>
+                                      <span>Refundable</span>
                                     </div>
                                   ) : (
-                                    <button
-                                      type="button"
-                                      className="itn-exc-btn-add"
-                                      onClick={() => toggleTransportAddon(transfer.id)}
-                                    >
-                                      + Add to itinerary
-                                    </button>
+                                    <div className="itn-exc-meta-item itn-exc-non-refundable">
+                                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <line x1="15" y1="9" x2="9" y2="15" />
+                                        <line x1="9" y1="9" x2="15" y2="15" />
+                                      </svg>
+                                      <span>Non Refundable</span>
+                                    </div>
                                   )}
+
+                                  <div className="itn-exc-meta-item">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                      <circle cx="9" cy="7" r="4" />
+                                      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                                      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                    </svg>
+                                    <span>{transfer.passengers}</span>
+                                  </div>
+                                </div>
+
+                                <div className="itn-exc-card-footer">
+                                  <div className="itn-exc-price-col">
+                                    <strong className="itn-exc-price">
+                                      ₹ {transfer.price.toLocaleString('en-IN')}
+                                    </strong>
+                                    <span className="itn-exc-per-night">Per vehicle</span>
+                                  </div>
+
+                                  <div className="itn-exc-actions">
+                                    {isAdded ? (
+                                      <div className="itn-exc-added-row">
+                                        <span className="itn-exc-added-label">
+                                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                                            <polyline points="20 6 9 17 4 12" />
+                                          </svg>
+                                          Added
+                                        </span>
+                                        <button
+                                          type="button"
+                                          className="itn-exc-trash-btn"
+                                          onClick={() => toggleTransportAddon(transfer.id)}
+                                          title="Remove from itinerary"
+                                          aria-label={`Remove ${transfer.title}`}
+                                        >
+                                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <polyline points="3 6 5 6 21 6" />
+                                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                            <line x1="10" y1="11" x2="10" y2="17" />
+                                            <line x1="14" y1="11" x2="14" y2="17" />
+                                          </svg>
+                                        </button>
+                                      </div>
+                                    ) : (
+                                      <button
+                                        type="button"
+                                        className="itn-exc-btn-add"
+                                        onClick={() => toggleTransportAddon(transfer.id)}
+                                      >
+                                        + Add to itinerary
+                                      </button>
+                                    )}
+                                  </div>
                                 </div>
                               </div>
                             </div>
-                          </div>
-                        );
-                      })
+                          );
+                        })
+                      ) : (
+                        <div
+                          className="itn-exc-empty-state"
+                          style={{
+                            padding: '36px 20px',
+                            textAlign: 'center',
+                            width: '100%',
+                            color: '#64748b',
+                            background: '#f8fafc',
+                            borderRadius: '16px',
+                            border: '1px dashed #cbd5e1',
+                          }}
+                        >
+                          <svg
+                            width="28"
+                            height="28"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="#94a3b8"
+                            strokeWidth="1.8"
+                            style={{ margin: '0 auto 8px', display: 'block' }}
+                          >
+                            <rect x="1" y="3" width="15" height="13" rx="2" />
+                            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+                            <circle cx="5.5" cy="18.5" r="2.5" />
+                            <circle cx="18.5" cy="18.5" r="2.5" />
+                          </svg>
+                          <p style={{ margin: 0, fontSize: '0.92rem', fontWeight: 500 }}>
+                            No transport transfers listed for this package.
+                          </p>
+                        </div>
+                      )
                     )}
                   </div>
                 </div>
@@ -8502,10 +9258,10 @@ export default function TourItineraryView({ destination, packageSlug }) {
                 <div className="itn-addons-header-top">
                   <div>
                     <h2 className="itn-block-title itn-addons-title">
-                      Add On&apos;s &amp; Activities ({displayActivities.length}) <span className="itn-addons-sparkle">✨</span>
+                      {addonSectionTitle}
                     </h2>
                     <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#64748b' }}>
-                      Enhance your trip with unforgettable local experiences and activity passes.
+                      {cmsAddonData?.blockDesc || 'Enhance your trip with unforgettable local experiences and activity passes.'}
                     </p>
                   </div>
                 </div>
@@ -8529,84 +9285,119 @@ export default function TourItineraryView({ destination, packageSlug }) {
                   role="region"
                   aria-label="Add-ons horizontal carousel"
                 >
-                  {displayActivities.map((activity) => {
-                    const isAdded = selectedAddonActivityIds.includes(activity.id);
+                  {displayActivities.length > 0 ? (
+                    displayActivities.map((activity) => {
+                      const isAdded = selectedAddonActivityIds.includes(activity.id);
 
-                    return (
-                      <div key={activity.id} className={`itn-addon-card ${isAdded ? 'is-added' : ''}`}>
-                        <div className="itn-addon-img-wrap">
-                          <Image
-                            src={activity.image}
-                            alt={activity.name}
-                            fill
-                            sizes="(max-width: 768px) 100vw, 33vw"
-                            style={{ objectFit: 'cover' }}
-                            unoptimized={activity.image.startsWith('http')}
-                          />
-                          <div className="itn-addon-badge">{activity.badge}</div>
-                        </div>
-
-                        <div className="itn-addon-body">
-                          <div className="itn-addon-tag">{activity.tag}</div>
-                          <h3 className="itn-addon-name">{activity.name}</h3>
-                          <div className="itn-addon-meta">
-                            <span>{activity.category}</span>
-                            <span className="itn-addon-dot">•</span>
-                            <span>{activity.duration}</span>
+                      return (
+                        <div key={activity.id} className={`itn-addon-card ${isAdded ? 'is-added' : ''}`}>
+                          <div className="itn-addon-img-wrap">
+                            <Image
+                              src={activity.image}
+                              alt={activity.name}
+                              fill
+                              sizes="(max-width: 768px) 100vw, 33vw"
+                              style={{ objectFit: 'cover' }}
+                              unoptimized={Boolean(activity.image?.startsWith('http'))}
+                              onError={(e) => {
+                                if (e?.currentTarget) {
+                                  e.currentTarget.src = 'https://images.unsplash.com/photo-1595815771614-ade9d652a65d?auto=format&fit=crop&w=600&q=80';
+                                }
+                              }}
+                            />
+                            <div className="itn-addon-badge">{activity.badge}</div>
                           </div>
-                          {activity.notes ? (
-                            <p className="itn-addon-notes" title={activity.notes}>
-                              {activity.notes}
-                            </p>
-                          ) : null}
 
-                          <div className="itn-addon-footer">
-                            <div className="itn-addon-price-col">
-                              <strong className="itn-addon-price">
-                                ₹ {activity.price.toLocaleString('en-IN')}
-                              </strong>
-                              <span className="itn-addon-per-night">Per person</span>
+                          <div className="itn-addon-body">
+                            <div className="itn-addon-tag">{activity.tag}</div>
+                            <h3 className="itn-addon-name">{activity.name}</h3>
+                            <div className="itn-addon-meta">
+                              <span>{activity.category}</span>
+                              <span className="itn-addon-dot">•</span>
+                              <span>{activity.duration}</span>
                             </div>
+                            {activity.notes ? (
+                              <p className="itn-addon-notes" title={activity.notes}>
+                                {activity.notes}
+                              </p>
+                            ) : null}
 
-                            <div className="itn-addon-actions">
-                              {isAdded ? (
-                                <div className="itn-addon-added-row">
-                                  <span className="itn-addon-added-label">
-                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                                      <polyline points="20 6 9 17 4 12" />
-                                    </svg>
-                                    Added
-                                  </span>
+                            <div className="itn-addon-footer">
+                              <div className="itn-addon-price-col">
+                                <strong className="itn-addon-price">
+                                  ₹ {activity.price.toLocaleString('en-IN')}
+                                </strong>
+                                <span className="itn-addon-per-night">Per person</span>
+                              </div>
+
+                              <div className="itn-addon-actions">
+                                {isAdded ? (
+                                  <div className="itn-addon-added-row">
+                                    <span className="itn-addon-added-label">
+                                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                                        <polyline points="20 6 9 17 4 12" />
+                                      </svg>
+                                      Added
+                                    </span>
+                                    <button
+                                      type="button"
+                                      className="itn-addon-trash-btn"
+                                      onClick={() => toggleActivityAddon(activity.id)}
+                                      title="Remove from itinerary"
+                                      aria-label={`Remove ${activity.name}`}
+                                    >
+                                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <polyline points="3 6 5 6 21 6" />
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                        <line x1="10" y1="11" x2="10" y2="17" />
+                                        <line x1="14" y1="11" x2="14" y2="17" />
+                                      </svg>
+                                    </button>
+                                  </div>
+                                ) : (
                                   <button
                                     type="button"
-                                    className="itn-addon-trash-btn"
+                                    className="itn-addon-btn-add"
                                     onClick={() => toggleActivityAddon(activity.id)}
-                                    title="Remove from itinerary"
-                                    aria-label={`Remove ${activity.name}`}
                                   >
-                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                      <polyline points="3 6 5 6 21 6" />
-                                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                                      <line x1="10" y1="11" x2="10" y2="17" />
-                                      <line x1="14" y1="11" x2="14" y2="17" />
-                                    </svg>
+                                    + Add to itinerary
                                   </button>
-                                </div>
-                              ) : (
-                                <button
-                                  type="button"
-                                  className="itn-addon-btn-add"
-                                  onClick={() => toggleActivityAddon(activity.id)}
-                                >
-                                  + Add to itinerary
-                                </button>
-                              )}
+                                )}
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })
+                  ) : (
+                    <div
+                      className="itn-addons-empty-state"
+                      style={{
+                        padding: '36px 20px',
+                        textAlign: 'center',
+                        width: '100%',
+                        color: '#64748b',
+                        background: '#f8fafc',
+                        borderRadius: '16px',
+                        border: '1px dashed #cbd5e1',
+                      }}
+                    >
+                      <svg
+                        width="28"
+                        height="28"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#94a3b8"
+                        strokeWidth="1.8"
+                        style={{ margin: '0 auto 8px', display: 'block' }}
+                      >
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                      </svg>
+                      <p style={{ margin: 0, fontSize: '0.92rem', fontWeight: 500 }}>
+                        No add-ons or activities listed for this package.
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 {displayActivities.length > 2 ? (
@@ -9164,15 +9955,49 @@ export default function TourItineraryView({ destination, packageSlug }) {
 
           {/* What Our Travelers Say */}
           {displayReviews.length > 0 ? (
-            <section className="itn-full-block">
+            <section className="itn-full-block" id="itinerary-reviews">
               <h2 className="itn-block-title">What Our Travelers Say</h2>
-              <div className="itn-reviews-grid itn-reviews-grid-full">
-                {displayReviews.map((rev, index) => (
-                  <div key={`review-card-${index}`} className="itn-review-card">
+              <div
+                className="itn-reviews-grid itn-reviews-grid-full"
+                style={displayReviews.length <= 2 ? { gridTemplateColumns: `repeat(${displayReviews.length}, minmax(0, 1fr))` } : undefined}
+              >
+                {displayReviews.slice(0, 3).map((rev, index) => (
+                  <div
+                    key={`review-card-${index}`}
+                    className="itn-review-card"
+                    onClick={() => {
+                      setSelectedReviewIndex(index);
+                      setAllReviewsModalOpen(true);
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    style={{ cursor: 'pointer' }}
+                    title="Click to view full review"
+                  >
                     <div className="itn-review-header">
                       <div className="itn-review-user-info">
                         <div className="itn-review-avatar">
-                          {rev.name.charAt(0).toUpperCase()}
+                          {rev.avatar || rev.img ? (
+                            <img
+                              src={rev.avatar || getMediaUrl(rev.img)}
+                              alt={rev.name}
+                              style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover',
+                                display: 'block',
+                              }}
+                              onError={(e) => {
+                                e.currentTarget.style.display = 'none';
+                                if (e.currentTarget.nextElementSibling) {
+                                  e.currentTarget.nextElementSibling.style.display = 'flex';
+                                }
+                              }}
+                            />
+                          ) : null}
+                          <span style={{ display: (rev.avatar || rev.img) ? 'none' : 'flex' }}>
+                            {(rev.name || 'T').charAt(0).toUpperCase()}
+                          </span>
                         </div>
                         <strong className="itn-review-name">{rev.name}</strong>
                       </div>
@@ -9181,8 +10006,22 @@ export default function TourItineraryView({ destination, packageSlug }) {
                         <strong>{Number(rev.rating).toFixed(1)}</strong>
                       </div>
                     </div>
+                    {rev.title && rev.title.trim() !== rev.name ? (
+                      <h4
+                        className="itn-review-card-title"
+                        style={{
+                          margin: '8px 0 4px 0',
+                          fontSize: '15px',
+                          fontWeight: 600,
+                          color: '#1a1a1a',
+                          lineHeight: 1.35,
+                        }}
+                      >
+                        &ldquo;{rev.title.trim()}&rdquo;
+                      </h4>
+                    ) : null}
                     <p className="itn-review-comment">{rev.comment}</p>
-                    <div className="itn-review-date">{rev.date}</div>
+                    <div className="itn-review-date">{rev.date || 'Verified traveler'}</div>
                   </div>
                 ))}
               </div>
@@ -9190,9 +10029,12 @@ export default function TourItineraryView({ destination, packageSlug }) {
                 <button
                   type="button"
                   className="itn-btn-outline"
-                  onClick={() => setAllReviewsModalOpen(true)}
+                  onClick={() => {
+                    setSelectedReviewIndex(0);
+                    setAllReviewsModalOpen(true);
+                  }}
                 >
-                  View All Reviews
+                  {displayReviews.length > 3 ? `View All ${displayReviews.length} Reviews` : 'View All Reviews'}
                 </button>
               </div>
             </section>
@@ -9392,29 +10234,14 @@ export default function TourItineraryView({ destination, packageSlug }) {
         </div>
       ) : null}
 
-      {/* All Reviews Modal */}
-      {allReviewsModalOpen ? (
-        <div className="itn-media-modal" role="dialog" aria-modal="true" aria-label="All traveler reviews">
-          <div className="itn-media-panel" style={{ maxWidth: 640 }}>
-            <div className="itn-media-head">
-              <h3>Traveler Reviews ({reviewCount})</h3>
-              <button type="button" onClick={() => setAllReviewsModalOpen(false)} aria-label="Close">✕</button>
-            </div>
-            <div style={{ padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
-              {(reviews.length > 0 ? reviews : FALLBACK_REVIEWS).map((rev, index) => (
-                <div key={`modal-rev-${index}`} style={{ paddingBottom: 16, borderBottom: '1px solid #f1f5f9' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-                    <strong style={{ fontSize: 14, color: '#0f172a' }}>{rev.reviewer_name || rev.customer?.name || rev.name}</strong>
-                    <span style={{ color: '#f59e0b', fontSize: 13, fontWeight: 700 }}>★ {Number(rev.rating).toFixed(1)}</span>
-                  </div>
-                  <p style={{ margin: 0, color: '#475569', fontSize: 13, lineHeight: 1.5 }}>{rev.comment || rev.title}</p>
-                  <small style={{ color: '#94a3b8', fontSize: 11 }}>{rev.date || 'Verified traveler'}</small>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      ) : null}
+      {/* Individual Review Popup Modal (Matching Home Page) */}
+      <ReviewDetailModal
+        isOpen={allReviewsModalOpen}
+        onClose={() => setAllReviewsModalOpen(false)}
+        reviews={displayReviews}
+        currentIndex={selectedReviewIndex}
+        onNavigate={(newIdx) => setSelectedReviewIndex(newIdx)}
+      />
 
       {/* Create your Itinerary Custom Modal Popup */}
       {customModalOpen ? (
@@ -9705,19 +10532,99 @@ export default function TourItineraryView({ destination, packageSlug }) {
                             onClick={() => {
                               setCustomDepartureCity(city);
                               setCustomCustomCityInput('');
+                              setCustomCityDropdownOpen(false);
+                              setCustomCitySuggestions([]);
                             }}
                           >
                             {city}
                           </button>
                         ))}
                       </div>
-                      <input
-                        type="text"
-                        placeholder="Or enter other departure city / airport..."
-                        value={customCustomCityInput}
-                        onChange={(e) => setCustomCustomCityInput(e.target.value)}
-                        className="itn-custom-text-input itn-custom-city-other"
-                      />
+
+                      {/* Dynamic Search Input with API Suggestions & Slug Matching */}
+                      <div className="itn-custom-city-search-wrap" ref={customCityDropdownRef}>
+                        <div className="itn-custom-city-input-inner">
+                          <svg className="itn-custom-city-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2.2">
+                            <circle cx="11" cy="11" r="8" />
+                            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                          </svg>
+                          <input
+                            type="text"
+                            placeholder="Or search departure city (e.g. Delhi, Paris, 10 de Abril)..."
+                            value={customCustomCityInput}
+                            onChange={(e) => {
+                              setCustomCustomCityInput(e.target.value);
+                              if (e.target.value.trim().length >= 2) {
+                                setCustomCityDropdownOpen(true);
+                              }
+                            }}
+                            onFocus={() => {
+                              if (customCitySuggestions.length > 0) {
+                                setCustomCityDropdownOpen(true);
+                              }
+                            }}
+                            className="itn-custom-text-input itn-custom-city-other"
+                          />
+                          {customCityLoading && (
+                            <span className="itn-custom-city-spinner" />
+                          )}
+                          {!customCityLoading && customCustomCityInput && (
+                            <button
+                              type="button"
+                              className="itn-custom-city-clear-btn"
+                              onClick={() => {
+                                setCustomCustomCityInput('');
+                                setCustomCitySuggestions([]);
+                                setCustomCityDropdownOpen(false);
+                              }}
+                              title="Clear search"
+                            >
+                              ✕
+                            </button>
+                          )}
+                        </div>
+
+                        {/* Suggestions Dropdown */}
+                        {customCityDropdownOpen && (
+                          <div className="itn-custom-city-dropdown">
+                            {customCityLoading && customCitySuggestions.length === 0 ? (
+                              <div className="itn-custom-city-loading-state">
+                                <span className="itn-custom-city-spinner" />
+                                <span>Searching cities...</span>
+                              </div>
+                            ) : customCitySuggestions.length > 0 ? (
+                              <div className="itn-custom-city-list">
+                                {customCitySuggestions.map((item) => (
+                                  <button
+                                    key={`${item.id || item.name}-${item.country_id || ''}`}
+                                    type="button"
+                                    className="itn-custom-city-item"
+                                    onClick={() => handleSelectCitySuggestion(item)}
+                                  >
+                                    <div className="itn-custom-city-item-left">
+                                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="itn-custom-city-pin">
+                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                                        <circle cx="12" cy="10" r="3" />
+                                      </svg>
+                                      <div className="itn-custom-city-item-text">
+                                        <span className="itn-custom-city-name">{item.name}</span>
+                                        {item.country_name && (
+                                          <span className="itn-custom-city-country">, {item.country_name}</span>
+                                        )}
+                                      </div>
+                                    </div>
+                                    <span className="itn-custom-city-type-pill">City</span>
+                                  </button>
+                                ))}
+                              </div>
+                            ) : customCustomCityInput.trim().length >= 2 ? (
+                              <div className="itn-custom-city-empty-state">
+                                No cities found matching &quot;{customCustomCityInput}&quot;
+                              </div>
+                            ) : null}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
 

@@ -232,16 +232,79 @@ export const getCategories = async () => {
   }
 };
 
+export const isDomesticDestination = (d) => {
+  if (!d) return false;
+  const name = String(d.name || d.title || '').toLowerCase().trim();
+  const slug = String(d.slug || '').toLowerCase().trim();
+  const type = String(d.type || '').toLowerCase().trim();
+  if (slug === 'rajjjjj' || !name) return false;
+  return (
+    type === 'domestic' ||
+    type.includes('domestic') ||
+    slug === 'kashmir' ||
+    slug === 'goa' ||
+    slug === 'kerala' ||
+    slug === 'maldives' ||
+    name === 'kashmir' ||
+    name === 'goa' ||
+    name === 'kerala' ||
+    name === 'maldives' ||
+    name === 'india'
+  );
+};
+
+export const isInternationalDestination = (d) => {
+  if (!d) return false;
+  const name = String(d.name || d.title || '').toLowerCase().trim();
+  const slug = String(d.slug || '').toLowerCase().trim();
+  const type = String(d.type || '').toLowerCase().trim();
+  if (slug === 'rajjjjj' || !name) return false;
+  if (isDomesticDestination(d)) return false;
+  return (
+    type === 'international' ||
+    type.includes('international') ||
+    (!type && !isDomesticDestination(d))
+  );
+};
+
+export const isDomesticPackage = (pkg) => {
+  if (!pkg) return false;
+  const dests = (pkg.destinations || []).map((x) => x.destination || x).filter(Boolean);
+  if (dests.some(isDomesticDestination)) return true;
+  const text = `${pkg.name || ''} ${pkg.title || ''} ${pkg.slug || ''} ${pkg.location || ''} ${pkg.dest || ''}`.toLowerCase();
+  const domesticKeywords = ['kashmir', 'kerala', 'goa', 'india', 'maldives'];
+  if (domesticKeywords.some((k) => text.includes(k))) return true;
+  if (dests.some(isInternationalDestination)) return false;
+  return String(pkg.package_type || '').toLowerCase().trim() === 'domestic';
+};
+
+export const isInternationalPackage = (pkg) => {
+  if (!pkg) return false;
+  const dests = (pkg.destinations || []).map((x) => x.destination || x).filter(Boolean);
+  if (dests.some(isInternationalDestination)) return true;
+  if (String(pkg.package_type || '').toLowerCase().trim() === 'international') return true;
+  return !isDomesticPackage(pkg);
+};
+
 let destinationsCache = {};
 
 let allDestinationsCache = null;
 
 export const getDestinations = async (filters = {}) => {
-  const params = cleanParams(filters);
+  const filterType = filters?.type ? String(filters.type).toLowerCase().trim() : null;
+  const queryFilters = { ...filters };
+  if (filterType === 'domestic' || filterType === 'international') {
+    delete queryFilters.type;
+  }
+  const params = cleanParams(queryFilters);
   const cacheKey = JSON.stringify(params);
 
   if (!cacheKey || cacheKey === '{}') {
-    if (allDestinationsCache) return allDestinationsCache;
+    if (allDestinationsCache) {
+      if (filterType === 'domestic') return allDestinationsCache.filter(isDomesticDestination);
+      if (filterType === 'international') return allDestinationsCache.filter(isInternationalDestination);
+      return allDestinationsCache;
+    }
   }
 
   try {
@@ -256,6 +319,13 @@ export const getDestinations = async (filters = {}) => {
 
     if (!cacheKey || cacheKey === '{}') {
       allDestinationsCache = data;
+    }
+
+    if (filterType === 'domestic') {
+      return data.filter(isDomesticDestination);
+    }
+    if (filterType === 'international') {
+      return data.filter(isInternationalDestination);
     }
 
     return data;
@@ -571,12 +641,34 @@ export const getHomePage = async () => {
   }
 };
 
+export const getPages = async () => {
+  try {
+    const response = await apiClient.get('/pages', {
+      params: { _t: Date.now() },
+      validateStatus: () => true,
+    });
+    return normalizeApiData(response) || [];
+  } catch (error) {
+    console.error('Error fetching CMS pages:', error);
+    return [];
+  }
+};
+
 export const getPageBySlug = async (slug) => {
   try {
     let response = await apiClient.get(`/pages/slug/${slug}`, {
       params: { _t: Date.now() },
       validateStatus: () => true,
     });
+    if (!response.data?.success) {
+      const lower = String(slug || '').toLowerCase();
+      if (lower !== slug) {
+        response = await apiClient.get(`/pages/slug/${lower}`, {
+          params: { _t: Date.now() },
+          validateStatus: () => true,
+        });
+      }
+    }
     if (!response.data?.success) {
       // Fallback for CMS typo (e.g. "Family-Package ")
       response = await apiClient.get(`/pages/slug/${slug} `, {
@@ -590,6 +682,45 @@ export const getPageBySlug = async (slug) => {
     return null;
   }
 };
+
+export const getCmsReviews = async () => {
+  try {
+    const pageData = await getPageBySlug('reviews');
+    if (!pageData) return [];
+
+    const details = Array.isArray(pageData.details) ? pageData.details : [];
+    let section = details.find(
+      (item) => item.section === 'tabs_section' || item.key === 'hero_key' || item.json_data?.tabs
+    );
+
+    let tabs = section?.json_data?.tabs;
+    if (typeof section?.json_data === 'string') {
+      try {
+        const parsed = JSON.parse(section.json_data);
+        tabs = parsed?.tabs;
+      } catch {}
+    }
+
+    if (!Array.isArray(tabs) || tabs.length === 0) {
+      for (const item of details) {
+        let jd = item?.json_data;
+        if (typeof jd === 'string') {
+          try { jd = JSON.parse(jd); } catch {}
+        }
+        if (Array.isArray(jd?.tabs) && jd.tabs.length > 0) {
+          tabs = jd.tabs;
+          break;
+        }
+      }
+    }
+
+    return Array.isArray(tabs) ? tabs : [];
+  } catch (error) {
+    console.warn('CMS reviews unavailable:', error?.message || error);
+    return [];
+  }
+};
+
 
 export const getBlogs = async ({ page = 1, limit = 10, slug } = {}) => {
   try {
@@ -779,14 +910,16 @@ export const getPackages = async (filters = {}) => {
     const params = Object.fromEntries(
       Object.entries(filters).filter(([, value]) => value !== undefined && value !== null && value !== '')
     );
-    const response = await axios.get('/api/packages', {
-      params: { ...params, _t: Date.now() },
-      headers: {
-        'Cache-Control': 'no-cache',
-        Pragma: 'no-cache',
-      },
-      validateStatus: () => true,
-    });
+    const response = typeof window === 'undefined'
+      ? await apiClient.get('/packages', { params })
+      : await axios.get('/api/packages', {
+          params: { ...params, _t: Date.now() },
+          headers: {
+            'Cache-Control': 'no-cache',
+            Pragma: 'no-cache',
+          },
+          validateStatus: () => true,
+        });
     return normalizeApiData(response) || [];
   } catch (error) {
     console.error('Error fetching packages:', error);
@@ -1061,15 +1194,28 @@ export const searchCountryCityLocations = async ({ search = '', limit = 20 } = {
     return { countries: [], cities: [], suggestions: [] };
   }
 
+  // De-slugify query if it contains hyphens/underscores so backend matches words
+  const apiSearch = query.includes('-') || query.includes('_')
+    ? query.replace(/[-_]+/g, ' ').trim()
+    : query;
+
   try {
     const response = await axios.get('/api/locations/country-city', {
-      params: { search: query, limit, _t: Date.now() },
+      params: { search: apiSearch, limit, _t: Date.now() },
       validateStatus: () => true,
     });
     const data = normalizeApiData(response) || {};
     const countries = Array.isArray(data.countries) ? data.countries : [];
-    const cities = Array.isArray(data.cities) ? data.cities : [];
-    const suggestions = Array.isArray(data.suggestions) ? data.suggestions : [...countries, ...cities];
+    const rawCities = Array.isArray(data.cities) ? data.cities : [];
+    const cities = rawCities.map((c) => ({
+      ...c,
+      slug: String(c.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
+    }));
+    const rawSuggestions = Array.isArray(data.suggestions) ? data.suggestions : [...countries, ...cities];
+    const suggestions = rawSuggestions.map((s) => ({
+      ...s,
+      slug: String(s.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
+    }));
 
     return { countries, cities, suggestions };
   } catch (error) {

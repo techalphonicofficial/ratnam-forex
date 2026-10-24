@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { getFeaturedTourHref } from '@/components/FeaturedToursRow';
 import TourCard from '@/components/TourCard';
-import { getTripInquiries, getMediaUrl, getPackages, normalizePackageToTour } from '@/utils/api';
+import { getTripInquiries, getMediaUrl, getPackages, normalizePackageToTour, isDomesticPackage } from '@/utils/api';
 
 /* ── Filter options ──────────────────────────────────── */
 const FILTER_OPTIONS = {
@@ -102,9 +102,9 @@ export default function ExploreIndiaSection() {
     const fetchIndiaPackages = async () => {
       setIsLoading(true);
       try {
-        const result = await getPackages({ country: 'india' });
+        const result = await getPackages({ limit: 100 });
         if (!mounted) return;
-        const pkgs = Array.isArray(result) ? result.map(normalizePackageToTour) : [];
+        const pkgs = Array.isArray(result) ? result.filter(isDomesticPackage).map(normalizePackageToTour) : [];
         setIndiaPackages(pkgs);
       } catch (err) {
         console.error('Failed to load India packages', err);

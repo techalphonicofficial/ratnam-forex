@@ -81,6 +81,7 @@ function GramCard({ photo, index }) {
               width: '100%',
               height: '100%',
               objectFit: 'cover',
+              objectPosition: 'center',
               transform: hovered ? 'scale(1.05)' : 'scale(1)',
               transition: 'transform 0.5s ease',
               background: 'var(--color-text-primary)',
@@ -96,6 +97,7 @@ function GramCard({ photo, index }) {
               width: '100%',
               height: '100%',
               objectFit: 'cover',
+              objectPosition: 'center',
               transform: hovered ? 'scale(1.05)' : 'scale(1)',
               transition: 'transform 0.5s ease',
             }}
@@ -248,7 +250,7 @@ export default function GramSection({ videoReviewsData, themeClass = '', cmsPage
 
   const scroll = useCallback((dir) => {
     if (!scrollRef.current) return;
-    const scrollAmount = window.innerWidth <= 768 ? window.innerWidth : 500;
+    const scrollAmount = window.innerWidth <= 768 ? (scrollRef.current.clientWidth || window.innerWidth) : 500;
     scrollRef.current.scrollBy({ left: dir * scrollAmount, behavior: 'smooth' });
   }, []);
 
@@ -378,9 +380,9 @@ export default function GramSection({ videoReviewsData, themeClass = '', cmsPage
         .gram-section-not-in-container .gram-arrow-next {
           right: 20px;
         }
-        @media (max-width: 1220px) {
+        @media (max-width: 1220px) and (min-width: 769px) {
           .gram-in-container .gram-scroll-area {
-            justify-content: flex-start !important;
+            justify-content: center !important;
             padding-left: 20px !important;
             padding-right: 20px !important;
           }
@@ -398,21 +400,39 @@ export default function GramSection({ videoReviewsData, themeClass = '', cmsPage
             font-size: 26px;
             padding: 0 16px;
           }
-          .gram-in-container .gram-card {
-            width: 200px !important;
+          .gram-spacer {
+            display: none !important;
           }
-          .gram-in-container .gram-card-img {
+          .gram-in-container .gram-card,
+          .gram-card {
+            width: 200px !important;
+            margin: 0 auto !important;
+          }
+          .gram-in-container .gram-card-img,
+          .gram-card-img {
             height: 340px !important;
           }
+          .gram-in-container .gram-scroll-area,
           .gram-scroll-area {
             gap: 0 !important;
             justify-content: flex-start !important;
+            padding: 14px 0 24px !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
           }
           .gram-card-wrapper {
-            width: 100vw !important;
+            width: 100% !important;
+            min-width: 100% !important;
+            max-width: 100% !important;
+            flex: 0 0 100% !important;
             scroll-snap-align: center !important;
-            display: flex;
-            justify-content: center;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            box-sizing: border-box !important;
+            margin: 0 !important;
+            padding: 0 !important;
           }
           .gram-arrow-btn {
             width: 36px;
