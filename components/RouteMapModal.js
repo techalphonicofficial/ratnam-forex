@@ -91,8 +91,14 @@ export default function RouteMapModal({
       const origOverflow = document.body.style.overflow;
       document.body.style.overflow = 'hidden';
       return () => {
-        document.body.style.overflow = origOverflow;
+        if (typeof document !== 'undefined' && document.body) {
+          document.body.style.overflow = (origOverflow && origOverflow !== 'hidden') ? origOverflow : '';
+        }
       };
+    } else {
+      if (typeof document !== 'undefined' && document.body && document.body.style.overflow === 'hidden') {
+        document.body.style.overflow = '';
+      }
     }
   }, [isOpen]);
 

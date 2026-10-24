@@ -7330,7 +7330,7 @@ export default function TourItineraryView({ destination, packageSlug }) {
     };
   }, []);
 
-  // Disable background scrolling whenever any popup modal is open
+  // Disable background scrolling whenever any popup modal is open, and restore cleanly on close
   useEffect(() => {
     const isAnyModalOpen = Boolean(
       bookingModalOpen ||
@@ -7341,20 +7341,32 @@ export default function TourItineraryView({ destination, packageSlug }) {
       customModalOpen
     );
 
-    if (!isAnyModalOpen) return;
-
-    const prevBodyOverflow = document.body.style.overflow;
-    const prevHtmlOverflow = document.documentElement.style.overflow;
-    const prevBodyTouchAction = document.body.style.touchAction;
-
-    document.body.style.overflow = 'hidden';
-    document.documentElement.style.overflow = 'hidden';
-    document.body.style.touchAction = 'none';
+    if (isAnyModalOpen) {
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none';
+    } else {
+      if (typeof document !== 'undefined') {
+        if (document.body) {
+          document.body.style.overflow = '';
+          document.body.style.touchAction = '';
+        }
+        if (document.documentElement) {
+          document.documentElement.style.overflow = '';
+        }
+      }
+    }
 
     return () => {
-      document.body.style.overflow = prevBodyOverflow;
-      document.documentElement.style.overflow = prevHtmlOverflow;
-      document.body.style.touchAction = prevBodyTouchAction;
+      if (typeof document !== 'undefined') {
+        if (document.body) {
+          document.body.style.overflow = '';
+          document.body.style.touchAction = '';
+        }
+        if (document.documentElement) {
+          document.documentElement.style.overflow = '';
+        }
+      }
     };
   }, [bookingModalOpen, routeModalOpen, mediaOpen, allReviewsModalOpen, cancellationModalOpen, customModalOpen]);
 

@@ -10,20 +10,46 @@ import {
 export default function CancellationPolicyModal({ isOpen, onClose, policyData: incomingPolicyData }) {
   const [fetchedData, setFetchedData] = useState(null);
 
+  // Fetch policy data if not provided
+  useEffect(() => {
+    if (!isOpen || incomingPolicyData || fetchedData) return;
+    let mounted = true;
+    getCancellationPolicy().then((data) => {
+      if (mounted && data) setFetchedData(data);
+    });
+    return () => {
+      mounted = false;
+    };
+  }, [isOpen, incomingPolicyData, fetchedData]);
+
+  // Handle escape key
   useEffect(() => {
     if (!isOpen) return;
-
-    let mounted = true;
-    if (!incomingPolicyData && !fetchedData) {
-      getCancellationPolicy().then((data) => {
-        if (mounted && data) setFetchedData(data);
-      });
-    }
-
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape' && onClose) onClose();
     };
     window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, onClose]);
+
+  // Handle background scroll locking safely
+  useEffect(() => {
+    if (!isOpen) {
+      if (typeof document !== 'undefined') {
+        if (document.body && document.body.style.overflow === 'hidden') {
+          document.body.style.overflow = '';
+        }
+        if (document.documentElement && document.documentElement.style.overflow === 'hidden') {
+          document.documentElement.style.overflow = '';
+        }
+        if (document.body && document.body.style.touchAction === 'none') {
+          document.body.style.touchAction = '';
+        }
+      }
+      return;
+    }
 
     const prevBodyOverflow = document.body.style.overflow;
     const prevHtmlOverflow = document.documentElement.style.overflow;
@@ -34,13 +60,18 @@ export default function CancellationPolicyModal({ isOpen, onClose, policyData: i
     document.body.style.touchAction = 'none';
 
     return () => {
-      mounted = false;
-      window.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = prevBodyOverflow;
-      document.documentElement.style.overflow = prevHtmlOverflow;
-      document.body.style.touchAction = prevBodyTouchAction;
+      // Safely restore styles: never restore 'hidden' or 'none' which would freeze scrolling
+      if (typeof document !== 'undefined') {
+        if (document.body) {
+          document.body.style.overflow = (prevBodyOverflow && prevBodyOverflow !== 'hidden') ? prevBodyOverflow : '';
+          document.body.style.touchAction = (prevBodyTouchAction && prevBodyTouchAction !== 'none') ? prevBodyTouchAction : '';
+        }
+        if (document.documentElement) {
+          document.documentElement.style.overflow = (prevHtmlOverflow && prevHtmlOverflow !== 'hidden') ? prevHtmlOverflow : '';
+        }
+      }
     };
-  }, [isOpen, onClose, incomingPolicyData, fetchedData]);
+  }, [isOpen]);
 
   const activeData = incomingPolicyData || fetchedData || FALLBACK_CANCELLATION_DATA;
 

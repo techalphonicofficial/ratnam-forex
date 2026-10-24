@@ -61,6 +61,26 @@ export default function ReviewDetailModal({
   useEffect(() => {
     if (!isOpen) return;
     window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, handleKeyDown]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      if (typeof document !== 'undefined') {
+        if (document.body && document.body.style.overflow === 'hidden') {
+          document.body.style.overflow = '';
+        }
+        if (document.documentElement && document.documentElement.style.overflow === 'hidden') {
+          document.documentElement.style.overflow = '';
+        }
+        if (document.body && document.body.style.touchAction === 'none') {
+          document.body.style.touchAction = '';
+        }
+      }
+      return;
+    }
 
     const prevBodyOverflow = document.body.style.overflow;
     const prevHtmlOverflow = document.documentElement.style.overflow;
@@ -82,14 +102,19 @@ export default function ReviewDetailModal({
     window.addEventListener('touchmove', preventBackgroundScroll, { passive: false });
 
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('wheel', preventBackgroundScroll);
       window.removeEventListener('touchmove', preventBackgroundScroll);
-      document.body.style.overflow = prevBodyOverflow;
-      document.documentElement.style.overflow = prevHtmlOverflow;
-      document.body.style.touchAction = prevBodyTouchAction;
+      if (typeof document !== 'undefined') {
+        if (document.body) {
+          document.body.style.overflow = (prevBodyOverflow && prevBodyOverflow !== 'hidden') ? prevBodyOverflow : '';
+          document.body.style.touchAction = (prevBodyTouchAction && prevBodyTouchAction !== 'none') ? prevBodyTouchAction : '';
+        }
+        if (document.documentElement) {
+          document.documentElement.style.overflow = (prevHtmlOverflow && prevHtmlOverflow !== 'hidden') ? prevHtmlOverflow : '';
+        }
+      }
     };
-  }, [isOpen, handleKeyDown]);
+  }, [isOpen]);
 
   if (!isOpen || !currentReview) return null;
 
