@@ -141,7 +141,18 @@ export default function ContactClient({ hero = fallbackHero, faqContent = fallba
 
   return (
     <>
-      <div className="page-header" style={{ position: 'relative', overflow: 'hidden' }}>
+      <div
+        className="page-header"
+        style={{
+          position: 'relative',
+          overflow: 'hidden',
+          minHeight: 420,
+          paddingTop: 168,
+          paddingBottom: 84,
+          display: 'flex',
+          alignItems: 'center',
+        }}
+      >
         {heroImage && (
           <>
             <Image
@@ -155,10 +166,10 @@ export default function ContactClient({ hero = fallbackHero, faqContent = fallba
             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(0,10,40,0.78), rgba(0,82,204,0.46))' }} />
           </>
         )}
-        <div className="container" style={{ position: 'relative', zIndex: 1 }}>
-          <span className="section-label" style={{ color: 'rgba(255,255,255,0.7)' }}>{hero.label}</span>
-          <h1 className="section-title" style={{ color: 'white' }}>{hero.title}</h1>
-          <p style={{ color: 'rgba(255,255,255,0.78)', fontSize: 16, maxWidth: 720 }}>
+        <div className="container" style={{ position: 'relative', zIndex: 1, width: '100%' }}>
+          <span className="section-label" style={{ color: 'rgba(255,255,255,0.8)', fontSize: 13.5, letterSpacing: '2.5px', marginBottom: 14, display: 'inline-block' }}>{hero.label}</span>
+          <h1 className="section-title" style={{ color: 'white', fontSize: 'clamp(38px, 5.2vw, 56px)', fontWeight: 800, lineHeight: 1.18, marginBottom: 18 }}>{hero.title}</h1>
+          <p style={{ color: 'rgba(255,255,255,0.82)', fontSize: 18, lineHeight: 1.7, maxWidth: 780, marginBottom: 0 }}>
             {hero.description}
           </p>
         </div>

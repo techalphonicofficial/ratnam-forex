@@ -146,7 +146,7 @@ export function transformCancellationHtml(rawHtml) {
   if (!rawHtml) return '';
   let html = rawHtml.trim();
 
-  // 1. Group consecutive schedule items into a single .cpm-schedule-grid
+  // 1. Group consecutive schedule items into a modern table structure matching the reference image
   const schedItems = [];
   let schedMatch;
   const globalRegex = /<p>\s*<strong>([^<]+?)(?:Up to\s+(\d+%))<\/strong>\s*<\/p>\s*<p>\s*([^<]+?)\s*<\/p>/gi;
@@ -164,23 +164,43 @@ export function transformCancellationHtml(rawHtml) {
     schedItems.push({
       matchStr: schedMatch[0],
       html: `
-        <div class="cpm-sched-card ${isFull ? 'cpm-sched-card--full' : ''}">
-          <div class="cpm-sched-time">${time}</div>
-          <div class="cpm-sched-charge ${chargeClass}">${charge}</div>
-          <div class="cpm-sched-note">${note}</div>
+        <div class="cpm-table-row ${isFull ? 'cpm-table-row--full' : ''}">
+          <div class="cpm-table-pill">
+            <svg class="cpm-cal-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            <span>${time}</span>
+          </div>
+          <div class="cpm-table-charge">
+            <strong class="cpm-charge-rate ${chargeClass}">${charge}</strong>
+            <span class="cpm-charge-note">${note}</span>
+          </div>
         </div>
       `,
     });
   }
 
   if (schedItems.length > 0) {
-    const gridHtml = `<div class="cpm-schedule-grid">${schedItems.map((i) => i.html).join('')}</div>`;
+    const tableHtml = `
+      <div class="cpm-schedule-box">
+        <div class="cpm-table-head">
+          <span class="cpm-th-time">Time Before Departure</span>
+          <span class="cpm-th-charge">Cancellation Charges</span>
+        </div>
+        <div class="cpm-table-body">
+          ${schedItems.map((i) => i.html).join('')}
+        </div>
+      </div>
+    `;
     const firstMatch = schedItems[0].matchStr;
     const startIdx = html.indexOf(firstMatch);
     if (startIdx !== -1) {
       const lastMatch = schedItems[schedItems.length - 1].matchStr;
       const endIdx = html.indexOf(lastMatch) + lastMatch.length;
-      html = html.substring(0, startIdx) + gridHtml + html.substring(endIdx);
+      html = html.substring(0, startIdx) + tableHtml + html.substring(endIdx);
     }
   }
 
@@ -198,10 +218,19 @@ export function transformCancellationHtml(rawHtml) {
     '<div class="cpm-highlight-box cpm-highlight-box--amber"><div class="cpm-highlight-icon">🛡️</div><div>$1</div></div>'
   );
 
-  // 4. Disclaimer text under schedule
+  // 4. Disclaimer text under schedule (with circular info icon)
   html = html.replace(
     /<p>\s*(These are proposed standard terms[\s\S]*?)<\/p>/gi,
-    '<p class="cpm-disclaimer-text">$1</p>'
+    `<div class="cpm-disclaimer-callout">
+      <div class="cpm-disclaimer-icon">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="16" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
+      </div>
+      <p class="cpm-disclaimer-text">$1</p>
+    </div>`
   );
 
   // 5. Acknowledgment checkmark box
@@ -210,7 +239,21 @@ export function transformCancellationHtml(rawHtml) {
     '<p class="cpm-acknowledgment-box">✓ $1</p>'
   );
 
-  // 6. Structure intro callout and sections
+  // 6. Section 1 title icon (document/edit pen icon)
+  html = html.replace(
+    /<h3><strong>([0-9]+\.\s*[^<]+)<\/strong><\/h3>/gi,
+    `<h3 class="cpm-section-heading">
+      <span class="cpm-section-icon">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 20h9"></path>
+          <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+        </svg>
+      </span>
+      <span>$1</span>
+    </h3>`
+  );
+
+  // 7. Structure intro callout and sections
   const firstH3Index = html.indexOf('<h3');
   if (firstH3Index > 0) {
     const introPart = html.substring(0, firstH3Index).trim();
@@ -235,17 +278,25 @@ let cachedPolicyData = null;
 /**
  * Fetch cancellation policy from CMS API slug 'cancellation-policy'
  */
-export async function getCancellationPolicy() {
-  if (cachedPolicyData) return cachedPolicyData;
+export async function getCancellationPolicy(customSlug) {
+  if (cachedPolicyData && !customSlug) return cachedPolicyData;
 
   try {
-    const page = await getPageBySlug('cancellation-policy');
+    const slug = customSlug || 'cancellation-policy';
+    let page = await getPageBySlug(slug);
+    if (!page && slug !== 'cancellation-policy') {
+      page = await getPageBySlug('cancellation-policy');
+    }
+    if (!page && slug !== 'cancellation') {
+      page = await getPageBySlug('cancellation');
+    }
     if (page && page.details) {
-      cachedPolicyData = normalizeCancellationData(page);
-      return cachedPolicyData;
+      const normalized = normalizeCancellationData(page);
+      if (!customSlug) cachedPolicyData = normalized;
+      return normalized;
     }
   } catch (err) {
-    console.warn('Failed to load cancellation-policy CMS page:', err);
+    console.warn('Failed to load cancellation policy CMS page:', err);
   }
 
   return FALLBACK_CANCELLATION_DATA;

@@ -41,6 +41,16 @@ const fallbackStoryHtml = `
 
 const stripHtml = (value = '') => String(value).replace(/<[^>]*>/g, '').trim();
 
+const decodeHtml = (value = '') =>
+  String(value)
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&nbsp;/g, ' ')
+    .trim();
+
 const splitMilestoneLabel = (label = '') => {
   const titleMatch = String(label).match(/<strong>(.*?)<\/strong>/i);
   const paragraphs = [...String(label).matchAll(/<p>(.*?)<\/p>/gi)].map((match) => stripHtml(match[1]));
@@ -53,11 +63,73 @@ const splitMilestoneLabel = (label = '') => {
 
 const findSection = (page, section) => page?.details?.find((item) => item.section === section);
 
-const buildAboutContent = (page) => {
+const extractTeamData = (teamPage, aboutPage) => {
+  const teamSection =
+    teamPage?.details?.find(
+      (s) => s.section === 'tabs_section' || s.section === 'team_grid' || s.key === 'hero_key'
+    ) ||
+    teamPage?.details?.[0] ||
+    findSection(aboutPage, 'team_grid') ||
+    findSection(aboutPage, 'tabs_section');
+
+  const jsonData = teamSection?.json_data || {};
+  const rawList =
+    jsonData.tabs ||
+    jsonData.team ||
+    jsonData.members ||
+    jsonData.items ||
+    [];
+
+  const label =
+    jsonData.heading_content ||
+    teamSection?.title ||
+    'The People Behind The Magic';
+
+  const title =
+    teamSection?.title ||
+    teamPage?.title ||
+    'Meet Our Team';
+
+  const description =
+    jsonData.block_desc ||
+    teamSection?.description ||
+    teamPage?.description ||
+    'Passionate travelers who turned their love of adventure into a career.';
+
+  const members = Array.isArray(rawList) && rawList.length > 0
+    ? rawList.map((m) => {
+        const name = m.title || m.name || '';
+        const role = m.badge || m.role || '';
+        const rawBio = m.content || m.bio || m.description || '';
+        const bio = decodeHtml(stripHtml(rawBio));
+        const imagePath = m.img || m.image || '';
+        const image = getMediaUrl(imagePath);
+        const fallbackMatch = fallbackTeam.find(
+          (t) => t.name.toLowerCase() === name.toLowerCase()
+        )?.image;
+
+        return {
+          name,
+          role,
+          bio,
+          image: image || fallbackMatch || fallbackTeam[0].image,
+          fallbackImage: fallbackMatch || fallbackTeam[0].image,
+        };
+      }).filter((m) => m.name)
+    : fallbackTeam;
+
+  return {
+    label,
+    title,
+    description,
+    members: members.length > 0 ? members : fallbackTeam,
+  };
+};
+
+const buildAboutContent = (page, teamPage) => {
   const imageText = findSection(page, 'image_text');
   const storyGrid = findSection(page, 'story_grid');
   const statsBar = findSection(page, 'stats_bar');
-  const teamGrid = findSection(page, 'team_grid');
 
   const heroImage = getMediaUrl(imageText?.json_data?.media_url || imageText?.json_data?.image || page?.feature_image) || FALLBACK_HERO_IMAGE;
   const storyGallery = storyGrid?.json_data?.gallery?.length
@@ -92,20 +164,7 @@ const buildAboutContent = (page) => {
         }))
         : fallbackMilestones,
     },
-    team: {
-      label: teamGrid?.title || 'The People Behind The Magic',
-      title: teamGrid?.json_data?.heading_content || 'Meet Our Team',
-      description: teamGrid?.json_data?.block_desc || 'Passionate travelers who turned their love of adventure into a career.',
-      members: teamGrid?.json_data?.team?.length
-        ? teamGrid.json_data.team.map((member) => ({
-          name: member.name,
-          role: member.role,
-          bio: member.bio,
-          image: getMediaUrl(member.img || member.image),
-          fallbackImage: fallbackTeam.find((t) => t.name === member.name)?.image,
-        })).filter((member) => member.name && member.image)
-        : fallbackTeam,
-    },
+    team: extractTeamData(teamPage, page),
   };
 };
 
@@ -126,8 +185,11 @@ export async function generateMetadata() {
 }
 
 export default async function AboutPage() {
-  const page = await getPageBySlug('about');
-  const content = buildAboutContent(page);
+  const [page, teamPage] = await Promise.all([
+    getPageBySlug('about'),
+    getPageBySlug('our-team'),
+  ]);
+  const content = buildAboutContent(page, teamPage);
 
   return (
     <>

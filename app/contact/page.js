@@ -106,14 +106,14 @@ const normalizeFieldOptions = (options) => {
 };
 
 const buildContactContent = (page) => {
-  const standard = findSection(page, 'standard');
+  const standard = findSection(page, 'image_text') || findSection(page, 'standard') || page?.details?.[0];
   const faqAccordion = findSection(page, 'faq_accordion');
 
   return {
     hero: {
       label: standard?.title || fallbackHero.label,
       title: standard?.json_data?.heading_content || page?.title || fallbackHero.title,
-      description: standard?.description || page?.description || fallbackHero.description,
+      description: standard?.json_data?.body || standard?.description || page?.description || fallbackHero.description,
     },
     faqContent: {
       label: faqAccordion?.title || fallbackFaqContent.label,
@@ -121,7 +121,7 @@ const buildContactContent = (page) => {
       description: faqAccordion?.json_data?.block_desc || fallbackFaqContent.description,
       faqs: Array.isArray(faqAccordion?.json_data?.faqs) ? faqAccordion.json_data.faqs : [],
     },
-    heroImage: getMediaUrl(page?.feature_image),
+    heroImage: getMediaUrl(standard?.json_data?.media_url || page?.feature_image),
   };
 };
 
