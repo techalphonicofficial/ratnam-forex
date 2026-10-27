@@ -245,7 +245,7 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
         </>
       )}
       <section className={themeClass} style={{
-        padding: 'var(--space-8) 0 var(--space-10)',
+        padding: showMarketingSections ? '20px 0 var(--space-8)' : 'var(--space-8) 0 var(--space-10)',
         background: (themeClass.includes('blush') || themeClass.includes('teal') || themeClass.includes('nri') || themeClass.includes('purple') || themeClass.includes('pilgrim') || themeClass.includes('budget') || themeClass.includes('trending') || themeClass.includes('corporate')) ? 'transparent' : 'var(--color-card)',
         position: 'relative',
         overflow: 'hidden',
@@ -270,7 +270,7 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
         <div style={{ position: 'relative', zIndex: 1 }}>
 
           {/* Heading & Search - Inside Container */}
-          <div className="container" style={{ maxWidth: '1400px', marginBottom: '40px' }}>
+          <div className="container" style={{ maxWidth: '1400px', marginBottom: '24px' }}>
             <div className="text-center">
               <h2 className="theme-underline-heading" style={{ fontSize: '32px', fontWeight: 800, color: 'var(--color-text-primary)', fontFamily: '"Italiana", sans-serif' }}>
                 {vacationPickHeading.prefix}

@@ -396,8 +396,8 @@ export default function HoneymoonToursSection({ themeClass = '', cmsPage = null 
         .hm-desktop-only { display: flex; }
         .hm-mobile-only { display: none; }
 
-        .honeymoon-section { padding: 60px 0; }
-        .hm-header { margin-bottom: 40px; }
+        .honeymoon-section { padding: 20px 0 36px; }
+        .hm-header { margin-bottom: 24px; }
         .hm-featured-title { font-size: 42px; margin-bottom: 16px; }
         .hm-featured-price-box { padding: 10px 16px; }
         .hm-featured-price { font-size: 22px; }
@@ -424,7 +424,7 @@ export default function HoneymoonToursSection({ themeClass = '', cmsPage = null 
         @media (max-width: 992px) {
           .hm-desktop-only { display: none !important; }
           .hm-mobile-only { display: block; }
-          .honeymoon-section { background: #FFF9FA !important; padding: 32px 0 !important; }
+          .honeymoon-section { background: #FFF9FA !important; padding: 16px 0 24px !important; }
           
           /* Mobile Header */
           .hm-header-mobile { text-align: center; margin-bottom: 24px; }

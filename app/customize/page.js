@@ -957,7 +957,7 @@ function CustomizeFlow() {
 
       const renderBottom = () => (
         <section className="premium-picker-wrapper" style={{ background: isCorporate ? '#F7FAFF' : (isNri ? '#FFFCF5' : (isGroup ? '#FAF5FA' : (isFamily ? '#FFFDF7' : (isPilgrim ? '#FFF9EF' : (isBudget ? '#F8FFF6' : (isTrending ? '#FFF9F7' : '#FFF9FA')))))), borderTop: `1px solid ${isCorporate ? '#E2E8F0' : (isNri ? '#F2D99B' : (isGroup ? '#F5E6F5' : (isFamily ? '#F2F7F4' : (isPilgrim ? '#F3D49A' : (isBudget ? '#E4EDE4' : (isTrending ? '#FFCEC0' : '#FCE7ED'))))))}` }}>
-          <div style={{ maxWidth: 1400, margin: '0 auto', paddingTop: 60, paddingBottom: 60 }}>
+          <div style={{ maxWidth: 1400, margin: '0 auto', paddingTop: 0, paddingBottom: 32 }}>
             <DestinationPicker
               destinations={destinationOptions}
               error={destinationsError}

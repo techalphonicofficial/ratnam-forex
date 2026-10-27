@@ -20,6 +20,7 @@ export default function PremiumDestinationLayout({
   const [isExpanded, setIsExpanded] = useState(false);
   const [isNavSticky, setIsNavSticky] = useState(false);
   const [headerOffset, setHeaderOffset] = useState(60);
+  const [navHeight, setNavHeight] = useState(56);
   const navRef = useRef(null);
   const sentinelRef = useRef(null);
   const readMoreRef = useRef(null);
@@ -345,6 +346,9 @@ export default function PremiumDestinationLayout({
 
   useEffect(() => {
     const updateHeaderOffset = () => {
+      if (navRef.current) {
+        setNavHeight(navRef.current.offsetHeight || 56);
+      }
       const custHeader = document.querySelector('.cust-header');
       if (custHeader && window.getComputedStyle(custHeader).display !== 'none') {
         setHeaderOffset(custHeader.offsetHeight || 60);
@@ -371,6 +375,7 @@ export default function PremiumDestinationLayout({
   useEffect(() => {
     const handleScroll = () => {
       const navH = navRef.current?.offsetHeight || 56;
+      setNavHeight(navH);
       const totalOffset = headerOffset + navH;
 
       // 1. Update active nav pill section
@@ -474,6 +479,9 @@ export default function PremiumDestinationLayout({
       '--theme-text-sec': themeType === 'corporate' ? '#4B5563' : (themeType === 'nri' ? '#596575' : (themeType === 'group' ? '#6B5969' : (themeType === 'family' ? '#5E6870' : (themeType === 'pilgrim' ? '#64615D' : (themeType === 'budget' ? '#575F5A' : (themeType === 'trending' ? '#555555' : 'var(--text-sec)')))))),
       '--theme-text-main': themeType === 'corporate' ? '#0D1B2A' : (themeType === 'nri' ? '#173A63' : (themeType === 'group' ? '#5A2A54' : (themeType === 'family' ? '#245C59' : (themeType === 'pilgrim' ? '#4A2A16' : (themeType === 'budget' ? '#1B5E20' : (themeType === 'trending' ? '#8B1E1E' : 'var(--text-main)')))))),
       '--sticky-header-offset': `${headerOffset}px`,
+      '--sticky-nav-height': `${navHeight}px`,
+      '--sticky-total-offset': `${headerOffset + navHeight}px`,
+      '--carousel-height': '460px',
     }}>
       {(themeType === 'pilgrim' || themeType === 'budget' || themeType === 'trending') && (
         <style dangerouslySetInnerHTML={{
@@ -1018,7 +1026,7 @@ export default function PremiumDestinationLayout({
 
 
       {themeType === 'corporate' && (
-        <div className="corporate-benefits-strip-container" style={{ background: '#F7FAFF', borderTop: '1px solid #E2E8F0', padding: '24px 0', marginTop: '40px' }}>
+        <div className="corporate-benefits-strip-container" style={{ background: '#F7FAFF', borderTop: '1px solid #E2E8F0', padding: '20px 0', marginTop: '16px', marginBottom: '16px' }}>
           <div className="nri-benefits-strip" style={{ display: 'flex', justifyContent: 'space-around', maxWidth: '1200px', margin: '0 auto', flexWrap: 'wrap', gap: '20px' }}>
             <div className="nri-benefit" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <span className="nri-benefit-icon" style={{ background: '#E6F2FD', color: '#1E5AA8', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', fontSize: '24px' }}>💼</span>
@@ -1175,8 +1183,9 @@ export default function PremiumDestinationLayout({
 
         .nri-benefits-strip-container {
           background-color: #F4F7FA;
-          padding: 30px 20px;
-          margin-top: 40px;
+          padding: 20px;
+          margin-top: 16px;
+          margin-bottom: 16px;
           border-radius: 16px;
           max-width: 1300px;
           margin-left: auto;
@@ -1226,8 +1235,9 @@ export default function PremiumDestinationLayout({
         /* PILGRIM BENEFITS STRIP */
         .pilgrim-benefits-strip-container {
           background-color: #FFF5E5;
-          padding: 30px 20px;
-          margin-top: 40px;
+          padding: 20px;
+          margin-top: 16px;
+          margin-bottom: 16px;
           border-radius: 16px;
           max-width: 1300px;
           margin-left: auto;
@@ -1278,8 +1288,9 @@ export default function PremiumDestinationLayout({
         /* BUDGET BENEFITS STRIP */
         .budget-benefits-strip-container {
           background-color: #F1F8EF;
-          padding: 30px 20px;
-          margin-top: 40px;
+          padding: 20px;
+          margin-top: 16px;
+          margin-bottom: 16px;
           border-radius: 16px;
           max-width: 1300px;
           margin-left: auto;
@@ -1330,8 +1341,9 @@ export default function PremiumDestinationLayout({
         /* TRENDING BENEFITS STRIP */
         .trending-benefits-strip-container {
           background-color: #FFF2F2;
-          padding: 30px 20px;
-          margin-top: 40px;
+          padding: 20px;
+          margin-top: 16px;
+          margin-bottom: 16px;
           border-radius: 16px;
           max-width: 1300px;
           margin-left: auto;
@@ -1686,7 +1698,7 @@ export default function PremiumDestinationLayout({
           gap: 0 40px;
           max-width: 100%;
           justify-content: space-between;
-          padding: 40px 32px 96px;
+          padding: 32px 32px 32px;
         }
 
         /* CENTER CONTENT */
@@ -1699,10 +1711,11 @@ export default function PremiumDestinationLayout({
         #section-overview {
           display: flex;
           flex-direction: column;
-          min-height: 564px;
+          min-height: 460px;
         }
         #section-overview.preview-mode {
-          height: 564px;
+          height: 460px;
+          margin-bottom: 0;
         }
         #section-overview .section-text {
           flex: 1;
@@ -1872,17 +1885,23 @@ export default function PremiumDestinationLayout({
         /* RIGHT SIDEBAR */
         .premium-right {
           position: sticky;
-          top: 60px; /* offset below the sticky nav bar */
+          top: max(
+            calc(var(--sticky-total-offset, 120px) + 24px),
+            calc((100vh + var(--sticky-total-offset, 120px) - var(--carousel-height, 460px)) / 2)
+          );
           align-self: start;
           grid-column: 2;
           grid-row: 1 / span 2;
+          margin-top: 0;
+          margin-bottom: 24px;
+          z-index: 90;
         }
         .sticky-booking-card {
         }
 
         .right-image-carousel {
           width: 100%;
-          height: 564px;
+          height: 460px;
           position: relative;
           border-radius: 20px;
           overflow: hidden;
@@ -1938,12 +1957,13 @@ export default function PremiumDestinationLayout({
           .premium-main {
             grid-template-columns: 1fr;
             grid-template-rows: auto;
-            padding: 24px 5% 64px;
-            gap: 32px;
+            padding: 20px 4% 16px;
+            gap: 24px;
           }
           #section-overview.preview-mode {
             height: auto;
             min-height: auto;
+            margin-bottom: 16px;
           }
           .premium-center-top, .premium-center-bottom, .premium-right {
             grid-column: 1;
@@ -1952,6 +1972,7 @@ export default function PremiumDestinationLayout({
           .premium-right {
             position: relative;
             top: 0;
+            margin: 24px 0;
           }
           .nav-links {
             padding: 0 12px;

@@ -3558,10 +3558,11 @@ function ItineraryStyles() {
       /* Sidebar Cards */
       .itn-sidebar {
         position: sticky;
-        top: 144px;
+        top: max(130px, calc((100vh + 120px - 520px) / 2));
         display: flex;
         flex-direction: column;
         gap: 16px;
+        margin-bottom: 24px;
       }
       .itn-sidebar-card {
         border: 1px solid var(--color-border, #e2e8f0);

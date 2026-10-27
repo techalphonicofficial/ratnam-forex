@@ -121,7 +121,7 @@ export default function TrendingPackagePage() {
         borderTop: '1px solid #FFCEC0',
       }}
     >
-      <div style={{ maxWidth: 1400, margin: '0 auto', paddingTop: 60, paddingBottom: 60 }}>
+      <div style={{ maxWidth: 1400, margin: '0 auto', paddingTop: 0, paddingBottom: 32 }}>
         <DestinationPicker
           destinations={destinations}
           error={destinationsError}
