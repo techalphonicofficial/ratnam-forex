@@ -396,8 +396,8 @@ export default function HoneymoonToursSection({ themeClass = '', cmsPage = null 
         .hm-desktop-only { display: flex; }
         .hm-mobile-only { display: none; }
 
-        .honeymoon-section { padding: 20px 0 36px; }
-        .hm-header { margin-bottom: 24px; }
+        .honeymoon-section { padding: 12px 0 16px; }
+        .hm-header { margin-bottom: 16px; }
         .hm-featured-title { font-size: 42px; margin-bottom: 16px; }
         .hm-featured-price-box { padding: 10px 16px; }
         .hm-featured-price { font-size: 22px; }

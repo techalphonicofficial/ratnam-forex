@@ -152,7 +152,7 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
     const isHovered = hoveredIndex === index;
 
     return (
-      <div style={{ position: 'relative', width: '100%', paddingTop: '40px', paddingBottom: '70px' }}
+      <div style={{ position: 'relative', width: '100%', paddingTop: '16px', paddingBottom: '28px' }}
         onMouseEnter={() => setHoveredIndex(index)}
         onMouseLeave={() => setHoveredIndex(null)}>
 
@@ -206,7 +206,7 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
         {/* Hover Badges Block */}
         <div style={{
           position: 'absolute',
-          bottom: '24px',
+          bottom: '6px',
           left: '50%',
           transform: 'translateX(-50%)',
           display: 'flex',
@@ -245,7 +245,7 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
         </>
       )}
       <section className={themeClass} style={{
-        padding: showMarketingSections ? '20px 0 var(--space-8)' : 'var(--space-8) 0 var(--space-10)',
+        padding: showMarketingSections ? '12px 0 16px' : 'var(--space-6) 0 var(--space-8)',
         background: (themeClass.includes('blush') || themeClass.includes('teal') || themeClass.includes('nri') || themeClass.includes('purple') || themeClass.includes('pilgrim') || themeClass.includes('budget') || themeClass.includes('trending') || themeClass.includes('corporate')) ? 'transparent' : 'var(--color-card)',
         position: 'relative',
         overflow: 'hidden',
@@ -270,7 +270,7 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
         <div style={{ position: 'relative', zIndex: 1 }}>
 
           {/* Heading & Search - Inside Container */}
-          <div className="container" style={{ maxWidth: '1400px', marginBottom: '24px' }}>
+          <div className="container" style={{ maxWidth: '1400px', marginBottom: '16px' }}>
             <div className="text-center">
               <h2 className="theme-underline-heading" style={{ fontSize: '32px', fontWeight: 800, color: 'var(--color-text-primary)', fontFamily: '"Italiana", sans-serif' }}>
                 {vacationPickHeading.prefix}
@@ -485,8 +485,8 @@ export default function DestinationPicker({ onPick, destinations: apiDestination
           flex: 0 0 auto;
           width: 240px;
           scroll-snap-align: center;
-          padding-top: 40px;
-          padding-bottom: 70px;
+          padding-top: 16px;
+          padding-bottom: 28px;
         }
         .destination-skeleton-arch,
         .destination-skeleton-line {

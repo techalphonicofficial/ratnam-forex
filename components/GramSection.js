@@ -288,7 +288,7 @@ export default function GramSection({ videoReviewsData, themeClass = '', cmsPage
   return (
     <section className={`${themeClass} ${inContainer ? 'gram-in-container' : 'gram-section-not-in-container'}`} style={{
       background: 'transparent',
-      padding: inContainer ? '10px 0 20px' : '36px 0 40px',
+      padding: inContainer ? '10px 0 16px' : '16px 0 20px',
       position: 'relative',
       overflow: 'visible',
     }}>
@@ -297,7 +297,7 @@ export default function GramSection({ videoReviewsData, themeClass = '', cmsPage
           font-family: "Italiana", sans-serif;
           font-size: 40px;
           color: var(--color-text-primary);
-          margin: 0 0 16px;
+          margin: 0 0 12px;
           text-transform: uppercase;
           letter-spacing: 1px;
         }

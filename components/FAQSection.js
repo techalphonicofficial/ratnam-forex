@@ -208,12 +208,12 @@ export default function FAQSection({ themeClass = '', cmsPage = null }) {
 
       <style jsx>{`
         .faq-section {
-          padding: 60px 0 80px;
+          padding: 24px 0 36px;
           background: transparent;
         }
         .faq-flex-container {
           display: flex;
-          gap: 60px;
+          gap: 40px;
           flex-wrap: wrap;
           align-items: flex-start;
         }

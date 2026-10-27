@@ -102,12 +102,12 @@ export default function LoveStoryDestinations({ themeClass = '', destinationsDat
       <style>{`
         .love-story-section {
           background-color: ${isNri ? '#FFFCF5' : (isGroup ? '#FAF5FA' : (isFamily ? '#FFFDF7' : (isPilgrim ? 'transparent' : (isBudget ? 'transparent' : '#FFF9FA'))))};
-          padding: 32px 20px 36px;
+          padding: 16px 20px 20px;
           position: relative;
           overflow: hidden;
         }
         .love-story-header {
-          margin-bottom: 24px;
+          margin-bottom: 16px;
           text-align: center;
         }
         .love-story-title {
@@ -128,7 +128,7 @@ export default function LoveStoryDestinations({ themeClass = '', destinationsDat
           display: grid;
           grid-template-columns: repeat(4, 1fr);
           gap: 30px;
-          row-gap: 40px;
+          row-gap: 24px;
           justify-items: center;
           position: relative;
           z-index: 2;
@@ -206,7 +206,7 @@ export default function LoveStoryDestinations({ themeClass = '', destinationsDat
         }
         .love-story-btn-wrapper {
           text-align: center;
-          margin-top: 30px;
+          margin-top: 18px;
         }
         .love-story-view-btn {
           background-color: transparent;

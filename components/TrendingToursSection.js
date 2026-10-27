@@ -246,7 +246,7 @@ export default function TrendingToursSection({ themeClass = '', cmsPage = null }
 
   return (
     <section className={themeClass} style={{
-      padding: '20px 0 32px',
+      padding: '12px 0 16px',
       background: bgColor,
       position: 'relative',
       width: '100%',
@@ -254,7 +254,7 @@ export default function TrendingToursSection({ themeClass = '', cmsPage = null }
       <div className="container trending-wrapper" style={{ maxWidth: '1400px' }}>
 
         {/* Heading Header matched to screenshot */}
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px', textAlign: 'center', width: '100%' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px', textAlign: 'center', width: '100%' }}>
           <h2 className={`trending-heading theme-underline-heading ${!isFamily && !isGroup && !isNri ? 'honeymoon-heading' : ''}`} style={{
             fontWeight: 600,
             color: primaryColor,

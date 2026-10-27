@@ -1739,10 +1739,10 @@ export default function PremiumDestinationLayout({
           grid-row: 2;
           display: flex;
           flex-direction: column;
-          gap: 48px;
+          gap: 32px;
         }
         .content-section {
-          margin-bottom: 48px;
+          margin-bottom: 32px;
         }
         .section-heading {
           font-size: 36px;
@@ -1878,8 +1878,8 @@ export default function PremiumDestinationLayout({
           color: white;
         }
         .read-less {
-          margin-top: 32px;
-          margin-bottom: 24px;
+          margin-top: 20px;
+          margin-bottom: 16px;
         }
 
         /* RIGHT SIDEBAR */

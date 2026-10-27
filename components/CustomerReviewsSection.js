@@ -116,7 +116,7 @@ export default function CustomerReviewsSection({ themeClass = '' }) {
 
   return (
     <section className={themeClass} style={{
-      padding: '60px 0',
+      padding: '20px 0',
       background: 'transparent',
     }}>
       <div className="container" style={{ maxWidth: '1200px' }}>

@@ -1169,7 +1169,7 @@ function ItineraryStyles() {
     <style jsx global>{`
       .itn-page {
         background: #ffffff;
-        padding: 144px 0 130px;
+        padding: 144px 0 0;
         color: var(--color-text-primary, #0f172a);
         font-family: inherit, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         font-size: 14px;
@@ -3513,9 +3513,15 @@ function ItineraryStyles() {
       .itn-full-sections {
         margin-top: 56px;
         width: 100%;
+        margin-bottom: 0;
+        padding-bottom: 0;
       }
       .itn-full-block {
         margin-bottom: 60px;
+      }
+      .itn-full-sections > .itn-full-block:last-child,
+      #itinerary-reviews {
+        margin-bottom: 0 !important;
       }
       .itn-full-block .itn-block-title {
         margin: 0 0 24px;
@@ -4164,7 +4170,7 @@ function ItineraryStyles() {
         /* Page spacing & container */
         .itn-page {
           padding-top: 84px !important;
-          padding-bottom: 96px !important;
+          padding-bottom: 0 !important;
         }
         .itn-container {
           padding: 0 16px !important;
@@ -9968,7 +9974,7 @@ export default function TourItineraryView({ destination, packageSlug }) {
 
           {/* What Our Travelers Say */}
           {displayReviews.length > 0 ? (
-            <section className="itn-full-block" id="itinerary-reviews">
+            <section className="itn-full-block" id="itinerary-reviews" style={{ marginBottom: 0 }}>
               <h2 className="itn-block-title">What Our Travelers Say</h2>
               <div
                 className="itn-reviews-grid itn-reviews-grid-full"
