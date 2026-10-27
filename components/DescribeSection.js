@@ -22,7 +22,7 @@ export default function DescribeSection({ sectionData, collectionDescriptions = 
         .collections-section {
           position: relative;
           background: var(--color-bg);
-          padding: 60px 0 80px;
+          padding: 36px 0 40px;
         }
 
         .collections-inner {
@@ -30,7 +30,7 @@ export default function DescribeSection({ sectionData, collectionDescriptions = 
         }
 
         .collections-title {
-          margin: 0 0 50px;
+          margin: 0 0 28px;
           color: var(--color-text-primary);
           font-family: "Italiana", sans-serif;
           font-size: clamp(28px, 3.5vw, 42px);
@@ -41,7 +41,7 @@ export default function DescribeSection({ sectionData, collectionDescriptions = 
         .collection-block {
           display: flex;
           align-items: stretch;
-          margin-bottom: 60px;
+          margin-bottom: 36px;
           gap: 50px;
         }
 
@@ -159,28 +159,36 @@ export default function DescribeSection({ sectionData, collectionDescriptions = 
         @media (max-width: 900px) {
           .collection-block, .collection-block:nth-of-type(even) {
             flex-direction: column-reverse; /* Stack with text on bottom, image on top */
-            gap: 30px;
-            margin-bottom: 50px;
+            gap: 18px;
+            margin-bottom: 28px;
           }
           .collection-image-wrapper {
-            aspect-ratio: 4 / 3;
+            aspect-ratio: 16 / 10;
             width: 100%;
           }
           .collection-heading {
             margin-top: 0;
+            margin-bottom: 10px;
+          }
+          .collection-desc {
+            margin-bottom: 14px;
           }
           .btn-explore {
-            margin-top: 40px;
+            margin-top: 18px;
+            padding: 10px 24px;
+          }
+          .collections-title {
+            margin-bottom: 18px;
           }
         }
 
         @media (max-width: 540px) {
           .collection-highlights {
             grid-template-columns: repeat(2, max-content);
-            gap: 10px 15px; /* slightly smaller gap on mobile */
+            gap: 8px 12px; /* slightly smaller gap on mobile */
           }
           .collections-section {
-            padding: 40px 0;
+            padding: 24px 0 24px;
           }
         }
       `}</style>

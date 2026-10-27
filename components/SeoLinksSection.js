@@ -113,14 +113,14 @@ export default async function SeoLinksSection() {
           background-position: center;
           background-color: #FAFAFA; /* Slightly off-white fallback */
           color: #E2E8F0;
-          padding: 60px 40px 40px;
+          padding: 36px 40px 36px;
           border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .seo-category-title {
           font-family: "Italiana", sans-serif;
           font-size: 36px;
-          margin-bottom: 36px;
+          margin-bottom: 24px;
           color: var(--color-text-primary, #1F2A44);
           font-weight: 600;
           letter-spacing: 0.5px;
@@ -171,27 +171,34 @@ export default async function SeoLinksSection() {
 
         @media (max-width: 768px) {
           .seo-category-title {
-            font-size: 28px;
-            margin-bottom: 24px;
+            font-size: 24px;
+            margin-bottom: 16px;
           }
           .seo-links-section {
-            padding: 40px 30px 30px;
+            padding: 24px 16px 20px;
           }
           .seo-links-grid {
             grid-template-columns: repeat(2, 1fr);
+            gap: 10px 12px;
+          }
+          .seo-divider {
+            margin: 20px 0;
           }
         }
 
         @media (max-width: 480px) {
           .seo-links-section {
-            padding: 30px 20px 20px;
+            padding: 20px 14px 16px;
           }
           .seo-links-grid {
             grid-template-columns: repeat(2, 1fr);
-            gap: 12px 10px;
+            gap: 8px 10px;
           }
           .seo-link {
-            font-size: 14px;
+            font-size: 13px;
+          }
+          .seo-divider {
+            margin: 16px 0;
           }
         }
       `}</style>

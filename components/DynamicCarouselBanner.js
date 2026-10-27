@@ -36,7 +36,14 @@ export default function DynamicCarouselBanner() {
   if (team.length === 0) return null;
 
   return (
-    <section style={{ padding: '16px 0 32px', background: 'white' }}>
+    <section className="dynamic-carousel-section" style={{ padding: '12px 0 16px', background: 'white' }}>
+      <style>{`
+        @media (max-width: 768px) {
+          .dynamic-carousel-section {
+            padding: 8px 0 12px !important;
+          }
+        }
+      `}</style>
       <div className="container" style={{ margin: '0 auto', padding: '0 24px' }}>
         <div style={{ position: 'relative', borderRadius: 24, overflow: 'hidden', height: 'clamp(180px, 28vw, 300px)', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
           <Swiper

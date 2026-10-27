@@ -288,7 +288,7 @@ export default function GramSection({ videoReviewsData, themeClass = '', cmsPage
   return (
     <section className={`${themeClass} ${inContainer ? 'gram-in-container' : 'gram-section-not-in-container'}`} style={{
       background: 'transparent',
-      padding: inContainer ? '10px 0 20px' : '80px 0 100px',
+      padding: inContainer ? '10px 0 20px' : '36px 0 40px',
       position: 'relative',
       overflow: 'visible',
     }}>
@@ -396,9 +396,13 @@ export default function GramSection({ videoReviewsData, themeClass = '', cmsPage
           }
         }
         @media (max-width: 768px) {
+          .gram-section-not-in-container {
+            padding: 24px 0 24px !important;
+          }
           .gram-heading {
             font-size: 26px;
             padding: 0 16px;
+            margin-bottom: 12px !important;
           }
           .gram-spacer {
             display: none !important;
@@ -416,7 +420,7 @@ export default function GramSection({ videoReviewsData, themeClass = '', cmsPage
           .gram-scroll-area {
             gap: 0 !important;
             justify-content: flex-start !important;
-            padding: 14px 0 24px !important;
+            padding: 10px 0 16px !important;
             width: 100% !important;
             max-width: 100% !important;
             box-sizing: border-box !important;

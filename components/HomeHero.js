@@ -276,7 +276,7 @@ export default function HomeHero() {
             position: 'absolute', inset: 0, zIndex: 4,
             display: 'flex', flexDirection: 'column',
             alignItems: 'center', justifyContent: 'flex-end',
-            textAlign: 'center', padding: isMobile ? '0 16px 40px' : '0 16px 20px',
+            textAlign: 'center', padding: isMobile ? '0 16px 24px' : '0 16px 20px',
           }}
         >
           {/* Green-border search bar */}

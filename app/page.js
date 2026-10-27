@@ -104,16 +104,16 @@ export default async function HomePage() {
         <style>{`
           .newsletter-section {
             background: var(--color-primary);
-            padding: 48px 16px;
-            margin: 0 16px 40px;
-            border-radius: 24px;
+            padding: 28px 16px;
+            margin: 0 12px 20px;
+            border-radius: 20px;
           }
           @media (min-width: 768px) {
             .newsletter-section {
-              margin: 0 auto 60px;
+              margin: 0 auto 36px;
               max-width: 1200px;
               width: calc(100% - 64px);
-              padding: 64px 20px;
+              padding: 44px 20px;
               border-radius: 32px;
             }
           }
@@ -125,7 +125,7 @@ export default async function HomePage() {
           <h2 style={{ fontFamily: '"Italiana", sans-serif', fontWeight: 800, fontSize: 26, color: 'white', marginBottom: 10, lineHeight: 1.2 }}>
             Get Exclusive Deals & Travel Inspiration
           </h2>
-          <p style={{ color: 'rgba(255,255,255,0.95)', fontSize: 14, marginBottom: 24 }}>
+          <p style={{ color: 'rgba(255,255,255,0.95)', fontSize: 14, marginBottom: 16 }}>
             Early-bird discounts, curated guides & weekly travel ideas.
           </p>
           <NewsletterForm />

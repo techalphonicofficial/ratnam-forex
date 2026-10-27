@@ -65,9 +65,10 @@ export default function TravelerTypesSection() {
 
   return (
     <section
+      className="sec-traveller-types"
       style={{
         position: 'relative',
-        padding: '80px 0 84px',
+        padding: '48px 0 32px',
         background: 'var(--color-bg)',
         overflow: 'hidden',
       }}
@@ -113,6 +114,15 @@ export default function TravelerTypesSection() {
           right: -20px;
         }
         @media (max-width: 768px) {
+          .sec-traveller-types {
+            padding: 24px 0 20px !important;
+          }
+          .sec-traveller-header {
+            margin-bottom: 16px !important;
+          }
+          .sec-traveller-btn-wrap {
+            margin-top: 16px !important;
+          }
           .traveller-nav-prev {
             left: -16px;
           }
@@ -128,6 +138,9 @@ export default function TravelerTypesSection() {
             height: 16px;
           }
           .sec-traveller-swiper {
+            padding-top: 8px !important;
+            padding-bottom: 8px !important;
+            margin-top: -8px !important;
             padding-left: 12px !important;
             padding-right: 12px !important;
           }
@@ -136,7 +149,7 @@ export default function TravelerTypesSection() {
 
       <div className="container" style={{ margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 2 }}>
         {/* Section Header */}
-        <div style={{ textAlign: 'center', marginBottom: 44 }}>
+        <div className="sec-traveller-header" style={{ textAlign: 'center', marginBottom: 28 }}>
           <span style={{
             fontSize: 12,
             fontWeight: 800,
@@ -148,12 +161,12 @@ export default function TravelerTypesSection() {
           }}>
             Design Your Dream Trip
           </span>
-          <h2 style={{
+          <h2 className="theme-underline-heading" style={{
             fontFamily: '"Italiana", sans-serif',
             fontWeight: 900,
             fontSize: 'clamp(24px, 3vw, 36px)',
             color: 'var(--color-text-primary)',
-            margin: '0 0 12px',
+            margin: '0 0 14px',
             textTransform: 'uppercase',
             letterSpacing: 0.5
           }}>
@@ -192,7 +205,7 @@ export default function TravelerTypesSection() {
             loop={true}
             speed={500}
             breakpoints={{
-              320: { slidesPerView: 2, spaceBetween: 16 },
+              320: { slidesPerView: 2, spaceBetween: 12 },
               768: { slidesPerView: 3, spaceBetween: 24 },
               1024: { slidesPerView: 5, spaceBetween: 28 },
             }}
@@ -220,7 +233,7 @@ export default function TravelerTypesSection() {
         </div>
 
         {/* View More Button */}
-        <div style={{ textAlign: 'center', marginTop: 40 }}>
+        <div className="sec-traveller-btn-wrap" style={{ textAlign: 'center', marginTop: 24 }}>
           <Link href="/categories" className="btn-primary circle-btn-hover" style={{ display: 'inline-flex', width: 'auto', minWidth: '160px' }}>
             <svg className="circle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
             View More

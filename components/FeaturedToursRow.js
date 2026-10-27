@@ -33,34 +33,144 @@ export const getFeaturedTourHref = (title) => {
   return `/tours/${slug}`;
 };
 
-function CustomDropdown({ label, options, currentValue, onChange }) {
+function CustomDropdown({ options, currentValue, onChange, className = '' }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [hoveredOpt, setHoveredOpt] = useState(null);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   return (
-    <div style={{ position: 'relative', display: 'inline-block', textAlign: 'left' }}>
-      <select
-        value={currentValue}
-        onChange={(e) => onChange(e.target.value)}
+    <div
+      ref={dropdownRef}
+      className={`custom-dropdown-wrap ${className}`}
+      style={{ position: 'relative', display: 'inline-block', textAlign: 'left' }}
+    >
+      <button
+        type="button"
+        className="custom-dropdown-btn"
+        onClick={() => setIsOpen(!isOpen)}
         style={{
           appearance: 'none',
           WebkitAppearance: 'none',
           background: 'var(--color-card)',
-          border: '1px solid var(--color-border)',
+          border: isOpen ? '1px solid var(--color-primary, #aa8453)' : '1px solid var(--color-border)',
           borderRadius: 4,
-          padding: '6px 24px 6px 10px',
-          fontSize: 12,
+          padding: '6px 28px 6px 12px',
+          fontSize: 13,
           color: 'var(--color-text-muted)',
           cursor: 'pointer',
-          width: '100%',
+          position: 'relative',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          userSelect: 'none',
           outline: 'none',
+          boxShadow: isOpen ? '0 0 0 2px color-mix(in srgb, var(--color-primary, #aa8453) 20%, transparent)' : 'none',
+          transition: 'all 0.2s ease',
+        }}
+        onMouseEnter={(e) => {
+          if (!isOpen) e.currentTarget.style.borderColor = 'var(--color-primary, #aa8453)';
+        }}
+        onMouseLeave={(e) => {
+          if (!isOpen) e.currentTarget.style.borderColor = 'var(--color-border)';
         }}
       >
-        {label && <option disabled value="">{label}</option>}
-        {options.map((opt) => (
-          <option key={opt} value={opt}>
-            {opt}
-          </option>
-        ))}
-      </select>
-      <svg style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        <span
+          className="custom-dropdown-label"
+          style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+        >
+          {currentValue}
+        </span>
+        <svg
+          className="custom-dropdown-arrow"
+          style={{
+            position: 'absolute',
+            right: 8,
+            top: '50%',
+            transform: `translateY(-50%) ${isOpen ? 'rotate(180deg)' : 'rotate(0deg)'}`,
+            transition: 'transform 0.2s ease',
+            pointerEvents: 'none'
+          }}
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </button>
+
+      {isOpen && (
+        <div
+          className="custom-dropdown-menu"
+          style={{
+            position: 'absolute',
+            top: 'calc(100% + 4px)',
+            left: 0,
+            width: '100%',
+            minWidth: '130px',
+            background: 'var(--color-card, #ffffff)',
+            border: '1px solid var(--color-border)',
+            borderRadius: 6,
+            boxShadow: '0 6px 20px rgba(0,0,0,0.12)',
+            zIndex: 100,
+            padding: '4px 0',
+            maxHeight: '200px',
+            overflowY: 'auto',
+          }}
+        >
+          {options.map((opt) => {
+            const isSelected = opt === currentValue;
+            const isHovered = opt === hoveredOpt;
+
+            return (
+              <div
+                key={opt}
+                onClick={() => {
+                  onChange(opt);
+                  setIsOpen(false);
+                  setHoveredOpt(null);
+                }}
+                onMouseEnter={() => setHoveredOpt(opt)}
+                onMouseLeave={() => setHoveredOpt(null)}
+                style={{
+                  padding: '8px 14px',
+                  fontSize: 13,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  fontWeight: isSelected ? 600 : 400,
+                  color: isSelected
+                    ? '#ffffff'
+                    : isHovered
+                    ? 'var(--color-primary, #aa8453)'
+                    : 'var(--color-text-primary)',
+                  background: isSelected
+                    ? 'var(--color-primary, #aa8453)'
+                    : isHovered
+                    ? 'color-mix(in srgb, var(--color-primary, #aa8453) 12%, transparent)'
+                    : 'transparent',
+                  transition: 'background 0.15s ease, color 0.15s ease',
+                }}
+              >
+                {opt}
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
@@ -165,21 +275,15 @@ export default function RecommendedPackages() {
         
         .recent-bookings-section {
           background: var(--color-card);
-          padding: 100px 0 60px 0;
+          padding: 40px 0 36px 0;
         }
         
         .recent-filters {
           display: flex;
           align-items: center;
           gap: 12px;
-          flex-wrap: nowrap;
-          overflow-x: auto;
-          scrollbar-width: none;
-          -ms-overflow-style: none;
+          flex-wrap: wrap;
           justify-content: center;
-        }
-        .recent-filters::-webkit-scrollbar {
-          display: none;
         }
         
         /* Styled to match the dropdown filters in the design */
@@ -365,11 +469,26 @@ export default function RecommendedPackages() {
         }
 
         @media (max-width: 768px) {
-           .recent-bookings-section { padding: 40px 0; }
+           .recent-bookings-section { padding: 24px 0 20px; }
+           .recent-bookings-header {
+             margin-bottom: 16px !important;
+           }
+           .recent-bookings-header p {
+             margin-bottom: 12px !important;
+           }
+           .recent-bookings-header .live-badge-wrap {
+             margin-bottom: 14px !important;
+           }
+           .recent-bookings-header .recent-filters {
+             margin-bottom: 0 !important;
+           }
+           .recent-bookings-btn-wrap {
+             margin-top: 16px !important;
+           }
            .recent-bookings-section .th-section-intro {
              width: 100%;
              min-width: 0;
-             margin-bottom: 20px;
+             margin-bottom: 16px;
            }
            .recent-bookings-section .th-section-copy,
            .recent-bookings-section .th-section-actions {
@@ -387,9 +506,64 @@ export default function RecommendedPackages() {
              gap: 12px;
            }
            .recent-filters {
-             width: 100%;
-             justify-content: center;
-             padding-bottom: 8px;
+             width: 100% !important;
+             display: flex !important;
+             flex-direction: row !important;
+             flex-wrap: nowrap !important;
+             justify-content: space-between !important;
+             align-items: center !important;
+             gap: 6px !important;
+             padding-bottom: 6px;
+             box-sizing: border-box !important;
+           }
+           .recent-filters .custom-dropdown-wrap {
+             flex: 1 1 0 !important;
+             min-width: 0 !important;
+             max-width: 100% !important;
+             display: block !important;
+           }
+           .recent-filters .custom-dropdown-wrap:first-child {
+             flex: 1.25 1 0 !important;
+           }
+           .recent-filters .custom-dropdown-wrap:nth-child(2) {
+             flex: 0.95 1 0 !important;
+           }
+           .recent-filters .custom-dropdown-wrap:nth-child(3) {
+             flex: 0.8 1 0 !important;
+           }
+           .recent-filters .custom-dropdown-btn {
+             width: 100% !important;
+             min-width: 0 !important;
+             box-sizing: border-box !important;
+             padding: 6px 18px 6px 8px !important;
+             font-size: 11.5px !important;
+             display: flex !important;
+             align-items: center !important;
+             justify-content: space-between !important;
+           }
+           .recent-filters .custom-dropdown-label {
+             min-width: 0 !important;
+             flex: 1 1 auto !important;
+             white-space: nowrap !important;
+             overflow: hidden !important;
+             text-overflow: ellipsis !important;
+             display: block !important;
+             text-align: left !important;
+           }
+           .recent-filters .custom-dropdown-arrow {
+             right: 5px !important;
+             width: 10px !important;
+             height: 10px !important;
+           }
+           .recent-filters .custom-dropdown-menu {
+             min-width: 120px !important;
+             width: max-content !important;
+             max-width: 190px !important;
+             z-index: 1000 !important;
+           }
+           .recent-filters .custom-dropdown-wrap:last-child .custom-dropdown-menu {
+             left: auto !important;
+             right: 0 !important;
            }
            .recent-scroll-actions { display: none; }
            .recent-booking-card { 
@@ -399,7 +573,7 @@ export default function RecommendedPackages() {
            .responsive-header-row {
              flex-direction: column;
              align-items: flex-start !important;
-             gap: 20px !important;
+             gap: 16px !important;
            }
         }
 
@@ -411,10 +585,11 @@ export default function RecommendedPackages() {
              font-size: 13px;
            }
            .recent-filters {
-             gap: 8px;
+             gap: 4px !important;
            }
-           .recent-filters > * {
-             flex: 0 0 auto;
+           .recent-filters .custom-dropdown-btn {
+             padding: 5px 16px 5px 6px !important;
+             font-size: 11px !important;
            }
            .recent-booking-card {
              width: calc((100vw - 32px) / 0.85);
@@ -428,7 +603,7 @@ export default function RecommendedPackages() {
 
       <div className="container">
         {/* ── Centered Header Section matching design ── */}
-        <div style={{ textAlign: 'center', marginBottom: 40 }}>
+        <div className="recent-bookings-header" style={{ textAlign: 'center', marginBottom: 24 }}>
           <h2 className="theme-underline-heading" style={{ fontFamily: '"Italiana", sans-serif', fontSize: 'clamp(28px, 4vw, 36px)', fontWeight: 900, color: 'var(--color-text-primary)', margin: '0 0 8px' }}>
             Hot Deals
           </h2>
@@ -436,26 +611,17 @@ export default function RecommendedPackages() {
             Unbeatable prices for unforgettable places creates a nice, memorable rhythm!
           </p>
           
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'var(--color-primary-light)', border: '1px solid var(--color-secondary)', padding: '4px 12px', borderRadius: 999, marginBottom: 24 }}>
+          <div className="live-badge-wrap" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'var(--color-primary-light)', border: '1px solid var(--color-secondary)', padding: '4px 12px', borderRadius: 999, marginBottom: 24 }}>
              <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--color-secondary)' }}></div>
              <span style={{ fontSize: 11, fontWeight: 700, color: '#FF6000', letterSpacing: 0.5 }}>
                {liveBookings.length ? `${liveBookings.length}+ tour packages` : '20+ tour packages'}
              </span>
           </div>
 
-          <div className="recent-filters" style={{ marginBottom: 16 }}>
+          <div className="recent-filters">
              <CustomDropdown currentValue={activeDest} onChange={handleDestChange} options={DEST_FILTERS} />
              <CustomDropdown currentValue={activeDuration} onChange={handleDurationChange} options={['DURATION', '1-3 Days', '4-7 Days', '8+ Days']} />
-             <CustomDropdown label="TRAVEL CLASS" currentValue={activeClass} onChange={handleClassSort} options={CLASS_FILTERS} />
-          </div>
-
-          <div className="recent-result-row" style={{ color: 'var(--color-text-muted)', fontSize: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-             <span style={{ background: 'var(--color-primary)', color: 'white', padding: '3px 10px', borderRadius: 12, marginRight: 8, fontWeight: 700 }}>
-               {filtered.length} itineraries
-             </span>
-             <span>
-               {loading ? 'loading latest trips' : 'showing top combined trips'}
-             </span>
+             <CustomDropdown currentValue={activeClass} onChange={handleClassSort} options={CLASS_FILTERS} />
           </div>
         </div>
 
@@ -513,7 +679,7 @@ export default function RecommendedPackages() {
         </div>
 
         {/* View More Button */}
-        <div style={{ textAlign: 'center', marginTop: 40 }}>
+        <div className="recent-bookings-btn-wrap" style={{ textAlign: 'center', marginTop: 24 }}>
           <Link href="/packages?hideFilters=true" className="btn-primary circle-btn-hover" style={{ display: 'inline-flex', width: 'auto', minWidth: '160px' }}>
             <svg className="circle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
             View All Hot Deals

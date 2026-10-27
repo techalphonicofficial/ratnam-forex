@@ -209,7 +209,7 @@ export default function WhyChooseSection() {
   }
 
   return (
-    <section style={{ background: 'var(--color-bg)', padding: '52px 0 56px' }}>
+    <section className="why-choose-section" style={{ background: 'var(--color-bg)', padding: '36px 0 36px' }}>
       <style>{`
         .why-choose-grid {
           display: flex;
@@ -443,6 +443,27 @@ export default function WhyChooseSection() {
         .blog-nav-right { right: -20px; }
 
         /* ── Responsive ── */
+        @media (max-width: 768px) {
+          .why-choose-section {
+            padding: 24px 0 24px !important;
+          }
+          .why-choose-grid {
+            gap: 16px !important;
+          }
+          .stats-grid {
+            margin-bottom: 16px !important;
+            gap: 10px !important;
+          }
+          .section-title.theme-underline-heading {
+            margin: 0 0 16px !important;
+          }
+          .feature-scroller-container {
+            margin-bottom: 16px !important;
+          }
+          .blog-slider-container {
+            margin: 0 auto 16px auto !important;
+          }
+        }
         @media (max-width: 640px) {
           .feature-scroller-container {
             width: 90% !important;

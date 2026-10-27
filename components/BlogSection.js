@@ -40,7 +40,7 @@ export default function BlogSection({ title = 'BLOG : CITY INFO, TRAVEL TIPS : S
       <style>{`
         .home-blog-section {
           background: var(--color-bg);
-          padding: var(--space-12, 48px) 0 var(--space-16, 64px);
+          padding: 32px 0 36px;
         }
 
         .home-blog-inner {
@@ -51,7 +51,7 @@ export default function BlogSection({ title = 'BLOG : CITY INFO, TRAVEL TIPS : S
         }
 
         .home-blog-header {
-          margin-bottom: var(--space-8, 32px);
+          margin-bottom: 20px;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -420,9 +420,12 @@ export default function BlogSection({ title = 'BLOG : CITY INFO, TRAVEL TIPS : S
           .mobile-only { display: none !important; }
         }
 
-        @media (max-width: 640px) {
+        @media (max-width: 768px) {
           .home-blog-section {
-            padding: var(--space-8, 32px) 0 var(--space-12, 48px);
+            padding: 24px 0 24px !important;
+          }
+          .home-blog-header {
+            margin-bottom: 14px !important;
           }
           .home-blog-inner {
             padding: 0 16px;
@@ -436,10 +439,10 @@ export default function BlogSection({ title = 'BLOG : CITY INFO, TRAVEL TIPS : S
           .mobile-banner {
             width: 75% !important;
             max-width: 300px !important;
-            margin: 0 auto 32px auto !important;
-            min-height: 120px !important;
-            padding: 20px 16px !important;
-            gap: 16px !important;
+            margin: 0 auto 16px auto !important;
+            min-height: 100px !important;
+            padding: 16px 14px !important;
+            gap: 12px !important;
           }
           .home-blog-banner-btn-mobile {
             display: inline-flex;

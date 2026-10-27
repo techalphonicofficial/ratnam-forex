@@ -28,31 +28,168 @@ const FILTER_OPTIONS = {
 };
 
 /* ── Dropdown Filter Component ───────────────────────── */
-function FilterDropdown({ label, items, value, onChange }) {
+function FilterDropdown({ label, items, value, onChange, alignRight = false }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [hoveredOpt, setHoveredOpt] = useState(null);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const displayLabel = value === 'All' ? label : value;
+  const isFiltered = value !== 'All';
+
   return (
-    <div className="ew-dropdown" style={{ position: 'relative', display: 'inline-block', flex: '0 1 auto', minWidth: 0 }}>
-      <select
+    <div
+      ref={dropdownRef}
+      className="ew-dropdown"
+      style={{
+        position: 'relative',
+        display: 'inline-block',
+        flex: '1 1 0',
+        minWidth: 0,
+        textAlign: 'left'
+      }}
+    >
+      <button
+        type="button"
         className="ew-dropdown-btn"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onClick={() => setIsOpen(prev => !prev)}
         style={{
           appearance: 'none',
           WebkitAppearance: 'none',
-          padding: '6px 18px 6px 8px',
-          fontSize: '12px',
-          width: '100%',
+          background: 'var(--color-card, #ffffff)',
+          border: isOpen || isFiltered
+            ? '1px solid var(--color-primary, #aa8453)'
+            : '1px solid var(--color-border)',
+          borderRadius: 4,
+          padding: '6px 24px 6px 10px',
+          fontSize: 13,
+          color: isFiltered ? 'var(--color-primary, #aa8453)' : 'var(--color-text-muted)',
+          fontWeight: isFiltered ? 600 : 400,
+          cursor: 'pointer',
+          position: 'relative',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          userSelect: 'none',
           outline: 'none',
-          textOverflow: 'ellipsis'
+          width: '100%',
+          boxShadow: isOpen
+            ? '0 0 0 2px color-mix(in srgb, var(--color-primary, #aa8453) 20%, transparent)'
+            : 'none',
+          transition: 'all 0.2s ease',
+        }}
+        onMouseEnter={(e) => {
+          if (!isOpen && !isFiltered) e.currentTarget.style.borderColor = 'var(--color-primary, #aa8453)';
+        }}
+        onMouseLeave={(e) => {
+          if (!isOpen && !isFiltered) e.currentTarget.style.borderColor = 'var(--color-border)';
         }}
       >
-        <option disabled value="">{label}</option>
-        {items.map((item) => (
-          <option key={item} value={item}>
-            {item === 'All' ? label : item}
-          </option>
-        ))}
-      </select>
-      <svg style={{ position: 'absolute', right: '6px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="6 9 12 15 18 9" /></svg>
+        <span
+          className="ew-dropdown-label"
+          style={{
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            display: 'block'
+          }}
+        >
+          {displayLabel}
+        </span>
+        <svg
+          className="ew-dropdown-arrow"
+          style={{
+            position: 'absolute',
+            right: 8,
+            top: '50%',
+            transform: `translateY(-50%) ${isOpen ? 'rotate(180deg)' : 'rotate(0deg)'}`,
+            transition: 'transform 0.2s ease',
+            pointerEvents: 'none',
+            color: isFiltered || isOpen ? 'var(--color-primary, #aa8453)' : 'currentColor',
+            flexShrink: 0
+          }}
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+
+      {isOpen && (
+        <div
+          className="ew-dropdown-menu"
+          style={{
+            position: 'absolute',
+            top: 'calc(100% + 4px)',
+            left: alignRight ? 'auto' : 0,
+            right: alignRight ? 0 : 'auto',
+            width: 'max-content',
+            minWidth: '130px',
+            maxWidth: '220px',
+            background: 'var(--color-card, #ffffff)',
+            border: '1px solid var(--color-border)',
+            borderRadius: 6,
+            boxShadow: '0 6px 20px rgba(0,0,0,0.12)',
+            zIndex: 100,
+            padding: '4px 0',
+            maxHeight: '220px',
+            overflowY: 'auto',
+          }}
+        >
+          {items.map((opt) => {
+            const isSelected = opt === value;
+            const isHovered = opt === hoveredOpt;
+
+            return (
+              <div
+                key={opt}
+                onClick={() => {
+                  onChange(opt);
+                  setIsOpen(false);
+                  setHoveredOpt(null);
+                }}
+                onMouseEnter={() => setHoveredOpt(opt)}
+                onMouseLeave={() => setHoveredOpt(null)}
+                style={{
+                  padding: '8px 14px',
+                  fontSize: 13,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  fontWeight: isSelected ? 600 : 400,
+                  color: isSelected
+                    ? '#ffffff'
+                    : isHovered
+                    ? 'var(--color-primary, #aa8453)'
+                    : 'var(--color-text-primary)',
+                  background: isSelected
+                    ? 'var(--color-primary, #aa8453)'
+                    : isHovered
+                    ? 'color-mix(in srgb, var(--color-primary, #aa8453) 12%, transparent)'
+                    : 'transparent',
+                  transition: 'background 0.15s ease, color 0.15s ease',
+                }}
+              >
+                {opt}
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
@@ -62,11 +199,11 @@ function applyFilters(tours, filters) {
   let list = [...tours];
 
   if (filters.theme !== 'All') {
-    list = list.filter(t => t.theme === filters.theme.toLowerCase());
+    list = list.filter(t => t.theme?.toLowerCase() === filters.theme.toLowerCase());
   }
 
   if (filters.season !== 'All') {
-    list = list.filter(t => t.season === filters.season.toLowerCase());
+    list = list.filter(t => t.season?.toLowerCase() === filters.season.toLowerCase());
   }
 
   if (filters.travelClass !== 'All') {
@@ -134,7 +271,7 @@ export default function ExploreWorldSection() {
       <style>{`
         .ew-section {
           background: var(--color-bg);
-          padding: 48px 0 56px;
+          padding: 32px 0 36px;
         }
 
         .ew-inner {
@@ -145,7 +282,7 @@ export default function ExploreWorldSection() {
         }
 
         .ew-title {
-          margin: 0 0 24px;
+          margin: 0 0 16px;
           color: #151922;
           font-family: 'Hoefler Text', 'Voga', serif;
           font-size: clamp(28px, 4vw, 36px);
@@ -165,7 +302,7 @@ export default function ExploreWorldSection() {
           align-items: center;
           justify-content: center;
           gap: 12px;
-          margin-bottom: 28px;
+          margin-bottom: 20px;
           flex-wrap: nowrap;
           width: 100%;
         }
@@ -177,29 +314,23 @@ export default function ExploreWorldSection() {
         .ew-dropdown-btn {
           display: flex;
           align-items: center;
-          gap: 8px;
-          padding: 9px 18px;
-          border-radius: 999px;
-          border: 1.5px solid var(--color-border);
-          background: var(--color-card);
-          color: var(--color-text-primary);
+          justify-content: space-between;
+          padding: 6px 24px 6px 10px;
+          border-radius: 4px;
+          border: 1px solid var(--color-border);
+          background: var(--color-card, #ffffff);
+          color: var(--color-text-muted);
           font-size: 13px;
-          font-weight: 600;
+          font-weight: 500;
           cursor: pointer;
           white-space: nowrap;
-          transition: all 0.2s;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+          transition: all 0.2s ease;
+          width: 100%;
+          outline: none;
         }
 
         .ew-dropdown-btn:hover {
-          border-color: var(--color-text-muted);
-          background: #fafafa;
-        }
-
-        .ew-dropdown-item--active {
-          color: white;
-          font-weight: 700;
-          background: var(--color-primary);
+          border-color: var(--color-primary, #aa8453);
         }
 
         /* ── Scroll area ──────────────── */
@@ -325,16 +456,27 @@ export default function ExploreWorldSection() {
           .ew-scroll-btn--right { right: 4px; top: 108px !important; }
           
           .ew-section {
-            padding: 32px 0 40px;
+            padding: 24px 0 24px;
+          }
+          .ew-title {
+            margin-bottom: 14px;
           }
           .ew-inner {
             padding: 0 16px;
           }
           .ew-filter-bar {
             flex-wrap: nowrap;
-            padding-bottom: 8px;
+            padding-bottom: 6px;
+            margin-bottom: 14px;
             justify-content: space-between;
             gap: 4px;
+          }
+          .ew-dropdown-btn {
+            padding: 5px 16px 5px 6px !important;
+            font-size: 11px !important;
+          }
+          .ew-dropdown-arrow {
+            right: 4px !important;
           }
           .ew-card {
             width: calc(100vw - 40px);
@@ -366,13 +508,14 @@ export default function ExploreWorldSection() {
 
         {/* Filter dropdowns */}
         <div className="ew-filter-bar">
-          {Object.entries(FILTER_OPTIONS).map(([key, opt]) => (
+          {Object.entries(FILTER_OPTIONS).map(([key, opt], idx) => (
             <FilterDropdown
               key={key}
               label={opt.label}
               items={opt.items}
               value={filters[key]}
               onChange={(val) => updateFilter(key, val)}
+              alignRight={idx >= 2}
             />
           ))}
         </div>

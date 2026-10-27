@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
 
-export default function CustomSelect({ value, onChange, options, placeholder, className, themeColor = '#D9466F', themeBg = '#FFF9FA' }) {
+export default function CustomSelect({ value, onChange, options, placeholder, className, themeColor = 'var(--color-primary, #aa8453)', themeBg = 'var(--brand-primary-light, #f7f1e8)' }) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef(null);
 

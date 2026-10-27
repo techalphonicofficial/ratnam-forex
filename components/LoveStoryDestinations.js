@@ -102,12 +102,12 @@ export default function LoveStoryDestinations({ themeClass = '', destinationsDat
       <style>{`
         .love-story-section {
           background-color: ${isNri ? '#FFFCF5' : (isGroup ? '#FAF5FA' : (isFamily ? '#FFFDF7' : (isPilgrim ? 'transparent' : (isBudget ? 'transparent' : '#FFF9FA'))))};
-          padding: 60px 20px;
+          padding: 32px 20px 36px;
           position: relative;
           overflow: hidden;
         }
         .love-story-header {
-          margin-bottom: 40px;
+          margin-bottom: 24px;
           text-align: center;
         }
         .love-story-title {
@@ -240,15 +240,23 @@ export default function LoveStoryDestinations({ themeClass = '', destinationsDat
           }
         }
         @media (max-width: 768px) {
+          .love-story-section {
+            padding: 24px 16px 24px !important;
+          }
+          .love-story-header {
+            margin-bottom: 16px !important;
+          }
           .love-story-grid {
             grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
+            gap: 14px !important;
+            row-gap: 20px !important;
           }
           .love-story-grid:not(.show-all) > *:nth-child(n+7) {
             display: none;
           }
           .love-story-btn-wrapper {
             display: block;
+            margin-top: 18px !important;
           }
           .love-story-title {
             font-size: 22px;
